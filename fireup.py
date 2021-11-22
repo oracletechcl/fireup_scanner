@@ -6,14 +6,16 @@
 
 
 import argparse
+from common.utils.formatter.printer import *
 
 def __execute_report__():
-    print("Executing report")
+    print_with_date("Executing fireup review tool")
+    debug_with_date("Executing fireup review tool")
 
 
 def __main__():
-    print("Executing main")
     __execute_report__()
+    
 
 
 __main__()
