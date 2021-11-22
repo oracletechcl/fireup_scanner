@@ -9,6 +9,7 @@ from common.utils.formatter.printer import *
 from abc import ABC, abstractmethod
 import oci
 
+__tenancy = None
 
 
 class ReviewPoint(ABC):    
@@ -19,6 +20,7 @@ class ReviewPoint(ABC):
         self.review_point = review_point
         self.status = status
         self.findings = findings
+        
 
 
     def get_benchmark_dictionary(self):

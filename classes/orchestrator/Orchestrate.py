@@ -8,12 +8,24 @@
 #              - Per each class, implemented in the corresponding abstract class, call the object and then call analyze_entity()
 
 from classes.securitycompliance.Mfa import Mfa
+from common.utils.reporter.Report import *
+
+__mfa_dictionary = []
 
 
-def main_orchestrator(config,signer):
-    __call_mfa(config, signer)
 
 
-def __call_mfa(config,signer):
-    mfa = Mfa("1.1", "Security and Compliance", "Manage Identities and Authorization Policies", "Enforce the Use of Multi-Factor Authentication (MFA)", True, [], config, signer)
-    mfa.analyze_entity()
+def main_orchestrator(config,signer, report_directory):
+    print_header("Fireup v0.0.1")
+    print_report_sub_header()
+    __call_mfa(config, signer, report_directory)
+
+
+def __call_mfa(config,signer, report_directory):
+    entry = "1.1"
+    mfa = Mfa(entry, "Security and Compliance", "Manage Identities and Authorization Policies", "Enforce the Use of Multi-Factor Authentication (MFA)", True, [], config, signer)
+    __mfa_dictionary = mfa.analyze_entity(entry)   
+    generate_on_screen_report(__mfa_dictionary, report_directory, "mfa_report")
+
+
+

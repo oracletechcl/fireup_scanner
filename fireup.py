@@ -9,6 +9,7 @@ import argparse
 from common.utils.formatter.printer import *
 from common.utils.tokenizer.signer import *
 from classes.orchestrator.Orchestrate import main_orchestrator
+import pathlib
 
 def __exec_orchestrator():
     parser = argparse.ArgumentParser()
@@ -16,7 +17,7 @@ def __exec_orchestrator():
                         help='Config file section to use (tenancy profile)')
     parser.add_argument('--output-to-bucket', default="", dest='output_bucket',
                         help='Set Output bucket name (i.e. my-reporting-bucket) ')
-    parser.add_argument('--report-directory', default=None, dest='report_directory',
+    parser.add_argument('--report-directory', default=str(pathlib.Path().resolve()), dest='report_directory',
                         help='Set Output report directory by default it is the current date (i.e. reports-date) ')
     parser.add_argument('--print-to-screen', default='True', dest='print_to_screen',
                         help='Set to False if you want to see only non-compliant findings (i.e. False) ')
@@ -29,7 +30,8 @@ def __exec_orchestrator():
 
     config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals, cmd.is_delegation_token)
 
-    main_orchestrator(config, signer)
+
+    main_orchestrator(config, signer, cmd.report_directory)
 
 
 
