@@ -8,7 +8,7 @@
 import argparse
 from common.utils.formatter.printer import *
 from common.utils.tokenizer.signer import *
-from classes.orchestrator.Orchestrate import main_orchestrator
+from common.orchestrator.Orchestrate import main_orchestrator
 import pathlib
 
 def __exec_orchestrator():

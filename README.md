@@ -38,4 +38,9 @@ The following is the detail of areas of interest
 | Operational efficiency            | Deployment strategy                                                                                                           |
 |                                   | Workload monitoring                                                                                                           |
 |                                   | OS management                                                                                                                 |
-|                                   | Support                                                                                                                              |
+|                                   | Support                                                                                                                       |
+
+
+
+## Class Structure
+
