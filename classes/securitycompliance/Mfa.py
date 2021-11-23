@@ -3,6 +3,7 @@
 # Mfa.py
 # Description: Implementation of class MFA based on abstract
 
+from common.utils.helpers.Helper import *
 from common.utils.formatter.printer import debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
@@ -36,12 +37,8 @@ class Mfa(ReviewPoint):
        except Exception as e:
            raise RuntimeError("Failed to create identity client: {}".format(e))
 
-    def load_entity(self):        
-        users_data = oci.pagination.list_call_get_all_results(
-                self.__identity.list_users,
-                self.__tenancy.id
-            ).data
-
+    def load_entity(self):       
+        users_data = get_user_data(self.__identity, self.__tenancy.id)
         for user in users_data:
                 record = {
                     'id': user.id,
