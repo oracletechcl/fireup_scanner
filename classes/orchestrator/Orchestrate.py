@@ -31,12 +31,12 @@ def __call_1_1(config,signer, report_directory):
     entry = "1.1"
     mfa = Mfa(entry, "Security and Compliance", "Manage Identities and Authorization Policies", "Enforce the Use of Multi-Factor Authentication (MFA)", True, [], config, signer)
     __mfa_dictionary = mfa.analyze_entity(entry)   
-    generate_on_screen_report(__mfa_dictionary, report_directory, "mfa_report")
+    generate_on_screen_report(__mfa_dictionary, report_directory, entry)
 
 
 def __call_1_2(config, signer, report_directory):
     entry = "1.2"
     admin = Admin(entry, "Security and Compliance", "Manage Identities and Authorization Policies", "Don't Use the Tenancy Administrator Account for Day-to-Day Operations", True, [], config, signer)
     __admin_dictionary = admin.analyze_entity(entry)
-    generate_on_screen_report(__admin_dictionary, report_directory, "admin_report")
+    generate_on_screen_report(__admin_dictionary, report_directory, entry)
 
