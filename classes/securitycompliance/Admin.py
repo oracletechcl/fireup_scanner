@@ -68,11 +68,14 @@ class Admin(ReviewPoint):
 
         for policy in self.__policies:
             for statement in policy['statements']:
-                if "manage".upper and "family".upper() in statement.upper() and "Administrators" not in statement.upper():
-                    counter += 1
+                if "Administrators".upper() not in statement.upper(): # Drop the word Administrator from statement
+                    if "dynamic-group".upper() not in statement.upper(): # Filter out all dynamic-group based policies
+                        if "service".upper() not in statement.upper(): # Filter out service policies
+                            if "group".upper() and "manage".upper() and "family".upper() in statement.upper(): # Check for segregated policies for manage, assigned to specific groups
+                                if "functions-family".upper() not in statement.upper(): # Filter out functions-family policies as this is mandatory policy in case of functions usage                                    
+                                    counter+=1                 # count the value of a compliant policy
         
-
-        if counter > 1:
+        if counter < 10: #criteria today is above 10 policies, will regard an IAM schema applied. 
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(policy)  
         return dictionary

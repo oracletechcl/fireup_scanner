@@ -14,8 +14,16 @@ fi
 
 source "./venv/bin/activate"
 
+if [ ! -d "reports" ] 
+then
+    mkdir reports
+fi
+# save the output to a file but also show in console
 
-python3 fireup.py 
+python3 fireup.py 2>&1 | tee ./reports/fireup.log 
+
+tar -cvf reports.tar.gz ./reports &>/dev/null
+rm -rf reports
 
 
 

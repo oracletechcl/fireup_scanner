@@ -46,4 +46,41 @@ The following is the detail of areas of interest
 
 The following is the class structure applied to the Fireup Tool
 
-![Class Structure](./images/class_structure.jpg)
+![Class Structure](./images/fireup_class_diagram.jpeg)
+
+The following design patterns are applied to this project: 
+
+- [Abstract Factory Pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern)
+- [Iterator Pattern](https://en.wikipedia.org/wiki/Iterator_pattern)
+- [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern)
+
+___
+
+## Pre-requisites
+- Pre-configured Oracle Cloud Infrastructure (OCI) account
+- Pre-configured OCI CLI. For instructions in how to configure CLI, refer to the [following link](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/climanualinst.htm)
+
+## How to use
+
+- Download the release given by your Oracle for Startups Architect
+- Unzip the file 
+- Execute the script `fireup.sh`
+
+___
+## Credits
+
+Refer to the following file for [credits and acknowledgements](AUTHORS.md)
+
+## Contributing
+This project is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
+For rules in how to contribute, refer to the [following link](COLLABORATE.md)
+
+## License
+Copyright (c) 2021 Oracle and/or its affiliates.
+
+Licensed under the Universal Permissive License (UPL), Version 1.0.
+
+See [LICENSE](LICENSE) for more details.
+
+
+
