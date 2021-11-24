@@ -24,6 +24,3 @@ python3 fireup.py 2>&1 | tee ./reports/fireup.log
 
 tar -cvf reports.tar.gz ./reports &>/dev/null
 rm -rf reports
-
-
-

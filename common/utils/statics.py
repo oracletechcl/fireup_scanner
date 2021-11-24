@@ -25,8 +25,8 @@ __rp_1_2 = {
 __rp_1_3 = {
     'entry': '1.3',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
+    'sub_area': 'Manage Identities and Authorization Policies',
+    'review_point': 'Restrict the Admin Abilities of a Tenancy Administrators Group',    
 }
 
 __rp_1_4 = {
