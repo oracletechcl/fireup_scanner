@@ -65,6 +65,25 @@ ___
 - Download the release given by your Oracle for Startups Architect
 - Unzip the file 
 - Execute the script `fireup.sh`
+- Once ran, deliver the reports.tar.gz file to your Oracle for Startups Architect for review
+
+## Expected output on console
+
+```shell
+########################################################################################################################################################################################################
+#                                                                                            Fireup v1.0.0                                                                                             #
+########################################################################################################################################################################################################
+Num     Area                    Sub-Area                                        Compliant                       Findings        Review Point
+########################################################################################################################################################################################################
+1.1     Security and Compliance Manage Identities and Authorization Policies    No                              22              Enforce the Use of Multi-Factor Authentication (MFA)
+1.2     Security and Compliance Manage Identities and Authorization Policies    No                              1               Don't Use the Tenancy Administrator Account for Day-to-Day Operations
+...
+...
+...
+
+```
+
+
 
 ___
 ## Credits
