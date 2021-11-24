@@ -9,7 +9,7 @@
 
 from classes.securitycompliance.Mfa import Mfa
 from classes.securitycompliance.Admin import Admin
-from common.utils.reporter.Report import *
+from common.utils.reporter.report import *
 from common.utils import statics
 
 
