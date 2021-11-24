@@ -4,7 +4,7 @@
 
 - In order to collaborate:
   - Open new issue on GitHub Fireup repo
-  - Fork the respository into your own personal account
+  - Fork or branch-out the respository into your own personal account
   - Branch out depending on what kind of issue you are dealing
     - If this is a new review point being introduced, branch creation should follow this naming convention
       - `feature/review_point_name`
