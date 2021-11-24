@@ -9,6 +9,7 @@
 
 from classes.securitycompliance.Mfa import Mfa
 from classes.securitycompliance.Admin import Admin
+from classes.securitycompliance.AdminAbility import AdminAbility
 from common.utils.reporter.report import *
 from common.utils import statics
 
@@ -25,6 +26,7 @@ def main_orchestrator(config,signer, report_directory):
     print_report_sub_header()
     __call_1_1(config, signer, report_directory)
     __call_1_2(config, signer, report_directory)
+    __call_1_3(config, signer, report_directory)
 
 
 def __call_1_1(config,signer, report_directory):       
@@ -37,4 +39,9 @@ def __call_1_2(config, signer, report_directory):
     admin = Admin(statics.__rp_1_2['entry'], statics.__rp_1_2['area'], statics.__rp_1_2['sub_area'], statics.__rp_1_2['review_point'], True, [], config, signer)
     __admin_dictionary = admin.analyze_entity(statics.__rp_1_2['entry'])
     generate_on_screen_report(__admin_dictionary, report_directory, statics.__rp_1_2['entry'])
+
+def __call_1_3(config, signer, report_directory):    
+    adminAbility = AdminAbility(statics.__rp_1_3['entry'], statics.__rp_1_3['area'], statics.__rp_1_3['sub_area'], statics.__rp_1_3['review_point'], True, [], config, signer)
+    __adminAbility_dictionary = adminAbility.analyze_entity(statics.__rp_1_3['entry'])
+    generate_on_screen_report(__adminAbility_dictionary, report_directory, statics.__rp_1_3['entry'])
 
