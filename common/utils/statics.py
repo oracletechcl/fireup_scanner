@@ -12,7 +12,8 @@ __rp_1_1 = {
     'entry': '1.1',
     'area': 'Security and Compliance',
     'sub_area': 'Manage Identities and Authorization Policies',
-    'review_point': 'Enforce the Use of Multi-Factor Authentication (MFA)',    
+    'review_point': 'Enforce the Use of Multi-Factor Authentication (MFA)',
+    'success_criteria': 'Check if user has MFA enabled. Enforce with policy allow group GroupA to manage instance-family in tenancy where request.user.mfaTotpVerified=\'true\''   
 }
 
 __rp_1_2 = {
@@ -20,27 +21,31 @@ __rp_1_2 = {
     'area': 'Security and Compliance',
     'sub_area': 'Manage Identities and Authorization Policies',
     'review_point': 'Don\'t Use the Tenancy Administrator Account for Day-to-Day Operations',    
+    'success_criteria': 'Check if there are policies that manage families of resources in tenancy',
 }
 
 __rp_1_3 = {
     'entry': '1.3',
     'area': 'Security and Compliance',
     'sub_area': 'Manage Identities and Authorization Policies',
-    'review_point': 'Restrict the Admin Abilities of a Tenancy Administrators Group',    
+    'review_point': 'Restrict the Admin Abilities of a Tenancy Administrators Group',
+    'success_criteria': 'Check if the following policy is in place: Allow group UserAdmins to inspect groups in tenancy',    
 }
 
 __rp_1_4 = {
     'entry': '1.4',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
+    'sub_area': 'Manage Identities and Authorization Policies',
+    'review_point': 'Prevent Accidental or Malicious Deletion of (and Changes to) Access Policies',
+    'success_criteria':'Check if the following policy is in place: Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE\'',    
 }
 
 __rp_1_5 = {
     'entry': '1.5',
     'area': 'Security and Compliance',
     'sub_area': '',
-    'review_point': '',    
+    'review_point': '',
+    'success_criteria': '',    
 }
 
 __rp_1_6 = {
@@ -48,6 +53,7 @@ __rp_1_6 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_7 = {
@@ -55,27 +61,31 @@ __rp_1_7 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_8 = {
     'entry': '1.8',
     'area': 'Security and Compliance',
     'sub_area': '',
-    'review_point': '',    
+    'review_point': '', 
+    'success_criteria': '',   
 }
 
 __rp_1_9 = {
     'entry': '1.9',
     'area': 'Security and Compliance',
     'sub_area': '',
-    'review_point': '',    
+    'review_point': '',  
+    'success_criteria': '',  
 }
 
 __rp_1_10 = {
     'entry': '1.10',
     'area': 'Security and Compliance',
     'sub_area': '',
-    'review_point': '',    
+    'review_point': '', 
+    'success_criteria': '',   
 }
 
 __rp_1_11 = {
@@ -83,6 +93,7 @@ __rp_1_11 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_12 = {
@@ -90,6 +101,7 @@ __rp_1_12 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_13 = {
@@ -97,6 +109,7 @@ __rp_1_13 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_14 = {
@@ -104,6 +117,7 @@ __rp_1_14 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_15 = {
@@ -111,6 +125,7 @@ __rp_1_15 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_16 = {
@@ -118,6 +133,7 @@ __rp_1_16 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_17 = {
@@ -125,6 +141,7 @@ __rp_1_17 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_18 = {
@@ -132,6 +149,7 @@ __rp_1_18 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_19 = {
@@ -139,6 +157,7 @@ __rp_1_19 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_20 = {
@@ -146,6 +165,7 @@ __rp_1_20 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_21 = {
@@ -153,6 +173,7 @@ __rp_1_21 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_22 = {
@@ -160,6 +181,7 @@ __rp_1_22 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_23 = {
@@ -167,6 +189,7 @@ __rp_1_23 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_24 = {
@@ -174,6 +197,7 @@ __rp_1_24 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_25 = {
@@ -181,6 +205,7 @@ __rp_1_25 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_1_26 = {
@@ -188,6 +213,7 @@ __rp_1_26 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 
@@ -196,6 +222,7 @@ __rp_2_1 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_2 = {
@@ -203,6 +230,7 @@ __rp_2_2 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_3 = {
@@ -210,6 +238,7 @@ __rp_2_3 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_4 = {
@@ -217,6 +246,7 @@ __rp_2_4 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_5 = {
@@ -224,6 +254,7 @@ __rp_2_5 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_6 = {
@@ -231,6 +262,7 @@ __rp_2_6 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_7 = {
@@ -238,6 +270,7 @@ __rp_2_7 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_8 = {
@@ -245,6 +278,7 @@ __rp_2_8 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_9 = {
@@ -252,6 +286,7 @@ __rp_2_9 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_10 = {
@@ -259,6 +294,7 @@ __rp_2_10 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_11 = {
@@ -266,6 +302,7 @@ __rp_2_11 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_12 = {
@@ -273,6 +310,7 @@ __rp_2_12 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_13 = {
@@ -280,6 +318,7 @@ __rp_2_13 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_14 = {
@@ -287,6 +326,7 @@ __rp_2_14 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_15 = {
@@ -294,6 +334,7 @@ __rp_2_15 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_16 = {
@@ -301,6 +342,7 @@ __rp_2_16 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_2_17 = {
@@ -308,6 +350,7 @@ __rp_2_17 = {
     'area': 'Reliability and Resilience',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_1 = {
@@ -315,6 +358,7 @@ __rp_3_1 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_2 = {
@@ -322,6 +366,7 @@ __rp_3_2 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_3 = {
@@ -329,6 +374,7 @@ __rp_3_3 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_4 = {
@@ -336,6 +382,7 @@ __rp_3_4 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_5 = {
@@ -343,6 +390,7 @@ __rp_3_5 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_6 = {
@@ -350,6 +398,7 @@ __rp_3_6 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_7 = {
@@ -357,6 +406,7 @@ __rp_3_7 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_8 = {
@@ -364,6 +414,7 @@ __rp_3_8 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_9 = {
@@ -371,6 +422,7 @@ __rp_3_9 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_10 = {
@@ -378,6 +430,7 @@ __rp_3_10 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_3_11 = {
@@ -385,6 +438,7 @@ __rp_3_11 = {
     'area': 'Performance and Cost Optimization',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_4_1 = {
@@ -392,6 +446,7 @@ __rp_4_1 = {
     'area': 'Operational Efficiency',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_4_2 = {
@@ -399,6 +454,7 @@ __rp_4_2 = {
     'area': 'Operational Efficiency',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_4_3 = {
@@ -406,6 +462,7 @@ __rp_4_3 = {
     'area': 'Operational Efficiency',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_4_4 = {
@@ -413,6 +470,7 @@ __rp_4_4 = {
     'area': 'Operational Efficiency',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_4_5 = {
@@ -420,6 +478,7 @@ __rp_4_5 = {
     'area': 'Operational Efficiency',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_4_6 = {
@@ -427,6 +486,7 @@ __rp_4_6 = {
     'area': 'Operational Efficiency',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
 
 __rp_4_7 = {
@@ -434,4 +494,5 @@ __rp_4_7 = {
     'area': 'Operational Efficiency',
     'sub_area': '',
     'review_point': '',    
+    'success_criteria': '',
 }
