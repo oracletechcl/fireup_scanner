@@ -65,7 +65,7 @@ ___
 - Download the release given by your Oracle for Startups Architect
 - Unzip the file 
 - Execute the script `fireup.sh`
-- Once ran, deliver the reports.tar.gz file to your Oracle for Startups Architect for review
+- Once ran, deliver the `reports.tar.gz` file to your Oracle for Startups Architect for review
 
 ## Expected output on console
 
