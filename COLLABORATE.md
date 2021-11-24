@@ -12,7 +12,8 @@
     - If this is a bug report, branch creation should follow this naming convention
       - `bug/bug_report_number`
     - Upon first commit, reference the issue number for tracking
-    - Once feature or bug is completed and unitary testing is done, create a Pull request against main branch on fireup repo
+    - Once feature or bug is completed and unitary testing is done, create a Pull request against main branch on fireup repository
+    - Always mark your PR with the approriate labels for tracking
     - Request review from `dralquinta`  
     - **IMPORTANT** 
       - **NEVER COMMIT TO MAIN BRANCH ON PRIMARY REPOSITORY**
