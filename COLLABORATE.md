@@ -36,7 +36,8 @@ If code contains bugs or enhancements, then PR will be returned to owner for fix
            'entry': '1.1',
             'area': 'Security and Compliance',
             'sub_area': 'Manage Identities and Authorization Policies',
-            'review_point': 'Enforce the Use of Multi-Factor Authentication (MFA)',    
+            'review_point': 'Enforce the Use of Multi-Factor Authentication (MFA)',
+            'success_criteria': 'Check that MFA is enabled on all users',    
             }
         ```
 - Create a new Concrete Class for review point under the framework structure under `classes > main_area > class`
@@ -150,6 +151,7 @@ def get_identity_client(config, signer):
 
 - To do the analysis of the information retrieved from API, always use the wrapper extracted object declared as class variable. Never use the direct json object coming from API.  
 - Once both abstract methods are implemented, update the [Orchestrate.py](./common/orchestrator/Orchestrate.py)
+- Make sure to import your concreteClass into the imports with a class alias
   - The entries on `Orchestrate.py` are the following: 
     - The entry point for execution should follow the naming convention `__call_X_Y`, where `X` and `Y` correspond to the review entry point on dictionary and on spreadsheet
     - The content of the function should always be: 
