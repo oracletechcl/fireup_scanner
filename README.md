@@ -44,3 +44,6 @@ The following is the detail of areas of interest
 
 ## Class Structure
 
+The following is the class structure applied to the Fireup Tool
+
+![Class Structure](./images/class_structure.jpg)

@@ -3,7 +3,7 @@
 # Mfa.py
 # Description: Implementation of class MFA based on abstract
 
-from common.utils.helpers.Helper import *
+from common.utils.helpers.helper import *
 from common.utils.formatter.printer import debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
@@ -15,6 +15,8 @@ class Mfa(ReviewPoint):
     # Class Variables
     __users = []
     __groups_to_users = []
+    __identity = None
+    __tenancy = None
 
 
 
@@ -29,16 +31,11 @@ class Mfa(ReviewPoint):
        # From here on is the code is not implemented on abstract class
        self.config = config
        self.signer = signer
-       try:
-        self.__identity = oci.identity.IdentityClient(
-        self.config, signer=self.signer)
-        self.__tenancy = self.__identity.get_tenancy(
-                config["tenancy"]).data
-       except Exception as e:
-           raise RuntimeError("Failed to create identity client: {}".format(e))
+       self.__identity = get_identity_client(self.config, self.signer)
+       self.__tenancy = get_tenancy_data(self.__identity, self.config)
 
     def load_entity(self):       
-        users_data = get_user_data(self.__identity, self.__tenancy.id)
+        users_data = get_user_data(self.__identity, self.__tenancy.id)        
         for user in users_data:
                 record = {
                     'id': user.id,

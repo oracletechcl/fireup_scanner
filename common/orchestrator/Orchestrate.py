@@ -27,16 +27,14 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_2(config, signer, report_directory)
 
 
-def __call_1_1(config,signer, report_directory):
-    entry = "1.1"
-    mfa = Mfa(entry, "Security and Compliance", "Manage Identities and Authorization Policies", "Enforce the Use of Multi-Factor Authentication (MFA)", True, [], config, signer)
-    __mfa_dictionary = mfa.analyze_entity(entry)   
-    generate_on_screen_report(__mfa_dictionary, report_directory, entry)
+def __call_1_1(config,signer, report_directory):       
+    mfa = Mfa(statics.__rp_1_1['entry'], statics.__rp_1_1['area'], statics.__rp_1_1['sub_area'], statics.__rp_1_1['review_point'], True, [], config, signer)
+    __mfa_dictionary = mfa.analyze_entity(statics.__rp_1_1['entry'])   
+    generate_on_screen_report(__mfa_dictionary, report_directory, statics.__rp_1_1['entry'])
 
 
-def __call_1_2(config, signer, report_directory):
-    entry = "1.2"
-    admin = Admin(entry, "Security and Compliance", "Manage Identities and Authorization Policies", "Don't Use the Tenancy Administrator Account for Day-to-Day Operations", True, [], config, signer)
-    __admin_dictionary = admin.analyze_entity(entry)
-    generate_on_screen_report(__admin_dictionary, report_directory, entry)
+def __call_1_2(config, signer, report_directory):    
+    admin = Admin(statics.__rp_1_2['entry'], statics.__rp_1_2['area'], statics.__rp_1_2['sub_area'], statics.__rp_1_2['review_point'], True, [], config, signer)
+    __admin_dictionary = admin.analyze_entity(statics.__rp_1_2['entry'])
+    generate_on_screen_report(__admin_dictionary, report_directory, statics.__rp_1_2['entry'])
 
