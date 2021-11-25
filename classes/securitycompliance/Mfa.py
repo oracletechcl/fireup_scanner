@@ -64,9 +64,9 @@ class Mfa(ReviewPoint):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         for user in self.__users:
-         if user['external_identifier'] is None and not(user['is_mfa_activated']) and user['lifecycle_state'] == 'ACTIVE':
-             dictionary[entry]['status'] = False
-             dictionary[entry]['findings'].append(user)
+            if user['is_mfa_activated'] == False and user['lifecycle_state'] == 'ACTIVE':
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(user)            
         return dictionary
 
         
