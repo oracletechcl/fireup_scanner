@@ -5,11 +5,21 @@
 
 from csv import excel
 import oci
+from common.utils.tokenizer.signer import *
 
 
 __identity_client = None
 __compartment_id = None
 __compartments = None
+
+def get_config_and_signer():
+    try:
+       config, signer = create_signer("", False, False)
+    except Exception as e:
+        raise RuntimeError("Failed to load configuration: {}".format(e))
+    return config, signer
+
+
 
 def get_identity_client(config, signer):
     try:

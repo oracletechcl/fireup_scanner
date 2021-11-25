@@ -24,7 +24,7 @@ __rp_1_2 = {
     'success_criteria': 'Check if there are policies that manage families of resources in tenancy',
 }
 
-__rp_1_3 = {
+__rp_1_5 = {
     'entry': '1.3',
     'area': 'Security and Compliance',
     'sub_area': 'Manage Identities and Authorization Policies',
@@ -32,7 +32,7 @@ __rp_1_3 = {
     'success_criteria': 'Check if the following policy is in place: Allow group UserAdmins to inspect groups in tenancy',    
 }
 
-__rp_1_4 = {
+__rp_1_5 = {
     'entry': '1.4',
     'area': 'Security and Compliance',
     'sub_area': 'Manage Identities and Authorization Policies',

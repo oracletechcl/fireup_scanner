@@ -66,7 +66,7 @@ class Mfa(ReviewPoint):
         for user in self.__users:
             if user['is_mfa_activated'] == False and user['lifecycle_state'] == 'ACTIVE':
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(user)            
+                dictionary[entry]['findings'].append(user)          
         return dictionary
 
         

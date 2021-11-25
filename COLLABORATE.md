@@ -18,6 +18,7 @@
     - **IMPORTANT** 
       - **NEVER COMMIT TO MAIN BRANCH ON PRIMARY REPOSITORY**
       - **NEVER MERGE CODE. ONLY PROJECT LEAD CAN MERGE AND RELEASE CODE**
+      - **ON EACH NEW PULL REQUEST INCLUDE THE RESULTS OF THE UNITARY TEST**
 
 
 If code is successfull, then PR will be approved and later merged into main
@@ -184,6 +185,160 @@ def __call_1_1(config,signer, report_directory):
     __call_X_Y(config, signer, report_directory) 
     
 ```
+
+
+## Unitary Testing
+
+***This approach uses Test Driven Development Model, for which an initial successful result in findings needs to be pre-established, so later after module creation, this matches with this value.***
+
+***The test modules are located in the `common/test` directory***
+
+***The testing process is supported by pytest module***
+
+In order to use test module, follow this methodology: 
+
+- Determine first how many results will return a successful entry point. This value will be knowned as `ASSERTION_VALUE_FOR_CORRECT_RESULTS`
+- Once determined, go to directory `test` and inside pertaining directory (see areas) create a test suite file, named `test_suite_X_Y.py` where `X_Y` is the corresponding review point. 
+- The content of the file is determined by the following logic: 
+
+File: `test_suite_X_Y.py`
+
+```python
+# Copyright (c) 2021 Oracle and/or its affiliates.
+# All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+# fireup.py
+# Description: Main test suite for fireup review tool
+# Dependencies: pytest
+
+from os import write
+from common.utils.helpers.helper import get_config_and_signer
+from common.utils.formatter.printer import debug_with_date
+from classes.AREA.CONCRETECLASS import ConcreteClass
+from common.utils import statics
+from common.utils.tokenizer.signer import *
+
+  
+
+def __test_suite_log(capsys):
+    out, err = capsys.readouterr()
+    open("stderr.out", "w").write(err)
+    open("stdout.out", "w").write(out)
+
+def test_review_point(capsys):     
+    
+    result_dictionary = ConcreteClass(statics.__rp_X_Y['entry'], 
+    statics.__rp_X_Y['area'], 
+    statics.__rp_X_Y['sub_area'], 
+    statics.__rp_X_Y['review_point'], 
+    True, [], get_config_and_signer()[0], 
+    get_config_and_signer()[1]
+    )
+
+    results_in_fault=0
+    dictionary = result_dictionary.analyze_entity(statics.__rp_X_Y['entry'])   
+    
+    for item in dictionary[statics.__rp_X_Y['entry']]['findings']:
+        debug_with_date(item)
+        results_in_fault += 1
+    
+    assert results_in_fault == ASSERTION_VALUE_FOR_CORRECT_RESULTS
+
+
+    
+
+    __test_suite_log(capsys)
+
+```
+
+To run the unitary testing, run script `unitary_test.sh`. 
+
+- Expected results under successful test is: 
+
+```shell
+[opc@dalquintdevhubscl test]$ ./unitary_test.sh 
+running pytest
+running egg_info
+writing fireup.egg-info/PKG-INFO
+writing dependency_links to fireup.egg-info/dependency_links.txt
+writing requirements to fireup.egg-info/requires.txt
+writing top-level names to fireup.egg-info/top_level.txt
+reading manifest file 'fireup.egg-info/SOURCES.txt'
+writing manifest file 'fireup.egg-info/SOURCES.txt'
+running build_ext
+=========================================================================================== test session starts ============================================================================================
+platform linux -- Python 3.6.8, pytest-6.2.5, py-1.11.0, pluggy-1.0.0
+rootdir: /home/opc/REPOS/OCIBE/MY_PROJECTS/fireup/test
+collected 5 items                                                                                                                                                                                          
+
+securitycompliance/test_suite_1_1.py .                                                                                                                                                               [ 20%]
+securitycompliance/test_suite_1_2.py .                                                                                                                                                               [ 40%]
+securitycompliance/test_suite_1_3.py .                                                                                                                                                               [ 60%]
+securitycompliance/test_suite_1_4.py .                                                                                                                                                               [ 80%]
+securitycompliance/test_suite_1_5.py .                                                                                                                                                               [100%]
+
+============================================================================================ 5 passed in 4.94s =============================================================================================
+```
+
+- Expected results under failed test is: 
+
+```shell
+[opc@dalquintdevhubscl test]$ ./unitary_test.sh 
+running pytest
+running egg_info
+writing fireup.egg-info/PKG-INFO
+writing dependency_links to fireup.egg-info/dependency_links.txt
+writing requirements to fireup.egg-info/requires.txt
+writing top-level names to fireup.egg-info/top_level.txt
+reading manifest file 'fireup.egg-info/SOURCES.txt'
+writing manifest file 'fireup.egg-info/SOURCES.txt'
+running build_ext
+=========================================================================================== test session starts ============================================================================================
+platform linux -- Python 3.6.8, pytest-6.2.5, py-1.11.0, pluggy-1.0.0
+rootdir: /home/opc/REPOS/OCIBE/MY_PROJECTS/fireup/test
+collected 5 items                                                                                                                                                                                          
+
+securitycompliance/test_suite_1_1.py .                                                                                                                                                               [ 20%]
+securitycompliance/test_suite_1_2.py F                                                                                                                                                               [ 40%]
+securitycompliance/test_suite_1_3.py .                                                                                                                                                               [ 60%]
+securitycompliance/test_suite_1_4.py .                                                                                                                                                               [ 80%]
+securitycompliance/test_suite_1_5.py .                                                                                                                                                               [100%]
+
+================================================================================================= FAILURES =================================================================================================
+____________________________________________________________________________________________ test_review_point _____________________________________________________________________________________________
+
+capsys = <_pytest.capture.CaptureFixture object at 0x7f2d12e2b160>
+
+    def test_review_point(capsys):
+    
+        result_dictionary = Admin(statics.__rp_1_2['entry'],
+        statics.__rp_1_2['area'],
+        statics.__rp_1_2['sub_area'],
+        statics.__rp_1_2['review_point'],
+        True, [], get_config_and_signer()[0],
+        get_config_and_signer()[1]
+        )
+    
+        results_in_fault=0
+        dictionary = result_dictionary.analyze_entity(statics.__rp_1_2['entry'])
+    
+        for item in dictionary[statics.__rp_1_2['entry']]['findings']:
+            debug_with_date(item)
+            results_in_fault += 1
+    
+>       assert results_in_fault == 10
+E       assert 1 == 10
+
+securitycompliance/test_suite_1_2.py:38: AssertionError
+------------------------------------------------------------------------------------------- Captured stdout call -------------------------------------------------------------------------------------------
+[25/11/2021 19:40:21] DEBUG: {'compartment_id': 'ocid1.tenancy.oc1..aaaaaaaaoqdygmiidrabhv3y4hkr3rb3z6dpmgotvq2scffra6jt7rubresa', 'defined_tags': {'default_namespace': {'creator': 'oracleidentitycloudservice/muthuvel.balasubramanian@oracle.com'}}, 'description': 'For Vulnerability Scanning', 'freeform_tags': {}, 'id': 'ocid1.policy.oc1..aaaaaaaatytjyeej43ehzzor6tfshjgauuaf4fpf5n4ovlmrbfr6zqjtukwa', 'lifecycle_state': 'ACTIVE', 'name': 'vss-bmuthuv', 'statements': ['Allow service vulnerability-scanning-service to manage instances in compartment  bmuthuv', 'Allow service vulnerability-scanning-service to read compartments in compartment bmuthuv', 'Allow service vulnerability-scanning-service to read vnics in compartment bmuthuv', 'Allow service vulnerability-scanning-service to read vnic-attachments in compartment bmuthuv', 'Allow dynamic-group bmuthuv-ca-dg to use keys in compartment bmuthuv'], 'time_created': datetime.datetime(2021, 11, 24, 6, 50, 50, 35000, tzinfo=tzutc()), 'version_date': None}
+========================================================================================= short test summary info ==========================================================================================
+FAILED securitycompliance/test_suite_1_2.py::test_review_point - assert 1 == 10
+```
+
+**Failed Status**: This will show the test that's failing and the results the dictionary is returning as failed status. As the value of the assertion is already expected under `ASSERTION_VALUE_FOR_CORRECT_RESULTS`, this allows for quick evaluation of error and fix on implementation
+
+For convenience, the standard output and standard error are also captured and stored in files `stdout.out` and `stderr.out`
+
 
 **IMPORTANT**
 If you have any question, slack or email denny.alquinta@oracle.com before doing any PR or commit
