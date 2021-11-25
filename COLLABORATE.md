@@ -191,7 +191,7 @@ def __call_1_1(config,signer, report_directory):
 
 ***This approach uses Test Driven Development Model, for which an initial successful result in findings needs to be pre-established, so later after module creation, this matches with this value.***
 
-***The test modules are located in the `common/test` directory***
+***The test modules are located in the `test` directory***
 
 ***The testing process is supported by pytest module***
 
