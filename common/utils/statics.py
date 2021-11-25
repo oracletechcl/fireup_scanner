@@ -43,9 +43,9 @@ __rp_1_4 = {
 __rp_1_5 = {
     'entry': '1.5',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',
-    'success_criteria': '',    
+    'sub_area': 'Manage Identities and Authorization Policies',
+    'review_point': 'Federate Oracle Cloud Infrastructure Identity and Access Management',
+    'success_criteria': 'Check if user federation is in place and gross majority of users are federated (90 percent or more)',    
 }
 
 __rp_1_6 = {
