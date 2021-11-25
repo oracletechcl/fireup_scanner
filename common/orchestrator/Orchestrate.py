@@ -11,6 +11,7 @@ from classes.securitycompliance.Mfa import Mfa
 from classes.securitycompliance.Admin import Admin
 from classes.securitycompliance.AdminAbility import AdminAbility
 from classes.securitycompliance.PolicyAdmins import PolicyAdmins
+from classes.securitycompliance.FederatedUsers import FederatedUsers
 from common.utils.reporter.report import *
 from common.utils import statics
 
@@ -23,6 +24,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_2(config, signer, report_directory)
     __call_1_3(config, signer, report_directory)
     __call_1_4(config, signer, report_directory)
+    __call_1_5(config, signer, report_directory)
 
 
 def __call_1_1(config,signer, report_directory):       
@@ -44,5 +46,10 @@ def __call_1_3(config, signer, report_directory):
 def __call_1_4(config, signer, report_directory):    
     policyAdmin = PolicyAdmins(statics.__rp_1_4['entry'], statics.__rp_1_4['area'], statics.__rp_1_4['sub_area'], statics.__rp_1_4['review_point'], True, [], config, signer)
     __policyAdmin_dictionary = policyAdmin.analyze_entity(statics.__rp_1_4['entry'])
-    generate_on_screen_report(__policyAdmin_dictionary, report_directory, statics.__rp_1_3['entry'])
+    generate_on_screen_report(__policyAdmin_dictionary, report_directory, statics.__rp_1_4['entry'])
+
+def __call_1_5(config, signer, report_directory):    
+    federatedUsers = FederatedUsers(statics.__rp_1_5['entry'], statics.__rp_1_5['area'], statics.__rp_1_5['sub_area'], statics.__rp_1_5['review_point'], True, [], config, signer)
+    __federatedUsers_dictionary = federatedUsers.analyze_entity(statics.__rp_1_5['entry'])
+    generate_on_screen_report(__federatedUsers_dictionary, report_directory, statics.__rp_1_5['entry'])
 
