@@ -36,9 +36,7 @@ class AdminAbility(ReviewPoint):
        self.__tenancy = get_tenancy_data(self.__identity, self.config)
 
 
-    def load_entity(self):   
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        
+    def load_entity(self):                  
         policy_data = get_policies_data(self.__identity, self.__tenancy.id)
 
         for policy in policy_data:  
@@ -66,12 +64,16 @@ class AdminAbility(ReviewPoint):
         counter = 0        
         for policy in self.__policies:
             for statement in policy['statements']:
-                if "Allow group Administrators to inspect groups in tenancy".upper() in statement.upper():                    
-                    counter+=1
+                if "service".upper() not in statement.upper():                    
+                    if "Allow group".upper() in statement.upper():
+                        if "to inspect groups in tenancy".upper() in statement.upper():
+                            if "Administrator".upper() or "admin".upper() or "adm".upper() or "UsrAdmins".upper() in statement.upper():             
+                                counter+=1
         
-        if counter < 1: 
+        if counter == 0 : 
                     dictionary[entry]['status'] = False
         else:
                     dictionary[entry]['status'] = True
-                    dictionary[entry]['findings'].append(policy)                    
+                    dictionary[entry]['findings'].append(policy)  
+     
         return dictionary
