@@ -18,6 +18,7 @@
     - **IMPORTANT** 
       - **NEVER COMMIT TO MAIN BRANCH ON PRIMARY REPOSITORY**
       - **NEVER MERGE CODE. ONLY PROJECT LEAD CAN MERGE AND RELEASE CODE**
+      - **ON EACH NEW PULL REQUEST INCLUDE THE RESULTS OF THE UNITARY TEST**
 
 
 If code is successfull, then PR will be approved and later merged into main
@@ -186,11 +187,13 @@ def __call_1_1(config,signer, report_directory):
 ```
 
 
-## Test Modules
+## Unitary Testing
 
 ***This approach uses Test Driven Development Model, for which an initial successful result in findings needs to be pre-established, so later after module creation, this matches with this value.***
 
 ***The test modules are located in the `common/test` directory***
+
+***The testing process is supported by pytest module***
 
 In order to use test module, follow this methodology: 
 
