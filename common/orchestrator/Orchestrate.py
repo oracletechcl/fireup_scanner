@@ -7,6 +7,7 @@
 #              - Via constructor, initialize the dictionary entry as it applies to the excel spreadsheet
 #              - Per each class, implemented in the corresponding abstract class, call the object and then call analyze_entity()
 
+from classes.securitycompliance.ApiKeys import ApiKeys
 from classes.securitycompliance.Mfa import Mfa
 from classes.securitycompliance.Admin import Admin
 from classes.securitycompliance.AdminAbility import AdminAbility
@@ -22,43 +23,84 @@ from common.utils import statics
 def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+statics.__version__)
     print_report_sub_header()
-    # __call_1_1(config, signer, report_directory)
-    # __call_1_2(config, signer, report_directory)
-    # __call_1_3(config, signer, report_directory)
-    # __call_1_4(config, signer, report_directory)
-    # __call_1_5(config, signer, report_directory)
+    __call_1_1(config, signer, report_directory)
+    __call_1_2(config, signer, report_directory)
+    __call_1_3(config, signer, report_directory)
+    __call_1_4(config, signer, report_directory)
+    __call_1_5(config, signer, report_directory)
+    __call_1_6(config, signer, report_directory)
 
     __call_2_8(config, signer, report_directory)
 
 
+
 def __call_1_1(config,signer, report_directory):       
-    mfa = Mfa(statics.__rp_1_1['entry'], statics.__rp_1_1['area'], statics.__rp_1_1['sub_area'], statics.__rp_1_1['review_point'], True, [], config, signer)
+    mfa = Mfa(
+    statics.__rp_1_1['entry'], 
+    statics.__rp_1_1['area'], 
+    statics.__rp_1_1['sub_area'], 
+    statics.__rp_1_1['review_point'], 
+    True, [], config, signer)
     __mfa_dictionary = mfa.analyze_entity(statics.__rp_1_1['entry'])       
     generate_on_screen_report(__mfa_dictionary, report_directory, statics.__rp_1_1['entry'])
 
 
 def __call_1_2(config, signer, report_directory):    
-    admin = Admin(statics.__rp_1_2['entry'], statics.__rp_1_2['area'], statics.__rp_1_2['sub_area'], statics.__rp_1_2['review_point'], True, [], config, signer)
+    admin = Admin(
+    statics.__rp_1_2['entry'], 
+    statics.__rp_1_2['area'], 
+    statics.__rp_1_2['sub_area'], 
+    statics.__rp_1_2['review_point'], 
+    True, [], config, signer)
     __admin_dictionary = admin.analyze_entity(statics.__rp_1_2['entry'])
     generate_on_screen_report(__admin_dictionary, report_directory, statics.__rp_1_2['entry'])
 
 def __call_1_3(config, signer, report_directory):    
-    adminAbility = AdminAbility(statics.__rp_1_5['entry'], statics.__rp_1_5['area'], statics.__rp_1_5['sub_area'], statics.__rp_1_5['review_point'], True, [], config, signer)
-    __adminAbility_dictionary = adminAbility.analyze_entity(statics.__rp_1_5['entry'])
-    generate_on_screen_report(__adminAbility_dictionary, report_directory, statics.__rp_1_5['entry'])
+    adminAbility = AdminAbility(
+    statics.__rp_1_3['entry'], 
+    statics.__rp_1_3['area'], 
+    statics.__rp_1_3['sub_area'], 
+    statics.__rp_1_3['review_point'], 
+    True, [], config, signer)
+    __adminAbility_dictionary = adminAbility.analyze_entity(statics.__rp_1_3['entry'])
+    generate_on_screen_report(__adminAbility_dictionary, report_directory, statics.__rp_1_3['entry'])
 
 def __call_1_4(config, signer, report_directory):    
-    policyAdmin = PolicyAdmins(statics.__rp_1_5['entry'], statics.__rp_1_5['area'], statics.__rp_1_5['sub_area'], statics.__rp_1_5['review_point'], True, [], config, signer)
-    __policyAdmin_dictionary = policyAdmin.analyze_entity(statics.__rp_1_5['entry'])
-    generate_on_screen_report(__policyAdmin_dictionary, report_directory, statics.__rp_1_5['entry'])
+    policyAdmin = PolicyAdmins(
+    statics.__rp_1_4['entry'], 
+    statics.__rp_1_4['area'], 
+    statics.__rp_1_4['sub_area'], 
+    statics.__rp_1_4['review_point'], 
+    True, [], config, signer)
+    __policyAdmin_dictionary = policyAdmin.analyze_entity(statics.__rp_1_4['entry'])
+    generate_on_screen_report(__policyAdmin_dictionary, report_directory, statics.__rp_1_4['entry'])
 
 def __call_1_5(config, signer, report_directory):    
-    federatedUsers = FederatedUsers(statics.__rp_1_5['entry'], statics.__rp_1_5['area'], statics.__rp_1_5['sub_area'], statics.__rp_1_5['review_point'], True, [], config, signer)
+    federatedUsers = FederatedUsers(
+    statics.__rp_1_5['entry'], 
+    statics.__rp_1_5['area'], 
+    statics.__rp_1_5['sub_area'], 
+    statics.__rp_1_5['review_point'], 
+    True, [], config, signer)
     __federatedUsers_dictionary = federatedUsers.analyze_entity(statics.__rp_1_5['entry'])
     generate_on_screen_report(__federatedUsers_dictionary, report_directory, statics.__rp_1_5['entry'])
 
+def __call_1_6(config, signer, report_directory):
+    apiKeys = ApiKeys(
+    statics.__rp_1_6['entry'], 
+    statics.__rp_1_6['area'], 
+    statics.__rp_1_6['sub_area'], 
+    statics.__rp_1_6['review_point'], 
+    True, [], config, signer)
+    __apiKeys_dictionary = apiKeys.analyze_entity(statics.__rp_1_6['entry'])
+    generate_on_screen_report(__apiKeys_dictionary, report_directory, statics.__rp_1_6['entry'])
+
 def __call_2_8(config, signer, report_directory):    
-    separateCIDRBlocks = SeparateCIDRBlocks(statics.__rp_2_8['entry'], statics.__rp_2_8['area'], statics.__rp_2_8['sub_area'], statics.__rp_2_8['review_point'], True, [], config, signer)
+    separateCIDRBlocks = SeparateCIDRBlocks(
+    statics.__rp_2_8['entry'],
+    statics.__rp_2_8['area'],
+    statics.__rp_2_8['sub_area'],
+    statics.__rp_2_8['review_point'],
+    True, [], config, signer)
     __separateCIDRBlocks_dictionary = separateCIDRBlocks.analyze_entity(statics.__rp_2_8['entry'])
     # generate_on_screen_report(__federatedUsers_dictionary, report_directory, statics.__rp_2_8['entry'])
-

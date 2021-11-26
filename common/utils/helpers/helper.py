@@ -172,6 +172,7 @@ def get_bucket_per_compartment(objectstorage_client, compartment_id, namespace):
         raise RuntimeError("Failed to get bucket per compartment: {}".format(e))
     return bucket_per_compartment
 
+
 def get_vcn_data(network_client, compartment_id): 
         __network_client = network_client
 
@@ -179,3 +180,14 @@ def get_vcn_data(network_client, compartment_id):
         __network_client.list_vcns,
         compartment_id
     ).data
+
+def get_api_key_data(identity_client, user_id):
+    try:
+        api_key_data = oci.pagination.list_call_get_all_results(
+            identity_client.list_api_keys,
+            user_id
+        ).data
+    except Exception as e:
+        raise RuntimeError("Failed to get api key data: {}".format(e))
+    return api_key_data
+
