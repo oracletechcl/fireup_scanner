@@ -40,7 +40,7 @@ __rp_1_4 = {
     'success_criteria':'Check if the following policy is in place: Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE\'',    
 }
 
-__rp_1_5 = {
+__rp_1_6 = {
     'entry': '1.5',
     'area': 'Security and Compliance',
     'sub_area': 'Manage Identities and Authorization Policies',
