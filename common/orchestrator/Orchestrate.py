@@ -72,16 +72,21 @@ def __call_1_4(config, signer, report_directory):
 
 def __call_1_5(config, signer, report_directory):    
     federatedUsers = FederatedUsers(
+    statics.__rp_1_5['entry'], 
+    statics.__rp_1_5['area'], 
+    statics.__rp_1_5['sub_area'], 
+    statics.__rp_1_5['review_point'], 
+    True, [], config, signer)
+    __federatedUsers_dictionary = federatedUsers.analyze_entity(statics.__rp_1_5['entry'])
+    generate_on_screen_report(__federatedUsers_dictionary, report_directory, statics.__rp_1_5['entry'])
+
+def __call_1_6(config, signer, report_directory):
+    apiKeys = ApiKeys(
     statics.__rp_1_6['entry'], 
     statics.__rp_1_6['area'], 
     statics.__rp_1_6['sub_area'], 
     statics.__rp_1_6['review_point'], 
     True, [], config, signer)
-    __federatedUsers_dictionary = federatedUsers.analyze_entity(statics.__rp_1_6['entry'])
-    generate_on_screen_report(__federatedUsers_dictionary, report_directory, statics.__rp_1_6['entry'])
-
-def __call_1_6(config, signer, report_directory):
-    apiKeys = ApiKeys(statics.__rp_1_6['entry'], statics.__rp_1_6['area'], statics.__rp_1_6['sub_area'], statics.__rp_1_6['review_point'], True, [], config, signer)
     __apiKeys_dictionary = apiKeys.analyze_entity(statics.__rp_1_6['entry'])
     generate_on_screen_report(__apiKeys_dictionary, report_directory, statics.__rp_1_6['entry'])
 
