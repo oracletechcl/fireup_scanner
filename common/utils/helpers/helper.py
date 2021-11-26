@@ -9,6 +9,7 @@ from common.utils.tokenizer.signer import *
 
 
 __identity_client = None
+__network_client = None
 __compartment_id = None
 __compartments = None
 
@@ -170,3 +171,11 @@ def get_bucket_per_compartment(objectstorage_client, compartment_id, namespace):
     except Exception as e:
         raise RuntimeError("Failed to get bucket per compartment: {}".format(e))
     return bucket_per_compartment
+
+def get_vcn_data(network_client, compartment_id): 
+        __network_client = network_client
+
+        return oci.pagination.list_call_get_all_results(
+        __network_client.list_vcns,
+        compartment_id
+    ).data

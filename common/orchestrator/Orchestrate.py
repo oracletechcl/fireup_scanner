@@ -12,6 +12,8 @@ from classes.securitycompliance.Admin import Admin
 from classes.securitycompliance.AdminAbility import AdminAbility
 from classes.securitycompliance.PolicyAdmins import PolicyAdmins
 from classes.securitycompliance.FederatedUsers import FederatedUsers
+
+from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from common.utils.reporter.report import *
 from common.utils import statics
 
@@ -20,11 +22,13 @@ from common.utils import statics
 def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+statics.__version__)
     print_report_sub_header()
-    __call_1_1(config, signer, report_directory)
-    __call_1_2(config, signer, report_directory)
-    __call_1_3(config, signer, report_directory)
-    __call_1_4(config, signer, report_directory)
-    __call_1_5(config, signer, report_directory)
+    # __call_1_1(config, signer, report_directory)
+    # __call_1_2(config, signer, report_directory)
+    # __call_1_3(config, signer, report_directory)
+    # __call_1_4(config, signer, report_directory)
+    # __call_1_5(config, signer, report_directory)
+
+    __call_2_8(config, signer, report_directory)
 
 
 def __call_1_1(config,signer, report_directory):       
@@ -52,4 +56,9 @@ def __call_1_5(config, signer, report_directory):
     federatedUsers = FederatedUsers(statics.__rp_1_5['entry'], statics.__rp_1_5['area'], statics.__rp_1_5['sub_area'], statics.__rp_1_5['review_point'], True, [], config, signer)
     __federatedUsers_dictionary = federatedUsers.analyze_entity(statics.__rp_1_5['entry'])
     generate_on_screen_report(__federatedUsers_dictionary, report_directory, statics.__rp_1_5['entry'])
+
+def __call_2_8(config, signer, report_directory):    
+    separateCIDRBlocks = SeparateCIDRBlocks(statics.__rp_2_8['entry'], statics.__rp_2_8['area'], statics.__rp_2_8['sub_area'], statics.__rp_2_8['review_point'], True, [], config, signer)
+    __separateCIDRBlocks_dictionary = separateCIDRBlocks.analyze_entity(statics.__rp_2_8['entry'])
+    # generate_on_screen_report(__federatedUsers_dictionary, report_directory, statics.__rp_2_8['entry'])
 
