@@ -24,7 +24,7 @@ __rp_1_2 = {
     'success_criteria': 'Check if there are policies that manage families of resources in tenancy',
 }
 
-__rp_1_5 = {
+__rp_1_3 = {
     'entry': '1.3',
     'area': 'Security and Compliance',
     'sub_area': 'Manage Identities and Authorization Policies',
@@ -32,7 +32,7 @@ __rp_1_5 = {
     'success_criteria': 'Check if the following policy is in place: Allow group UserAdmins to inspect groups in tenancy',    
 }
 
-__rp_1_5 = {
+__rp_1_4 = {
     'entry': '1.4',
     'area': 'Security and Compliance',
     'sub_area': 'Manage Identities and Authorization Policies',
@@ -51,9 +51,9 @@ __rp_1_5 = {
 __rp_1_6 = {
     'entry': '1.6',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
+    'sub_area': 'Manage Identities and Authorization Policies',
+    'review_point': 'Monitor and Manage the Activities and Status of All Users',    
+    'success_criteria': 'Check API Keys and if they are 90 days or more old, fail., Check that at least 5 users are created for tenancy',
 }
 
 __rp_1_7 = {
