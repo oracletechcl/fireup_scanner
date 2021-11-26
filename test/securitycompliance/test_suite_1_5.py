@@ -20,18 +20,18 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = FederatedUsers(statics.__rp_1_6['entry'], 
-    statics.__rp_1_6['area'], 
-    statics.__rp_1_6['sub_area'], 
-    statics.__rp_1_6['review_point'], 
+    result_dictionary = FederatedUsers(statics.__rp_1_5['entry'], 
+    statics.__rp_1_5['area'], 
+    statics.__rp_1_5['sub_area'], 
+    statics.__rp_1_5['review_point'], 
     True, [], get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(statics.__rp_1_6['entry'])   
+    dictionary = result_dictionary.analyze_entity(statics.__rp_1_5['entry'])   
     
-    for item in dictionary[statics.__rp_1_6['entry']]['findings']:
+    for item in dictionary[statics.__rp_1_5['entry']]['findings']:
         debug_with_date(item)
         results_in_fault += 1    
 
