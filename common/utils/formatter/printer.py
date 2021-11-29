@@ -36,7 +36,7 @@ def print_report_fields(finding):
     print(finding['Recommendation #'] + "\t" + finding['Area'] + "\t" + finding['Sub Area'] + "\t" + finding['Compliant'] + "\t\t\t\t" + finding['Findings'] + "\t\t" + finding['Review Point'])
 
 def debug_with_date(msg):
-    print(get_current_date()+" DEBUG: "+str(msg))
+    print(get_current_date()+" DEBUG: "+str(msg), flush=True)
 
 def debug(msg):
-    print("DEBUG: " + str(msg))
+    print("DEBUG: " + str(msg), flush=True)
