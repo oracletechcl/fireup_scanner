@@ -100,9 +100,9 @@ def get_tenancy_data(identity_client, config):
         raise RuntimeError("Failed to get tenancy: {}".format(e))
     return tenancy
 
-def get_regions_data(identity_client):
+def get_regions_data(identity_client, config):
     try:
-        regions = identity_client.list_region_subscriptions().data
+        regions = identity_client.list_region_subscriptions(config["tenancy"]).data
     except Exception as e:
         raise RuntimeError("Failed to get regions: {}".format(e))
     return regions
