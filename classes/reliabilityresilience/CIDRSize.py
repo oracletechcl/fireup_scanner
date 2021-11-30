@@ -6,11 +6,9 @@
 from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
-from itertools import combinations
-import ipaddr
 
 
-class SeparateCIDRBlocks(ReviewPoint):
+class CIDRSize(ReviewPoint):
 
     # Class Variables
     __vcns = []
@@ -71,18 +69,13 @@ class SeparateCIDRBlocks(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        pairs = combinations(self.__vcns, 2)
-
-        for vcn1, vcn2 in pairs:
-            for cidr1 in vcn1['cidr_blocks']:
-                for cidr2 in vcn2['cidr_blocks']:
-                    # If the VCN is not compliant, add it to findings if it hasn't already been added
-                    if ipaddr.IPNetwork(cidr1).overlaps(ipaddr.IPNetwork(cidr2)):
-                        dictionary[entry]['status'] = False
-                        if vcn1 not in dictionary[entry]['findings']:
-                            dictionary[entry]['findings'].append(vcn1)
-                            dictionary[entry]['failure_cause'].append('VCNs CIDR Blocks are overlapping')
-                            dictionary[entry]['mitigations'].append('Make sure vcn '+str(vcn1['display_name'])+' CIDR Blocks are not overlapping with vcn '+str(vcn2['display_name']))
+        for vcn in self.__vcns:
+            for cidr in vcn['cidr_blocks']:
+                if int(cidr.split('/')[1]) > 24:
+                    dictionary[entry]['status'] = False
+                    dictionary[entry]['findings'].append(vcn)
+                    dictionary[entry]['failure_cause'].append('VCNs CIDR Blocks are too small, making it harder to expand.')
+                    dictionary[entry]['mitigations'].append('Make sure vcn '+str(vcn['display_name'])+' CIDR block(s) are is at least /24 or bigger.')
 
         return dictionary
 
