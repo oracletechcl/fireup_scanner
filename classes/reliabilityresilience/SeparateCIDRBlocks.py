@@ -63,7 +63,7 @@ class SeparateCIDRBlocks(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__vcns = parallel_executor(network_clients, compartments, search_compartments, len(compartments))
+        self.__vcns = parallel_executor(network_clients, compartments, self.__search_compartments, len(compartments))
 
         return self.__vcns
 
@@ -88,32 +88,33 @@ class SeparateCIDRBlocks(ReviewPoint):
 
         return dictionary
 
-def search_compartments(item):
-    network_client = item[0]
-    compartments = item[1:]
+    
+    def __search_compartments(self, item):
+        network_client = item[0]
+        compartments = item[1:]
 
-    vcns = []
+        vcns = []
 
-    for compartment in compartments:
-        vcn_data = get_vcn_data(network_client, compartment.id)
-        for vcn in vcn_data:
-            record = {
-                'cidr_blocks': vcn.cidr_blocks,
-                'compartment_id': vcn.compartment_id,
-                'default_dhcp_options_id': vcn.default_dhcp_options_id,
-                'default_route_table_id': vcn.default_route_table_id,
-                'default_security_list_id': vcn.default_security_list_id,
-                'defined_tags': vcn.defined_tags,
-                'display_name': vcn.display_name,
-                'dns_label': vcn.dns_label,
-                'freeform_tags': vcn.freeform_tags,
-                'id': vcn.id,
-                'ipv6_cidr_blocks': vcn.ipv6_cidr_blocks,
-                'lifecycle_state': vcn.lifecycle_state,
-                'time_created': vcn.time_created,
-                'vcn_domain_name': vcn.vcn_domain_name,
-            }
+        for compartment in compartments:
+            vcn_data = get_vcn_data(network_client, compartment.id)
+            for vcn in vcn_data:
+                record = {
+                    'cidr_blocks': vcn.cidr_blocks,
+                    'compartment_id': vcn.compartment_id,
+                    'default_dhcp_options_id': vcn.default_dhcp_options_id,
+                    'default_route_table_id': vcn.default_route_table_id,
+                    'default_security_list_id': vcn.default_security_list_id,
+                    'defined_tags': vcn.defined_tags,
+                    'display_name': vcn.display_name,
+                    'dns_label': vcn.dns_label,
+                    'freeform_tags': vcn.freeform_tags,
+                    'id': vcn.id,
+                    'ipv6_cidr_blocks': vcn.ipv6_cidr_blocks,
+                    'lifecycle_state': vcn.lifecycle_state,
+                    'time_created': vcn.time_created,
+                    'vcn_domain_name': vcn.vcn_domain_name,
+                }
 
-            vcns.append(record)
+                vcns.append(record)
 
-    return vcns
+        return vcns
