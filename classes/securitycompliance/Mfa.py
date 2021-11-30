@@ -7,7 +7,9 @@ from common.utils.helpers.helper import *
 from common.utils.formatter.printer import debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
-import oci
+from common.utils.statics import Statics
+
+
 
 
 class Mfa(ReviewPoint):
@@ -20,13 +22,28 @@ class Mfa(ReviewPoint):
 
 
 
-    def __init__(self, entry, area, sub_area, review_point, status, findings, config, signer):
+
+    def __init__(self,
+                entry:str, 
+                area:str, 
+                sub_area:str, 
+                review_point: str, 
+                status:bool, 
+                failure_cause:list, 
+                findings:list, 
+                mitigations:list, 
+                fireup_mapping:list,
+                config, 
+                signer):
        self.entry = entry
        self.area = area
        self.sub_area = sub_area
        self.review_point = review_point
        self.status = status
+       self.failure_cause = failure_cause
        self.findings = findings
+       self.mitigations = mitigations
+       self.fireup_mapping = fireup_mapping
 
        # From here on is the code is not implemented on abstract class
        self.config = config
@@ -54,19 +71,22 @@ class Mfa(ReviewPoint):
                 # Adding Groups to the user
                 for group in self.__groups_to_users:
                     if user.id == group['user_id']:
-                        record['groups'].append(group['name'])       
+                        record['groups'].append(group['name'])                                                     
 
                 self.__users.append(record)
         return self.__users
                 
 
     def analyze_entity(self, entry):
-        self.load_entity()
+        self.load_entity()       
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         for user in self.__users:
             if user['is_mfa_activated'] == False and user['lifecycle_state'] == 'ACTIVE':
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(user)          
+                dictionary[entry]['findings'].append(user)
+                dictionary[entry]['failure_cause'].append('Faulty User:' + user['name'])                
+                dictionary[entry]['mitigations'].append('Enable MFA on user: ' + user['name'])                                
+
         return dictionary
 
         

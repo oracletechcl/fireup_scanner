@@ -7,7 +7,6 @@
 from common.utils.formatter.printer import debug, debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
-import oci
 from common.utils.helpers.helper import *
 
 
@@ -21,13 +20,27 @@ class AdminAbility(ReviewPoint):
 
 
 
-    def __init__(self, entry, area, sub_area, review_point, status, findings, config, signer):
+    def __init__(self,
+                entry:str, 
+                area:str, 
+                sub_area:str, 
+                review_point: str, 
+                status:bool, 
+                failure_cause:list, 
+                findings:list, 
+                mitigations:list, 
+                fireup_mapping:list,
+                config, 
+                signer):
        self.entry = entry
        self.area = area
        self.sub_area = sub_area
        self.review_point = review_point
        self.status = status
+       self.failure_cause = failure_cause
        self.findings = findings
+       self.mitigations = mitigations
+       self.fireup_mapping = fireup_mapping
 
        # From here on is the code is not implemented on abstract class
        self.config = config
@@ -72,6 +85,8 @@ class AdminAbility(ReviewPoint):
         
         if counter == 0 : 
                     dictionary[entry]['status'] = False
+                    dictionary[entry]['failure_cause'].append('Policy \'Allow group UserAdmins to inspect groups in tenancy\' does not exists')                
+                    dictionary[entry]['mitigations'].append('Create a policy \' Allow group UserAdmins to inspect groups in tenancy\'')
         else:
                     dictionary[entry]['status'] = True
                     dictionary[entry]['findings'].append(policy)  

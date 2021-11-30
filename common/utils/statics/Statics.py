@@ -13,7 +13,8 @@ __rp_1_1 = {
     'area': 'Security and Compliance',
     'sub_area': 'Manage Identities and Authorization Policies',
     'review_point': 'Enforce the Use of Multi-Factor Authentication (MFA)',
-    'success_criteria': 'Check if user has MFA enabled. Enforce with policy allow group GroupA to manage instance-family in tenancy where request.user.mfaTotpVerified=\'true\''   
+    'success_criteria': 'Check if user has MFA enabled. Enforce with policy allow group GroupA to manage instance-family in tenancy where request.user.mfaTotpVerified=\'true\'',   
+    'fireup_items': ["Fireup Tasks: 1 - Do you have MFA configured for any of your user accounts and restrictions on any resources? (e.g. must have MFA to access a DB resource)"]
 }
 
 __rp_1_2 = {
@@ -22,6 +23,7 @@ __rp_1_2 = {
     'sub_area': 'Manage Identities and Authorization Policies',
     'review_point': 'Don\'t Use the Tenancy Administrator Account for Day-to-Day Operations',    
     'success_criteria': 'Check if there are policies that manage families of resources in tenancy',
+    'fireup_items': ['Fireup Task: 2 - Are you logging/using same username/Password as admin for your day-day operations as well?']
 }
 
 __rp_1_3 = {
@@ -30,6 +32,7 @@ __rp_1_3 = {
     'sub_area': 'Manage Identities and Authorization Policies',
     'review_point': 'Restrict the Admin Abilities of a Tenancy Administrators Group',
     'success_criteria': 'Check if the following policy is in place: Allow group UserAdmins to inspect groups in tenancy',    
+    'fireup_items': ['Fireup Task: 2 - Are you logging/using same username/Password as admin for your day-day operations as well?']
 }
 
 __rp_1_4 = {
@@ -38,6 +41,7 @@ __rp_1_4 = {
     'sub_area': 'Manage Identities and Authorization Policies',
     'review_point': 'Prevent Accidental or Malicious Deletion of (and Changes to) Access Policies',
     'success_criteria':'Check if the following policy is in place: Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE\'',    
+    'fireup_items': ['Fireup Task: 2 - Are you logging/using same username/Password as admin for your day-day operations as well?']
 }
 
 __rp_1_5 = {
@@ -46,6 +50,7 @@ __rp_1_5 = {
     'sub_area': 'Manage Identities and Authorization Policies',
     'review_point': 'Federate Oracle Cloud Infrastructure Identity and Access Management',
     'success_criteria': 'Check if user federation is in place and gross majority of users are federated (90 percent or more)',    
+    'fireup_items': ['Fireup Task: 5 - Do you have a large user base', 'Fireup Task: 8 - Do all users have individual IAM Accounts?']
 }
 
 __rp_1_6 = {
@@ -54,6 +59,7 @@ __rp_1_6 = {
     'sub_area': 'Manage Identities and Authorization Policies',
     'review_point': 'Monitor and Manage the Activities and Status of All Users',    
     'success_criteria': 'Check API Keys and if they are 90 days or more old, fail., Check that at least 5 users are created for tenancy',
+    'fireup_items': ['Fireup Task: 3 - Do you have password rotation policy on schedule for all users and API Keys', 'Fireup Task: 4 - Is your user base larger than 5 users']
 }
 
 __rp_1_7 = {
