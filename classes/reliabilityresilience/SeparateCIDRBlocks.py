@@ -46,13 +46,13 @@ class SeparateCIDRBlocks(ReviewPoint):
 
         pairs = combinations(self.__vcns, 2)
 
-        for pair in pairs:
-            vcn1 = pair[0]
-            vcn2 = pair[1]
+        for vcn1, vcn2 in pairs:
             for cidr1 in vcn1['cidr_blocks']:
                 for cidr2 in vcn2['cidr_blocks']:
+                    # If the VCN is not compliant, add it to findings if it hasn't already been added
                     if ipaddr.IPNetwork(cidr1).overlaps(ipaddr.IPNetwork(cidr2)):
                         dictionary[entry]['status'] = False
-                        dictionary[entry]['findings'].append(vcn1)
+                        if vcn1 not in dictionary[entry]['findings']:
+                            dictionary[entry]['findings'].append(vcn1)
 
         return dictionary
