@@ -105,8 +105,7 @@ def __call_1_6(config, signer, report_directory):
     Statics.__rp_1_6['review_point'], 
     True, [], [], [], [], config, signer)
     mitigation_report_name = Statics.__rp_1_6['entry']+"_"+Statics.__rp_1_6['area']+"_"+Statics.__rp_1_6['sub_area']+"_mitigations"
-    __apiKeys_dictionary = apiKeys.analyze_entity(Statics.__rp_1_6['entry'])
-    debug_with_date(__apiKeys_dictionary)
+    __apiKeys_dictionary = apiKeys.analyze_entity(Statics.__rp_1_6['entry'])    
     generate_on_screen_report(__apiKeys_dictionary, report_directory, Statics.__rp_1_6['entry'])
     generate_mitigation_report(__apiKeys_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_6['fireup_items'])
 
