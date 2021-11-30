@@ -18,13 +18,27 @@ class SeparateCIDRBlocks(ReviewPoint):
     __vcns = []
     __identity = None
 
-    def __init__(self, entry, area, sub_area, review_point, status, findings, config, signer):
+    def __init__(self,
+                entry:str, 
+                area:str, 
+                sub_area:str, 
+                review_point: str, 
+                status:bool, 
+                failure_cause:list, 
+                findings:list, 
+                mitigations:list, 
+                fireup_mapping:list,
+                config, 
+                signer):
         self.entry = entry
         self.area = area
         self.sub_area = sub_area
         self.review_point = review_point
         self.status = status
+        self.failure_cause = failure_cause
         self.findings = findings
+        self.mitigations = mitigations
+        self.fireup_mapping = fireup_mapping
 
         # From here on is the code is not implemented on abstract class
         self.config = config
@@ -69,6 +83,8 @@ class SeparateCIDRBlocks(ReviewPoint):
                         dictionary[entry]['status'] = False
                         if vcn1 not in dictionary[entry]['findings']:
                             dictionary[entry]['findings'].append(vcn1)
+                            dictionary[entry]['failure_cause'].append('VCNs CIDR Blocks are overlapping')
+                            dictionary[entry]['mitigations'].append('Make sure vcn '+str(vcn1['display_name'])+' CIDR Blocks are not overlapping with vcn '+str(vcn2['display_name']))
 
         return dictionary
 

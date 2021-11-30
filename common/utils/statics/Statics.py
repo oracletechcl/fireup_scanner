@@ -285,6 +285,7 @@ __rp_2_8 = {
     'sub_area': 'Define Your Network and Connectivity Architecture',
     'review_point': 'Establish Non-Overlapping Private Network Ranges Across Private Environments',    
     'success_criteria': 'Check if CIDR Blocks are overlapping in VCNs',
+    'fireup_items': ['Fireup Task: 29 - Can you ensure that are no overlapping private IP spaces?']
 }
 
 __rp_2_9 = {

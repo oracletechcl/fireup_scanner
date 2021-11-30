@@ -109,10 +109,12 @@ def __call_1_6(config, signer, report_directory):
 
 def __call_2_8(config, signer, report_directory):    
     separateCIDRBlocks = SeparateCIDRBlocks(
-    statics.__rp_2_8['entry'],
-    statics.__rp_2_8['area'],
-    statics.__rp_2_8['sub_area'],
-    statics.__rp_2_8['review_point'],
-    True, [], config, signer)
-    __separateCIDRBlocks_dictionary = separateCIDRBlocks.analyze_entity(statics.__rp_2_8['entry'])
-    generate_on_screen_report(__separateCIDRBlocks_dictionary, report_directory, statics.__rp_2_8['entry'])
+    Statics.__rp_2_8['entry'],
+    Statics.__rp_2_8['area'],
+    Statics.__rp_2_8['sub_area'],
+    Statics.__rp_2_8['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_8['entry']+"_"+Statics.__rp_2_8['area']+"_"+Statics.__rp_2_8['sub_area']+"_mitigations"
+    __separateCIDRBlocks_dictionary = separateCIDRBlocks.analyze_entity(Statics.__rp_2_8['entry'])
+    generate_on_screen_report(__separateCIDRBlocks_dictionary, report_directory, Statics.__rp_2_8['entry'])
+    generate_mitigation_report(__separateCIDRBlocks_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_8['fireup_items'])
