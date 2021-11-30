@@ -65,9 +65,10 @@ __rp_1_6 = {
 __rp_1_7 = {
     'entry': '1.7',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Organize Resources Using Compartments and Tags',    
+    'success_criteria': 'Check that multiple compartments (and nested) are created. Check for Environment keywords such as PRD, Production, etc. Check if there are policies applied to the name of these compartments. Check if policies are created at root level and fail. Check if namespaces and tags are present and being used',
+    'fireup_items': ['Fireup Task: 12 - Do you have a designated compartment for specific categories of resources for easier management', 'Fireup Task: 13 - Do you enforce policies or rules on who can move / migrate compartments', 'Fireup Task: 14 - Do you want to set a limit on number of resrouces on each compartment?', 'Fireup Task: 15 - Are there any IAM policies written at root level?']
 }
 
 __rp_1_8 = {
