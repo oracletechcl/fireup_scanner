@@ -8,6 +8,8 @@ from common.utils.helpers.helper import *
 from common.utils.formatter.printer import debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
+from itertools import combinations
+import ipaddr
 
 
 class SeparateCIDRBlocks(ReviewPoint):
@@ -42,8 +44,15 @@ class SeparateCIDRBlocks(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        debug_with_date(dictionary)
+        pairs = combinations(self.__vcns, 2)
 
-        for vcn in self.__vcns:
-            debug_with_date(vcn['display_name'])
+        for pair in pairs:
+            vcn1 = pair[0]
+            vcn2 = pair[1]
+            for cidr1 in vcn1['cidr_blocks']:
+                for cidr2 in vcn2['cidr_blocks']:
+                    if ipaddr.IPNetwork(cidr1).overlaps(ipaddr.IPNetwork(cidr2)):
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['findings'].append(vcn1)
 
+        return dictionary

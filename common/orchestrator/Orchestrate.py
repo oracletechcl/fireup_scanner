@@ -23,12 +23,12 @@ from common.utils import statics
 def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+statics.__version__)
     print_report_sub_header()
-    # __call_1_1(config, signer, report_directory)
-    # __call_1_2(config, signer, report_directory)
-    # __call_1_3(config, signer, report_directory)
-    # __call_1_4(config, signer, report_directory)
-    # __call_1_5(config, signer, report_directory)
-    # __call_1_6(config, signer, report_directory)
+    __call_1_1(config, signer, report_directory)
+    __call_1_2(config, signer, report_directory)
+    __call_1_3(config, signer, report_directory)
+    __call_1_4(config, signer, report_directory)
+    __call_1_5(config, signer, report_directory)
+    __call_1_6(config, signer, report_directory)
 
     __call_2_8(config, signer, report_directory)
 
@@ -103,4 +103,4 @@ def __call_2_8(config, signer, report_directory):
     statics.__rp_2_8['review_point'],
     True, [], config, signer)
     __separateCIDRBlocks_dictionary = separateCIDRBlocks.analyze_entity(statics.__rp_2_8['entry'])
-    # generate_on_screen_report(__federatedUsers_dictionary, report_directory, statics.__rp_2_8['entry'])
+    generate_on_screen_report(__separateCIDRBlocks_dictionary, report_directory, statics.__rp_2_8['entry'])
