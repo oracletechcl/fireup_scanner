@@ -34,9 +34,24 @@ class SeparateCIDRBlocks(ReviewPoint):
 
     def load_entity(self):
 
-        self.__vcns = get_all_vcns(self.__identity, self.config, self.signer)
+        regions = get_regions_data(self.__identity, self.config)
+        network_clients = []
 
-        return self.__vcns                
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            # Create a network client for each region
+            network_clients.append(get_virtual_network_client(region_config, self.signer))
+
+        tenancy = get_tenancy_data(self.__identity, self.config)
+
+        # Get all compartments including root compartment
+        compartments = get_compartments_data(self.__identity, tenancy.id)
+        compartments.append(get_tenancy_data(self.__identity, self.config))
+
+        self.__vcns = parallel_executor(network_clients, compartments, search_compartments, len(compartments))
+
+        return self.__vcns
 
 
     def analyze_entity(self, entry):
@@ -56,3 +71,33 @@ class SeparateCIDRBlocks(ReviewPoint):
                             dictionary[entry]['findings'].append(vcn1)
 
         return dictionary
+
+def search_compartments(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    vcns = []
+
+    for compartment in compartments:
+        vcn_data = get_vcn_data(network_client, compartment.id)
+        for vcn in vcn_data:
+            record = {
+                'cidr_blocks': vcn.cidr_blocks,
+                'compartment_id': vcn.compartment_id,
+                'default_dhcp_options_id': vcn.default_dhcp_options_id,
+                'default_route_table_id': vcn.default_route_table_id,
+                'default_security_list_id': vcn.default_security_list_id,
+                'defined_tags': vcn.defined_tags,
+                'display_name': vcn.display_name,
+                'dns_label': vcn.dns_label,
+                'freeform_tags': vcn.freeform_tags,
+                'id': vcn.id,
+                'ipv6_cidr_blocks': vcn.ipv6_cidr_blocks,
+                'lifecycle_state': vcn.lifecycle_state,
+                'time_created': vcn.time_created,
+                'vcn_domain_name': vcn.vcn_domain_name,
+            }
+
+            vcns.append(record)
+
+    return vcns

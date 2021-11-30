@@ -6,6 +6,7 @@
 import oci
 from common.utils.tokenizer.signer import *
 from concurrent import futures
+from common.utils.formatter.printer import debug_with_date
 
 
 __identity_client = None
@@ -192,65 +193,34 @@ def get_api_key_data(identity_client, user_id):
         raise RuntimeError("Failed to get api key data: {}".format(e))
     return api_key_data
 
-def search_compartments(item):
-    network_client = item[0]
-    compartments = item[1:]
-    # print(network_client, flush=True)
-    for compartment in compartments:
-        vcns = get_vcn_data(network_client, compartment.id)
-        # print(vcns, flush=True)
-        for vcn in vcns:
-            record = {
-                'cidr_blocks': vcn.cidr_blocks,
-                'compartment_id': vcn.compartment_id,
-                'default_dhcp_options_id': vcn.default_dhcp_options_id,
-                'default_route_table_id': vcn.default_route_table_id,
-                'default_security_list_id': vcn.default_security_list_id,
-                'defined_tags': vcn.defined_tags,
-                'display_name': vcn.display_name,
-                'dns_label': vcn.dns_label,
-                'freeform_tags': vcn.freeform_tags,
-                'id': vcn.id,
-                'ipv6_cidr_blocks': vcn.ipv6_cidr_blocks,
-                'lifecycle_state': vcn.lifecycle_state,
-                'time_created': vcn.time_created,
-                'vcn_domain_name': vcn.vcn_domain_name,
-            }
 
-            __vcns.append(record)
-
-def get_all_vcns(identity_client, config, signer):
-    regions = get_regions_data(identity_client, config)
-    network_clients = []
-
-    for region in regions:
-        region_config = config
-        region_config['region'] = region.region_name
-        # Create a network client for each region
-        network_clients.append(get_virtual_network_client(region_config, signer))
-
-    tenancy = get_tenancy_data(identity_client, config)
-
-    # Get all compartments including root compartment
-    compartments = get_compartments_data(identity_client, tenancy.id)
-    compartments.append(get_tenancy_data(identity_client, config))
-
+def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int):
     items = []
 
-    for network_client in network_clients:
-        item = [network_client]
-        for i, compartment in enumerate(compartments):
-            item.append(compartment)
+    for client in dependent_clients:
+        item = [client]
+        for i, indepdent in enumerate(independent_iterator):
+            item.append(indepdent)
             if i > 0 and i % 20 == 0:
                 items.append(item)
-                item = [network_client]
+                item = [client]
         items.append(item)
 
-    with futures.ThreadPoolExecutor(200) as executor:
+    values = []
+
+    with futures.ThreadPoolExecutor(threads) as executor:
         processes = []
 
-        processes = [executor.submit(search_compartments, item) for item in items]
+        processes = [executor.submit(
+            fuction_to_execute,
+            item
+            ) 
+            for item in items]
 
         futures.wait(processes)
 
-    return __vcns
+        for p in processes:
+            for value in p.result():
+                values.append(value)
+
+    return values
