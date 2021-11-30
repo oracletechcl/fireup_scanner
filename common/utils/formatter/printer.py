@@ -28,12 +28,12 @@ def print_header(msg):
 
 
 def print_report_sub_header():
-    print('Num' + "\t" + "Area " + "\t\t\t" + "Sub-Area "
-              "\t\t\t\t\t" "Compliant" + "\t\t\t" + "Findings  " + "\t" + 'Review Point')
-    print('#' * int(Statics.__lenght_print__))
+    print('Num' + " " + "{:<40}".format(str("Area")) + " {:<70}".format(str("Sub-Area")) +
+              " {:<5}".format(str("OK")) + " {:<5}".format(str("Findings")) + "   {:<50}".format(str("Review Point")), flush=True)
+    print('#' * int(Statics.__lenght_print__), flush=True)
 
 def print_report_fields(finding):
-    print(finding['Recommendation #'] + "\t" + finding['Area'] + "\t" + finding['Sub Area'] + "\t" + finding['Compliant'] + "\t\t\t\t" + finding['Findings'] + "\t\t" + finding['Review Point'])
+    print(finding['Recommendation #'] + " {:<40}".format(finding['Area']) + " {:<70}".format(finding['Sub Area']) + " {:<5}".format(finding['Compliant']) + " {:<5}".format(finding['Findings']) + "      {:<50}".format(finding['Review Point']), flush=True)
 
 
 def print_list_of_dicts(list_of_dicts):
@@ -44,7 +44,7 @@ def print_mitigation_report_fields(finding):
     print(finding['Recommendation #'] + "\t" + finding['Area'] + "\t" + finding['Sub Area'] + "\t" + finding['Compliant'] + "\t" + finding['Findings'] + "\t\t" + finding['Review Point']+ "\t\t" + print_list_of_dicts(finding['Failure Causes']) +"\t\t"+print_list_of_dicts(finding['Mitigations']))
 
 def debug_with_date(msg):
-    print(get_current_date()+" DEBUG: "+str(msg))
+    print(get_current_date()+" DEBUG: "+str(msg), flush=True)
 
 def debug(msg):
-    print("DEBUG: " + str(msg))
+    print("DEBUG: " + str(msg), flush=True)

@@ -3,14 +3,17 @@
 # Helper.py
 # Description: Helper functions for OCI Python SDK
 
-from csv import excel
 import oci
 from common.utils.tokenizer.signer import *
+from concurrent import futures
+from common.utils.formatter.printer import debug_with_date
 
 
 __identity_client = None
+__network_client = None
 __compartment_id = None
 __compartments = None
+__vcns = []
 
 def get_config_and_signer():
     try:
@@ -99,9 +102,9 @@ def get_tenancy_data(identity_client, config):
         raise RuntimeError("Failed to get tenancy: {}".format(e))
     return tenancy
 
-def get_regions_data(identity_client):
+def get_regions_data(identity_client, config):
     try:
-        regions = identity_client.list_region_subscriptions().data
+        regions = identity_client.list_region_subscriptions(config["tenancy"]).data
     except Exception as e:
         raise RuntimeError("Failed to get regions: {}".format(e))
     return regions
@@ -171,6 +174,15 @@ def get_bucket_per_compartment(objectstorage_client, compartment_id, namespace):
         raise RuntimeError("Failed to get bucket per compartment: {}".format(e))
     return bucket_per_compartment
 
+
+def get_vcn_data(network_client, compartment_id): 
+        __network_client = network_client
+
+        return oci.pagination.list_call_get_all_results(
+        __network_client.list_vcns,
+        compartment_id
+    ).data
+
 def get_api_key_data(identity_client, user_id):
     try:
         api_key_data = oci.pagination.list_call_get_all_results(
@@ -180,3 +192,35 @@ def get_api_key_data(identity_client, user_id):
     except Exception as e:
         raise RuntimeError("Failed to get api key data: {}".format(e))
     return api_key_data
+
+
+def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int):
+    items = []
+
+    for client in dependent_clients:
+        item = [client]
+        for i, indepdent in enumerate(independent_iterator):
+            item.append(indepdent)
+            if i > 0 and i % 20 == 0:
+                items.append(item)
+                item = [client]
+        items.append(item)
+
+    values = []
+
+    with futures.ThreadPoolExecutor(threads) as executor:
+        processes = []
+
+        processes = [executor.submit(
+            fuction_to_execute,
+            item
+            ) 
+            for item in items]
+
+        futures.wait(processes)
+
+        for p in processes:
+            for value in p.result():
+                values.append(value)
+
+    return values
