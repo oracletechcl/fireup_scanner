@@ -8,7 +8,7 @@ from os import write
 from classes.securitycompliance.FederatedUsers import FederatedUsers
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug_with_date
-from common.utils import statics
+from common.utils.statics import Statics
 from common.utils.tokenizer.signer import *
 
   
@@ -20,18 +20,19 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = FederatedUsers(statics.__rp_1_5['entry'], 
-    statics.__rp_1_5['area'], 
-    statics.__rp_1_5['sub_area'], 
-    statics.__rp_1_5['review_point'], 
-    True, [], get_config_and_signer()[0], 
+    result_dictionary = FederatedUsers(Statics.__rp_1_5['entry'], 
+    Statics.__rp_1_5['area'], 
+    Statics.__rp_1_5['sub_area'], 
+    Statics.__rp_1_5['review_point'], 
+    True, [], [], [], [], 
+    get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(statics.__rp_1_5['entry'])   
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_5['entry'])   
     
-    for item in dictionary[statics.__rp_1_5['entry']]['findings']:
+    for item in dictionary[Statics.__rp_1_5['entry']]['findings']:
         debug_with_date(item)
         results_in_fault += 1    
 

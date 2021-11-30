@@ -7,7 +7,6 @@
 from common.utils.formatter.printer import debug, debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
-import oci
 from common.utils.helpers.helper import *
 
 
@@ -21,13 +20,27 @@ class Admin(ReviewPoint):
 
 
 
-    def __init__(self, entry, area, sub_area, review_point, status, findings, config, signer):
+    def __init__(self,
+                entry:str, 
+                area:str, 
+                sub_area:str, 
+                review_point: str, 
+                status:bool, 
+                failure_cause:list, 
+                findings:list, 
+                mitigations:list, 
+                fireup_mapping:list,
+                config, 
+                signer):
        self.entry = entry
        self.area = area
        self.sub_area = sub_area
        self.review_point = review_point
        self.status = status
+       self.failure_cause = failure_cause
        self.findings = findings
+       self.mitigations = mitigations
+       self.fireup_mapping = fireup_mapping
 
        # From here on is the code is not implemented on abstract class
        self.config = config
@@ -37,8 +50,7 @@ class Admin(ReviewPoint):
 
 
     def load_entity(self):   
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        
+        compartments = get_compartments_data(self.__identity, self.__tenancy.id)        
         policy_data = get_policies_data(self.__identity, self.__tenancy.id)
 
         for policy in policy_data:  
@@ -64,6 +76,7 @@ class Admin(ReviewPoint):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         counter = 0
+        good_policy_list = []
         # check if the policy contains in its statement the word manage and the word family if it does print ok
 
         for policy in self.__policies:
@@ -74,8 +87,11 @@ class Admin(ReviewPoint):
                             if "group".upper() and "manage".upper() and "family".upper() in statement.upper(): # Check for segregated policies for manage, assigned to specific groups
                                 if "functions-family".upper() not in statement.upper(): # Filter out functions-family policies as this is mandatory policy in case of functions usage                                    
                                     counter+=1                 # count the value of a compliant policy
+                                    good_policy_list.append(policy['statements'])
         
         if counter < 10: #criteria today is above 10 policies, will regard an IAM schema applied. 
                     dictionary[entry]['status'] = False
-                    dictionary[entry]['findings'].append(policy)  
+                    dictionary[entry]['findings'].append(policy)
+                    dictionary[entry]['failure_cause'].append('Not enough compliant policies:' + str(policy))                
+                    dictionary[entry]['mitigations'].append('Increase the amount of granular policies containing \'manage family\' as verbs. Sample: '+str(good_policy_list))                                  
         return dictionary
