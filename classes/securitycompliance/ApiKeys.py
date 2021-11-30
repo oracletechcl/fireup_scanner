@@ -22,13 +22,27 @@ class ApiKeys(ReviewPoint):
 
 
 
-    def __init__(self, entry, area, sub_area, review_point, status, findings, config, signer):
+    def __init__(self,
+                entry:str, 
+                area:str, 
+                sub_area:str, 
+                review_point: str, 
+                status:bool, 
+                failure_cause:list, 
+                findings:list, 
+                mitigations:list, 
+                fireup_mapping:list,
+                config, 
+                signer):
        self.entry = entry
        self.area = area
        self.sub_area = sub_area
        self.review_point = review_point
        self.status = status
+       self.failure_cause = failure_cause
        self.findings = findings
+       self.mitigations = mitigations
+       self.fireup_mapping = fireup_mapping
 
        # From here on is the code is not implemented on abstract class
        self.config = config
@@ -77,17 +91,17 @@ class ApiKeys(ReviewPoint):
         self.load_entity()              
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         # Count all of the users inside variable self.__users
-        total_user_count = len(self.__users)
-                
+        total_user_count = len(self.__users)        
         for user in self.__users:
             if user['api_key'] is not None:
-                for api_key in user['api_key']:          
-                    # Fix this to get both created and now time. Substract them and then make it fail if greater than 90          
-                    
+                for api_key in user['api_key']:                   
                     time_created = api_key['time_created']
                     time_now = datetime.datetime.strptime(self.__now_formatted, "%d/%m/%Y %H:%M:%S")
                     time_difference = time_now - time_created.replace(tzinfo=None)                    
                     if time_difference.days > 90 and total_user_count > 5:                        
                         dictionary[entry]['findings'].append(user)
-                        dictionary[entry]['status'] = False                        
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['failure_cause'].append('User: '+user['name']+' has an API key that is older than 90 days')
+                        dictionary[entry]['mitigations'].append('Update API Key: '+str(api_key['fingerprint'])+' of user'+user['name'])
+
         return dictionary

@@ -19,13 +19,28 @@ class FederatedUsers(ReviewPoint):
 
 
 
-    def __init__(self, entry, area, sub_area, review_point, status, findings, config, signer):
+    def __init__(self,
+                entry:str, 
+                area:str, 
+                sub_area:str, 
+                review_point: str, 
+                status:bool, 
+                failure_cause:list, 
+                findings:list, 
+                mitigations:list, 
+                fireup_mapping:list,
+                config, 
+                signer):
        self.entry = entry
        self.area = area
        self.sub_area = sub_area
        self.review_point = review_point
        self.status = status
+       self.failure_cause = failure_cause
        self.findings = findings
+       self.mitigations = mitigations
+       self.fireup_mapping = fireup_mapping
+
 
        # From here on is the code is not implemented on abstract class
        self.config = config
@@ -62,12 +77,20 @@ class FederatedUsers(ReviewPoint):
         total_user_count = len(self.__users)
         # count all the users inside self._users that contain the entry identity provider id not null
         none_idp_user_count = 0
+        faulty_user = []
         for user in self.__users:
             if user['identity_provider_id'] is None:
                 none_idp_user_count += 1                                        
                 dictionary[entry]['findings'].append(user)
+                faulty_user.append(user['name'])
         
+        if total_user_count < 5:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append('User base is too small')  
+            dictionary[entry]['mitigations'].append('Your current use base is: '+str(total_user_count)+' users. You should have more than 10 users to ensure privileges and further access is correctly spread')
         if none_idp_user_count/total_user_count <= 0.9:
-            dictionary[entry]['status'] = False        
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append('The gross majority of your users are IAM Users. Total count is:'+str(none_idp_user_count)) 
+            dictionary[entry]['mitigations'].append('Move the following user to a federated mode: '+str(faulty_user))       
 
         return dictionary

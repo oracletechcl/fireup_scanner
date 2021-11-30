@@ -13,13 +13,25 @@ __tenancy = None
 
 
 class ReviewPoint(ABC):    
-    def __init__(self, entry:str, area:str, sub_area:str, review_point: str, status:bool, findings:list):        
+    def __init__(self, 
+                 entry:str, 
+                 area:str, 
+                 sub_area:str, 
+                 review_point: str, 
+                 status:bool, 
+                 failure_cause:list, 
+                 findings:list, 
+                 mitigations:list, 
+                 fireup_mapping:list):        
         self.entry = entry
         self.area = area
         self.sub_area = sub_area
         self.review_point = review_point
         self.status = status
+        self.failure_cause = failure_cause
+        self.mitigations = mitigations
         self.findings = findings
+        self.fireup_mapping = fireup_mapping
         
 
 
@@ -30,7 +42,10 @@ class ReviewPoint(ABC):
                 'sub_area': self.sub_area,
                 'review_point': self.review_point,
                 'status': self.status,
-                'findings': self.findings               
+                'failure_cause': self.failure_cause,
+                'mitigations': self.mitigations,
+                'findings': self.findings,  
+                'fireup_mapping': self.fireup_mapping             
                 },
         }
 
