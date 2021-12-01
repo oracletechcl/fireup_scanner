@@ -8,14 +8,13 @@ from common.utils.formatter.printer import debug, debug_with_date, print_with_da
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
-import datetime
+
 
 
 class CompartmentsAndPolicies(ReviewPoint):
 
     # Class Variables    
     __users = []
-    __groups_to_users = []
     __compartments = []
     __policies = []
     __identity = None
@@ -85,7 +84,8 @@ class CompartmentsAndPolicies(ReviewPoint):
                 'is_accessible': compartment.is_accessible,
                 'lifecycle_state': compartment.lifecycle_state,
                 'name': compartment.name,
-                'time_created': compartment.time_created,                
+                'time_created': compartment.time_created,  
+                'statements': ""              
             }
             self.__compartments.append(compartment_record)
 
@@ -110,46 +110,50 @@ class CompartmentsAndPolicies(ReviewPoint):
     def analyze_entity(self, entry):
         self.load_entity()              
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        compartment_naming_count = 0
-        env_dict = {
-            'prd': ['Production', 'PRD', 'PROD', 'PRODUCTION'],
-            'dev': ['Development', 'DEV', 'DEVELOPMENT'],
-            'test': ['Test', 'TEST', 'TESTING'],
-            'stage': ['Stage', 'STAGE', 'STAGING'],
-            'qa': ['QA', 'Quality Assurance', 'Quality Assurance', 'QA']            
-        }
-        # Check within the compartments if there are specific names such as PRD, production, DEV, development, QA, qa, 
-        for compartment in self.__compartments:
-            for key, value in env_dict.items():
-                for item in value:
-                    if item in compartment['name']:
-                        compartment['environment'] = key                                            
-                        compartment_naming_count += 1                
-                                          
-        if compartment_naming_count < 5:
-            for compartment in self.__compartments:
-                for key, value in env_dict.items():
-                    for item in value:
-                        if item not in compartment['name']:
-                            compartment['environment'] = key                                            
-                            dictionary[entry]['status'] = False
-                            dictionary[entry]['findings'].append(compartment)
-                            dictionary[entry]['failure_cause'].append('Compartment name '+compartment['name']+'is not consistent with the environment')
-                            dictionary[entry]['mitigations'].append('Rename '+compartment['name']+' to reflect some environment name')
-        else:
-            for compartment in self.__compartments:
-                for key, value in env_dict.items():
-                    for item in value:
-                        if item in compartment['name']:
-                            compartment['environment'] = key                                            
-                            dictionary[entry]['status'] = True
-                            dictionary[entry]['findings'].append(compartment)
+        compliant_compartment_count = 0
 
+        env_list = ['prd', 'dev', 'test', 'stage', 'qa', 'sandbox', 'prod', 'tst', 'stg', 'quality', 'sbx','sand', 'hub', 'hom']
+        compliant_compartment_names = []
+        all_compartment_names = []
 
+        for compartments in self.__compartments:         
+            all_compartment_names.append(compartments['name'])
+            for env in env_list:
+                if env.lower() in compartments['name'].lower():
+                    compliant_compartment_count += 1
+                    compliant_compartment_names.append(compartments['name'])
+                    break
+                else:
+                    continue
             
+        non_compliant_compartments_names = list(set(all_compartment_names) - set(compliant_compartment_names))        
+
+
+        if len(compliant_compartment_names) < 5:
+            dictionary[entry]['status'] = False        
+
+
+        for compartments in self.__compartments:         
+            all_compartment_names.append(compartments['name'])
+            for env in env_list:
+                if env.lower() not in compartments['name'].lower():
+                    dictionary[entry]['findings'].append(compartments)
+                    break
+                else:
+                    continue
+
+        for item in non_compliant_compartments_names:
+            dictionary[entry]['failure_cause'].append("Compartment name does not match the environment name convention: " + item)
+            dictionary[entry]['mitigations'].append("Rename compartment: " + item + " to match the environment name convention")
+
+         
+   
+
+        # Policy Analysis    
         for policy in self.__policies:
             if policy['compartment_id'] == self.__tenancy.id:
                 dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(policy)
                 dictionary[entry]['failure_cause'].append(policy['name']+' is attached to the root compartment')
                 dictionary[entry]['mitigations'].append('Remove policy'+ policy['name'] +' from root compartment')                
         
