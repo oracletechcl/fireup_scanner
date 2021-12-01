@@ -16,6 +16,7 @@ from classes.securitycompliance.FederatedUsers import FederatedUsers
 
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
+from classes.reliabilityresilience.ReviewPoint210 import ReviewPoint210
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
 
@@ -24,15 +25,16 @@ from common.utils.statics import Statics
 def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+Statics.__version__)
     print_report_sub_header()
-    __call_1_1(config, signer, report_directory)
-    __call_1_2(config, signer, report_directory)
-    __call_1_3(config, signer, report_directory)
-    __call_1_4(config, signer, report_directory)
-    __call_1_5(config, signer, report_directory)
-    __call_1_6(config, signer, report_directory)
+    # __call_1_1(config, signer, report_directory)
+    # __call_1_2(config, signer, report_directory)
+    # __call_1_3(config, signer, report_directory)
+    # __call_1_4(config, signer, report_directory)
+    # __call_1_5(config, signer, report_directory)
+    # __call_1_6(config, signer, report_directory)
 
-    __call_2_8(config, signer, report_directory)
-    __call_2_9(config, signer, report_directory)
+    # __call_2_8(config, signer, report_directory)
+    # __call_2_9(config, signer, report_directory)
+    __call_2_10(config, signer, report_directory)
 
 
 
@@ -133,3 +135,16 @@ def __call_2_9(config, signer, report_directory):
     __cidrSize_dictionary = cidrSize.analyze_entity(Statics.__rp_2_9['entry'])
     generate_on_screen_report(__cidrSize_dictionary, report_directory, Statics.__rp_2_9['entry'])
     generate_mitigation_report(__cidrSize_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_9['fireup_items'])
+
+
+def __call_2_10(config, signer, report_directory):    
+    reviewPoint210 = ReviewPoint210(
+    Statics.__rp_2_10['entry'],
+    Statics.__rp_2_10['area'],
+    Statics.__rp_2_10['sub_area'],
+    Statics.__rp_2_10['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_10['entry']+"_"+Statics.__rp_2_10['area']+"_"+Statics.__rp_2_10['sub_area']+"_mitigations"
+    __reviewPoint210_dictionary = reviewPoint210.analyze_entity(Statics.__rp_2_10['entry'])
+    generate_on_screen_report(__reviewPoint210_dictionary, report_directory, Statics.__rp_2_10['entry'])
+    generate_mitigation_report(__reviewPoint210_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_10['fireup_items'])

@@ -300,9 +300,10 @@ __rp_2_9 = {
 __rp_2_10 = {
     'entry': '2.10',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
+    'sub_area': 'Define Your Network and Connectivity Architecture',
+    'review_point': 'Establish Fault Tolerant and High Availability Connections for Your Public Workload',    
+    'success_criteria': 'If LBaaS Exists check that it correctly uses distribution. See if DNS is implemented and if multiple regions are in place, check that Steering Policy are in place depending on region login',
+    'fireup_items': ['Fireup Task: 31 - Are you leveraging traffic management, web firewall and load balancing for public resources?']
 }
 
 __rp_2_11 = {
