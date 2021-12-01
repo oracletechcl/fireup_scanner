@@ -292,9 +292,10 @@ __rp_2_8 = {
 __rp_2_9 = {
     'entry': '2.9',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
+    'sub_area': 'Define Your Network and Connectivity Architecture',
+    'review_point': 'Size Your Virtual Cloud Network to Allow for Expansion',    
+    'success_criteria': 'Check CIDR Block size on VCN. Anything lower than /24 will fail',
+    'fireup_items': ['Fireup Task: 30 - Do you have enough CIDR range for future expansions? (Make sure CIDRs are greater than /24)']
 }
 
 __rp_2_10 = {

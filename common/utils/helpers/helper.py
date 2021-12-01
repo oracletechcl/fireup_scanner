@@ -194,19 +194,23 @@ def get_api_key_data(identity_client, user_id):
     return api_key_data
 
 
-def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int):
+def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, storage_variable_name:str):
+
+    values = globals()[storage_variable_name]
+
+    if len(values) > 0:
+        return values
+
     items = []
 
     for client in dependent_clients:
         item = [client]
-        for i, indepdent in enumerate(independent_iterator):
-            item.append(indepdent)
+        for i, independent in enumerate(independent_iterator):
+            item.append(independent)
             if i > 0 and i % 20 == 0:
                 items.append(item)
                 item = [client]
         items.append(item)
-
-    values = []
 
     with futures.ThreadPoolExecutor(threads) as executor:
         processes = []
