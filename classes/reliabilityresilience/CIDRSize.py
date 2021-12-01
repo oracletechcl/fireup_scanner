@@ -75,7 +75,7 @@ class CIDRSize(ReviewPoint):
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(vcn)
                     dictionary[entry]['failure_cause'].append('VCNs CIDR Blocks are too small, making it harder to expand.')
-                    dictionary[entry]['mitigations'].append('Make sure vcn '+str(vcn['display_name'])+' CIDR block(s) are is at least /24 or bigger.')
+                    dictionary[entry]['mitigations'].append('Make sure vcn '+str(vcn['display_name'])+' CIDR block(s) are at least /24 or bigger.')
 
         return dictionary
 
