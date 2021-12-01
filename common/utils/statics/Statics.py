@@ -294,7 +294,7 @@ __rp_2_9 = {
     'sub_area': 'Define Your Network and Connectivity Architecture',
     'review_point': 'Size Your Virtual Cloud Network to Allow for Expansion',    
     'success_criteria': 'Check CIDR Block size on VCN. Anything lower than /24 will fail',
-    'fireup_items': ['MISSING']
+    'fireup_items': ['Fireup Task: 30 - Do you have enough CIDR range for future expansions? (Make sure CIDRs are greater than /24)']
 }
 
 __rp_2_10 = {
