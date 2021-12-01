@@ -14,7 +14,6 @@ from classes.securitycompliance.Admin import Admin
 from classes.securitycompliance.AdminAbility import AdminAbility
 from classes.securitycompliance.PolicyAdmins import PolicyAdmins
 from classes.securitycompliance.FederatedUsers import FederatedUsers
-from classes.securitycompliance.CompartmentsAndPolicies import CompartmentsAndPolicies
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
