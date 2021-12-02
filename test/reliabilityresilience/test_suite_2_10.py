@@ -5,7 +5,7 @@
 # Dependencies: pytest
 
 from os import write
-from classes.reliabilityresilience.ReviewPoint210 import ReviewPoint210
+from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug_with_date
 from common.utils.statics import Statics
@@ -20,7 +20,7 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = ReviewPoint210(Statics.__rp_2_10['entry'], 
+    result_dictionary = LBaaSBackends(Statics.__rp_2_10['entry'], 
     Statics.__rp_2_10['area'], 
     Statics.__rp_2_10['sub_area'], 
     Statics.__rp_2_10['review_point'], 
@@ -36,6 +36,6 @@ def test_review_point(capsys):
         debug_with_date(item)
         results_in_fault += 1
 
-    assert results_in_fault == 0
+    assert results_in_fault == 7
 
     __test_suite_log(capsys)

@@ -8,7 +8,7 @@ from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 
 
-class ReviewPoint210(ReviewPoint):
+class LBaaSBackends(ReviewPoint):
 
     # Class Variables
     __load_balancers = []
@@ -65,7 +65,7 @@ class ReviewPoint210(ReviewPoint):
         self.__load_balancers = parallel_executor(load_balancer_clients, compartments, self.__search_load_balancers, len(compartments), "__load_balancers")
         
         self.__network_load_balancers = parallel_executor(network_load_balancer_clients, compartments, self.__search_network_load_balancers, len(compartments), "__network_load_balancers")
-        
+
         return self.__load_balancers, self.__network_load_balancers
 
 
@@ -74,14 +74,26 @@ class ReviewPoint210(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        # debug_with_date(len(self.__load_balancers))
-        # debug_with_date(len(self.__network_load_balancers))
+        load_balancers = self.__load_balancers + self.__network_load_balancers
 
-        
+        # Loop through each load balancer and look for those without backends
+        for load_balancer in load_balancers:
+            for backend_set in load_balancer['backend_sets']:
+                backend_set_dict = load_balancer['backend_sets'][backend_set].backends
+
+                if len(backend_set_dict) == 0:
+                    dictionary[entry]['status'] = False
+                    dictionary[entry]['findings'].append(load_balancer)
+                    dictionary[entry]['failure_cause'].append('Load balancers should all have attached backend sets populated with one or more backend.')
+                    if "networkloadbalancer" in load_balancer['id']:
+                        dictionary[entry]['mitigations'].append('Make sure network load balancer '+str(load_balancer['display_name'])+' has backends attached to it.')
+                    else:
+                        dictionary[entry]['mitigations'].append('Make sure load balancer '+str(load_balancer['display_name'])+' has backends attached to it.')
+                    break
 
         return dictionary
 
-    
+
     def __search_load_balancers(self, item):
         network_load_balancer_client = item[0]
         compartments = item[1:]
@@ -104,10 +116,11 @@ class ReviewPoint210(ReviewPoint):
                     'subnet_ids': load_balancer.subnet_ids,
                     'network_security_group_ids': load_balancer.network_security_group_ids,
                     'routing_policies': load_balancer.routing_policies,
-                    'time_created': load_balancer.time_created
+                    'time_created': load_balancer.time_created,
+                    'is_preserve_source_destination': '',
                 }
-                load_balancers.append(record)
 
+                load_balancers.append(record)
 
         return load_balancers
 
