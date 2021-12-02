@@ -228,3 +228,10 @@ def parallel_executor(dependent_clients:list, independent_iterator:list, fuction
                 values.append(value)
 
     return values
+
+def get_quotas_client(config, signer):
+    try:
+        quotas_client = oci.limits.QuotasClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create quotas client: {}".format(e))
+    return quotas_client

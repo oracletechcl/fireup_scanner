@@ -44,6 +44,9 @@ class CompartmentQuotas(ReviewPoint):
 
     def load_entity(self):
 
+        compartment_data = get_compartments_data(self.__identity, self.__tenancy.id) 
+        debug_with_date(compartment_data)
+
         # regions = get_regions_data(self.__identity, self.config)
         # network_clients = []
 
