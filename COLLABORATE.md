@@ -23,6 +23,27 @@
         - If this is a bug report, branch creation should follow this naming convention
           - `bug/bug_report_number`
         - **At this point and this point only, you can start working on your code**
+      - Start working on your code and upon first commit, execute the following command to create the remote branch on github `git push --set-upstream origin foo/bar_x_y` where `foo/bar_x_y` is either your feature or bug.
+      - The expected output is something similar to this:
+  
+```shell
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 734 bytes | 734.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+remote: 
+remote: Create a pull request for 'foo/bar_x_y' on GitHub by visiting:
+remote:      https://github.com/oraclecloudbricks/fireup/pull/new/foo/bar_x_y
+remote: 
+To github.com:oraclecloudbricks/fireup.git
+ * [new branch]      foo/bar_x_y -> foo/bar_x_y
+Branch 'foo/bar_x_y' set up to track remote branch 'foo/bar_x_y' from 'origin'.
+```
+
+- From here on, all subsequent pushes, will go to the remote branch. Above task is only **executed once***
   
     - Upon first commit, reference the issue number for tracking
     - Once feature or bug is completed and unitary testing is done, create a Pull request against main branch on fireup repository
