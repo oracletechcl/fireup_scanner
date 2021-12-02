@@ -6,6 +6,7 @@
   - [Branch and Collaboration](#branch-and-collaboration)
   - [How Create new review point](#how-create-new-review-point)
   - [Unitary Testing](#unitary-testing)
+  - [Github Best Practices](#github-best-practices)
 
 
 ____
@@ -504,4 +505,24 @@ Also, it'll show a debug on screen for the failed object related to the failed r
 
 **IMPORTANT**
 If you have any question, slack or email denny.alquinta@oracle.com before doing any PR or commit
+
+
+<div id="BestPractices"></div>
+
+## Github Best Practices
+
+- Do keep an updated photo on your profile
+- Commit only complete and correctly tested code. You may save your code on your staging environment and test it out properly. Restrict commits only to functional and finished developments.
+- Use imperative statements on commit messages: Good examples are: *Fixed a bug that…, Changed implementation of, …. Removed faulty method that caused…, Refactored code to perform…*   Bad examples are: *If applied, this commit will fix…, If applied this will remove,*
+- Be as descriptive as possible on commit message: Commit messages are intended to describe what you did on your feature/hotfix. Commit message such as *“commit01, testcommit, etc”* are a very bad practice as this won't allow to do a proper release of your code. 
+- For long commit messages use embedded Text Editor on VSCode. This is done by raising the commit without the –m modifier so that Default text editor is prompted on commit screen
+- GIT Tagging standard follows what’s defined under https://semver.org the following is an excerpt of it: 
+
+- Given a version number MAJOR.MINOR.PATCH, increment the:
+  - MAJOR version when you make incompatible API changes,
+  - MINOR version when you add functionality in a backwards compatible manner, and
+  - PATCH version when you make backwards compatible bug fixes.
+
+Example: *v1.0.1*
+
 
