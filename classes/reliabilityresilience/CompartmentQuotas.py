@@ -43,28 +43,11 @@ class CompartmentQuotas(ReviewPoint):
 
 
     def load_entity(self):
-
-        compartment_data = get_compartments_data(self.__identity, self.__tenancy.id) 
+        tenancy = get_tenancy_data(self.__identity, self.config)
+        compartment_data = get_compartments_data(self.__identity, tenancy.id) 
         debug_with_date(compartment_data)
 
-        # regions = get_regions_data(self.__identity, self.config)
-        # network_clients = []
-
-        # for region in regions:
-        #     region_config = self.config
-        #     region_config['region'] = region.region_name
-        #     # Create a network client for each region
-        #     network_clients.append(get_virtual_network_client(region_config, self.signer))
-
-        # tenancy = get_tenancy_data(self.__identity, self.config)
-
-        # # Get all compartments including root compartment
-        # compartments = get_compartments_data(self.__identity, tenancy.id)
-        # compartments.append(get_tenancy_data(self.__identity, self.config))
-
-        # self.__vcns = parallel_executor(network_clients, compartments, self.__search_compartments, len(compartments), "__vcns")
-
-         return self.__compartments
+        return self.__compartments
 
 
     def analyze_entity(self, entry):
