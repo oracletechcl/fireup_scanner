@@ -4,13 +4,26 @@
 
 - In order to collaborate:
   - Open new issue on GitHub Fireup repo
-  - Fork or branch-out the respository into your own personal account
-  - Branch out depending on what kind of issue you are dealing
-    - If this is a new review point being introduced, branch creation should follow this naming convention
-      - `feature/review_point_name`
-        - Avoid including numbers into branch name
-    - If this is a bug report, branch creation should follow this naming convention
-      - `bug/bug_report_number`
+  - Branch out the respository into your own personal branch
+    - Branch out depending on what kind of issue you are dealing      
+      - To create a new branch:
+        - Make sure you have the latest and greatest updates from main branch. To do so, execute: 
+            `git branch`
+            This should return something like this: 
+
+            ```shell
+            [opc@dalquintdevhubscl fireup]$ git branch
+              bug/doc_bug_27
+              * main
+            ```
+          - If the asterisc is on main, then do pull by executing `git pull`
+          - Then create your branch by executing `git checkout -b branch_name`
+            -  If this is a new review point being introduced, branch creation should follow this naming convention
+          - `feature/review_point_name`          
+        - If this is a bug report, branch creation should follow this naming convention
+          - `bug/bug_report_number`
+        - **At this point and this point only, you can start working on your code**
+  
     - Upon first commit, reference the issue number for tracking
     - Once feature or bug is completed and unitary testing is done, create a Pull request against main branch on fireup repository
     - Always mark your PR with the approriate labels for tracking
