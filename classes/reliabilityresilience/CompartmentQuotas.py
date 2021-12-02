@@ -11,7 +11,7 @@ from common.utils.tokenizer import *
 class CompartmentQuotas(ReviewPoint):
 
     # Class Variables
-    __vcns = []
+    __compartments = []
     __identity = None
 
     def __init__(self,
@@ -61,7 +61,7 @@ class CompartmentQuotas(ReviewPoint):
 
         # self.__vcns = parallel_executor(network_clients, compartments, self.__search_compartments, len(compartments), "__vcns")
 
-        # return self.__vcns
+         return self.__compartments
 
 
     def analyze_entity(self, entry):
@@ -69,7 +69,4 @@ class CompartmentQuotas(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
-        return dictionary
-
-    
-   
+        return dictionary   
