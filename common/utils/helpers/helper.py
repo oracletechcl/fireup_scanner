@@ -25,13 +25,8 @@ __network_load_balancer_client = None
 __load_balancers = []
 __network_load_balancers = []
 
-### Rbac.py Global Variables
+# Rbac.py Global Variables
 __policies = []
-
-### ApiKeys.py Global Variables
-# Api Key list for use with parallel_executor
-__api_keys = []
-
 
 def get_config_and_signer():
     try:

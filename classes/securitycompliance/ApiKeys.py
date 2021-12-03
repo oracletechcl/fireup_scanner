@@ -52,26 +52,38 @@ class ApiKeys(ReviewPoint):
 
 
     def load_entity(self):  
-        users_data = get_user_data(self.__identity, self.__tenancy.id)
+        users_data = get_user_data(self.__identity, self.__tenancy.id)             
+        api_key_data = None
         for user in users_data:
-            user_record = {
-                'id': user.id,
-                'defined_tags': user.defined_tags,
-                'description': user.description,
-                'email': user.email,
-                'email_verified': user.email_verified,
-                'external_identifier': user.external_identifier,
-                'identity_provider_id': user.identity_provider_id,
-                'is_mfa_activated': user.is_mfa_activated,
-                'lifecycle_state': user.lifecycle_state,
-                'time_created': user.time_created,
-                'name': user.name,
-                'api_key': []                    
-            }
-            self.__users.append(user_record)
-
-        self.__users = parallel_executor([self.__identity], self.__users, self.__search_user_for_api_keys, len(self.__users), "__api_keys")
-
+                user_record = {
+                    'id': user.id,
+                    'defined_tags': user.defined_tags,
+                    'description': user.description,
+                    'email': user.email,
+                    'email_verified': user.email_verified,
+                    'external_identifier': user.external_identifier,
+                    'identity_provider_id': user.identity_provider_id,
+                    'is_mfa_activated': user.is_mfa_activated,
+                    'lifecycle_state': user.lifecycle_state,
+                    'time_created': user.time_created,
+                    'name': user.name,
+                    'api_key': []                    
+                }
+                # load the api key data inside the empty resource api_key[] per each user
+                api_key_data = get_api_key_data(self.__identity, user.id)
+                for api_key in api_key_data:
+                    api_key_record = {
+                      'fingerprint': api_key.fingerprint,
+                      'inactive_status': api_key.inactive_status,
+                      'lifecycle_state': api_key.lifecycle_state,
+                      'user_id': api_key.user_id,
+                      'time_created': api_key.time_created,  
+                    }
+                    user_record['api_key'].append(api_key_record)                    
+                self.__users.append(user_record)                    
+                    
+                
+            
         return self.__users
         
 
@@ -93,26 +105,3 @@ class ApiKeys(ReviewPoint):
                         dictionary[entry]['mitigations'].append('Update API Key: '+str(api_key['fingerprint'])+' of user'+user['name'])
 
         return dictionary
-
-
-    def __search_user_for_api_keys(self, item):
-        indentity_client = item[0]
-        users = item[1:]
-
-        user_data = []
-
-        for user in users:
-            api_key_data = get_api_key_data(indentity_client, user['id'])
-            for api_key in api_key_data:
-                api_key_record = {
-                    'fingerprint': api_key.fingerprint,
-                    'inactive_status': api_key.inactive_status,
-                    'lifecycle_state': api_key.lifecycle_state,
-                    'user_id': api_key.user_id,
-                    'time_created': api_key.time_created,  
-                }
-                user['api_key'].append(api_key_record) 
-            
-            user_data.append(user)
-
-        return user_data
