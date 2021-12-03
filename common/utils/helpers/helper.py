@@ -17,20 +17,9 @@ __compartments = None
 
 __vcns = []
 
-<<<<<<< HEAD
-### LBaasBackends.py Global Variables
-# LBaas Clients
-__load_balancer_client = None
-__network_load_balancer_client = None
-# LBaas lists for use with parallel_executor
-__load_balancers = []
-__network_load_balancers = []
-
-=======
 
 # Rbac.py Global Variables
 __policies = []
->>>>>>> baf62f579381dd8ef7dd7f10f99eb9f155273a22
 
 def get_config_and_signer():
     try:
