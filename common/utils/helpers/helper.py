@@ -13,7 +13,10 @@ __identity_client = None
 __network_client = None
 __compartment_id = None
 __compartments = None
-__vcns = [] 
+__vcns = []
+
+
+# Rbac.py Global Variables
 __policies = []
 
 def get_config_and_signer():
