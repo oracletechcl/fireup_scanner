@@ -14,7 +14,7 @@ __network_client = None
 __compartment_id = None
 __compartments = None
 __vcns = [] 
-
+__policies = []
 
 def get_config_and_signer():
     try:

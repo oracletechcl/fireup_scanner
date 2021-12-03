@@ -54,7 +54,6 @@ class Rbac(ReviewPoint):
 
     def load_entity(self):   
         identity_clients = []
-        policy_dictionary = {}
         identity_clients.append(get_identity_client(self.config, self.signer))       
         
 
@@ -71,10 +70,12 @@ class Rbac(ReviewPoint):
                 "name": compartment.name,
                 "time_created": compartment.time_created,          
             }
-            self.__compartments.append(compartment_record)                      
-            self.__policy_dictionary.setdefault(compartment.id, []).append(self.__get_policies_per_compartment(compartment))       
-                
-           
+            self.__compartments.append(compartment_record)
+
+        policies_per_compartment = parallel_executor([self.__identity], compartments, self.__get_policies_per_compartment, len(compartments), "__policies")
+
+        for i, compartment in enumerate(compartments):
+            self.__policy_dictionary.setdefault(compartment.id, []).append(policies_per_compartment[i])
 
     def analyze_entity(self, entry):
         entry_check = ['inspect', 'read', 'update', 'manage', 'in compartment']
@@ -115,24 +116,33 @@ class Rbac(ReviewPoint):
             
         return dictionary
 
-    def __get_policies_per_compartment(self, compartment):
-        policies = []        
-        policy_data = get_policies_data(self.__identity, compartment.id)        
-        for policy in policy_data:  
-            policy_record = {
-                "compartment_id": policy.compartment_id,
-                "defined_tags": policy.defined_tags,
-                "description": policy.description,
-                "freeform_tags": policy.freeform_tags,
-                "id": policy.id,
-                "lifecycle_state": policy.lifecycle_state,
-                "name": policy.name,
-                "statements": policy.statements,
-                "time_created": policy.time_created,
-                "version_date": policy.version_date
-            }            
-            policies.append(policy_record)
-        return policies
+    def __get_policies_per_compartment(self, item):
+        identity_client = item[0]
+        compartments = item[1:]
+
+        policies_per_compartment = []
+        for compartment in compartments:
+            policies = []
+            policy_data = get_policies_data(identity_client, compartment.id)        
+            for policy in policy_data:  
+                policy_record = {
+                    "compartment_id": policy.compartment_id,
+                    "defined_tags": policy.defined_tags,
+                    "description": policy.description,
+                    "freeform_tags": policy.freeform_tags,
+                    "id": policy.id,
+                    "lifecycle_state": policy.lifecycle_state,
+                    "name": policy.name,
+                    "statements": policy.statements,
+                    "time_created": policy.time_created,
+                    "version_date": policy.version_date
+                }
+                
+                policies.append(policy_record)
+
+            policies_per_compartment.append(policies)
+
+        return policies_per_compartment
 
     def __set_compartment_finding_count(self, entry_check):
         for compartment in self.__compartments:
