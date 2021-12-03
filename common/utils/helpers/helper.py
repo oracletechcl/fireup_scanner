@@ -15,6 +15,10 @@ __compartment_id = None
 __compartments = None
 __vcns = []
 
+
+# Rbac.py Global Variables
+__policies = []
+
 def get_config_and_signer():
     try:
        config, signer = create_signer("", False, False)
