@@ -11,13 +11,16 @@ from common.utils.formatter.printer import debug_with_date
 
 __identity_client = None
 __network_client = None
-__load_balancer_client = None
-__network_load_balancer_client = None
+
 __compartment_id = None
 __compartments = None
 
-
 __vcns = []
+
+# LBaasBackends.py Global Variables
+__load_balancer_client = None
+__network_load_balancer_client = None
+
 __load_balancers = []
 __network_load_balancers = []
 
