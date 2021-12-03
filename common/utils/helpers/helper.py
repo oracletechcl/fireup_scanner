@@ -11,13 +11,26 @@ from common.utils.formatter.printer import debug_with_date
 
 __identity_client = None
 __network_client = None
+
 __compartment_id = None
 __compartments = None
+
 __vcns = []
 
+<<<<<<< HEAD
+### LBaasBackends.py Global Variables
+# LBaas Clients
+__load_balancer_client = None
+__network_load_balancer_client = None
+# LBaas lists for use with parallel_executor
+__load_balancers = []
+__network_load_balancers = []
+
+=======
 
 # Rbac.py Global Variables
 __policies = []
+>>>>>>> baf62f579381dd8ef7dd7f10f99eb9f155273a22
 
 def get_config_and_signer():
     try:
@@ -98,6 +111,19 @@ def get_notification_data_plane_client(config, signer):
         raise RuntimeError("Failed to create notification data client: {}".format(e))
     return notification_data_plane_client
 
+def get_load_balancer_client(config, signer):
+    try:
+        load_balancer_client = oci.load_balancer.LoadBalancerClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create load balancer client: {}".format(e))
+    return load_balancer_client
+
+def get_network_load_balancer_client(config, signer):
+    try:
+        network_load_balancer_client = oci.network_load_balancer.NetworkLoadBalancerClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create network load balancer client: {}".format(e))
+    return network_load_balancer_client
 
 def get_tenancy_data(identity_client, config):
     try:
@@ -197,6 +223,21 @@ def get_api_key_data(identity_client, user_id):
         raise RuntimeError("Failed to get api key data: {}".format(e))
     return api_key_data
 
+def get_load_balancer_data(load_balancer_client, compartment_id): 
+        __load_balancer_client = load_balancer_client
+
+        return oci.pagination.list_call_get_all_results(
+        __load_balancer_client.list_load_balancers,
+        compartment_id
+    ).data
+
+def get_network_load_balancer_data(network_load_balancer_client, compartment_id): 
+        __network_load_balancer_client = network_load_balancer_client
+
+        return oci.pagination.list_call_get_all_results(
+        __network_load_balancer_client.list_network_load_balancers,
+        compartment_id
+    ).data
 
 def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, storage_variable_name:str):
 

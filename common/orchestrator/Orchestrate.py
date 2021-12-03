@@ -17,6 +17,8 @@ from classes.securitycompliance.FederatedUsers import FederatedUsers
 from classes.securitycompliance.Rbac import Rbac
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
+from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
+
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
 
@@ -36,6 +38,7 @@ def main_orchestrator(config,signer, report_directory):
     
     __call_2_8(config, signer, report_directory)
     __call_2_9(config, signer, report_directory)
+    __call_2_10(config, signer, report_directory)
 
 
 
@@ -162,3 +165,16 @@ def __call_2_9(config, signer, report_directory):
     __cidrSize_dictionary = cidrSize.analyze_entity(Statics.__rp_2_9['entry'])
     generate_on_screen_report(__cidrSize_dictionary, report_directory, Statics.__rp_2_9['entry'])
     generate_mitigation_report(__cidrSize_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_9['fireup_items'])
+
+
+def __call_2_10(config, signer, report_directory):    
+    lbaasBackends = LBaaSBackends(
+    Statics.__rp_2_10['entry'],
+    Statics.__rp_2_10['area'],
+    Statics.__rp_2_10['sub_area'],
+    Statics.__rp_2_10['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_10['entry']+"_"+Statics.__rp_2_10['area']+"_"+Statics.__rp_2_10['sub_area']+"_mitigations"
+    __lbaasBackends_dictionary = lbaasBackends.analyze_entity(Statics.__rp_2_10['entry'])
+    generate_on_screen_report(__lbaasBackends_dictionary, report_directory, Statics.__rp_2_10['entry'])
+    generate_mitigation_report(__lbaasBackends_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_10['fireup_items'])
