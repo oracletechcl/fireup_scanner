@@ -50,8 +50,16 @@ def generate_mitigation_report(dictionary, report_directory, report_name, fireup
             }
            
             # Add record to summary report for CSV output
-            summary_report.append(record)          
-        
+            summary_report.append(record)
+
+        try:
+            failure_cause = summary_report[0]['Failure Causes'][0]
+        except IndexError:
+            failure_cause = ""
+            
+
+
+
         for finding in summary_report:
             for key, value in finding.items():
                 if(key == "Mitigations"):                   
@@ -59,7 +67,8 @@ def generate_mitigation_report(dictionary, report_directory, report_name, fireup
                         report_directory,
                         report_name, 
                         value,
-                        fireup_mapping)
+                        fireup_mapping, 
+                        failure_cause)
 
 def generate_csv_output(report_directory, report_name, dictionary):
     for index, recommendation in dictionary.items():        
@@ -69,7 +78,7 @@ def generate_csv_output(report_directory, report_name, dictionary):
                 recommendation['area'] + "_" + recommendation['sub_area'], 
                 recommendation['findings'])
 
-def __print_mitigation_report(report_directory, report_name,  mitigation_list, fireup_mapping):
+def __print_mitigation_report(report_directory, report_name,  mitigation_list, fireup_mapping, failure_cause):
     
         try:
             # Creating report directory
@@ -98,8 +107,11 @@ def __print_mitigation_report(report_directory, report_name,  mitigation_list, f
             # print the contents of fireup_mapping one by one in the log file
             file.write("Fireup Mapping tasks: \n")
             for x in range(len(fireup_mapping)):
-                file.write(str(x+1) + ": " + fireup_mapping[x] + "\n")
+                file.write(fireup_mapping[x] + "\n")
             file.write("\n")
+            file.write("Failure Cause: " + failure_cause + "\n\n")
+            file.write("The following are the mitigations to be applied: \n")
+            file.write("----------------------------------------------------------------------------------------------------------------------\n")
             for row in mitigation_list:
                 file.write(row + "\n")
             file.close()                       

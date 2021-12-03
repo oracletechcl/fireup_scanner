@@ -84,7 +84,7 @@ class Mfa(ReviewPoint):
             if user['is_mfa_activated'] == False and user['lifecycle_state'] == 'ACTIVE':
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(user)
-                dictionary[entry]['failure_cause'].append('Faulty User:' + user['name'])                
+                dictionary[entry]['failure_cause'].append("User does not have MFA activated")                
                 dictionary[entry]['mitigations'].append('Enable MFA on user: ' + user['name'])                                
 
         return dictionary

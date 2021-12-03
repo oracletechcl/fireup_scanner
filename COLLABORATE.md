@@ -230,6 +230,7 @@ class Mfa(ReviewPoint):
 **Important Notes**
 
 - You can add as many class variables as required. Always use the convention `__variable_name = FOO` to avoid name conflicts.
+- Do not include iteratable objects into `dictionary[entry]['failure_cause'].append()` but only say a statement that generalize the failure.
 - You can add as many imports you require on your Concrete class, however mandatory entries are the following: 
 ```python
 from common.utils.helpers.helper import *
