@@ -8,12 +8,13 @@
 #              - Per each class, implemented in the corresponding abstract class, call the object and then call analyze_entity()
 
 from classes.securitycompliance.ApiKeys import ApiKeys
+from classes.securitycompliance.CompartmentsAndPolicies import CompartmentsAndPolicies
 from classes.securitycompliance.Mfa import Mfa
 from classes.securitycompliance.Admin import Admin
 from classes.securitycompliance.AdminAbility import AdminAbility
 from classes.securitycompliance.PolicyAdmins import PolicyAdmins
 from classes.securitycompliance.FederatedUsers import FederatedUsers
-
+from classes.securitycompliance.Rbac import Rbac
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
@@ -32,7 +33,9 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_4(config, signer, report_directory)
     __call_1_5(config, signer, report_directory)
     __call_1_6(config, signer, report_directory)
-
+    __call_1_7(config, signer, report_directory)
+    __call_1_8(config, signer, report_directory)
+    
     __call_2_8(config, signer, report_directory)
     __call_2_9(config, signer, report_directory)
     __call_2_10(config, signer, report_directory)
@@ -108,9 +111,35 @@ def __call_1_6(config, signer, report_directory):
     Statics.__rp_1_6['review_point'], 
     True, [], [], [], [], config, signer)
     mitigation_report_name = Statics.__rp_1_6['entry']+"_"+Statics.__rp_1_6['area']+"_"+Statics.__rp_1_6['sub_area']+"_mitigations"
-    __apiKeys_dictionary = apiKeys.analyze_entity(Statics.__rp_1_6['entry'])
+    __apiKeys_dictionary = apiKeys.analyze_entity(Statics.__rp_1_6['entry'])    
     generate_on_screen_report(__apiKeys_dictionary, report_directory, Statics.__rp_1_6['entry'])
     generate_mitigation_report(__apiKeys_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_6['fireup_items'])
+
+
+def __call_1_7(config, signer, report_directory):
+    compPolicies = CompartmentsAndPolicies(
+    Statics.__rp_1_7['entry'], 
+    Statics.__rp_1_7['area'], 
+    Statics.__rp_1_7['sub_area'], 
+    Statics.__rp_1_7['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_7['entry']+"_"+Statics.__rp_1_7['area']+"_"+Statics.__rp_1_7['sub_area']+"_mitigations"
+    __compPolicies_dictionary = compPolicies.analyze_entity(Statics.__rp_1_7['entry'])
+    generate_on_screen_report(__compPolicies_dictionary, report_directory, Statics.__rp_1_7['entry'])
+    generate_mitigation_report(__compPolicies_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_7['fireup_items'])
+
+def __call_1_8(config, signer, report_directory):
+    Rbacobject = Rbac(
+    Statics.__rp_1_8['entry'], 
+    Statics.__rp_1_8['area'], 
+    Statics.__rp_1_8['sub_area'], 
+    Statics.__rp_1_8['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_8['entry']+"_"+Statics.__rp_1_8['area']+"_"+Statics.__rp_1_8['sub_area']+"_mitigations"
+    __Rbacobject_dictionary = Rbacobject.analyze_entity(Statics.__rp_1_8['entry'])
+    generate_on_screen_report(__Rbacobject_dictionary, report_directory, Statics.__rp_1_8['entry'])
+    generate_mitigation_report(__Rbacobject_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_8['fireup_items'])
+
 
 def __call_2_8(config, signer, report_directory):    
     separateCIDRBlocks = SeparateCIDRBlocks(
