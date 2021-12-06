@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# Mfa.py
-# Description: Implementation of class MFA based on abstract
+# LBaaSHealthChecks.py
+# Description: Implementation of class LBaaSHealthChecks based on abstract
 
 from oci.load_balancer import load_balancer_client
 from oci.load_balancer.load_balancer_client import LoadBalancerClient
