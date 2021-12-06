@@ -3,6 +3,7 @@
 # Helper.py
 # Description: Helper functions for OCI Python SDK
 
+from typing import Iterable
 import oci
 from common.utils.tokenizer.signer import *
 from concurrent import futures
@@ -14,6 +15,8 @@ __network_client = None
 
 __compartment_id = None
 __compartments = None
+
+__availability_domains = []
 
 __vcns = []
 
@@ -33,6 +36,12 @@ __policies = []
 ### ApiKeys.py Global Variables
 # Api Key list for use with parallel_executor
 __api_keys = []
+
+### CheckBackupPolicies.py Global Variables
+# Block storage lists for use with parallel_executor
+__block_storages = []
+__boot_volumes = []
+__storages_with_no_policy = []
 
 
 def get_config_and_signer():
@@ -127,6 +136,20 @@ def get_network_load_balancer_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create network load balancer client: {}".format(e))
     return network_load_balancer_client
+
+def get_block_storage_client(config, signer):
+    try:
+        block_storage_client = oci.core.BlockstorageClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create block storage client: {}".format(e))
+    return block_storage_client
+
+def get_file_storage_client(config, signer):
+    try:
+        file_storage_client = oci.file_storage.FileStorageClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create file storage client: {}".format(e))
+    return file_storage_client
 
 def get_tenancy_data(identity_client, config):
     try:
@@ -242,6 +265,21 @@ def get_network_load_balancer_data(network_load_balancer_client, compartment_id)
         compartment_id
     ).data
 
+def get_block_volume_data(block_storage_client, compartment_id): 
+
+        return oci.pagination.list_call_get_all_results(
+        block_storage_client.list_volumes,
+        compartment_id
+    ).data
+
+def get_boot_volume_data(block_storage_client, availability_domain, compartment_id): 
+
+        return oci.pagination.list_call_get_all_results(
+        block_storage_client.list_boot_volumes,
+        availability_domain,
+        compartment_id
+    ).data
+
 def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, storage_variable_name:str):
 
     values = globals()[storage_variable_name]
@@ -261,13 +299,11 @@ def parallel_executor(dependent_clients:list, independent_iterator:list, fuction
         items.append(item)
 
     with futures.ThreadPoolExecutor(threads) as executor:
-        processes = []
 
-        processes = [executor.submit(
-            fuction_to_execute,
-            item
-            ) 
-            for item in items]
+        processes = [
+            executor.submit(fuction_to_execute, item) 
+            for item in items
+        ]
 
         futures.wait(processes)
 
@@ -276,3 +312,28 @@ def parallel_executor(dependent_clients:list, independent_iterator:list, fuction
                 values.append(value)
 
     return values
+
+
+def get_availability_domains(identity_clients, tenancy_id):
+    """
+    Get all availability domains in a region using an identity client from each region
+    """
+    availability_domains = globals()["__availability_domains"]
+
+    # Return if function has already been run
+    if len(availability_domains) > 0:
+        return availability_domains
+
+    with futures.ThreadPoolExecutor(len(identity_clients)) as executor:
+        processes = [
+            executor.submit(identity_client.list_availability_domains, tenancy_id)
+            for identity_client in identity_clients
+        ]
+
+        futures.wait(processes)
+
+        for p in processes:
+            for value in p.result().data:
+                availability_domains.append(value.name)
+        
+    return availability_domains
