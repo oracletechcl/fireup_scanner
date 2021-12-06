@@ -24,24 +24,22 @@ from common.utils.reporter.report import *
 from common.utils.statics import Statics
 
 
-
 def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+Statics.__version__)
     print_report_sub_header()
-    # __call_1_1(config, signer, report_directory)
-    # __call_1_2(config, signer, report_directory)
-    # __call_1_3(config, signer, report_directory)
-    # __call_1_4(config, signer, report_directory)
-    # __call_1_5(config, signer, report_directory)
-    # __call_1_6(config, signer, report_directory)
-    # __call_1_7(config, signer, report_directory)
-    # __call_1_8(config, signer, report_directory)
+    __call_1_1(config, signer, report_directory)
+    __call_1_2(config, signer, report_directory)
+    __call_1_3(config, signer, report_directory)
+    __call_1_4(config, signer, report_directory)
+    __call_1_5(config, signer, report_directory)
+    __call_1_6(config, signer, report_directory)
+    __call_1_7(config, signer, report_directory)
+    __call_1_8(config, signer, report_directory)
     
-    # __call_2_8(config, signer, report_directory)
-    # __call_2_9(config, signer, report_directory)
-    # __call_2_10(config, signer, report_directory)
+    __call_2_8(config, signer, report_directory)
+    __call_2_9(config, signer, report_directory)
+    __call_2_10(config, signer, report_directory)
     __call_2_13(config, signer, report_directory)
-
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -69,6 +67,7 @@ def __call_1_2(config, signer, report_directory):
     generate_on_screen_report(__admin_dictionary, report_directory, Statics.__rp_1_2['entry'])
     generate_mitigation_report(__admin_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_2['fireup_items'])
 
+
 def __call_1_3(config, signer, report_directory):    
     adminAbility = AdminAbility(
     Statics.__rp_1_3['entry'], 
@@ -80,6 +79,7 @@ def __call_1_3(config, signer, report_directory):
     __adminAbility_dictionary = adminAbility.analyze_entity(Statics.__rp_1_3['entry'])
     generate_on_screen_report(__adminAbility_dictionary, report_directory, Statics.__rp_1_3['entry'])
     generate_mitigation_report(__adminAbility_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_3['fireup_items'])
+
 
 def __call_1_4(config, signer, report_directory):    
     policyAdmin = PolicyAdmins(
@@ -93,6 +93,7 @@ def __call_1_4(config, signer, report_directory):
     generate_on_screen_report(__policyAdmin_dictionary, report_directory, Statics.__rp_1_4['entry'])
     generate_mitigation_report(__policyAdmin_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_4['fireup_items'])
 
+
 def __call_1_5(config, signer, report_directory):    
     federatedUsers = FederatedUsers(
     Statics.__rp_1_5['entry'], 
@@ -104,6 +105,7 @@ def __call_1_5(config, signer, report_directory):
     __federatedUsers_dictionary = federatedUsers.analyze_entity(Statics.__rp_1_5['entry'])
     generate_on_screen_report(__federatedUsers_dictionary, report_directory, Statics.__rp_1_5['entry'])
     generate_mitigation_report(__federatedUsers_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_5['fireup_items'])
+
 
 def __call_1_6(config, signer, report_directory):
     apiKeys = ApiKeys(
@@ -129,6 +131,7 @@ def __call_1_7(config, signer, report_directory):
     __compPolicies_dictionary = compPolicies.analyze_entity(Statics.__rp_1_7['entry'])
     generate_on_screen_report(__compPolicies_dictionary, report_directory, Statics.__rp_1_7['entry'])
     generate_mitigation_report(__compPolicies_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_7['fireup_items'])
+
 
 def __call_1_8(config, signer, report_directory):
     Rbacobject = Rbac(
@@ -180,7 +183,6 @@ def __call_2_10(config, signer, report_directory):
     __lbaasBackends_dictionary = lbaasBackends.analyze_entity(Statics.__rp_2_10['entry'])
     generate_on_screen_report(__lbaasBackends_dictionary, report_directory, Statics.__rp_2_10['entry'])
     generate_mitigation_report(__lbaasBackends_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_10['fireup_items'])
-
 
 
 def __call_2_13(config, signer, report_directory):    
