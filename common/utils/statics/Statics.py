@@ -354,10 +354,10 @@ __rp_2_12 = {
 __rp_2_13 = {
     'entry': '2.13',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Understand the Health of Your Workload',
+    'review_point': 'Implement Health Checks',    
+    'success_criteria': 'If LBaaS exists, check that health checks are properly implemented and responding correctly',
+    'fireup_items': ['Fireup Task: 33 - Do you anticipate failure and have a recovery procedure in place']
 }
 
 __rp_2_14 = {
