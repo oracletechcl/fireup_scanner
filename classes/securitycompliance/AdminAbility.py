@@ -85,7 +85,7 @@ class AdminAbility(ReviewPoint):
         
         if counter == 0 : 
                     dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append('Policy \'Allow group UserAdmins to inspect groups in tenancy\' does not exists')                
+                    dictionary[entry]['failure_cause'].append('Policy \'Allow group UserAdmins to inspect groups in tenancy\' does not exists in tenancy')                
                     dictionary[entry]['mitigations'].append('Create a policy \' Allow group UserAdmins to inspect groups in tenancy\'')
         else:
                     dictionary[entry]['status'] = True

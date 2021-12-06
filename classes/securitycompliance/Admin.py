@@ -92,6 +92,6 @@ class Admin(ReviewPoint):
         if counter < 10: #criteria today is above 10 policies, will regard an IAM schema applied. 
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(policy)
-                    dictionary[entry]['failure_cause'].append('Not enough compliant policies:' + str(policy))                
+                    dictionary[entry]['failure_cause'].append("Not enough policies found that are compliant with granularity. A minimum of 10 is considered acceptable")                
                     dictionary[entry]['mitigations'].append('Increase the amount of granular policies containing \'manage family\' as verbs. Sample: '+str(good_policy_list))                                  
         return dictionary

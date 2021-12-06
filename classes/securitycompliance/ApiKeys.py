@@ -89,7 +89,7 @@ class ApiKeys(ReviewPoint):
                     if time_difference.days > 90 and total_user_count > 5:                        
                         dictionary[entry]['findings'].append(user)
                         dictionary[entry]['status'] = False
-                        dictionary[entry]['failure_cause'].append('User: '+user['name']+' has an API key that is older than 90 days')
+                        dictionary[entry]['failure_cause'].append('Users have an API key that is older than 90 days')
                         dictionary[entry]['mitigations'].append('Update API Key: '+str(api_key['fingerprint'])+' of user'+user['name'])
 
         return dictionary

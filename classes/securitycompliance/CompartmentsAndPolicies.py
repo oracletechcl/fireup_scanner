@@ -143,7 +143,7 @@ class CompartmentsAndPolicies(ReviewPoint):
                     continue
 
         for item in non_compliant_compartments_names:
-            dictionary[entry]['failure_cause'].append("Compartment name does not match the environment name convention: " + item)
+            dictionary[entry]['failure_cause'].append("Compartment name does not match the environment name convention")
             dictionary[entry]['mitigations'].append("Rename compartment: " + item + " to match the environment name convention")
 
          
@@ -154,7 +154,7 @@ class CompartmentsAndPolicies(ReviewPoint):
             if policy['compartment_id'] == self.__tenancy.id:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(policy)
-                dictionary[entry]['failure_cause'].append(policy['name']+' is attached to the root compartment')
+                dictionary[entry]['failure_cause'].append('Some policies are attached to the root compartment')
                 dictionary[entry]['mitigations'].append('Remove policy'+ policy['name'] +' from root compartment')                
         
 
