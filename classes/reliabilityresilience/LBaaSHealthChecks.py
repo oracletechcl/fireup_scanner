@@ -67,21 +67,14 @@ class LBaaSHealthChecks(ReviewPoint):
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
         self.__load_balancers = parallel_executor([x[0] for x in load_balancer_clients], compartments, self.__search_load_balancers, len(compartments), "__load_balancers")
-        
+
         self.__network_load_balancers = parallel_executor([x[0] for x in network_load_balancer_clients], compartments, self.__search_network_load_balancers, len(compartments), "__network_load_balancers")
 
-        load_balancers = self.__load_balancers + self.__network_load_balancers
+        load_balancer_healths = parallel_executor(load_balancer_clients, self.__load_balancers, self.__search_load_balancer_healths, len(self.__load_balancers), "__load_balancer_healths")
 
-        for load_balancer in load_balancers:
-            id = load_balancer['id']
-            if "networkloadbalancer" in id:
-                for network_load_balancer_client in network_load_balancer_clients:
-                    if network_load_balancer_client[1] in id or network_load_balancer_client[2] in id:
-                        self.__load_balancer_healths.append( (load_balancer, network_load_balancer_client[0].get_network_load_balancer_health(id).data) )
-            else:
-                for load_balancer_client in load_balancer_clients:
-                    if load_balancer_client[1] in id or load_balancer_client[2] in id:
-                        self.__load_balancer_healths.append( (load_balancer, load_balancer_client[0].get_load_balancer_health(id).data) )
+        network_load_balancer_healths = parallel_executor(network_load_balancer_clients, self.__network_load_balancers, self.__search_load_balancer_healths, len(self.__network_load_balancers), "__network_load_balancer_healths")
+
+        self.__load_balancer_healths = load_balancer_healths + network_load_balancer_healths
 
         return self.__load_balancer_healths
 
@@ -161,3 +154,21 @@ class LBaaSHealthChecks(ReviewPoint):
                 network_load_balancers.append(record)
 
         return network_load_balancers
+
+
+    def __search_load_balancer_healths(self, item):
+        client = item[0]
+        load_balancers = item[1:]
+
+        healths = []
+
+        for load_balancer in load_balancers:
+            id = load_balancer['id']
+            if "networkloadbalancer" in id:
+                if client[1] in id or client[2] in id:
+                    healths.append( (load_balancer, client[0].get_network_load_balancer_health(id).data) )
+            else:
+                if client[1] in id or client[2] in id:
+                    healths.append( (load_balancer, client[0].get_load_balancer_health(id).data) )
+
+        return healths        

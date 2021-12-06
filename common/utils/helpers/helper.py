@@ -17,13 +17,15 @@ __compartments = None
 
 __vcns = []
 
-### LBaasBackends.py Global Variables
+### LBaasBackends.py + LBaaSHealthChecks.py Global Variables
 # LBaas Clients
 __load_balancer_client = None
 __network_load_balancer_client = None
 # LBaas lists for use with parallel_executor
 __load_balancers = []
 __network_load_balancers = []
+__load_balancer_healths = []
+__network_load_balancer_healths = []
 
 # Rbac.py Global Variables
 __policies = []
