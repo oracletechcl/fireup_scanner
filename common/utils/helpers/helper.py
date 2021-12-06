@@ -27,8 +27,13 @@ __network_load_balancers = []
 __load_balancer_healths = []
 __network_load_balancer_healths = []
 
-# Rbac.py Global Variables
+### Rbac.py Global Variables
 __policies = []
+
+### ApiKeys.py Global Variables
+# Api Key list for use with parallel_executor
+__api_keys = []
+
 
 def get_config_and_signer():
     try:
