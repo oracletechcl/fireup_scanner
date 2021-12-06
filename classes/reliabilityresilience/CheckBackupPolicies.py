@@ -7,13 +7,12 @@ from common.utils.formatter.printer import debug
 from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
-from itertools import product
 
 
 class CheckBackupPolicies(ReviewPoint):
 
     # Class Variables
-    __block_storages = []
+    __block_volumes = []
     __boot_volumes = []
     __storages_with_no_policy = []
     __identity = None
@@ -74,11 +73,11 @@ class CheckBackupPolicies(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__block_storages = parallel_executor([x[0] for x in block_storage_clients], compartments, self.__search_block_storages, len(compartments), "__block_storages")
+        self.__block_volumes = parallel_executor([x[0] for x in block_storage_clients], compartments, self.__search_block_volumes, len(compartments), "__block_volumes")
         
         self.__boot_volumes = parallel_executor(clients_with_compartments, compartments, self.__search_boot_volumes, len(compartments), "__boot_volumes")
 
-        self.__storages_with_no_policy = parallel_executor(block_storage_clients, self.__block_storages + self.__boot_volumes, self.__search_for_policy, len(self.__block_storages), "__storages_with_no_policy")
+        self.__storages_with_no_policy = parallel_executor(block_storage_clients, self.__block_volumes + self.__boot_volumes, self.__search_for_policy, len(self.__block_volumes + self.__boot_volumes), "__storages_with_no_policy")
 
         return self.__storages_with_no_policy
 
@@ -98,36 +97,36 @@ class CheckBackupPolicies(ReviewPoint):
         return dictionary
 
     
-    def __search_block_storages(self, item):
+    def __search_block_volumes(self, item):
         block_storage_client = item[0]
         compartments = item[1:]
 
-        block_storages = []
+        block_volumes = []
 
         for compartment in compartments:
-            block_storage_data = get_block_volume_data(block_storage_client, compartment.id)
-            for block_storage in block_storage_data:
+            block_volume_data = get_block_volume_data(block_storage_client, compartment.id)
+            for block_volume in block_volume_data:
                 record = {
-                    'availability_domain': block_storage.availability_domain,
-                    'block_volume_replicas': block_storage.block_volume_replicas,
+                    'availability_domain': block_volume.availability_domain,
+                    'block_volume_replicas': block_volume.block_volume_replicas,
                     'boot_volume_replicas': '',
-                    'compartment_id': block_storage.compartment_id,
-                    'display_name': block_storage.display_name,
-                    'id': block_storage.id,
+                    'compartment_id': block_volume.compartment_id,
+                    'display_name': block_volume.display_name,
+                    'id': block_volume.id,
                     'image_id': '',
-                    'is_auto_tune_enabled': block_storage.is_auto_tune_enabled,
-                    'is_hydrated': block_storage.is_hydrated,
-                    'kms_key_id': block_storage.kms_key_id,
-                    'lifecycle_state': block_storage.lifecycle_state,
-                    'size_in_gbs': block_storage.size_in_gbs,
-                    'volume_group_id': block_storage.volume_group_id,
-                    'vpus_per_gb': block_storage.vpus_per_gb,
-                    'time_created': block_storage.time_created,
+                    'is_auto_tune_enabled': block_volume.is_auto_tune_enabled,
+                    'is_hydrated': block_volume.is_hydrated,
+                    'kms_key_id': block_volume.kms_key_id,
+                    'lifecycle_state': block_volume.lifecycle_state,
+                    'size_in_gbs': block_volume.size_in_gbs,
+                    'volume_group_id': block_volume.volume_group_id,
+                    'vpus_per_gb': block_volume.vpus_per_gb,
+                    'time_created': block_volume.time_created,
                 }
 
-                block_storages.append(record)
+                block_volumes.append(record)
 
-        return block_storages
+        return block_volumes
 
 
     def __search_boot_volumes(self, item):

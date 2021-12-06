@@ -39,7 +39,7 @@ __api_keys = []
 
 ### CheckBackupPolicies.py Global Variables
 # Block storage lists for use with parallel_executor
-__block_storages = []
+__block_volumes = []
 __boot_volumes = []
 __storages_with_no_policy = []
 
