@@ -363,10 +363,10 @@ __rp_2_13 = {
 __rp_2_14 = {
     'entry': '2.14',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Back Up Your Data',
+    'review_point': 'Backup Data in Storage Services',    
+    'success_criteria': 'Check for backup policies on block volumes and snapshots are enabled for file storage systems',
+    'fireup_items': ['Fireup Task: 34 - Have backups for failure (VMs, Block Storage, Object Storage, SSD, Database, have appropriate RPO/RTO).'],
 }
 
 __rp_2_15 = {

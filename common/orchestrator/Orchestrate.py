@@ -19,6 +19,7 @@ from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
 from classes.reliabilityresilience.LBaaSHealthChecks import LBaaSHealthChecks
+from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicies
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -40,6 +41,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_9(config, signer, report_directory)
     __call_2_10(config, signer, report_directory)
     __call_2_13(config, signer, report_directory)
+    __call_2_14(config, signer, report_directory)
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -196,3 +198,16 @@ def __call_2_13(config, signer, report_directory):
     __lbaasHealthChecks_dictionary = lbaasHealthChecks.analyze_entity(Statics.__rp_2_13['entry'])
     generate_on_screen_report(__lbaasHealthChecks_dictionary, report_directory, Statics.__rp_2_13['entry'])
     generate_mitigation_report(__lbaasHealthChecks_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_13['fireup_items'])
+
+
+def __call_2_14(config, signer, report_directory):    
+    checkBackupPolicies = CheckBackupPolicies(
+    Statics.__rp_2_14['entry'],
+    Statics.__rp_2_14['area'],
+    Statics.__rp_2_14['sub_area'],
+    Statics.__rp_2_14['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_14['entry']+"_"+Statics.__rp_2_14['area']+"_"+Statics.__rp_2_14['sub_area']+"_mitigations"
+    __checkBackupPolicies_dictionary = checkBackupPolicies.analyze_entity(Statics.__rp_2_14['entry'])
+    generate_on_screen_report(__checkBackupPolicies_dictionary, report_directory, Statics.__rp_2_14['entry'])
+    generate_mitigation_report(__checkBackupPolicies_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_14['fireup_items'])
