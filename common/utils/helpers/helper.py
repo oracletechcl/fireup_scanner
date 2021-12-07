@@ -3,7 +3,6 @@
 # Helper.py
 # Description: Helper functions for OCI Python SDK
 
-from typing import Iterable
 import oci
 from common.utils.tokenizer.signer import *
 from concurrent import futures
@@ -42,6 +41,8 @@ __api_keys = []
 __block_volumes = []
 __boot_volumes = []
 __storages_with_no_policy = []
+__file_systems = []
+__file_system_snapshots = []
 
 
 def get_config_and_signer():
@@ -278,6 +279,14 @@ def get_boot_volume_data(block_storage_client, availability_domain, compartment_
         block_storage_client.list_boot_volumes,
         availability_domain,
         compartment_id
+    ).data
+
+def get_file_system_data(file_storage_client, compartment_id, availability_domain):
+    
+    return oci.pagination.list_call_get_all_results(
+        file_storage_client.list_file_systems,
+        compartment_id,
+        availability_domain
     ).data
 
 def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, storage_variable_name:str):
