@@ -4,6 +4,7 @@
 # Description: Helper functions for OCI Python SDK
 
 import oci
+import re
 from common.utils.tokenizer.signer import *
 from concurrent import futures
 from common.utils.formatter.printer import debug_with_date
@@ -13,6 +14,11 @@ __identity_client = None
 __network_client = None
 __compartment_id = None
 __compartments = None
+__quotas_client = None
+__tenancy_id = None
+__quota_id = None
+
+
 __vcns = []
 
 def get_config_and_signer():
@@ -235,3 +241,22 @@ def get_quotas_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create quotas client: {}".format(e))
     return quotas_client
+
+def list_quota_data(quotas_client, tenancy_id): 
+        __quotas_client = quotas_client
+        __tenancy_id = tenancy_id
+
+        return oci.pagination.list_call_get_all_results(
+        __quotas_client.list_quotas,
+        __tenancy_id
+    ).data
+
+def get_quota_data(quotas_client, quota_id):
+    try:
+        quota = oci.pagination.list_call_get_all_results(
+            quotas_client.get_quota,
+            quota_id
+        ).data
+    except Exception as e:
+        raise RuntimeError("Failed to get quota data: {}".format(e))
+    return quota
