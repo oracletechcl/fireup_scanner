@@ -44,6 +44,10 @@ __storages_with_no_policy = []
 __file_systems = []
 __file_system_snapshots = []
 
+### BackupDatabases.py Global Variables
+# Database list for use with parallel_executor
+__databases = []
+
 
 def get_config_and_signer():
     try:
@@ -152,6 +156,13 @@ def get_file_storage_client(config, signer):
         raise RuntimeError("Failed to create file storage client: {}".format(e))
     return file_storage_client
 
+def get_database_client(config, signer):
+    try:
+        database_client = oci.database.DatabaseClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create database client: {}".format(e))
+    return database_client
+
 def get_tenancy_data(identity_client, config):
     try:
         tenancy = identity_client.get_tenancy(config["tenancy"]).data
@@ -173,7 +184,8 @@ def get_compartments_data(identity_client, compartment_id):
         return oci.pagination.list_call_get_all_results(
         __identity_client.list_compartments,
         __compartment_id,
-        compartment_id_in_subtree=True
+        compartment_id_in_subtree=True,
+        lifecycle_state="ACTIVE"
     ).data
     
 def get_policies_data(identity_client, compartment_id): 
@@ -287,6 +299,13 @@ def get_file_system_data(file_storage_client, compartment_id, availability_domai
         file_storage_client.list_file_systems,
         compartment_id,
         availability_domain
+    ).data
+
+def get_db_system_data(database_client, compartment_id):
+    
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_systems,
+        compartment_id,
     ).data
 
 def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, storage_variable_name:str):
