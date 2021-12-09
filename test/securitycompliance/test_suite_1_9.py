@@ -5,7 +5,7 @@
 # Dependencies: pytest
 
 from os import write
-from classes.securitycompliance.Rbac import Rbac
+from classes.securitycompliance.InstancePrincipal import InstancePrincipal
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug_with_date
 from common.utils.statics import Statics
@@ -20,7 +20,7 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = Rbac(Statics.__rp_1_9['entry'], 
+    result_dictionary = InstancePrincipal(Statics.__rp_1_9['entry'], 
     Statics.__rp_1_9['area'], 
     Statics.__rp_1_9['sub_area'], 
     Statics.__rp_1_9['review_point'], 
@@ -36,6 +36,6 @@ def test_review_point(capsys):
         debug_with_date(item)
         results_in_fault += 1    
 
-    assert results_in_fault == 161
+    assert results_in_fault == 117
 
     __test_suite_log(capsys)

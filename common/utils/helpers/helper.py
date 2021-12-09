@@ -32,6 +32,13 @@ __policies = []
 # Api Key list for use with parallel_executor
 __api_keys = []
 
+### InstancePrincipal.py
+__instancePrincipal_dictionary = []
+
+### InstancePrincipal.py
+__dyn_groups_per_compartment = []
+
+
 
 def get_config_and_signer():
     try:
@@ -125,6 +132,13 @@ def get_network_load_balancer_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create network load balancer client: {}".format(e))
     return network_load_balancer_client
+
+def get_compute_client(config, signer):
+    try:
+        compute_client = oci.core.ComputeClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create compute client: {}".format(e))
+    return compute_client
 
 def get_tenancy_data(identity_client, config):
     try:
@@ -238,6 +252,21 @@ def get_network_load_balancer_data(network_load_balancer_client, compartment_id)
         return oci.pagination.list_call_get_all_results(
         __network_load_balancer_client.list_network_load_balancers,
         compartment_id
+    ).data
+
+def get_dynamic_group_data(identity_client, compartment_id): 
+        __identity_client = identity_client
+        __compartment_id = compartment_id
+
+        return oci.pagination.list_call_get_all_results(
+        __identity_client.list_dynamic_groups,
+        __compartment_id,
+    ).data
+
+def get_instances_in_compartment_data(compute_client, compartment_ocid):
+    return oci.pagination.list_call_get_all_results(
+        compute_client.list_instances,
+        compartment_ocid
     ).data
 
 def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, storage_variable_name:str):
