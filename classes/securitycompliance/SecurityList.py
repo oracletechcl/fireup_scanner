@@ -73,7 +73,7 @@ class SecurityList(ReviewPoint):
         
         for comp in compartments:
            sec_list_data = parallel_executor(network_clients, compartments, self.__search_sec_lists, len(compartments), "__security_lists")
-           #debug_with_date("Security List Data: " + str(sec_list_data))
+           
            
 
         return self.__vcns
