@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v1.0.0'
+__version__ = 'v0.0.7'
 __lenght_print__ = "200"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -74,9 +74,10 @@ __rp_1_7 = {
 __rp_1_8 = {
     'entry': '1.8',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '', 
-    'success_criteria': '',   
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Implement Role-Based Access Control', 
+    'success_criteria': 'Check that policies are in place for compartment names for RBAC access',   
+    'fireup_items': ['Fireup Task: 12 - Do you have a designated compartment for specific categories of resources for easier management', 'Fireup Task: 13 - Do you enforce policies or rules on who can move / migrate compartments', 'Fireup Task: 14 - Do you want to set a limit on number of resrouces on each compartment?', 'Fireup Task: 15 - Are there any IAM policies written at root level?']
 }
 
 __rp_1_9 = {
@@ -84,7 +85,8 @@ __rp_1_9 = {
     'area': 'Security and Compliance',
     'sub_area': '',
     'review_point': '',  
-    'success_criteria': '',  
+    'success_criteria': '',
+    'fireup_items': [],  
 }
 
 __rp_1_10 = {
@@ -93,6 +95,7 @@ __rp_1_10 = {
     'sub_area': '',
     'review_point': '', 
     'success_criteria': '',   
+    'fireup_items': [],
 }
 
 __rp_1_11 = {
@@ -101,6 +104,7 @@ __rp_1_11 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_12 = {
@@ -109,6 +113,7 @@ __rp_1_12 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_13 = {
@@ -117,6 +122,7 @@ __rp_1_13 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_14 = {
@@ -125,6 +131,7 @@ __rp_1_14 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_15 = {
@@ -133,6 +140,7 @@ __rp_1_15 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_16 = {
@@ -141,6 +149,7 @@ __rp_1_16 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_17 = {
@@ -149,6 +158,7 @@ __rp_1_17 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_18 = {
@@ -157,6 +167,7 @@ __rp_1_18 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_19 = {
@@ -165,6 +176,7 @@ __rp_1_19 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_20 = {
@@ -173,6 +185,7 @@ __rp_1_20 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_21 = {
@@ -181,6 +194,7 @@ __rp_1_21 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_22 = {
@@ -189,6 +203,7 @@ __rp_1_22 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_23 = {
@@ -197,6 +212,7 @@ __rp_1_23 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_24 = {
@@ -205,6 +221,7 @@ __rp_1_24 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_25 = {
@@ -213,6 +230,7 @@ __rp_1_25 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_1_26 = {
@@ -221,6 +239,7 @@ __rp_1_26 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 
@@ -230,6 +249,7 @@ __rp_2_1 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_2 = {
@@ -238,6 +258,7 @@ __rp_2_2 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_3 = {
@@ -246,6 +267,7 @@ __rp_2_3 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_4 = {
@@ -254,6 +276,7 @@ __rp_2_4 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_5 = {
@@ -271,6 +294,7 @@ __rp_2_6 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_7 = {
@@ -279,6 +303,7 @@ __rp_2_7 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_8 = {
@@ -302,9 +327,10 @@ __rp_2_9 = {
 __rp_2_10 = {
     'entry': '2.10',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
+    'sub_area': 'Define Your Network and Connectivity Architecture',
+    'review_point': 'Establish Fault Tolerant and High Availability Connections for Your Public Workload',    
+    'success_criteria': 'If LBaaS Exists check that it correctly uses distribution. See if DNS is implemented and if multiple regions are in place, check that Steering Policy are in place depending on region login',
+    'fireup_items': ['Fireup Task: 31 - Are you leveraging traffic management, web firewall and load balancing for public resources?']
 }
 
 __rp_2_11 = {
@@ -313,6 +339,7 @@ __rp_2_11 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_12 = {
@@ -321,22 +348,25 @@ __rp_2_12 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_13 = {
     'entry': '2.13',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
+    'sub_area': 'Understand the Health of Your Workload',
+    'review_point': 'Implement Health Checks',    
+    'success_criteria': 'If LBaaS exists, check that health checks are properly implemented and responding correctly',
+    'fireup_items': ['Fireup Task: 33 - Do you anticipate failure and have a recovery procedure in place']
 }
 
 __rp_2_14 = {
     'entry': '2.14',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
+    'sub_area': 'Back Up Your Data',
+    'review_point': 'Backup Data in Storage Services',    
+    'success_criteria': 'Check for backup policies on block volumes and snapshots are enabled for file storage systems',
+    'fireup_items': ['Fireup Task: 34 - Have backups for failure (VMs, Block Storage, Object Storage, SSD, Database, have appropriate RPO/RTO).'],
 }
 
 __rp_2_15 = {
@@ -345,6 +375,7 @@ __rp_2_15 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_16 = {
@@ -353,6 +384,7 @@ __rp_2_16 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_2_17 = {
@@ -361,6 +393,7 @@ __rp_2_17 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_1 = {
@@ -369,6 +402,7 @@ __rp_3_1 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_2 = {
@@ -377,6 +411,7 @@ __rp_3_2 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_3 = {
@@ -385,6 +420,7 @@ __rp_3_3 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_4 = {
@@ -393,6 +429,7 @@ __rp_3_4 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_5 = {
@@ -401,6 +438,7 @@ __rp_3_5 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_6 = {
@@ -409,6 +447,7 @@ __rp_3_6 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_7 = {
@@ -417,6 +456,7 @@ __rp_3_7 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_8 = {
@@ -425,6 +465,7 @@ __rp_3_8 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_9 = {
@@ -433,6 +474,7 @@ __rp_3_9 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_10 = {
@@ -441,6 +483,7 @@ __rp_3_10 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_11 = {
@@ -449,6 +492,7 @@ __rp_3_11 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_4_1 = {
@@ -457,6 +501,7 @@ __rp_4_1 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_4_2 = {
@@ -465,6 +510,7 @@ __rp_4_2 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_4_3 = {
@@ -473,6 +519,7 @@ __rp_4_3 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_4_4 = {
@@ -481,6 +528,7 @@ __rp_4_4 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_4_5 = {
@@ -489,6 +537,7 @@ __rp_4_5 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_4_6 = {
@@ -497,6 +546,7 @@ __rp_4_6 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_4_7 = {
@@ -505,4 +555,5 @@ __rp_4_7 = {
     'sub_area': '',
     'review_point': '',    
     'success_criteria': '',
+    'fireup_items': [],
 }

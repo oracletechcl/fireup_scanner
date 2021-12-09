@@ -28,12 +28,15 @@ def print_header(msg):
 
 
 def print_report_sub_header():
-    print('Num' + " " + "{:<40}".format(str("Area")) + " {:<70}".format(str("Sub-Area")) +
+    print('Num' + "  " + " {:<40}".format(str("Area")) + " {:<70}".format(str("Sub-Area")) +
               " {:<5}".format(str("OK")) + " {:<5}".format(str("Findings")) + "   {:<50}".format(str("Review Point")), flush=True)
     print('#' * int(Statics.__lenght_print__), flush=True)
 
 def print_report_fields(finding):
-    print(finding['Recommendation #'] + " {:<40}".format(finding['Area']) + " {:<70}".format(finding['Sub Area']) + " {:<5}".format(finding['Compliant']) + " {:<5}".format(finding['Findings']) + "      {:<50}".format(finding['Review Point']), flush=True)
+    if(len(finding['Recommendation #']) == 3 ):    
+        print(finding['Recommendation #'] + "   {:<40}".format(finding['Area']) + " {:<70}".format(finding['Sub Area']) + " {:<5}".format(finding['Compliant']) + " {:<5}".format(finding['Findings']) + "      {:<50}".format(finding['Review Point']), flush=True)
+    else:
+        print(finding['Recommendation #'] + "  {:<40}".format(finding['Area']) + " {:<70}".format(finding['Sub Area']) + " {:<5}".format(finding['Compliant']) + " {:<5}".format(finding['Findings']) + "      {:<50}".format(finding['Review Point']), flush=True)
 
 
 def print_list_of_dicts(list_of_dicts):

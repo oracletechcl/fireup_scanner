@@ -4,8 +4,7 @@
 # Description: Main test suite for fireup review tool
 # Dependencies: pytest
 
-from os import write
-from classes.securitycompliance.CompartmentsAndPolicies import CompartmentsAndPolicies
+from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicies
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug_with_date
 from common.utils.statics import Statics
@@ -20,22 +19,22 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = CompartmentsAndPolicies(Statics.__rp_1_7['entry'], 
-    Statics.__rp_1_7['area'], 
-    Statics.__rp_1_7['sub_area'], 
-    Statics.__rp_1_7['review_point'], 
+    result_dictionary = CheckBackupPolicies(Statics.__rp_2_14['entry'], 
+    Statics.__rp_2_14['area'], 
+    Statics.__rp_2_14['sub_area'], 
+    Statics.__rp_2_14['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_7['entry'])   
-    
-    for item in dictionary[Statics.__rp_1_7['entry']]['findings']:
-        debug_with_date(item)
-        results_in_fault += 1    
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_14['entry'])   
 
-    assert results_in_fault == 243
+    for item in dictionary[Statics.__rp_2_14['entry']]['findings']:
+        debug_with_date(item)
+        results_in_fault += 1
+
+    assert results_in_fault == 158
 
     __test_suite_log(capsys)
