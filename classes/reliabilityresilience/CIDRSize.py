@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# Mfa.py
-# Description: Implementation of class MFA based on abstract
+# CIDRSize.py
+# Description: Implementation of class CIDRSize based on abstract
 
 from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint

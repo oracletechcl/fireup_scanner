@@ -5,7 +5,7 @@
 # Dependencies: pytest
 
 from os import write
-from classes.securitycompliance.InstancePrincipal import InstancePrincipal
+from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug_with_date
 from common.utils.statics import Statics
@@ -20,22 +20,22 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = InstancePrincipal(Statics.__rp_1_8['entry'], 
-    Statics.__rp_1_8['area'], 
-    Statics.__rp_1_8['sub_area'], 
-    Statics.__rp_1_8['review_point'], 
+    result_dictionary = CompartmentQuotas(Statics.__rp_2_5['entry'], 
+    Statics.__rp_2_5['area'], 
+    Statics.__rp_2_5['sub_area'], 
+    Statics.__rp_2_5['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_8['entry'])   
-    
-    for item in dictionary[Statics.__rp_1_8['entry']]['findings']:
-        debug_with_date(item)
-        results_in_fault += 1    
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_5['entry'])   
 
-    assert results_in_fault == 117
+    for item in dictionary[Statics.__rp_2_5['entry']]['findings']:
+        debug_with_date(item)
+        results_in_fault += 1
+
+    assert results_in_fault == 187
 
     __test_suite_log(capsys)

@@ -1,19 +1,23 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# LBaaSBackends.py
-# Description: Implementation of class LBaaSBackends based on abstract
+# LBaaSHealthChecks.py
+# Description: Implementation of class LBaaSHealthChecks based on abstract
 
+from oci.load_balancer import load_balancer_client
+from oci.load_balancer.load_balancer_client import LoadBalancerClient
 from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 
 
-class LBaaSBackends(ReviewPoint):
+class LBaaSHealthChecks(ReviewPoint):
 
     # Class Variables
     __load_balancers = []
     __network_load_balancers = []
+    __load_balancer_healths = []
     __identity = None
+    
 
     def __init__(self,
                 entry:str, 
@@ -53,8 +57,8 @@ class LBaaSBackends(ReviewPoint):
             region_config = self.config
             region_config['region'] = region.region_name
             # Create a network client for each region
-            load_balancer_clients.append(get_load_balancer_client(region_config, self.signer))
-            network_load_balancer_clients.append(get_network_load_balancer_client(region_config, self.signer))
+            load_balancer_clients.append( (get_load_balancer_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
+            network_load_balancer_clients.append( (get_network_load_balancer_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
@@ -62,11 +66,17 @@ class LBaaSBackends(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__load_balancers = parallel_executor(load_balancer_clients, compartments, self.__search_load_balancers, len(compartments), "__load_balancers")
-        
-        self.__network_load_balancers = parallel_executor(network_load_balancer_clients, compartments, self.__search_network_load_balancers, len(compartments), "__network_load_balancers")
+        self.__load_balancers = parallel_executor([x[0] for x in load_balancer_clients], compartments, self.__search_load_balancers, len(compartments), "__load_balancers")
 
-        return self.__load_balancers, self.__network_load_balancers
+        self.__network_load_balancers = parallel_executor([x[0] for x in network_load_balancer_clients], compartments, self.__search_network_load_balancers, len(compartments), "__network_load_balancers")
+
+        load_balancer_healths = parallel_executor(load_balancer_clients, self.__load_balancers, self.__search_load_balancer_healths, len(self.__load_balancers), "__load_balancer_healths")
+
+        network_load_balancer_healths = parallel_executor(network_load_balancer_clients, self.__network_load_balancers, self.__search_load_balancer_healths, len(self.__network_load_balancers), "__network_load_balancer_healths")
+
+        self.__load_balancer_healths = load_balancer_healths + network_load_balancer_healths
+
+        return self.__load_balancer_healths
 
 
     def analyze_entity(self, entry):
@@ -74,22 +84,15 @@ class LBaaSBackends(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        load_balancers = self.__load_balancers + self.__network_load_balancers
-
-        # Loop through each load balancer and look for those without backends
-        for load_balancer in load_balancers:
-            for backend_set in load_balancer['backend_sets']:
-                backend_set_dict = load_balancer['backend_sets'][backend_set].backends
-
-                if len(backend_set_dict) == 0:
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['findings'].append(load_balancer)
-                    dictionary[entry]['failure_cause'].append('Load balancers should all have attached backend sets populated with one or more backend.')
-                    if "networkloadbalancer" in load_balancer['id']:
-                        dictionary[entry]['mitigations'].append('Make sure network load balancer '+str(load_balancer['display_name'])+' has backends attached to it.')
-                    else:
-                        dictionary[entry]['mitigations'].append('Make sure load balancer '+str(load_balancer['display_name'])+' has backends attached to it.')
-                    break
+        for load_balancer, health in self.__load_balancer_healths:
+            if "OK" not in health.status:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(load_balancer)
+                dictionary[entry]['failure_cause'].append('Load balancers should all have passing health checks.')
+                if "networkloadbalancer" in load_balancer['id']:
+                    dictionary[entry]['mitigations'].append('Make sure network load balancer '+str(load_balancer['display_name'])+' has passing health checks')
+                else:
+                    dictionary[entry]['mitigations'].append('Make sure load balancer '+str(load_balancer['display_name'])+' has passing health checks')
 
         return dictionary
 
@@ -151,3 +154,21 @@ class LBaaSBackends(ReviewPoint):
                 network_load_balancers.append(record)
 
         return network_load_balancers
+
+
+    def __search_load_balancer_healths(self, item):
+        client = item[0]
+        load_balancers = item[1:]
+
+        healths = []
+
+        for load_balancer in load_balancers:
+            id = load_balancer['id']
+            if "networkloadbalancer" in id:
+                if client[1] in id or client[2] in id:
+                    healths.append( (load_balancer, client[0].get_network_load_balancer_health(id).data) )
+            else:
+                if client[1] in id or client[2] in id:
+                    healths.append( (load_balancer, client[0].get_load_balancer_health(id).data) )
+
+        return healths        

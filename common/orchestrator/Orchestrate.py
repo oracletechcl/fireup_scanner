@@ -18,16 +18,20 @@ from classes.securitycompliance.FederatedUsers import FederatedUsers
 from classes.securitycompliance.Rbac import Rbac
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
+
+from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
+from classes.reliabilityresilience.LBaaSHealthChecks import LBaaSHealthChecks
+from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicies
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
 
 
-
 def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+Statics.__version__)
     print_report_sub_header()
+
     __call_1_1(config, signer, report_directory)
     __call_1_2(config, signer, report_directory)
     __call_1_3(config, signer, report_directory)
@@ -38,9 +42,12 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_8(config, signer, report_directory)
     __call_1_9(config, signer, report_directory)
     
+    __call_2_5(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
     __call_2_9(config, signer, report_directory)
     __call_2_10(config, signer, report_directory)
+    __call_2_13(config, signer, report_directory)
+    __call_2_14(config, signer, report_directory)
 
 
 
@@ -69,6 +76,7 @@ def __call_1_2(config, signer, report_directory):
     generate_on_screen_report(__admin_dictionary, report_directory, Statics.__rp_1_2['entry'])
     generate_mitigation_report(__admin_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_2['fireup_items'])
 
+
 def __call_1_3(config, signer, report_directory):    
     adminAbility = AdminAbility(
     Statics.__rp_1_3['entry'], 
@@ -80,6 +88,7 @@ def __call_1_3(config, signer, report_directory):
     __adminAbility_dictionary = adminAbility.analyze_entity(Statics.__rp_1_3['entry'])
     generate_on_screen_report(__adminAbility_dictionary, report_directory, Statics.__rp_1_3['entry'])
     generate_mitigation_report(__adminAbility_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_3['fireup_items'])
+
 
 def __call_1_4(config, signer, report_directory):    
     policyAdmin = PolicyAdmins(
@@ -93,6 +102,7 @@ def __call_1_4(config, signer, report_directory):
     generate_on_screen_report(__policyAdmin_dictionary, report_directory, Statics.__rp_1_4['entry'])
     generate_mitigation_report(__policyAdmin_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_4['fireup_items'])
 
+
 def __call_1_5(config, signer, report_directory):    
     federatedUsers = FederatedUsers(
     Statics.__rp_1_5['entry'], 
@@ -104,6 +114,7 @@ def __call_1_5(config, signer, report_directory):
     __federatedUsers_dictionary = federatedUsers.analyze_entity(Statics.__rp_1_5['entry'])
     generate_on_screen_report(__federatedUsers_dictionary, report_directory, Statics.__rp_1_5['entry'])
     generate_mitigation_report(__federatedUsers_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_5['fireup_items'])
+
 
 def __call_1_6(config, signer, report_directory):
     apiKeys = ApiKeys(
@@ -130,29 +141,43 @@ def __call_1_7(config, signer, report_directory):
     generate_on_screen_report(__compPolicies_dictionary, report_directory, Statics.__rp_1_7['entry'])
     generate_mitigation_report(__compPolicies_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_7['fireup_items'])
 
+
 def __call_1_8(config, signer, report_directory):
     Rbacobject = Rbac(
-    Statics.__rp_1_9['entry'], 
-    Statics.__rp_1_9['area'], 
-    Statics.__rp_1_9['sub_area'], 
-    Statics.__rp_1_9['review_point'], 
+    Statics.__rp_1_8['entry'], 
+    Statics.__rp_1_8['area'], 
+    Statics.__rp_1_8['sub_area'], 
+    Statics.__rp_1_8['review_point'], 
     True, [], [], [], [], config, signer)
-    mitigation_report_name = Statics.__rp_1_9['entry']+"_"+Statics.__rp_1_9['area']+"_"+Statics.__rp_1_9['sub_area']+"_mitigations"
-    __Rbacobject_dictionary = Rbacobject.analyze_entity(Statics.__rp_1_9['entry'])
-    generate_on_screen_report(__Rbacobject_dictionary, report_directory, Statics.__rp_1_9['entry'])
-    generate_mitigation_report(__Rbacobject_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_9['fireup_items'])
+    mitigation_report_name = Statics.__rp_1_8['entry']+"_"+Statics.__rp_1_8['area']+"_"+Statics.__rp_1_8['sub_area']+"_mitigations"
+    __Rbacobject_dictionary = Rbacobject.analyze_entity(Statics.__rp_1_8['entry'])
+    generate_on_screen_report(__Rbacobject_dictionary, report_directory, Statics.__rp_1_8['entry'])
+    generate_mitigation_report(__Rbacobject_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_8['fireup_items'])
 
 def __call_1_9(config, signer, report_directory):
     instancePrincipal = InstancePrincipal(
-    Statics.__rp_1_9['entry'], 
-    Statics.__rp_1_9['area'], 
-    Statics.__rp_1_9['sub_area'], 
-    Statics.__rp_1_9['review_point'], 
+    Statics.__rp_1_8['entry'], 
+    Statics.__rp_1_8['area'], 
+    Statics.__rp_1_8['sub_area'], 
+    Statics.__rp_1_8['review_point'], 
     True, [], [], [], [], config, signer)
-    mitigation_report_name = Statics.__rp_1_9['entry']+"_"+Statics.__rp_1_9['area']+"_"+Statics.__rp_1_9['sub_area']+"_mitigations"
-    __instancePrincipal_dictionary = instancePrincipal.analyze_entity(Statics.__rp_1_9['entry'])
-    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_9['entry'])
-    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_9['fireup_items'])
+    mitigation_report_name = Statics.__rp_1_8['entry']+"_"+Statics.__rp_1_8['area']+"_"+Statics.__rp_1_8['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = instancePrincipal.analyze_entity(Statics.__rp_1_8['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_8['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_8['fireup_items'])
+
+
+def __call_2_5(config, signer, report_directory):    
+    compQuotas = CompartmentQuotas(
+    Statics.__rp_2_5['entry'],
+    Statics.__rp_2_5['area'],
+    Statics.__rp_2_5['sub_area'],
+    Statics.__rp_2_5['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_5['entry']+"_"+Statics.__rp_2_5['area']+"_"+Statics.__rp_2_5['sub_area']+"_mitigations"
+    __compQuotas_dictionary = compQuotas.analyze_entity(Statics.__rp_2_5['entry'])
+    generate_on_screen_report(__compQuotas_dictionary, report_directory, Statics.__rp_2_5['entry'])
+    generate_mitigation_report(__compQuotas_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_5['fireup_items'])
 
 
 def __call_2_8(config, signer, report_directory):    
@@ -192,3 +217,29 @@ def __call_2_10(config, signer, report_directory):
     __lbaasBackends_dictionary = lbaasBackends.analyze_entity(Statics.__rp_2_10['entry'])
     generate_on_screen_report(__lbaasBackends_dictionary, report_directory, Statics.__rp_2_10['entry'])
     generate_mitigation_report(__lbaasBackends_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_10['fireup_items'])
+
+
+def __call_2_13(config, signer, report_directory):    
+    lbaasHealthChecks = LBaaSHealthChecks(
+    Statics.__rp_2_13['entry'],
+    Statics.__rp_2_13['area'],
+    Statics.__rp_2_13['sub_area'],
+    Statics.__rp_2_13['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_13['entry']+"_"+Statics.__rp_2_13['area']+"_"+Statics.__rp_2_13['sub_area']+"_mitigations"
+    __lbaasHealthChecks_dictionary = lbaasHealthChecks.analyze_entity(Statics.__rp_2_13['entry'])
+    generate_on_screen_report(__lbaasHealthChecks_dictionary, report_directory, Statics.__rp_2_13['entry'])
+    generate_mitigation_report(__lbaasHealthChecks_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_13['fireup_items'])
+
+
+def __call_2_14(config, signer, report_directory):    
+    checkBackupPolicies = CheckBackupPolicies(
+    Statics.__rp_2_14['entry'],
+    Statics.__rp_2_14['area'],
+    Statics.__rp_2_14['sub_area'],
+    Statics.__rp_2_14['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_14['entry']+"_"+Statics.__rp_2_14['area']+"_"+Statics.__rp_2_14['sub_area']+"_mitigations"
+    __checkBackupPolicies_dictionary = checkBackupPolicies.analyze_entity(Statics.__rp_2_14['entry'])
+    generate_on_screen_report(__checkBackupPolicies_dictionary, report_directory, Statics.__rp_2_14['entry'])
+    generate_mitigation_report(__checkBackupPolicies_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_14['fireup_items'])

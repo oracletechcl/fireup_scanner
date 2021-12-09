@@ -71,7 +71,7 @@ __rp_1_7 = {
     'fireup_items': ['Fireup Task: 12 - Do you have a designated compartment for specific categories of resources for easier management', 'Fireup Task: 13 - Do you enforce policies or rules on who can move / migrate compartments', 'Fireup Task: 14 - Do you want to set a limit on number of resrouces on each compartment?', 'Fireup Task: 15 - Are there any IAM policies written at root level?']
 }
 
-__rp_1_9 = {
+__rp_1_8 = {
     'entry': '1.8',
     'area': 'Security and Compliance',
     'sub_area': 'Isolate Resources and Control Access',
@@ -80,7 +80,7 @@ __rp_1_9 = {
     'fireup_items': ['Fireup Task: 12 - Do you have a designated compartment for specific categories of resources for easier management', 'Fireup Task: 13 - Do you enforce policies or rules on who can move / migrate compartments', 'Fireup Task: 14 - Do you want to set a limit on number of resrouces on each compartment?', 'Fireup Task: 15 - Are there any IAM policies written at root level?']
 }
 
-__rp_1_9 = {
+__rp_1_8 = {
     'entry': '1.9',
     'area': 'Security and Compliance',
     'sub_area': 'Isolate Resources and Control Access',
@@ -282,10 +282,10 @@ __rp_2_4 = {
 __rp_2_5 = {
     'entry': '2.5',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Service Limits',
+    'review_point': 'Set Compartment Quotas',    
+    'success_criteria': 'Check if Quotas are enabled',
+    'fireup_items': ['Fireup Task: 14 - Do you want to set a limit on number of resources on each compartment?']
 }
 
 __rp_2_6 = {
@@ -354,19 +354,19 @@ __rp_2_12 = {
 __rp_2_13 = {
     'entry': '2.13',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Understand the Health of Your Workload',
+    'review_point': 'Implement Health Checks',    
+    'success_criteria': 'If LBaaS exists, check that health checks are properly implemented and responding correctly',
+    'fireup_items': ['Fireup Task: 33 - Do you anticipate failure and have a recovery procedure in place']
 }
 
 __rp_2_14 = {
     'entry': '2.14',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Back Up Your Data',
+    'review_point': 'Backup Data in Storage Services',    
+    'success_criteria': 'Check for backup policies on block volumes and snapshots are enabled for file storage systems',
+    'fireup_items': ['Fireup Task: 34 - Have backups for failure (VMs, Block Storage, Object Storage, SSD, Database, have appropriate RPO/RTO).'],
 }
 
 __rp_2_15 = {
