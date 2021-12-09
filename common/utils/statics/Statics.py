@@ -262,7 +262,7 @@ __rp_2_5 = {
     'sub_area': 'Manage Your Service Limits',
     'review_point': 'Set Compartment Quotas',    
     'success_criteria': 'Check if Quotas are enabled',
-    'fireup_items': ['Fireup Task: 14 - Do you want to set a limit on number of resrouces on each compartment?']
+    'fireup_items': ['Fireup Task: 14 - Do you want to set a limit on number of resources on each compartment?']
 }
 
 __rp_2_6 = {

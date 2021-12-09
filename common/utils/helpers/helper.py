@@ -4,7 +4,6 @@
 # Description: Helper functions for OCI Python SDK
 
 import oci
-import re
 from common.utils.tokenizer.signer import *
 from concurrent import futures
 from common.utils.formatter.printer import debug_with_date
@@ -14,9 +13,6 @@ __identity_client = None
 __network_client = None
 __compartment_id = None
 __compartments = None
-__quotas_client = None
-__tenancy_id = None
-__quota_id = None
 
 
 __vcns = []
@@ -114,6 +110,12 @@ def get_regions_data(identity_client, config):
     except Exception as e:
         raise RuntimeError("Failed to get regions: {}".format(e))
     return regions
+
+def get_home_region(identity_client, config):
+    regions = get_regions_data(identity_client, config)
+    for region in regions:
+        if region.is_home_region:
+            return region
 
 def get_compartments_data(identity_client, compartment_id): 
         __identity_client = identity_client
@@ -250,13 +252,3 @@ def list_quota_data(quotas_client, tenancy_id):
         __quotas_client.list_quotas,
         __tenancy_id
     ).data
-
-def get_quota_data(quotas_client, quota_id):
-    try:
-        quota = oci.pagination.list_call_get_all_results(
-            quotas_client.get_quota,
-            quota_id
-        ).data
-    except Exception as e:
-        raise RuntimeError("Failed to get quota data: {}".format(e))
-    return quota

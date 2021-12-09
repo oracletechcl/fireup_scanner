@@ -1,12 +1,12 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# Mfa.py
-# Description: Implementation of class MFA based on abstract
+# CompartmentQuotas.py
+# Description: Implementation of class CompartmentQuotas based on abstract
 
-#from OCIBE.fireup_review_2_5.fireup.common.utils.formatter.printer import debug
 from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
+import re
 
 
 class CompartmentQuotas(ReviewPoint):
@@ -43,13 +43,20 @@ class CompartmentQuotas(ReviewPoint):
         # From here on is the code is not implemented on abstract class
         self.config = config
         self.signer = signer
-        self.__identity = get_identity_client(self.config, self.signer)
-        self.__quotas = get_quotas_client(self.config, self.signer)
 
+        self.__identity = get_identity_client(self.config, self.signer)
+        
 
     def load_entity(self):
         tenancy = get_tenancy_data(self.__identity, self.config)
         compartments = get_compartments_data(self.__identity, tenancy.id)
+        
+        home_region = get_home_region(self.__identity, self.config)
+
+        region_config = self.config
+        region_config['region'] = home_region.region_name
+
+        self.__quotas = get_quotas_client(region_config, self.signer)
 
         for compartment in compartments:
             compartment_record = {
@@ -99,6 +106,7 @@ class CompartmentQuotas(ReviewPoint):
             quota_compart = self.__quotas.get_quota(quotas_data['id'])
     
             for statement in quota_compart.data.statements:
+                # Regex that recieves compartment name from quota
                 compart_name = re.search('(?<=in compartment )(\w+)', statement).group(1)
                 for compartments in self.__compartments:
                     if compartments['name'] == compart_name:
@@ -109,19 +117,17 @@ class CompartmentQuotas(ReviewPoint):
                         continue
         non_compliant_compartments_names = list(set(all_compartment_names) - set(compliant_compartment_names))
 
-        if len(compliant_compartment_names) < 5:
-             dictionary[entry]['status'] = False
         
         for compartments in self.__compartments:
             for compart in non_compliant_compartments_names:
+                dictionary[entry]['status'] = False
                 if compartments['name'] == compart:
                     dictionary[entry]['findings'].append(compartments)
+                    dictionary[entry]['failure_cause'].append("Compartment name does not have the quota set: " + compart)
+                    dictionary[entry]['mitigations'].append("Please set the quota for : " + compart + " to make it complaint")  
                     break
                 else:
                     continue
 
-        for item in non_compliant_compartments_names:
-            dictionary[entry]['failure_cause'].append("Compartment name does not have the quota set: " + item)
-            dictionary[entry]['mitigations'].append("Please set the quota for : " + item + " to make it complaint")           
 
         return dictionary 
