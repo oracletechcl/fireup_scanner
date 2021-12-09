@@ -18,6 +18,7 @@ __compartments = None
 __availability_domains = []
 
 __vcns = []
+__security_lists = []
 
 ### LBaasBackends.py + LBaaSHealthChecks.py Global Variables
 # LBaas Clients
@@ -296,6 +297,12 @@ def get_instances_in_compartment_data(compute_client, compartment_ocid):
         compute_client.list_instances,
         compartment_ocid
     ).data
+
+def get_security_list_data(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_security_lists,
+        compartment_id
+    ).data        
     
 def get_block_volume_data(block_storage_client, compartment_id): 
 

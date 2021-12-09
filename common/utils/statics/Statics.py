@@ -92,10 +92,10 @@ __rp_1_9 = {
 __rp_1_10 = {
     'entry': '1.10',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '', 
-    'success_criteria': '',   
-    'fireup_items': [],
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Isolate Resources at the Network Layer', 
+    'success_criteria': 'Check for Security List implementation without open permissions and/or NSGs for microsegmentation',   
+    'fireup_items': ['Fireup Task: 18 - Do you have a proper security list, route tables, VCN, firewalls in place?', 'Fireup Task: 39 - Are you aware of some of the fixed service limits such as security lists/subnet?'],
 }
 
 __rp_1_11 = {
