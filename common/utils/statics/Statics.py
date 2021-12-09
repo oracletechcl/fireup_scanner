@@ -282,10 +282,10 @@ __rp_2_4 = {
 __rp_2_5 = {
     'entry': '2.5',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Service Limits',
+    'review_point': 'Set Compartment Quotas',    
+    'success_criteria': 'Check if Quotas are enabled',
+    'fireup_items': ['Fireup Task: 14 - Do you want to set a limit on number of resources on each compartment?']
 }
 
 __rp_2_6 = {

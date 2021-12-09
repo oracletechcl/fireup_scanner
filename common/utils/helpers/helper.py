@@ -166,6 +166,12 @@ def get_regions_data(identity_client, config):
         raise RuntimeError("Failed to get regions: {}".format(e))
     return regions
 
+def get_home_region(identity_client, config):
+    regions = get_regions_data(identity_client, config)
+    for region in regions:
+        if region.is_home_region:
+            return region
+
 def get_compartments_data(identity_client, compartment_id): 
         __identity_client = identity_client
         __compartment_id = compartment_id
@@ -322,6 +328,21 @@ def parallel_executor(dependent_clients:list, independent_iterator:list, fuction
 
     return values
 
+def get_quotas_client(config, signer):
+    try:
+        quotas_client = oci.limits.QuotasClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create quotas client: {}".format(e))
+    return quotas_client
+
+def list_quota_data(quotas_client, tenancy_id): 
+        __quotas_client = quotas_client
+        __tenancy_id = tenancy_id
+
+        return oci.pagination.list_call_get_all_results(
+        __quotas_client.list_quotas,
+        __tenancy_id
+    ).data
 
 def get_availability_domains(identity_clients, tenancy_id):
     """
