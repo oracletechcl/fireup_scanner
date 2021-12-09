@@ -36,6 +36,10 @@ __policies = []
 # Api Key list for use with parallel_executor
 __api_keys = []
 
+### InstancePrincipal.py
+__instancePrincipal_dictionary = []
+__dyn_groups_per_compartment = []
+
 ### CheckBackupPolicies.py Global Variables
 # Block storage lists for use with parallel_executor
 __block_volumes = []
@@ -138,6 +142,12 @@ def get_network_load_balancer_client(config, signer):
         raise RuntimeError("Failed to create network load balancer client: {}".format(e))
     return network_load_balancer_client
 
+def get_compute_client(config, signer):
+    try:
+        compute_client = oci.core.ComputeClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create compute client: {}".format(e))
+    return compute_client
 def get_block_storage_client(config, signer):
     try:
         block_storage_client = oci.core.BlockstorageClient(config, signer=signer)
@@ -272,6 +282,21 @@ def get_network_load_balancer_data(network_load_balancer_client, compartment_id)
         compartment_id
     ).data
 
+def get_dynamic_group_data(identity_client, compartment_id): 
+        __identity_client = identity_client
+        __compartment_id = compartment_id
+
+        return oci.pagination.list_call_get_all_results(
+        __identity_client.list_dynamic_groups,
+        __compartment_id,
+    ).data
+
+def get_instances_in_compartment_data(compute_client, compartment_ocid):
+    return oci.pagination.list_call_get_all_results(
+        compute_client.list_instances,
+        compartment_ocid
+    ).data
+    
 def get_block_volume_data(block_storage_client, compartment_id): 
 
         return oci.pagination.list_call_get_all_results(

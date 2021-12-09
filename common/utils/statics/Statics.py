@@ -83,10 +83,10 @@ __rp_1_8 = {
 __rp_1_9 = {
     'entry': '1.9',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',  
-    'success_criteria': '',
-    'fireup_items': [],  
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Secure Cross-Resource Access', 
+    'success_criteria': 'Check if instance principals are defined for users',   
+    'fireup_items': ['Fireup Task: 17 - Are you using instance principals instead of storing credentials'],
 }
 
 __rp_1_10 = {
