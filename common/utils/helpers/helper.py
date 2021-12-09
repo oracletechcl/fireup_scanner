@@ -46,7 +46,9 @@ __file_system_snapshots = []
 
 ### BackupDatabases.py Global Variables
 # Database list for use with parallel_executor
-__databases = []
+__db_systems = []
+__autonomous_databases = []
+__mysql_databases = []
 
 
 def get_config_and_signer():
@@ -162,6 +164,13 @@ def get_database_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create database client: {}".format(e))
     return database_client
+
+def get_mysql_client(config, signer):
+    try:
+        mysql_client = oci.mysql.DbSystemClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create MySQL client: {}".format(e))
+    return mysql_client
 
 def get_tenancy_data(identity_client, config):
     try:
@@ -305,6 +314,13 @@ def get_db_system_data(database_client, compartment_id):
     
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_systems,
+        compartment_id,
+    ).data
+
+def get_auto_db_data(database_client, compartment_id):
+    
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_autonomous_databases,
         compartment_id,
     ).data
 

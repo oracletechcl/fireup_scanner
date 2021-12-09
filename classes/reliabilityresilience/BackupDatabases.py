@@ -11,7 +11,9 @@ from common.utils.tokenizer import *
 class BackupDatabases(ReviewPoint):
 
     # Class Variables
-    __databases = []
+    __db_systems = []
+    __autonomous_databases = []
+    __mysql_databases = []
     __identity = None
 
     def __init__(self,
@@ -45,19 +47,22 @@ class BackupDatabases(ReviewPoint):
     def load_entity(self):
 
         regions = get_regions_data(self.__identity, self.config)
-        database_clients = []
+        db_system_clients = []
+        mysql_clients = []
 
-        # for region in regions:
-        #     region_config = self.config
-        #     region_config['region'] = region.region_name
-        #     # Create a network client for each region
-        #     database_clients.append(get_database_client(region_config, self.signer))
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            # Create a network client for each region
+            db_system_clients.append(get_database_client(region_config, self.signer))
+            mysql_clients.append(get_mysql_client(region_config, self.signer))
 
         # TEMPORARY REPLACEMENT OF ABOVE FOR SINGLE REGION
-        region_config = self.config
-        region_config['region'] = 'us-ashburn-1'
+        # region_config = self.config
+        # region_config['region'] = 'us-ashburn-1'
 
-        database_clients.append(get_database_client(region_config, self.signer))
+        # database_clients.append( (get_database_client(region_config, self.signer), get_mysql_client(region_config, self.signer)) )
+        
         # TEMPORARY REPLACEMENT OF ABOVE FOR SINGLE REGION
 
         tenancy = get_tenancy_data(self.__identity, self.config)
@@ -66,16 +71,44 @@ class BackupDatabases(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        debug_with_date('start')
-        self.__databases = parallel_executor(database_clients, compartments, self.__search_compartments, len(compartments), "__databases")
-        debug_with_date('stop')
-        return self.__databases
+        args_list = [
+            [db_system_clients, compartments, self.__search_compartments, len(compartments), "__db_systems"],
+            [db_system_clients, compartments, self.__search_auto_dbs, len(compartments), "__autonomous_databases"],
+            [mysql_clients, compartments, self.__search_mysql_dbs, len(compartments), "__mysql_databases"],
+        ]
+
+        with futures.ThreadPoolExecutor(16) as executor:
+            debug_with_date('start1')
+
+            values = []
+
+            processes = [
+                executor.submit(parallel_executor, *args)
+                for args in args_list
+            ]
+
+            for p in processes:
+                for value in p.result():
+                    values.append(value)
+
+            debug_with_date(values)
+
+            futures.wait(processes)
+            
+            # debug_with_date('start1')
+            # self.__db_systems = parallel_executor(db_system_clients, compartments, self.__search_compartments, len(compartments), "__db_systems")
+            # debug_with_date('start2')
+            # self.__autonomous_databases = parallel_executor(db_system_clients, compartments, self.__search_auto_dbs, len(compartments), "__autonomous_databases")
+            # debug_with_date('start3')
+            # self.__mysql_databases = parallel_executor(mysql_clients, compartments, self.__search_mysql_dbs, len(compartments), "__mysql_databases")
+            debug_with_date('stop')
+        return self.__db_systems
 
 
     def analyze_entity(self, entry):
         self.load_entity()
 
-        debug_with_date(self.__databases)
+        # debug_with_date(self.__db_systems)
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
@@ -91,13 +124,55 @@ class BackupDatabases(ReviewPoint):
         databases = []
 
         for compartment in compartments:
-            database_data = get_db_system_data(database_client, compartment.id)
+            # All, 1 region: ~40 sec
+            # All, 18 regions: ~50-60 seconds
+            database_data = get_db_system_data(database_client, compartment.id) # 18 regions: 34 seconds
+            # auto_database_data = get_auto_db_data(database_client, compartment.id)
+            # mysql_data = get_db_system_data(mysql_client, compartment.id)
                 
-            for database in database_data:
-                record = {
+            # for database in database_data:
+            #     record = {
                     
-                }
+            #     }
 
-                databases.append(database)
+            #     # databases.append(database)
+
+            # for auto_database in auto_database_data:
+            #     record = {
+                    
+            #     }
+
+            #     # databases.append(auto_database)
+            
+            # for mysql_database in mysql_data:
+            #     record = {
+                    
+            #     }
+
+            #     # databases.append(mysql_database)
+
+        return databases
+
+
+    def __search_auto_dbs(self, item):
+        database_client = item[0]
+        compartments = item[1:]
+
+        databases = []
+
+        for compartment in compartments:
+            auto_database_data = get_auto_db_data(database_client, compartment.id)
+
+        return databases
+
+
+    def __search_mysql_dbs(self, item):
+        mysql_client = item[0]
+        compartments = item[1:]
+
+        databases = []
+
+        for compartment in compartments:
+            mysql_data = get_db_system_data(mysql_client, compartment.id)
 
         return databases
