@@ -38,8 +38,6 @@ __api_keys = []
 
 ### InstancePrincipal.py
 __instancePrincipal_dictionary = []
-
-### InstancePrincipal.py
 __dyn_groups_per_compartment = []
 
 ### CheckBackupPolicies.py Global Variables

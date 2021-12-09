@@ -14,4 +14,4 @@ fi
 
 source "venv/bin/activate"
 
-python3 -m pytest --durations=0 -vv
+python3 -m pytest --durations=0 -v
