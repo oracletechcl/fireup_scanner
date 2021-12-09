@@ -5,9 +5,6 @@
 | 2.8          | [SeparateCIDRBlocks.py](SeparateCIDRBlocks.py)          |
 | 2.9          | [CIDRSize.py](CIDRSize.py)                              |
 | 2.10         | [LBaaSBackends.py](LBaaSBackends.py)                    |
-<<<<<<< HEAD
-=======
 | 2.13         | [LBaaSHealthChecks.py](LBaaSHealthChecks.py)
 | 2.14         | [CheckBackupPolicies.py](CheckBackupPolicies.py)
->>>>>>> 9a7961bb6e3064ba14a4b8190f9b2f2cf2060657
 

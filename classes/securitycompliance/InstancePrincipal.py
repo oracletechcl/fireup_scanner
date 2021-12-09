@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# Mfa.py
-# Description: Implementation of class MFA based on abstract
+# InstancePrincipal.py
+# Description: Implementation of class InstancePrincipal based on abstract
 
 
 
@@ -119,19 +119,14 @@ class InstancePrincipal(ReviewPoint):
         dictionary = ReviewPoint.get_benchmark_dictionary(self)     
 
 
-        # Get all instance principals
         for dyngrp in self.__dyn_groups_per_tenancy:                        
              if instance_principal_entry_check[0] in dyngrp['matching_rule'] or instance_principal_entry_check[1] in dyngrp['matching_rule']:
                  self.__instance_principals_from_dyn_grp.append(dyngrp)
 
         instance_principal_compartment_list, instance_ocid_list = self.__get_matching_rule_entry_from_dyn_statement()
-
-        #debug_with_date(instance_principal_compartment_list)         
-        #debug_with_date(instance_ocid_list)  
-
         for compartment in instance_principal_compartment_list:
            instance_data = get_instances_in_compartment_data(self.__compute_client, compartment)
-           #debug_with_date(instance_data) 
+
            for instance in instance_data:
                instance_record = {
                    'id': instance.id,
@@ -176,81 +171,10 @@ class InstancePrincipal(ReviewPoint):
         
     def __get_instance_ocid_from_match_rule(self, matching_rule):
         instance_ocid = re.search(r'\w+\.instance\.oc1..*[\']', 
-         matching_rule).group(0).replace("'","").split(",")[0].split("}")[0]    
-         #TODO Implement get the compartment of a particular instance, based on it's OCID. Then return the compartment and link the function   
-
-        #debug_with_date(instance_ocid)               
+         matching_rule).group(0).replace("'","").split(",")[0].split("}")[0]            
         
         return instance_ocid
 
 
     def __remove_repeated_from_list(self, list_to_clean):
         return list(dict.fromkeys(list_to_clean))
-        
-
-        
-
-    
-
-
-
-        
-
-        
-
-        
-
-
-
-        
-        
-        
-        
-       
-         
-
-        
-
- 
-        
-        
-        
-        
-
-        
-        
-
-
-        
-
-
-
-       
-       
-        
-
-
-    def __get_compartment_from_statement(self, statement):               
-        partition_string = "compartment "
-        returned_value = ""
-        predicate_string = " "
-        try:
-            if partition_string in statement:
-                returned_value = statement.partition(partition_string)[2]
-                returned_value = returned_value.split(predicate_string)[0]
-                return returned_value
-            else:
-                return returned_value
-        except Exception as e:
-            pass
-
-        # try:
-        #     separator = 'compartment'
-        #     returned_value = ""
-        #     if separator in statement:
-        #         returned_value = statement.split(separator)[1]                
-        #         return returned_value
-        #     else:
-        #         return returned_value
-        # except Exception as e:
-        #     pass
