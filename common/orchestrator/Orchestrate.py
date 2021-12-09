@@ -144,27 +144,27 @@ def __call_1_7(config, signer, report_directory):
 
 def __call_1_8(config, signer, report_directory):
     Rbacobject = Rbac(
-    Statics.__rp_1_8['entry'], 
-    Statics.__rp_1_8['area'], 
-    Statics.__rp_1_8['sub_area'], 
-    Statics.__rp_1_8['review_point'], 
+    Statics.__rp_1_9['entry'], 
+    Statics.__rp_1_9['area'], 
+    Statics.__rp_1_9['sub_area'], 
+    Statics.__rp_1_9['review_point'], 
     True, [], [], [], [], config, signer)
-    mitigation_report_name = Statics.__rp_1_8['entry']+"_"+Statics.__rp_1_8['area']+"_"+Statics.__rp_1_8['sub_area']+"_mitigations"
-    __Rbacobject_dictionary = Rbacobject.analyze_entity(Statics.__rp_1_8['entry'])
-    generate_on_screen_report(__Rbacobject_dictionary, report_directory, Statics.__rp_1_8['entry'])
-    generate_mitigation_report(__Rbacobject_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_8['fireup_items'])
+    mitigation_report_name = Statics.__rp_1_9['entry']+"_"+Statics.__rp_1_9['area']+"_"+Statics.__rp_1_9['sub_area']+"_mitigations"
+    __Rbacobject_dictionary = Rbacobject.analyze_entity(Statics.__rp_1_9['entry'])
+    generate_on_screen_report(__Rbacobject_dictionary, report_directory, Statics.__rp_1_9['entry'])
+    generate_mitigation_report(__Rbacobject_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_9['fireup_items'])
 
 def __call_1_9(config, signer, report_directory):
     instancePrincipal = InstancePrincipal(
-    Statics.__rp_1_8['entry'], 
-    Statics.__rp_1_8['area'], 
-    Statics.__rp_1_8['sub_area'], 
-    Statics.__rp_1_8['review_point'], 
+    Statics.__rp_1_9['entry'], 
+    Statics.__rp_1_9['area'], 
+    Statics.__rp_1_9['sub_area'], 
+    Statics.__rp_1_9['review_point'], 
     True, [], [], [], [], config, signer)
-    mitigation_report_name = Statics.__rp_1_8['entry']+"_"+Statics.__rp_1_8['area']+"_"+Statics.__rp_1_8['sub_area']+"_mitigations"
-    __instancePrincipal_dictionary = instancePrincipal.analyze_entity(Statics.__rp_1_8['entry'])
-    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_8['entry'])
-    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_8['fireup_items'])
+    mitigation_report_name = Statics.__rp_1_9['entry']+"_"+Statics.__rp_1_9['area']+"_"+Statics.__rp_1_9['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = instancePrincipal.analyze_entity(Statics.__rp_1_9['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_9['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_9['fireup_items'])
 
 
 def __call_2_5(config, signer, report_directory):    
