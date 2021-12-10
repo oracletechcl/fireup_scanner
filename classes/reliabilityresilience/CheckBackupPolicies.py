@@ -84,11 +84,13 @@ class CheckBackupPolicies(ReviewPoint):
 
         self.__boot_volumes = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_boot_volumes, len(compartments), "__boot_volumes")
 
-        self.__storages_with_no_policy = parallel_executor(block_storage_clients, self.__block_volumes + self.__boot_volumes, self.__search_for_policy, len(self.__block_volumes + self.__boot_volumes), "__storages_with_no_policy")
+        if len(self.__block_volumes + self.__boot_volumes) > 0:
+            self.__storages_with_no_policy = parallel_executor(block_storage_clients, self.__block_volumes + self.__boot_volumes, self.__search_for_policy, len(self.__block_volumes + self.__boot_volumes), "__storages_with_no_policy")
 
         self.__file_systems = parallel_executor(file_system_clients_with_ADs, compartments, self.__search_file_systems, len(compartments), "__file_systems")
 
-        self.__file_system_snapshots = parallel_executor(file_storage_clients, self.__file_systems, self.__search_for_snapshots, len(self.__file_systems), "__file_system_snapshots")
+        if len(self.__file_systems) > 0:
+            self.__file_system_snapshots = parallel_executor(file_storage_clients, self.__file_systems, self.__search_for_snapshots, len(self.__file_systems), "__file_system_snapshots")
 
         return self.__storages_with_no_policy, self.__file_system_snapshots 
 

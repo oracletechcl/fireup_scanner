@@ -70,9 +70,11 @@ class LBaaSHealthChecks(ReviewPoint):
 
         self.__network_load_balancers = parallel_executor([x[0] for x in network_load_balancer_clients], compartments, self.__search_network_load_balancers, len(compartments), "__network_load_balancers")
 
-        load_balancer_healths = parallel_executor(load_balancer_clients, self.__load_balancers, self.__search_load_balancer_healths, len(self.__load_balancers), "__load_balancer_healths")
+        if len(self.__load_balancers) > 0:
+            load_balancer_healths = parallel_executor(load_balancer_clients, self.__load_balancers, self.__search_load_balancer_healths, len(self.__load_balancers), "__load_balancer_healths")
 
-        network_load_balancer_healths = parallel_executor(network_load_balancer_clients, self.__network_load_balancers, self.__search_load_balancer_healths, len(self.__network_load_balancers), "__network_load_balancer_healths")
+        if len(self.__network_load_balancers) > 0:
+            network_load_balancer_healths = parallel_executor(network_load_balancer_clients, self.__network_load_balancers, self.__search_load_balancer_healths, len(self.__network_load_balancers), "__network_load_balancer_healths")
 
         self.__load_balancer_healths = load_balancer_healths + network_load_balancer_healths
 
