@@ -49,10 +49,10 @@ def print_mitigation_report_fields(finding):
     print(finding['Recommendation #'] + "\t" + finding['Area'] + "\t" + finding['Sub Area'] + "\t" + finding['Compliant'] + "\t" + finding['Findings'] + "\t\t" + finding['Review Point']+ "\t\t" + print_list_of_dicts(finding['Failure Causes']) +"\t\t"+print_list_of_dicts(finding['Mitigations']))
 
 def debug_with_date(msg):
-    print(get_current_date()+" DEBUG: "+str(msg))
+    print(turn_yellow(get_current_date()+" DEBUG: "+str(msg)), flush=True)
 
 def debug(msg):
-    print("DEBUG: " + str(msg), flush=True)
+    print(turn_yellow("DEBUG: " + str(msg)), flush=True)
 
 
 def dye_return(msg):
