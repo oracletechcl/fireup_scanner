@@ -14,15 +14,12 @@ from collections import defaultdict
 
 class SecurityList(ReviewPoint):
 
-    # Class Variables    
-    __compartments = []    
+    # Class Variables
     __identity = None
-    __tenancy = None
-    __vcns = []
     __non_compliant_sec_list = []
-    __compliant_sec_list = []
 
-    
+
+
 
     def __init__(self,
                 entry:str, 
@@ -50,10 +47,9 @@ class SecurityList(ReviewPoint):
        self.config = config
        self.signer = signer
        self.__identity = get_identity_client(self.config, self.signer)
-       self.__tenancy = get_tenancy_data(self.__identity, self.config)
 
 
-    def load_entity(self):   
+    def load_entity(self):
         regions = get_regions_data(self.__identity, self.config)
         network_clients = []
 
@@ -69,19 +65,13 @@ class SecurityList(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__vcns = parallel_executor(network_clients, compartments, self.__search_compartments, len(compartments), "__vcns")
-        
-        for comp in compartments:
-           sec_list_data = parallel_executor(network_clients, compartments, self.__search_sec_lists, len(compartments), "__security_lists")
-           
-           
+        self.__non_compliant_sec_list = parallel_executor(network_clients, compartments, self.__search_sec_lists, len(compartments), "__security_lists")
 
-        return self.__vcns
+        return self.__non_compliant_sec_list
 
 
     def analyze_entity(self, entry):
     
-        
         self.load_entity()    
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
@@ -89,11 +79,12 @@ class SecurityList(ReviewPoint):
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('Security List contains a wide open \"0.0.0.0/0\" CIDR in ingress rule that needs to be closed')
             for sec_list in self.__non_compliant_sec_list:
-                dictionary[entry]['findings'].append(sec_list)
-                dictionary[entry]['mitigations'].append('Make sure to reduce access and set more granular permissions into: '+sec_list['display_name'])                      
+                if sec_list not in dictionary[entry]['findings']:
+                    dictionary[entry]['findings'].append(sec_list)
+                    dictionary[entry]['mitigations'].append('Make sure to reduce access and set more granular permissions into: '+sec_list['display_name'])
+                                       
         return dictionary
 
-    
 
     def __search_sec_lists(self, item):
         network_client = item[0]
@@ -115,44 +106,12 @@ class SecurityList(ReviewPoint):
                     'time_created': sec_list.time_created,
                     'vcn_id': sec_list.vcn_id,
                 }
-
-                sec_lists.append(sec_list_record)
                     
-                for sl in sec_lists:
-                    for ingress in sl['ingress_security_rules']:
-                        if ingress.source == '0.0.0.0/0':
-                            self.__non_compliant_sec_list.append(sl)
-                            break;
-                        else:
-                            continue;
+                for ingress in sec_list_record['ingress_security_rules']:
+                    if ingress.source == '0.0.0.0/0':
+                        sec_lists.append(sec_list_record)
+                    break
+                else:
+                    continue
+
         return sec_lists
-
-    def __search_compartments(self, item):
-        network_client = item[0]
-        compartments = item[1:]
-
-        vcns = []
-
-        for compartment in compartments:
-            vcn_data = get_vcn_data(network_client, compartment.id)
-            for vcn in vcn_data:
-                record = {
-                    'cidr_blocks': vcn.cidr_blocks,
-                    'compartment_id': vcn.compartment_id,
-                    'default_dhcp_options_id': vcn.default_dhcp_options_id,
-                    'default_route_table_id': vcn.default_route_table_id,
-                    'default_security_list_id': vcn.default_security_list_id,
-                    'defined_tags': vcn.defined_tags,
-                    'display_name': vcn.display_name,
-                    'dns_label': vcn.dns_label,
-                    'freeform_tags': vcn.freeform_tags,
-                    'id': vcn.id,
-                    'ipv6_cidr_blocks': vcn.ipv6_cidr_blocks,
-                    'lifecycle_state': vcn.lifecycle_state,
-                    'time_created': vcn.time_created,
-                    'vcn_domain_name': vcn.vcn_domain_name,
-                }
-
-                vcns.append(record)
-
-        return vcns
