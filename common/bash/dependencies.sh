@@ -22,3 +22,4 @@ pip3 install setuptools
 pip3 install twine
 pip3 install oci
 pip3 install ipaddr
+pip3 install termcolor
