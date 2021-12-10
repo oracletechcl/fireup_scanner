@@ -11,3 +11,4 @@
 | 1.7          | [CompartmentsAndPolicies.py](CompartmentsAndPolicies.py)|
 | 1.8          | [Rbac.py](Rbac.py)                                      |
 | 1.9          | [InstancePrincipal.py](InstancePrincipal.py)            |
+| 1.10         | [SecurityList.py](SecurityList.py)                      |
