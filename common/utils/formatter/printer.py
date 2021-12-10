@@ -5,7 +5,6 @@
 
 from datetime import datetime
 from common.utils.statics import Statics
-import sys
 from termcolor import colored
 
 
