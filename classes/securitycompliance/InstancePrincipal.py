@@ -18,9 +18,10 @@ class InstancePrincipal(ReviewPoint):
     __compartments = []
     __identity = None
     __tenancy = None
-    __compute_client = None
     __dyn_groups = []
     __instance_principals_from_dyn_grp = []
+    __instances_with_instance_principals = []
+    __instance_principal_compartment_list = []
 
     def __init__(self,
                 entry:str, 
@@ -48,7 +49,6 @@ class InstancePrincipal(ReviewPoint):
         self.config = config
         self.signer = signer
         self.__identity = get_identity_client(self.config, self.signer)
-        self.__compute_client = get_compute_client(self.config, self.signer)
         self.__tenancy = get_tenancy_data(self.__identity, self.config)
 
 
@@ -87,34 +87,32 @@ class InstancePrincipal(ReviewPoint):
             }
             self.__compartments.append(compartment_record)
 
-
-    def analyze_entity(self, entry):
-        instance_principal_entry_check = ['instance.id', 'compartment.oc1']
-        instance_principal_compartment_list  = []
-        instance_ocid_list = []
-        instance_entry = []
-        self.load_entity()
-        dictionary = ReviewPoint.get_benchmark_dictionary(self)     
-
-
+        
         for dyngrp in self.__dyn_groups:
-            if instance_principal_entry_check[0] in dyngrp['matching_rule'] or instance_principal_entry_check[1] in dyngrp['matching_rule']:
+            if 'compartment.id' in dyngrp['matching_rule']:
                 self.__instance_principals_from_dyn_grp.append(dyngrp)
 
-        instance_principal_compartment_list, instance_ocid_list = self.__get_matching_rule_entry_from_dyn_statement()
-        for compartment in instance_principal_compartment_list:
-           instance_data = get_instances_in_compartment_data(self.__compute_client, compartment)
+        self.__instance_principal_compartment_list = self.__get_matching_rule_entry_from_dyn_statement()
 
-           for instance in instance_data:
-                instance_record = {
-                    'id': instance.id,
-                    'display_name': instance.display_name,
-                    'compartment_id': instance.compartment_id,
-                }
-                instance_entry.append(instance_record)
+        regions = get_regions_data(self.__identity, self.config)
+        compute_clients = []
         
-        for compartment in instance_principal_compartment_list:
-            for instance in instance_entry:
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            # Create a network client for each region
+            compute_clients.append(get_compute_client(region_config, self.signer))
+
+        if len(self.__instance_principal_compartment_list) > 0:
+            self.__instances_with_instance_principals = parallel_executor(compute_clients, self.__instance_principal_compartment_list, self.__search_for_computes, len(self.__instance_principal_compartment_list), "__instances_with_instance_principals")
+    
+
+    def analyze_entity(self, entry):
+        self.load_entity()
+        dictionary = ReviewPoint.get_benchmark_dictionary(self)
+
+        for compartment in self.__instance_principal_compartment_list:
+            for instance in self.__instances_with_instance_principals:
                 if compartment == instance['compartment_id']:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(instance)
@@ -122,34 +120,42 @@ class InstancePrincipal(ReviewPoint):
         
         dictionary[entry]['failure_cause'].append('Instances detected without proper Instance Principal Configuration')
 
-
         return dictionary
 
 
     def __get_matching_rule_entry_from_dyn_statement(self):
         instance_principal_compartment = []
-        instance_ocid_list = []
         for dyngrp in self.__instance_principals_from_dyn_grp:
             if "compartment.id" in dyngrp['matching_rule']:
-                instance_principal_compartment.append(self.__get_compartment_ocid_from_match_rule(dyngrp['matching_rule']))
-            elif "instance.oc1" in dyngrp['matching_rule']:
-                instance_ocid_list.append(self.__get_instance_ocid_from_match_rule(dyngrp['matching_rule']))
-        return self.__remove_repeated_from_list(instance_principal_compartment), self.__remove_repeated_from_list(instance_ocid_list)
+                compartment_ocid = re.search(r"\w+\.compartment\.oc1..*[\']", dyngrp['matching_rule'])
 
+                if compartment_ocid:
+                    compartment_ocid = compartment_ocid.group(0).split(',')[0]
+                    compartment_ocid = re.sub(r"[\'{}]", "", compartment_ocid)
+                    instance_principal_compartment.append(compartment_ocid)
 
-    def __get_compartment_ocid_from_match_rule(self, matching_rule):
-        compartment_ocid = re.search(r'\w+\.compartment\.oc1..*[\']', 
-            matching_rule).group(0).replace("'","").split(",")[0].split("}")[0]
-        
-        return compartment_ocid
-
-
-    def __get_instance_ocid_from_match_rule(self, matching_rule):
-        instance_ocid = re.search(r'\w+\.instance\.oc1..*[\']', 
-            matching_rule).group(0).replace("'","").split(",")[0].split("}")[0]
-        
-        return instance_ocid
-
+        return self.__remove_repeated_from_list(instance_principal_compartment)
 
     def __remove_repeated_from_list(self, list_to_clean):
         return list(dict.fromkeys(list_to_clean))
+
+
+    def __search_for_computes(self, item):
+        compute_client = item[0]
+        compartments = item[1:]
+
+        instances = []
+
+        for compartment in compartments:
+            instance_data = get_instances_in_compartment_data(compute_client, compartment)
+
+            for instance in instance_data:
+                instance_record = {
+                    'id': instance.id,
+                    'display_name': instance.display_name,
+                    'compartment_id': instance.compartment_id,
+                }
+
+                instances.append(instance_record)
+
+        return instances

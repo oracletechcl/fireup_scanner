@@ -49,6 +49,10 @@ __storages_with_no_policy = []
 __file_systems = []
 __file_system_snapshots = []
 
+### InstancePrincipal.py Global Variables
+# Instance list for use with parallel_executor
+__instances_with_instance_principals = []
+
 
 def get_config_and_signer():
     try:
