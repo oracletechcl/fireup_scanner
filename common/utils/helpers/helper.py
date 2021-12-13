@@ -51,7 +51,7 @@ __file_system_snapshots = []
 
 ### InstancePrincipal.py Global Variables
 # Instance list for use with parallel_executor
-__instances_with_instance_principals = []
+__instances = []
 
 
 def get_config_and_signer():
@@ -194,7 +194,8 @@ def get_compartments_data(identity_client, compartment_id):
         return oci.pagination.list_call_get_all_results(
         __identity_client.list_compartments,
         __compartment_id,
-        compartment_id_in_subtree=True
+        compartment_id_in_subtree=True,
+        lifecycle_state="ACTIVE"
     ).data
     
 def get_policies_data(identity_client, compartment_id): 
@@ -296,10 +297,10 @@ def get_dynamic_group_data(identity_client, compartment_id):
         __compartment_id,
     ).data
 
-def get_instances_in_compartment_data(compute_client, compartment_ocid):
+def get_instance_data(compute_client, compartment_ocid):
     return oci.pagination.list_call_get_all_results(
         compute_client.list_instances,
-        compartment_ocid
+        compartment_ocid,
     ).data
 
 def get_security_list_data(network_client, compartment_id):

@@ -19,9 +19,11 @@ class InstancePrincipal(ReviewPoint):
     __identity = None
     __tenancy = None
     __dyn_groups = []
-    __instance_principals_from_dyn_grp = []
-    __instances_with_instance_principals = []
-    __instance_principal_compartment_list = []
+    __instances = []
+    __dyn_groups_with_inst_prins = []
+    __inst_prin_compartment_id_list = []
+    __inst_prin_instance_id_list = []
+
 
     def __init__(self,
                 entry:str, 
@@ -69,30 +71,12 @@ class InstancePrincipal(ReviewPoint):
                 'time_created': group.time_created,
             }
             self.__dyn_groups.append(dyn_group_record)
-
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)        
-        for compartment in compartments:
-            compartment_record = {
-                'compartment_id': compartment.id,
-                'defined_tags': compartment.defined_tags,
-                'description': compartment.description,
-                'freeform_tags': compartment.freeform_tags,
-                'id': compartment.id,
-                'inactive_status': compartment.inactive_status,
-                'is_accessible': compartment.is_accessible,
-                'lifecycle_state': compartment.lifecycle_state,
-                'name': compartment.name,
-                'time_created': compartment.time_created,
-                'statements': ""
-            }
-            self.__compartments.append(compartment_record)
-
         
         for dyngrp in self.__dyn_groups:
-            if 'compartment.id' in dyngrp['matching_rule']:
-                self.__instance_principals_from_dyn_grp.append(dyngrp)
+            if 'compartment.id' in dyngrp['matching_rule'] or 'instance.id' in dyngrp['matching_rule']:
+                self.__dyn_groups_with_inst_prins.append(dyngrp)
 
-        self.__instance_principal_compartment_list = self.__get_matching_rule_entry_from_dyn_statement()
+        self.__inst_prin_compartment_id_list, self.__inst_prin_instance_id_list = self.__get_matching_rule_entry_from_dyn_statement()
 
         regions = get_regions_data(self.__identity, self.config)
         compute_clients = []
@@ -103,38 +87,50 @@ class InstancePrincipal(ReviewPoint):
             # Create a network client for each region
             compute_clients.append(get_compute_client(region_config, self.signer))
 
-        if len(self.__instance_principal_compartment_list) > 0:
-            self.__instances_with_instance_principals = parallel_executor(compute_clients, self.__instance_principal_compartment_list, self.__search_for_computes, len(self.__instance_principal_compartment_list), "__instances_with_instance_principals")
+        # Get all compartments including root compartment
+        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        compartments.append(get_tenancy_data(self.__identity, self.config))
+
+        self.__instances = parallel_executor(compute_clients, compartments, self.__search_for_computes, len(compartments), "__instances")
     
 
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        for compartment in self.__instance_principal_compartment_list:
-            for instance in self.__instances_with_instance_principals:
-                if compartment == instance['compartment_id']:
+        for instance in self.__instances:
+            if instance['id'] not in self.__inst_prin_instance_id_list:
+                if instance['compartment_id'] not in self.__inst_prin_compartment_id_list:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(instance)
-                    dictionary[entry]['mitigations'].append('Create an instance principal that contains instance: '+ instance['display_name'] + ' in compartment: ' + compartment+ " as target")
-        
-        dictionary[entry]['failure_cause'].append('Instances detected without proper Instance Principal Configuration')
+                    dictionary[entry]['mitigations'].append('Create an instance principal that contains instance: '+ instance['display_name'] + ' in compartment: ' + instance['compartment_id'] + " as target")
+                    dictionary[entry]['failure_cause'].append('Instances detected without proper Instance Principal Configuration')
 
         return dictionary
 
 
     def __get_matching_rule_entry_from_dyn_statement(self):
-        instance_principal_compartment = []
-        for dyngrp in self.__instance_principals_from_dyn_grp:
+        instance_principal_compartments = []
+        instance_principal_instances = []
+        for dyngrp in self.__dyn_groups_with_inst_prins:
             if "compartment.id" in dyngrp['matching_rule']:
                 compartment_ocid = re.search(r"\w+\.compartment\.oc1..*[\']", dyngrp['matching_rule'])
 
                 if compartment_ocid:
                     compartment_ocid = compartment_ocid.group(0).split(',')[0]
                     compartment_ocid = re.sub(r"[\'{}]", "", compartment_ocid)
-                    instance_principal_compartment.append(compartment_ocid)
+                    instance_principal_compartments.append(compartment_ocid)
+            
+            if "instance.id" in dyngrp['matching_rule']:
+                instance_ocid = re.search(r"\w+\.instance\.oc1..*[\']", dyngrp['matching_rule'])
 
-        return self.__remove_repeated_from_list(instance_principal_compartment)
+                if instance_ocid:
+                    instance_ocid = instance_ocid.group(0).split(',')[0]
+                    instance_ocid = re.sub(r"[\'{}]", "", instance_ocid)
+                    instance_principal_instances.append(instance_ocid)
+
+        return self.__remove_repeated_from_list(instance_principal_compartments), self.__remove_repeated_from_list(instance_principal_instances)
+
 
     def __remove_repeated_from_list(self, list_to_clean):
         return list(dict.fromkeys(list_to_clean))
@@ -147,15 +143,16 @@ class InstancePrincipal(ReviewPoint):
         instances = []
 
         for compartment in compartments:
-            instance_data = get_instances_in_compartment_data(compute_client, compartment)
+            instance_data = get_instance_data(compute_client, compartment.id)
 
             for instance in instance_data:
-                instance_record = {
-                    'id': instance.id,
-                    'display_name': instance.display_name,
-                    'compartment_id': instance.compartment_id,
-                }
+                if instance.lifecycle_state != "TERMINATED":
+                    instance_record = {
+                        'id': instance.id,
+                        'display_name': instance.display_name,
+                        'compartment_id': instance.compartment_id,
+                    }
 
-                instances.append(instance_record)
+                    instances.append(instance_record)
 
         return instances
