@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v0.0.7'
+__version__ = 'v0.0.8'
 __lenght_print__ = "200"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -119,10 +119,10 @@ __rp_1_12 = {
 __rp_1_13 = {
     'entry': '1.13',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure Your Databases',
+    'review_point': 'Restrict Permissions for Deleting Database Resources',    
+    'success_criteria': '"Check that there is a DBA group and the following policies are applied: Allow group DBUsers to manage db-systems in tenancy where request.permission!=\'DB_SYSTEM_DELETE\' Allow group DBUsers to manage databases in tenancy where request.permission!=\'DATABASE_DELETE\' Allow group DBUsers to manage db-homes in tenancy where request.permission!=\'DB_HOME_DELETE\'',
+    'fireup_items': ['Fireup Task: 21 - Who has permissions to delete resources?'],
 }
 
 __rp_1_14 = {
