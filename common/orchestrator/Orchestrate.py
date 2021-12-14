@@ -17,6 +17,7 @@ from classes.securitycompliance.AdminAbility import AdminAbility
 from classes.securitycompliance.PolicyAdmins import PolicyAdmins
 from classes.securitycompliance.FederatedUsers import FederatedUsers
 from classes.securitycompliance.DBSystemControl import DBSystemControl
+from classes.securitycompliance.DBPermissions import DBPermissions
 from classes.securitycompliance.Rbac import Rbac
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
@@ -25,6 +26,7 @@ from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
 from classes.reliabilityresilience.LBaaSHealthChecks import LBaaSHealthChecks
 from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicies
+from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -45,6 +47,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_9(config, signer, report_directory)
     __call_1_10(config, signer, report_directory)
     __call_1_12(config, signer, report_directory)
+    __call_1_13(config, signer, report_directory)
     
     __call_2_5(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
@@ -52,6 +55,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_10(config, signer, report_directory)
     __call_2_13(config, signer, report_directory)
     __call_2_14(config, signer, report_directory)
+    __call_2_15(config, signer, report_directory)
 
 
 
@@ -182,6 +186,18 @@ def __call_1_10(config, signer, report_directory):
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_10['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_10['fireup_items'])
 
+def __call_1_13(config, signer, report_directory):
+    dbPerms = DBPermissions(
+    Statics.__rp_1_13['entry'], 
+    Statics.__rp_1_13['area'], 
+    Statics.__rp_1_13['sub_area'], 
+    Statics.__rp_1_13['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_13['entry']+"_"+Statics.__rp_1_13['area']+"_"+Statics.__rp_1_13['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = dbPerms.analyze_entity(Statics.__rp_1_13['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_13['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_13['fireup_items'])
+
 
 def __call_1_12(config, signer, report_directory):
     dbSystem = DBSystemControl(
@@ -272,3 +288,16 @@ def __call_2_14(config, signer, report_directory):
     __checkBackupPolicies_dictionary = checkBackupPolicies.analyze_entity(Statics.__rp_2_14['entry'])
     generate_on_screen_report(__checkBackupPolicies_dictionary, report_directory, Statics.__rp_2_14['entry'])
     generate_mitigation_report(__checkBackupPolicies_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_14['fireup_items'])
+
+
+def __call_2_15(config, signer, report_directory):    
+    backupDatabases = BackupDatabases(
+    Statics.__rp_2_15['entry'],
+    Statics.__rp_2_15['area'],
+    Statics.__rp_2_15['sub_area'],
+    Statics.__rp_2_15['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_15['entry']+"_"+Statics.__rp_2_15['area']+"_"+Statics.__rp_2_15['sub_area']+"_mitigations"
+    __backupDatabases_dictionary = backupDatabases.analyze_entity(Statics.__rp_2_15['entry'])
+    generate_on_screen_report(__backupDatabases_dictionary, report_directory, Statics.__rp_2_15['entry'])
+    generate_mitigation_report(__backupDatabases_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_15['fireup_items'])

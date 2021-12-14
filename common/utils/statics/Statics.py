@@ -119,10 +119,10 @@ __rp_1_12 = {
 __rp_1_13 = {
     'entry': '1.13',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure Your Databases',
+    'review_point': 'Restrict Permissions for Deleting Database Resources',    
+    'success_criteria': '"Check that there is a DBA group and the following policies are applied: Allow group DBUsers to manage db-systems in tenancy where request.permission!=\'DB_SYSTEM_DELETE\' Allow group DBUsers to manage databases in tenancy where request.permission!=\'DATABASE_DELETE\' Allow group DBUsers to manage db-homes in tenancy where request.permission!=\'DB_HOME_DELETE\'',
+    'fireup_items': ['Fireup Task: 21 - Who has permissions to delete resources?'],
 }
 
 __rp_1_14 = {
@@ -372,10 +372,10 @@ __rp_2_14 = {
 __rp_2_15 = {
     'entry': '2.15',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Back Up Your Data',
+    'review_point': 'Backup Data in Your Databases',    
+    'success_criteria': 'If Oracle DB or MySQL is in place, check if backup strategy is in place',
+    'fireup_items': ['Fireup Task: 34 - Have backups for failure (VMs, Block Storage, Object Storage, SSD, Database, have appropriate RPO/RTO).'],
 }
 
 __rp_2_16 = {

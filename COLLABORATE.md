@@ -533,6 +533,11 @@ If you have any question, slack or email denny.alquinta@oracle.com before doing 
 
 - Do keep an updated photo on your profile
 - Commit only complete and correctly tested code. You may save your code on your staging environment and test it out properly. Restrict commits only to functional and finished developments.
+- If you do unintentionally commit/push to main, this is not the end of the world as you can run the following to undo your commit(s):
+```shell 
+git revert {COMMIT HASH}
+```
+The mentioned commit hash can be retrieved from running `git log` and finding the hash next to first commit that should haven't been commited to main. Running the revert command on a commit will undo all changes in that commit and any that came after it.
 - Use imperative statements on commit messages: Good examples are: *Fixed a bug that…, Changed implementation of, …. Removed faulty method that caused…, Refactored code to perform…*   Bad examples are: *If applied, this commit will fix…, If applied this will remove,*
 - Be as descriptive as possible on commit message: Commit messages are intended to describe what you did on your feature/hotfix. Commit message such as *“commit01, testcommit, etc”* are a very bad practice as this won't allow to do a proper release of your code. 
 - For long commit messages use embedded Text Editor on VSCode. This is done by raising the commit without the –m modifier so that Default text editor is prompted on commit screen
