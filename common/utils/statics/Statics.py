@@ -372,10 +372,10 @@ __rp_2_14 = {
 __rp_2_15 = {
     'entry': '2.15',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Back Up Your Data',
+    'review_point': 'Backup Data in Your Databases',    
+    'success_criteria': 'If Oracle DB or MySQL is in place, check if backup strategy is in place',
+    'fireup_items': ['Fireup Task: 34 - Have backups for failure (VMs, Block Storage, Object Storage, SSD, Database, have appropriate RPO/RTO).'],
 }
 
 __rp_2_16 = {

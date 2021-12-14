@@ -49,9 +49,18 @@ __storages_with_no_policy = []
 __file_systems = []
 __file_system_snapshots = []
 
+
+### BackupDatabases.py Global Variables
+# Database list for use with parallel_executor
+__db_system_homes = []
+__mysql_databases = []
+__db_system_backups = []
+__mysql_backups = []
+
 ### InstancePrincipal.py Global Variables
 # Instance list for use with parallel_executor
 __instances = []
+
 
 
 def get_config_and_signer():
@@ -166,6 +175,27 @@ def get_file_storage_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create file storage client: {}".format(e))
     return file_storage_client
+
+def get_database_client(config, signer):
+    try:
+        database_client = oci.database.DatabaseClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create database client: {}".format(e))
+    return database_client
+
+def get_mysql_client(config, signer):
+    try:
+        mysql_client = oci.mysql.DbSystemClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create MySQL client: {}".format(e))
+    return mysql_client
+
+def get_mysql_backup_client(config, signer):
+    try:
+        mysql_backup_client = oci.mysql.DbBackupsClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create MySQL Backup client: {}".format(e))
+    return mysql_backup_client
 
 def get_tenancy_data(identity_client, config):
     try:
@@ -330,6 +360,41 @@ def get_file_system_data(file_storage_client, compartment_id, availability_domai
         file_storage_client.list_file_systems,
         compartment_id,
         availability_domain
+    ).data
+
+def get_db_system_data(database_client, compartment_id):
+    
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_systems,
+        compartment_id,
+    ).data
+
+def get_db_system_home_data(database_client, compartment_id):
+    
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_homes,
+        compartment_id,
+    ).data
+
+def get_auto_db_data(database_client, compartment_id):
+    
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_autonomous_databases,
+        compartment_id,
+    ).data
+
+def get_db_system_backup_data(database_client, compartment_id):
+
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_backups,
+        compartment_id=compartment_id,
+    ).data
+
+def get_mysql_backup_data(mysql_client, compartment_id):
+    
+    return oci.pagination.list_call_get_all_results(
+        mysql_client.list_backups,
+        compartment_id,
     ).data
 
 def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, storage_variable_name:str):
