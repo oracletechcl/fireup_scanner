@@ -59,17 +59,7 @@ class BackupDatabases(ReviewPoint):
             region_config['region'] = region.region_name
             db_system_clients.append( (get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
             mysql_clients.append(get_mysql_client(region_config, self.signer))
-            mysql_backup_clients.append(get_mysql_backup_client(region_config, self.signer))
-
-        # TEMPORARY REPLACEMENT OF ABOVE FOR SINGLE REGION
-        # region_config = self.config
-        # region_config['region'] = 'us-ashburn-1'
-        # # uk-london-1, us-ashburn-1, sa-santiago-1
-
-        # db_system_clients.append(get_database_client(region_config, self.signer))
-        # mysql_clients.append(get_mysql_client(region_config, self.signer))
-        # mysql_backup_clients.append(get_mysql_backup_client(region_config, self.signer))
-        # TEMPORARY REPLACEMENT OF ABOVE FOR SINGLE REGION
+            mysql_backup_clients.append( (get_mysql_backup_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
@@ -77,21 +67,9 @@ class BackupDatabases(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        args_list = [
-            [[x[0] for x in db_system_clients], compartments, self.__search_compartments, len(compartments), "__db_system_homes"],
-            [mysql_clients, compartments, self.__search_mysql_dbs, len(compartments), "__mysql_databases"],
-        ]
+        self.__db_system_homes = parallel_executor([x[0] for x in db_system_clients], compartments, self.__search_compartments, len(compartments), "__db_system_homes")
 
-        with futures.ThreadPoolExecutor(16) as executor:
-            processes = [
-                executor.submit(parallel_executor, *args)
-                for args in args_list
-            ]
-
-            futures.wait(processes)
-
-            self.__db_system_homes = processes[0].result()
-            self.__mysql_databases = processes[1].result()
+        self.__mysql_databases = parallel_executor(mysql_clients, compartments, self.__search_mysql_dbs, len(compartments), "__mysql_databases")
 
         if len(self.__mysql_databases) > 0:
             self.__mysql_backups = parallel_executor(mysql_backup_clients, self.__mysql_databases, self.__search_mysql_backups, len(self.__mysql_databases), "__mysql_backups")
@@ -147,6 +125,8 @@ class BackupDatabases(ReviewPoint):
                         'endpoints': '',
                         'heat_wave_cluster': '',
                         'mysql_version': '',
+                        'availability_domain': '',
+                        'is_highly_available': '',
                     }
 
                     db_homes.append(record)
@@ -197,16 +177,19 @@ class BackupDatabases(ReviewPoint):
 
         # Checks that each MySQL DB has a backup within the last `backup_window` days
         for mysql_database in mysql_databases:
-            backup_data = get_mysql_backup_data(mysql_backup_client, mysql_database['compartment_id'])
-            for backup in backup_data:
-                if "DELETED" not in backup.lifecycle_state:
-                    if mysql_database['id'] == backup.db_system_id:
-                        latest = backup.time_created.replace(tzinfo=None)
-                        if datetime.now() < (latest + timedelta(days=backup_window)):
-                            break
-            else:
-                backups.append(mysql_database)
-        
+            region = mysql_database['id'].split('.')[3]
+            if mysql_backup_client[1] in region or mysql_backup_client[2] in region:
+                backup_data = get_mysql_backup_data(mysql_backup_client[0], mysql_database['compartment_id'])
+                # Checks if there are any backups, the newest isn't deleted, 
+                # matches to the current db, and is within the last `backup_window` days
+                if len(backup_data) > 0: 
+                    if ("DELETED" not in backup_data[0].lifecycle_state and
+                    mysql_database['id'] == backup_data[0].db_system_id and
+                    datetime.now() > (backup_data[0].time_created.replace(tzinfo=None) + timedelta(days=backup_window))):
+                        backups.append(mysql_database)
+                else:
+                    backups.append(mysql_database)
+
         return backups
 
 
