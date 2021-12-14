@@ -12,9 +12,10 @@ from common.utils.tokenizer import *
 class BackupDatabases(ReviewPoint):
 
     # Class Variables
-    __db_systems = []
+    __db_system_homes = []
     __mysql_databases = []
 
+    __db_system_backups = []
     __mysql_backups = []
     __identity = None
 
@@ -53,19 +54,21 @@ class BackupDatabases(ReviewPoint):
         mysql_clients = []
         mysql_backup_clients = []
 
-        # for region in regions:
-        #     region_config = self.config
-        #     region_config['region'] = region.region_name
-        #     db_system_clients.append(get_database_client(region_config, self.signer))
-        #     mysql_clients.append(get_mysql_client(region_config, self.signer))
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            db_system_clients.append( (get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
+            mysql_clients.append(get_mysql_client(region_config, self.signer))
+            mysql_backup_clients.append(get_mysql_backup_client(region_config, self.signer))
 
         # TEMPORARY REPLACEMENT OF ABOVE FOR SINGLE REGION
-        region_config = self.config
-        region_config['region'] = 'uk-london-1'
+        # region_config = self.config
+        # region_config['region'] = 'us-ashburn-1'
+        # # uk-london-1, us-ashburn-1, sa-santiago-1
 
-        db_system_clients.append(get_database_client(region_config, self.signer))
-        mysql_clients.append(get_mysql_client(region_config, self.signer))
-        mysql_backup_clients.append(get_mysql_backup_client(region_config, self.signer))
+        # db_system_clients.append(get_database_client(region_config, self.signer))
+        # mysql_clients.append(get_mysql_client(region_config, self.signer))
+        # mysql_backup_clients.append(get_mysql_backup_client(region_config, self.signer))
         # TEMPORARY REPLACEMENT OF ABOVE FOR SINGLE REGION
 
         tenancy = get_tenancy_data(self.__identity, self.config)
@@ -75,12 +78,11 @@ class BackupDatabases(ReviewPoint):
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
         args_list = [
-            [db_system_clients, compartments, self.__search_compartments, len(compartments), "__db_systems"],
+            [[x[0] for x in db_system_clients], compartments, self.__search_compartments, len(compartments), "__db_system_homes"],
             [mysql_clients, compartments, self.__search_mysql_dbs, len(compartments), "__mysql_databases"],
         ]
 
         with futures.ThreadPoolExecutor(16) as executor:
-            debug_with_date('start')
             processes = [
                 executor.submit(parallel_executor, *args)
                 for args in args_list
@@ -88,21 +90,34 @@ class BackupDatabases(ReviewPoint):
 
             futures.wait(processes)
 
-            self.__db_systems = processes[0].result()
-            self.__autonomous_databases = processes[1].result()
-            self.__mysql_databases = processes[2].result()
-
-            debug_with_date('stop')
+            self.__db_system_homes = processes[0].result()
+            self.__mysql_databases = processes[1].result()
 
         if len(self.__mysql_databases) > 0:
             self.__mysql_backups = parallel_executor(mysql_backup_clients, self.__mysql_databases, self.__search_mysql_backups, len(self.__mysql_databases), "__mysql_backups")
 
+        if len(self.__db_system_homes) > 0:
+            self.__db_system_backups = parallel_executor(db_system_clients, self.__db_system_homes, self.__search_db_system_backups, len(self.__db_system_homes), "__db_system_backups")
+
+        return self.__mysql_backups, self.__db_system_backups
+
+
     def analyze_entity(self, entry):
         self.load_entity()
 
-        # debug_with_date(self.__mysql_backups)
-
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
+
+        for db, db_home in self.__db_system_backups:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['findings'].append(db_home)
+            dictionary[entry]['failure_cause'].append('Each Database System database should have automatic backup enabled')
+            dictionary[entry]['mitigations'].append(f"Make sure database {db.db_name} within database home {db_home['display_name']} has automatic backup enabled.")
+
+        for mysql_database in self.__mysql_backups:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['findings'].append(mysql_database)
+            dictionary[entry]['failure_cause'].append('Each MySQL Database should have automatic backup enabled')
+            dictionary[entry]['mitigations'].append(f"Make sure MySQL Database {mysql_database['display_name']} has automatic backup enabled.")
 
         return dictionary
 
@@ -111,14 +126,32 @@ class BackupDatabases(ReviewPoint):
         database_client = item[0]
         compartments = item[1:]
 
-        databases = []
+        db_homes = []
 
         for compartment in compartments:
-            database_data = get_db_system_data(database_client, compartment.id)
-            for db in database_data:
-                databases.append(db)
+            database_home_data = get_db_system_home_data(database_client, compartment.id)
+            for db_home in database_home_data:
+                if "DELETED" not in db_home.lifecycle_state:
+                    record = {
+                        'compartment_id': db_home.compartment_id,
+                        'defined_tags': db_home.defined_tags,
+                        'display_name': db_home.display_name,
+                        'id': db_home.id,
+                        'time_created': db_home.time_created,
+                        'db_system_id': db_home.db_system_id,
+                        'db_version': db_home.db_version,
+                        'lifecycle_state': db_home.lifecycle_state,
+                        'vm_cluster_id': db_home.vm_cluster_id,
+                        'current_placement': '',
+                        'description': '',
+                        'endpoints': '',
+                        'heat_wave_cluster': '',
+                        'mysql_version': '',
+                    }
 
-        return databases
+                    db_homes.append(record)
+
+        return db_homes
 
 
     def __search_mysql_dbs(self, item):
@@ -139,16 +172,15 @@ class BackupDatabases(ReviewPoint):
                         'description': mysql_db.description,
                         'display_name': mysql_db.display_name,
                         'endpoints': mysql_db.endpoints,
-                        'fault_domain': mysql_db.fault_domain,
                         'heat_wave_cluster': mysql_db.heat_wave_cluster,
                         'id': mysql_db.id,
-                        'is_analytics_cluster_attached': mysql_db.is_analytics_cluster_attached,
-                        'is_heat_wave_cluster_attached': mysql_db.is_heat_wave_cluster_attached,
                         'is_highly_available': mysql_db.is_highly_available,
                         'lifecycle_state': mysql_db.lifecycle_state,
                         'mysql_version': mysql_db.mysql_version,
                         'time_created': mysql_db.time_created,
-                        'time_updated': mysql_db.time_updated,
+                        'db_system_id': '',
+                        'db_version': '',
+                        'vm_cluster_id': '',
                     }
 
                     databases.append(record)
@@ -176,3 +208,20 @@ class BackupDatabases(ReviewPoint):
                 backups.append(mysql_database)
         
         return backups
+
+
+    def __search_db_system_backups(self, item):
+        database_client = item[0]
+        db_system_homes = item[1:]
+
+        disabled_backups = []
+
+        for db_home in db_system_homes:
+            region = db_home['id'].split('.')[3]
+            if database_client[1] in region or database_client[2] in region:
+                databases = database_client[0].list_databases(db_home_id=db_home['id'], system_id=db_home['db_system_id'], compartment_id=db_home['compartment_id']).data
+                for db in databases:
+                    if not db.db_backup_config.auto_backup_enabled:
+                        disabled_backups.append( (db, db_home) )
+
+        return disabled_backups

@@ -46,9 +46,9 @@ __file_system_snapshots = []
 
 ### BackupDatabases.py Global Variables
 # Database list for use with parallel_executor
-__db_systems = []
+__db_system_homes = []
 __mysql_databases = []
-
+__db_system_backups = []
 __mysql_backups = []
 
 
@@ -325,11 +325,25 @@ def get_db_system_data(database_client, compartment_id):
         compartment_id,
     ).data
 
+def get_db_system_home_data(database_client, compartment_id):
+    
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_homes,
+        compartment_id,
+    ).data
+
 def get_auto_db_data(database_client, compartment_id):
     
     return oci.pagination.list_call_get_all_results(
         database_client.list_autonomous_databases,
         compartment_id,
+    ).data
+
+def get_db_system_backup_data(database_client, compartment_id):
+
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_backups,
+        compartment_id=compartment_id,
     ).data
 
 def get_mysql_backup_data(mysql_client, compartment_id):
