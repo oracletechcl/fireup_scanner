@@ -226,6 +226,24 @@ class Mfa(ReviewPoint):
         return dictionary
 ```
 
+- Update file classes > main_area > class > README.md with the review point description as follows: 
+
+```shell
+# Review Point - Class Mapping
+
+| Review Point | Concrete Class Implementation                           |
+|--------------|---------------------------------------------------------|
+| 1.1          | [Mfa.py](Mfa.py)                                        |
+| 1.2          | [Admin.py](Admin.py)                                    |
+| 1.3          | [AdminAbility.py](AdminAbility.py)                      |
+| 1.4          | [PolicyAdmin.py](PolicyAdmin.py)                        |
+| 1.5          | [FederatedUser.py](FederatedUser.py)                    |
+| 1.6          | [ApiKeys.py](ApiKeys.py)                                |
+| 1.7          | [CompartmentsAndPolicies.py](CompartmentsAndPolicies.py)|
+| 1.8          | [Rbac.py](Rbac.py)                                      |
+| 1.9          | [InstancePrincipal.py](InstancePrincipal.py)            |
+| X.Y          | [Other.py](Other.py)                                    |
+```
 
 **Important Notes**
 
@@ -251,6 +269,7 @@ def get_identity_client(config, signer):
 ```
 
   - Above example shows the implementation of the identity client as documented on [API reference](https://oracle-cloud-infrastructure-python-sdk.readthedocs.io/en/latest/api/identity/client/oci.identity.IdentityClient.html)
+  - For all the list of clients currently available on SDK, refer to the [following link](https://oracle-cloud-infrastructure-python-sdk.readthedocs.io/en/latest/api/landing.html)
   - **Structure of composer should always contain:**
     - Try and except for exception control
     - Representative name of client and then execution of API by using `oci.composer.Client()`

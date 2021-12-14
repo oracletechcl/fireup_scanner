@@ -21,7 +21,7 @@ def generate_on_screen_report(dictionary, report_directory, report_name):
             "Recommendation #": key,
             "Area": recommendation['area'],
             "Sub Area": recommendation['sub_area'],                                
-            "Compliant": ('Yes' if recommendation['status'] else 'No'),
+            "Compliant": ('Ok' if recommendation['status'] else 'No'),
             "Findings": str(len(recommendation['findings'])),
             "Review Point": recommendation['review_point']
         }

@@ -18,6 +18,7 @@ __compartments = None
 __availability_domains = []
 
 __vcns = []
+__security_lists = []
 
 ### LBaasBackends.py + LBaaSHealthChecks.py Global Variables
 # LBaas Clients
@@ -36,6 +37,10 @@ __policies = []
 # Api Key list for use with parallel_executor
 __api_keys = []
 
+### InstancePrincipal.py
+__instancePrincipal_dictionary = []
+__dyn_groups_per_compartment = []
+
 ### CheckBackupPolicies.py Global Variables
 # Block storage lists for use with parallel_executor
 __block_volumes = []
@@ -44,12 +49,18 @@ __storages_with_no_policy = []
 __file_systems = []
 __file_system_snapshots = []
 
+
 ### BackupDatabases.py Global Variables
 # Database list for use with parallel_executor
 __db_system_homes = []
 __mysql_databases = []
 __db_system_backups = []
 __mysql_backups = []
+
+### InstancePrincipal.py Global Variables
+# Instance list for use with parallel_executor
+__instances = []
+
 
 
 def get_config_and_signer():
@@ -145,6 +156,12 @@ def get_network_load_balancer_client(config, signer):
         raise RuntimeError("Failed to create network load balancer client: {}".format(e))
     return network_load_balancer_client
 
+def get_compute_client(config, signer):
+    try:
+        compute_client = oci.core.ComputeClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create compute client: {}".format(e))
+    return compute_client
 def get_block_storage_client(config, signer):
     try:
         block_storage_client = oci.core.BlockstorageClient(config, signer=signer)
@@ -193,6 +210,12 @@ def get_regions_data(identity_client, config):
     except Exception as e:
         raise RuntimeError("Failed to get regions: {}".format(e))
     return regions
+
+def get_home_region(identity_client, config):
+    regions = get_regions_data(identity_client, config)
+    for region in regions:
+        if region.is_home_region:
+            return region
 
 def get_compartments_data(identity_client, compartment_id): 
         __identity_client = identity_client
@@ -295,6 +318,27 @@ def get_network_load_balancer_data(network_load_balancer_client, compartment_id)
         compartment_id
     ).data
 
+def get_dynamic_group_data(identity_client, compartment_id): 
+        __identity_client = identity_client
+        __compartment_id = compartment_id
+
+        return oci.pagination.list_call_get_all_results(
+        __identity_client.list_dynamic_groups,
+        __compartment_id,
+    ).data
+
+def get_instance_data(compute_client, compartment_ocid):
+    return oci.pagination.list_call_get_all_results(
+        compute_client.list_instances,
+        compartment_ocid,
+    ).data
+
+def get_security_list_data(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_security_lists,
+        compartment_id
+    ).data        
+    
 def get_block_volume_data(block_storage_client, compartment_id): 
 
         return oci.pagination.list_call_get_all_results(
@@ -386,6 +430,21 @@ def parallel_executor(dependent_clients:list, independent_iterator:list, fuction
 
     return values
 
+def get_quotas_client(config, signer):
+    try:
+        quotas_client = oci.limits.QuotasClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create quotas client: {}".format(e))
+    return quotas_client
+
+def list_quota_data(quotas_client, tenancy_id): 
+        __quotas_client = quotas_client
+        __tenancy_id = tenancy_id
+
+        return oci.pagination.list_call_get_all_results(
+        __quotas_client.list_quotas,
+        __tenancy_id
+    ).data
 
 def get_availability_domains(identity_clients, tenancy_id):
     """

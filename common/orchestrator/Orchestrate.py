@@ -7,6 +7,8 @@
 #              - Via constructor, initialize the dictionary entry as it applies to the excel spreadsheet
 #              - Per each class, implemented in the corresponding abstract class, call the object and then call analyze_entity()
 
+from classes.securitycompliance.InstancePrincipal import InstancePrincipal
+from classes.securitycompliance.SecurityList import SecurityList
 from classes.securitycompliance.ApiKeys import ApiKeys
 from classes.securitycompliance.CompartmentsAndPolicies import CompartmentsAndPolicies
 from classes.securitycompliance.Mfa import Mfa
@@ -17,6 +19,8 @@ from classes.securitycompliance.FederatedUsers import FederatedUsers
 from classes.securitycompliance.Rbac import Rbac
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
+
+from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
 from classes.reliabilityresilience.LBaaSHealthChecks import LBaaSHealthChecks
 from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicies
@@ -29,6 +33,7 @@ from common.utils.statics import Statics
 def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+Statics.__version__)
     print_report_sub_header()
+
     __call_1_1(config, signer, report_directory)
     __call_1_2(config, signer, report_directory)
     __call_1_3(config, signer, report_directory)
@@ -37,13 +42,17 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_6(config, signer, report_directory)
     __call_1_7(config, signer, report_directory)
     __call_1_8(config, signer, report_directory)
+    __call_1_9(config, signer, report_directory)
+    __call_1_10(config, signer, report_directory)
     
+    __call_2_5(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
     __call_2_9(config, signer, report_directory)
     __call_2_10(config, signer, report_directory)
     __call_2_13(config, signer, report_directory)
     __call_2_14(config, signer, report_directory)
     __call_2_15(config, signer, report_directory)
+
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -148,6 +157,43 @@ def __call_1_8(config, signer, report_directory):
     __Rbacobject_dictionary = Rbacobject.analyze_entity(Statics.__rp_1_8['entry'])
     generate_on_screen_report(__Rbacobject_dictionary, report_directory, Statics.__rp_1_8['entry'])
     generate_mitigation_report(__Rbacobject_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_8['fireup_items'])
+
+def __call_1_9(config, signer, report_directory):
+    instancePrincipal = InstancePrincipal(
+    Statics.__rp_1_9['entry'], 
+    Statics.__rp_1_9['area'], 
+    Statics.__rp_1_9['sub_area'], 
+    Statics.__rp_1_9['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_9['entry']+"_"+Statics.__rp_1_9['area']+"_"+Statics.__rp_1_9['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = instancePrincipal.analyze_entity(Statics.__rp_1_9['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_9['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_9['fireup_items'])
+
+def __call_1_10(config, signer, report_directory):
+    secList = SecurityList(
+    Statics.__rp_1_10['entry'], 
+    Statics.__rp_1_10['area'], 
+    Statics.__rp_1_10['sub_area'], 
+    Statics.__rp_1_10['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_10['entry']+"_"+Statics.__rp_1_10['area']+"_"+Statics.__rp_1_10['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = secList.analyze_entity(Statics.__rp_1_10['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_10['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_10['fireup_items'])
+
+
+def __call_2_5(config, signer, report_directory):    
+    compQuotas = CompartmentQuotas(
+    Statics.__rp_2_5['entry'],
+    Statics.__rp_2_5['area'],
+    Statics.__rp_2_5['sub_area'],
+    Statics.__rp_2_5['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_5['entry']+"_"+Statics.__rp_2_5['area']+"_"+Statics.__rp_2_5['sub_area']+"_mitigations"
+    __compQuotas_dictionary = compQuotas.analyze_entity(Statics.__rp_2_5['entry'])
+    generate_on_screen_report(__compQuotas_dictionary, report_directory, Statics.__rp_2_5['entry'])
+    generate_mitigation_report(__compQuotas_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_5['fireup_items'])
 
 
 def __call_2_8(config, signer, report_directory):    

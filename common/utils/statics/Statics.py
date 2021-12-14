@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v0.0.7'
+__version__ = 'v0.0.8'
 __lenght_print__ = "200"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -83,19 +83,19 @@ __rp_1_8 = {
 __rp_1_9 = {
     'entry': '1.9',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',  
-    'success_criteria': '',
-    'fireup_items': [],  
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Secure Cross-Resource Access', 
+    'success_criteria': 'Check if instance principals are defined for users',   
+    'fireup_items': ['Fireup Task: 17 - Are you using instance principals instead of storing credentials'],
 }
 
 __rp_1_10 = {
     'entry': '1.10',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '', 
-    'success_criteria': '',   
-    'fireup_items': [],
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Isolate Resources at the Network Layer', 
+    'success_criteria': 'Check for Security List implementation without open permissions and/or NSGs for microsegmentation',   
+    'fireup_items': ['Fireup Task: 18 - Do you have a proper security list, route tables, VCN, firewalls in place?', 'Fireup Task: 39 - Are you aware of some of the fixed service limits such as security lists/subnet?'],
 }
 
 __rp_1_11 = {
@@ -282,10 +282,10 @@ __rp_2_4 = {
 __rp_2_5 = {
     'entry': '2.5',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Service Limits',
+    'review_point': 'Set Compartment Quotas',    
+    'success_criteria': 'Check if Quotas are enabled',
+    'fireup_items': ['Fireup Task: 14 - Do you want to set a limit on number of resources on each compartment?']
 }
 
 __rp_2_6 = {
