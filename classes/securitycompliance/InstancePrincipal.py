@@ -151,6 +151,15 @@ class InstancePrincipal(ReviewPoint):
                         'id': instance.id,
                         'display_name': instance.display_name,
                         'compartment_id': instance.compartment_id,
+                        'availability_config': instance.availability_config,
+                        'availability_domain': instance.availability_domain,
+                        'fault_domain': instance.fault_domain,
+                        'image_id': instance.image_id,
+                        'launch_options': instance.launch_options,
+                        'lifecycle_state': instance.lifecycle_state,
+                        'shape': instance.shape,
+                        'shape_config': instance.shape_config,
+                        'time_created': instance.time_created,
                     }
 
                     instances.append(instance_record)
