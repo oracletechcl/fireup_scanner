@@ -61,6 +61,10 @@ __mysql_backups = []
 # Instance list for use with parallel_executor
 __instances = []
 
+### ReplicatData.py Global Variables
+# TODO check comments still make sense here
+# Block volume replica list for use with parallel_executor 
+__block_volume_replicas = []
 
 
 def get_config_and_signer():
@@ -343,6 +347,14 @@ def get_block_volume_data(block_storage_client, compartment_id):
 
         return oci.pagination.list_call_get_all_results(
         block_storage_client.list_volumes,
+        compartment_id
+    ).data
+
+def get_block_volume_replica_data(block_storage_client, availability_domain, compartment_id): 
+
+        return oci.pagination.list_call_get_all_results(
+        block_storage_client.list_block_volume_replicas,
+        availability_domain,
         compartment_id
     ).data
 
