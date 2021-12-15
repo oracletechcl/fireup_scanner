@@ -106,24 +106,25 @@ class LBaaSHealthChecks(ReviewPoint):
         for compartment in compartments:
             load_balancer_data = get_load_balancer_data(network_load_balancer_client, compartment.id)
             for load_balancer in load_balancer_data:
-                record = {
-                    'display_name': load_balancer.display_name,
-                    'id': load_balancer.id,
-                    'compartment_id': load_balancer.compartment_id,
-                    'ip_addresses': load_balancer.ip_addresses,
-                    'backend_sets': load_balancer.backend_sets,
-                    'is_private': load_balancer.is_private,
-                    'lifecycle_state': load_balancer.lifecycle_state,
-                    'listeners': load_balancer.listeners,
-                    'shape_name': load_balancer.shape_name,
-                    'subnet_ids': load_balancer.subnet_ids,
-                    'network_security_group_ids': load_balancer.network_security_group_ids,
-                    'routing_policies': load_balancer.routing_policies,
-                    'time_created': load_balancer.time_created,
-                    'is_preserve_source_destination': '',
-                }
+                if "TERMINATED" not in load_balancer.lifecycle_state:
+                    record = {
+                        'display_name': load_balancer.display_name,
+                        'id': load_balancer.id,
+                        'compartment_id': load_balancer.compartment_id,
+                        'ip_addresses': load_balancer.ip_addresses,
+                        'backend_sets': load_balancer.backend_sets,
+                        'is_private': load_balancer.is_private,
+                        'lifecycle_state': load_balancer.lifecycle_state,
+                        'listeners': load_balancer.listeners,
+                        'shape_name': load_balancer.shape_name,
+                        'subnet_ids': load_balancer.subnet_ids,
+                        'network_security_group_ids': load_balancer.network_security_group_ids,
+                        'routing_policies': load_balancer.routing_policies,
+                        'time_created': load_balancer.time_created,
+                        'is_preserve_source_destination': '',
+                    }
 
-                load_balancers.append(record)
+                    load_balancers.append(record)
 
         return load_balancers
 
@@ -137,21 +138,22 @@ class LBaaSHealthChecks(ReviewPoint):
         for compartment in compartments:
             network_load_balancer_data = get_network_load_balancer_data(load_balancer_client, compartment.id)
             for network_load_balancer in network_load_balancer_data:
-                record = {
-                    'display_name': network_load_balancer.display_name,
-                    'id': network_load_balancer.id,
-                    'compartment_id': network_load_balancer.compartment_id,
-                    'ip_addresses': network_load_balancer.ip_addresses,
-                    'backend_sets': network_load_balancer.backend_sets,
-                    'is_private': network_load_balancer.is_private,
-                    'lifecycle_state': network_load_balancer.lifecycle_state,
-                    'listeners': network_load_balancer.listeners,
-                    'network_security_group_ids': network_load_balancer.network_security_group_ids,
-                    'is_preserve_source_destination': network_load_balancer.is_preserve_source_destination,
-                    'time_created': network_load_balancer.time_created
-                }
+                if "TERMINATED" not in network_load_balancer.lifecycle_state:
+                    record = {
+                        'display_name': network_load_balancer.display_name,
+                        'id': network_load_balancer.id,
+                        'compartment_id': network_load_balancer.compartment_id,
+                        'ip_addresses': network_load_balancer.ip_addresses,
+                        'backend_sets': network_load_balancer.backend_sets,
+                        'is_private': network_load_balancer.is_private,
+                        'lifecycle_state': network_load_balancer.lifecycle_state,
+                        'listeners': network_load_balancer.listeners,
+                        'network_security_group_ids': network_load_balancer.network_security_group_ids,
+                        'is_preserve_source_destination': network_load_balancer.is_preserve_source_destination,
+                        'time_created': network_load_balancer.time_created
+                    }
 
-                network_load_balancers.append(record)
+                    network_load_balancers.append(record)
 
         return network_load_balancers
 

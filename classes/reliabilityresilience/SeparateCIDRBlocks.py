@@ -96,23 +96,24 @@ class SeparateCIDRBlocks(ReviewPoint):
         for compartment in compartments:
             vcn_data = get_vcn_data(network_client, compartment.id)
             for vcn in vcn_data:
-                record = {
-                    'cidr_blocks': vcn.cidr_blocks,
-                    'compartment_id': vcn.compartment_id,
-                    'default_dhcp_options_id': vcn.default_dhcp_options_id,
-                    'default_route_table_id': vcn.default_route_table_id,
-                    'default_security_list_id': vcn.default_security_list_id,
-                    'defined_tags': vcn.defined_tags,
-                    'display_name': vcn.display_name,
-                    'dns_label': vcn.dns_label,
-                    'freeform_tags': vcn.freeform_tags,
-                    'id': vcn.id,
-                    'ipv6_cidr_blocks': vcn.ipv6_cidr_blocks,
-                    'lifecycle_state': vcn.lifecycle_state,
-                    'time_created': vcn.time_created,
-                    'vcn_domain_name': vcn.vcn_domain_name,
-                }
+                if "TERMINATED" not in vcn.lifecycle_state:
+                    record = {
+                        'cidr_blocks': vcn.cidr_blocks,
+                        'compartment_id': vcn.compartment_id,
+                        'default_dhcp_options_id': vcn.default_dhcp_options_id,
+                        'default_route_table_id': vcn.default_route_table_id,
+                        'default_security_list_id': vcn.default_security_list_id,
+                        'defined_tags': vcn.defined_tags,
+                        'display_name': vcn.display_name,
+                        'dns_label': vcn.dns_label,
+                        'freeform_tags': vcn.freeform_tags,
+                        'id': vcn.id,
+                        'ipv6_cidr_blocks': vcn.ipv6_cidr_blocks,
+                        'lifecycle_state': vcn.lifecycle_state,
+                        'time_created': vcn.time_created,
+                        'vcn_domain_name': vcn.vcn_domain_name,
+                    }
 
-                vcns.append(record)
+                    vcns.append(record)
 
         return vcns

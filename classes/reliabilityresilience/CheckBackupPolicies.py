@@ -124,29 +124,30 @@ class CheckBackupPolicies(ReviewPoint):
         for compartment in compartments:
             block_volume_data = get_block_volume_data(block_storage_client, compartment.id)
             for block_volume in block_volume_data:
-                record = {
-                    'availability_domain': block_volume.availability_domain,
-                    'block_volume_replicas': block_volume.block_volume_replicas,
-                    'boot_volume_replicas': '',
-                    'compartment_id': block_volume.compartment_id,
-                    'display_name': block_volume.display_name,
-                    'id': block_volume.id,
-                    'image_id': '',
-                    'is_auto_tune_enabled': block_volume.is_auto_tune_enabled,
-                    'is_hydrated': block_volume.is_hydrated,
-                    'kms_key_id': block_volume.kms_key_id,
-                    'lifecycle_state': block_volume.lifecycle_state,
-                    'size_in_gbs': block_volume.size_in_gbs,
-                    'volume_group_id': block_volume.volume_group_id,
-                    'vpus_per_gb': block_volume.vpus_per_gb,
-                    'time_created': block_volume.time_created,
-                    'metered_bytes': '',
-                    'is_clone_parent': '',
-                    'lifecycle_details': '',
-                    'source_details': '',
-                }
+                if "TERMINATED" not in block_volume.lifecycle_state:
+                    record = {
+                        'availability_domain': block_volume.availability_domain,
+                        'block_volume_replicas': block_volume.block_volume_replicas,
+                        'boot_volume_replicas': '',
+                        'compartment_id': block_volume.compartment_id,
+                        'display_name': block_volume.display_name,
+                        'id': block_volume.id,
+                        'image_id': '',
+                        'is_auto_tune_enabled': block_volume.is_auto_tune_enabled,
+                        'is_hydrated': block_volume.is_hydrated,
+                        'kms_key_id': block_volume.kms_key_id,
+                        'lifecycle_state': block_volume.lifecycle_state,
+                        'size_in_gbs': block_volume.size_in_gbs,
+                        'volume_group_id': block_volume.volume_group_id,
+                        'vpus_per_gb': block_volume.vpus_per_gb,
+                        'time_created': block_volume.time_created,
+                        'metered_bytes': '',
+                        'is_clone_parent': '',
+                        'lifecycle_details': '',
+                        'source_details': '',
+                    }
 
-                block_volumes.append(record)
+                    block_volumes.append(record)
 
         return block_volumes
 
@@ -161,29 +162,30 @@ class CheckBackupPolicies(ReviewPoint):
         for compartment in compartments:
             boot_volume_data = get_boot_volume_data(block_storage_client, availability_domain, compartment.id)
             for boot_volume in boot_volume_data:
-                record = {
-                    'availability_domain': boot_volume.availability_domain,
-                    'block_volume_replicas': '',
-                    'boot_volume_replicas': boot_volume.boot_volume_replicas,
-                    'compartment_id': boot_volume.compartment_id,
-                    'display_name': boot_volume.display_name,
-                    'id': boot_volume.id,
-                    'image_id': boot_volume.image_id,
-                    'is_auto_tune_enabled': boot_volume.is_auto_tune_enabled,
-                    'is_hydrated': boot_volume.is_hydrated,
-                    'kms_key_id': boot_volume.kms_key_id,
-                    'lifecycle_state': boot_volume.lifecycle_state,
-                    'size_in_gbs': boot_volume.size_in_gbs,
-                    'volume_group_id': boot_volume.volume_group_id,
-                    'vpus_per_gb': boot_volume.vpus_per_gb,
-                    'time_created': boot_volume.time_created,
-                    'metered_bytes': '',
-                    'is_clone_parent': '',
-                    'lifecycle_details': '',
-                    'source_details': '',
-                }
+                if "TERMINATED" not in boot_volume.lifecycle_state:
+                    record = {
+                        'availability_domain': boot_volume.availability_domain,
+                        'block_volume_replicas': '',
+                        'boot_volume_replicas': boot_volume.boot_volume_replicas,
+                        'compartment_id': boot_volume.compartment_id,
+                        'display_name': boot_volume.display_name,
+                        'id': boot_volume.id,
+                        'image_id': boot_volume.image_id,
+                        'is_auto_tune_enabled': boot_volume.is_auto_tune_enabled,
+                        'is_hydrated': boot_volume.is_hydrated,
+                        'kms_key_id': boot_volume.kms_key_id,
+                        'lifecycle_state': boot_volume.lifecycle_state,
+                        'size_in_gbs': boot_volume.size_in_gbs,
+                        'volume_group_id': boot_volume.volume_group_id,
+                        'vpus_per_gb': boot_volume.vpus_per_gb,
+                        'time_created': boot_volume.time_created,
+                        'metered_bytes': '',
+                        'is_clone_parent': '',
+                        'lifecycle_details': '',
+                        'source_details': '',
+                    }
 
-                boot_volumes.append(record)
+                    boot_volumes.append(record)
 
         return boot_volumes
 
@@ -197,10 +199,9 @@ class CheckBackupPolicies(ReviewPoint):
         for block_storage in block_storages:
             id = block_storage['id']
             region = block_storage['id'].split('.')[3]
-            if block_storage['lifecycle_state'].lower() != 'terminated':
-                if client[1] in region or client[2] in region:
-                    if len(client[0].get_volume_backup_policy_asset_assignment(id).data) == 0:
-                        findings.append(block_storage)
+            if client[1] in region or client[2] in region:
+                if len(client[0].get_volume_backup_policy_asset_assignment(id).data) == 0:
+                    findings.append(block_storage)
 
         return findings
 
@@ -215,29 +216,30 @@ class CheckBackupPolicies(ReviewPoint):
         for compartment in compartments:
             file_system_data = get_file_system_data(file_storage_client, compartment.id, availability_domain)
             for file_system in file_system_data:
-                record = {
-                    'availability_domain': file_system.availability_domain,
-                    'compartment_id': file_system.compartment_id,
-                    'id': file_system.id,
-                    'display_name': file_system.display_name,
-                    'is_clone_parent': file_system.is_clone_parent,
-                    'is_hydrated': file_system.is_hydrated,
-                    'kms_key_id': file_system.kms_key_id,
-                    'lifecycle_state': file_system.lifecycle_state,
-                    'lifecycle_details': file_system.lifecycle_details,
-                    'metered_bytes': file_system.metered_bytes,
-                    'source_details': file_system.source_details,
-                    'time_created': file_system.time_created,
-                    'block_volume_replicas': '',
-                    'boot_volume_replicas': '',
-                    'vpus_per_gb': '',
-                    'size_in_gbs': '',
-                    'is_auto_tune_enabled': '',
-                    'image_id': '',
-                    'volume_group_id': '',
-                }
+                if "TERMINATED" not in file_system.lifecycle_state:
+                    record = {
+                        'availability_domain': file_system.availability_domain,
+                        'compartment_id': file_system.compartment_id,
+                        'id': file_system.id,
+                        'display_name': file_system.display_name,
+                        'is_clone_parent': file_system.is_clone_parent,
+                        'is_hydrated': file_system.is_hydrated,
+                        'kms_key_id': file_system.kms_key_id,
+                        'lifecycle_state': file_system.lifecycle_state,
+                        'lifecycle_details': file_system.lifecycle_details,
+                        'metered_bytes': file_system.metered_bytes,
+                        'source_details': file_system.source_details,
+                        'time_created': file_system.time_created,
+                        'block_volume_replicas': '',
+                        'boot_volume_replicas': '',
+                        'vpus_per_gb': '',
+                        'size_in_gbs': '',
+                        'is_auto_tune_enabled': '',
+                        'image_id': '',
+                        'volume_group_id': '',
+                    }
 
-                file_systems.append(record)
+                    file_systems.append(record)
 
         return file_systems
 
@@ -252,15 +254,14 @@ class CheckBackupPolicies(ReviewPoint):
             id = file_system['id']
             region = file_system['id'].split('.')[3]
             # Replace added here as file systems use underscores in regions OCID
-            if file_system['lifecycle_state'].lower() != 'terminated':
-                if client[1] in region or client[1].replace('-', '_') in region or client[2] in region:
-                    # Gets latest snapshot of each file system and checks its date is recent
-                    snapshots = client[0].list_snapshots(id).data
-                    if len(snapshots) > 0:
-                        latest = snapshots[0].time_created.replace(tzinfo=None)
-                        if datetime.now() > (latest + timedelta(days=10)):
-                            findings.append(file_system)
-                    else:
+            if client[1] in region or client[1].replace('-', '_') in region or client[2] in region:
+                # Gets latest snapshot of each file system and checks its date is recent
+                snapshots = client[0].list_snapshots(id).data
+                if len(snapshots) > 0:
+                    latest = snapshots[0].time_created.replace(tzinfo=None)
+                    if datetime.now() > (latest + timedelta(days=10)):
                         findings.append(file_system)
+                else:
+                    findings.append(file_system)
 
         return findings
