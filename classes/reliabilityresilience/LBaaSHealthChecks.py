@@ -3,8 +3,6 @@
 # LBaaSHealthChecks.py
 # Description: Implementation of class LBaaSHealthChecks based on abstract
 
-from oci.load_balancer import load_balancer_client
-from oci.load_balancer.load_balancer_client import LoadBalancerClient
 from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
