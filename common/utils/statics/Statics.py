@@ -390,10 +390,10 @@ __rp_2_16 = {
 __rp_2_17 = {
     'entry': '2.17',
     'area': 'Reliability and Resilience',
-    'sub_area': 'Back Up Your Data',
-    'review_point': 'Replicate Your Data for Disaster Recovery',    
-    'success_criteria': 'If block storage in place, make sure that there is regional backup enabled. If Object storage, make sure to copy objects into another region. If Oracle DB In place, make sure to create a regional DR Dataguard.',
-    'fireup_items': ['Fireup Task: 34 - Have backups for failure (VMs, Block Storage, Object Storage, SSD, Database, have appropriate RPO/RTO).'],
+    'sub_area': '',
+    'review_point': '',    
+    'success_criteria': '',
+    'fireup_items': [],
 }
 
 __rp_3_1 = {
