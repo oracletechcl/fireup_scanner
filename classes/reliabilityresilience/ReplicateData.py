@@ -88,15 +88,20 @@ class ReplicateData(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        debug_with_date(self.__block_volume_replicas[0])
         debug_with_date(len(self.__block_volume_replicas))
 
-        # for block_storage in self.__storages_with_no_replication:
-        #     dictionary[entry]['status'] = False
-        #     dictionary[entry]['findings'].append(block_storage)
-        #     dictionary[entry]['failure_cause'].append('Each block storages should have a backup policy.')
-        #     dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_storage['display_name'])+' has a backup policy assigned to it.')
+        for block_volume in self.__block_volumes:
+            for block_volume_replica in self.__block_volume_replicas:
+                if block_volume['id'] == block_volume_replica['block_volume_id']:
+                    break
+            else:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(block_volume)
+                dictionary[entry]['failure_cause'].append('Each block storages should be replicated to a disaster recovery region.')
+                dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_volume['display_name'])+' has is replicated to a disaster recovery region.')
 
+        
+        
         return dictionary
 
     
@@ -109,29 +114,30 @@ class ReplicateData(ReviewPoint):
         for compartment in compartments:
             block_volume_data = get_block_volume_data(block_storage_client, compartment.id)
             for block_volume in block_volume_data:
-                record = {
-                    'availability_domain': block_volume.availability_domain,
-                    'block_volume_replicas': block_volume.block_volume_replicas,
-                    'boot_volume_replicas': '',
-                    'compartment_id': block_volume.compartment_id,
-                    'display_name': block_volume.display_name,
-                    'id': block_volume.id,
-                    'image_id': '',
-                    'is_auto_tune_enabled': block_volume.is_auto_tune_enabled,
-                    'is_hydrated': block_volume.is_hydrated,
-                    'kms_key_id': block_volume.kms_key_id,
-                    'lifecycle_state': block_volume.lifecycle_state,
-                    'size_in_gbs': block_volume.size_in_gbs,
-                    'volume_group_id': block_volume.volume_group_id,
-                    'vpus_per_gb': block_volume.vpus_per_gb,
-                    'time_created': block_volume.time_created,
-                    'metered_bytes': '',
-                    'is_clone_parent': '',
-                    'lifecycle_details': '',
-                    'source_details': '',
-                }
+                if "TERMINATED" not in block_volume.lifecycle_state:
+                    record = {
+                        'availability_domain': block_volume.availability_domain,
+                        'block_volume_replicas': block_volume.block_volume_replicas,
+                        'boot_volume_replicas': '',
+                        'compartment_id': block_volume.compartment_id,
+                        'display_name': block_volume.display_name,
+                        'id': block_volume.id,
+                        'image_id': '',
+                        'is_auto_tune_enabled': block_volume.is_auto_tune_enabled,
+                        'is_hydrated': block_volume.is_hydrated,
+                        'kms_key_id': block_volume.kms_key_id,
+                        'lifecycle_state': block_volume.lifecycle_state,
+                        'size_in_gbs': block_volume.size_in_gbs,
+                        'volume_group_id': block_volume.volume_group_id,
+                        'vpus_per_gb': block_volume.vpus_per_gb,
+                        'time_created': block_volume.time_created,
+                        'metered_bytes': '',
+                        'is_clone_parent': '',
+                        'lifecycle_details': '',
+                        'source_details': '',
+                    }
 
-                block_volumes.append(record)
+                    block_volumes.append(record)
 
         return block_volumes
 
@@ -146,29 +152,30 @@ class ReplicateData(ReviewPoint):
         for compartment in compartments:
             boot_volume_data = get_boot_volume_data(block_storage_client, availability_domain, compartment.id)
             for boot_volume in boot_volume_data:
-                record = {
-                    'availability_domain': boot_volume.availability_domain,
-                    'block_volume_replicas': '',
-                    'boot_volume_replicas': boot_volume.boot_volume_replicas,
-                    'compartment_id': boot_volume.compartment_id,
-                    'display_name': boot_volume.display_name,
-                    'id': boot_volume.id,
-                    'image_id': boot_volume.image_id,
-                    'is_auto_tune_enabled': boot_volume.is_auto_tune_enabled,
-                    'is_hydrated': boot_volume.is_hydrated,
-                    'kms_key_id': boot_volume.kms_key_id,
-                    'lifecycle_state': boot_volume.lifecycle_state,
-                    'size_in_gbs': boot_volume.size_in_gbs,
-                    'volume_group_id': boot_volume.volume_group_id,
-                    'vpus_per_gb': boot_volume.vpus_per_gb,
-                    'time_created': boot_volume.time_created,
-                    'metered_bytes': '',
-                    'is_clone_parent': '',
-                    'lifecycle_details': '',
-                    'source_details': '',
-                }
+                if "TERMINATED" not in boot_volume.lifecycle_state:
+                    record = {
+                        'availability_domain': boot_volume.availability_domain,
+                        'block_volume_replicas': '',
+                        'boot_volume_replicas': boot_volume.boot_volume_replicas,
+                        'compartment_id': boot_volume.compartment_id,
+                        'display_name': boot_volume.display_name,
+                        'id': boot_volume.id,
+                        'image_id': boot_volume.image_id,
+                        'is_auto_tune_enabled': boot_volume.is_auto_tune_enabled,
+                        'is_hydrated': boot_volume.is_hydrated,
+                        'kms_key_id': boot_volume.kms_key_id,
+                        'lifecycle_state': boot_volume.lifecycle_state,
+                        'size_in_gbs': boot_volume.size_in_gbs,
+                        'volume_group_id': boot_volume.volume_group_id,
+                        'vpus_per_gb': boot_volume.vpus_per_gb,
+                        'time_created': boot_volume.time_created,
+                        'metered_bytes': '',
+                        'is_clone_parent': '',
+                        'lifecycle_details': '',
+                        'source_details': '',
+                    }
 
-                boot_volumes.append(record)
+                    boot_volumes.append(record)
 
         return boot_volumes
 
@@ -183,18 +190,19 @@ class ReplicateData(ReviewPoint):
         for compartment in compartments:
             block_volume_replica_data = get_block_volume_replica_data(block_storage_client, availability_domain, compartment.id)
             for block_volume_replica in block_volume_replica_data:
-                record = {
-                    'availability_domain': block_volume_replica.availability_domain,
-                    'block_volume_id': block_volume_replica.block_volume_id,
-                    'compartment_id': block_volume_replica.compartment_id,
-                    'defined_tags': block_volume_replica.defined_tags,
-                    'display_name': block_volume_replica.display_name,
-                    'id': block_volume_replica.id,
-                    'lifecycle_state': block_volume_replica.lifecycle_state,
-                    'size_in_gbs': block_volume_replica.size_in_gbs,
-                    'time_created': block_volume_replica.time_created,
-                }
+                if "TERMINATED" not in block_volume_replica.lifecycle_state:
+                    record = {
+                        'availability_domain': block_volume_replica.availability_domain,
+                        'block_volume_id': block_volume_replica.block_volume_id,
+                        'compartment_id': block_volume_replica.compartment_id,
+                        'defined_tags': block_volume_replica.defined_tags,
+                        'display_name': block_volume_replica.display_name,
+                        'id': block_volume_replica.id,
+                        'lifecycle_state': block_volume_replica.lifecycle_state,
+                        'size_in_gbs': block_volume_replica.size_in_gbs,
+                        'time_created': block_volume_replica.time_created,
+                    }
 
-                block_volume_replicas.append(record)
+                    block_volume_replicas.append(record)
 
         return block_volume_replicas
