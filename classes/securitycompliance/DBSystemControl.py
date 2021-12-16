@@ -8,7 +8,7 @@
 from common.utils.formatter.printer import debug, debug_with_color_date, debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
-from common.utils.helpers.helper import * 
+from common.utils.helpers.helper import *
 
 
 
@@ -70,7 +70,7 @@ class DBSystemControl(ReviewPoint):
             region_config = self.config
             region_config['region'] = region.region_name
             db_system_clients.append( (get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
-            mysql_clients.append(get_mysql_client(region_config, self.signer))            
+            mysql_clients.append(get_mysql_client(region_config, self.signer), region.region_name, region.region_key.lower())             
             network_clients.append(get_virtual_network_client(region_config, self.signer))
 
         tenancy = get_tenancy_data(self.__identity, self.config)
@@ -83,7 +83,7 @@ class DBSystemControl(ReviewPoint):
         # execution of threads. All values are stored on global private variables.
         placeholder_returner = parallel_executor(network_clients, compartments, self.__search_vcns, len(compartments), "__vcns")
         placeholder_returner = parallel_executor([x[0] for x in db_system_clients], compartments, self.__search_oracledb_dbs_subnet_ocids, len(compartments), "__odb_dbsystems")
-        placeholder_returner = parallel_executor(mysql_clients, compartments, self.__search_mysql_dbs_ocids, len(compartments), "__mysql_dbsystems_ocids")
+        placeholder_returner = parallel_executor([x[0] for x in mysql_clients], compartments, self.__search_mysql_dbs_ocids, len(compartments), "__mysql_dbsystems_ocids")
         placeholder_returner = parallel_executor(mysql_clients, self.__mysql_db_ocids, self.__search_mysql_dbs_subnet_ocids, len(self.__mysql_db_ocids), "__mysql_subnets")
         
         #debug_with_color_date(self.__odb_dbsystems_subnet_ocids, "yellow")
@@ -139,13 +139,15 @@ class DBSystemControl(ReviewPoint):
 
         # Using recommendation listed here: https://github.com/oracle/oci-python-sdk/issues/408#issuecomment-994956936
         for db_ocid in mysql_ocids:
-            mysqldbdata = get_mysql_dbsystem_data(mysql_client, db_ocid)
-            for dbdata in mysqldbdata:
-                record = {
-                    'display_name': dbdata.display_name,
-                    'subnet_id': dbdata.subnet_id,
-                }
-                self.__mysql_dbsystems_subnet_ocids.append(record)
+            region = db_ocid['id'].split('.')[3]
+            if mysql_client[1] in region or mysql_client[2] in region:
+                mysqldbdata = get_mysql_dbsystem_data(mysql_client[0], db_ocid)
+                for dbdata in mysqldbdata:
+                    record = {
+                        'display_name': dbdata.display_name,
+                        'subnet_id': dbdata.subnet_id,
+                    }
+                    self.__mysql_dbsystems_subnet_ocids.append(record)
 
         return self.__mysql_dbsystems_subnet_ocids
 
