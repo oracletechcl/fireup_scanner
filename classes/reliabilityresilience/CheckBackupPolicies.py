@@ -3,9 +3,9 @@
 # CheckBackupPolicies.py
 # Description: Implementation of class CheckBackupPolicies based on abstract
 
-from datetime import datetime, timedelta
 from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 
 
@@ -13,9 +13,12 @@ class CheckBackupPolicies(ReviewPoint):
 
     # Class Variables
     __block_volumes = []
+    __block_volume_objects = []
     __boot_volumes = []
+    __boot_volume_objects = []
     __storages_with_no_policy = []
     __file_systems = []
+    __file_system_objects = []
     __file_system_snapshots = []
     __identity = None
 
@@ -64,7 +67,7 @@ class CheckBackupPolicies(ReviewPoint):
             identity_clients.append(get_identity_client(region_config, self.signer))
 
         # Retrieve all availability domains
-        availability_domains = get_availability_domains(identity_clients, tenancy.id)
+        availability_domains = ParallelExecutor.get_availability_domains(identity_clients, tenancy.id)
 
         block_storage_clients_with_ADs = []
         file_system_clients_with_ADs = []
@@ -80,19 +83,85 @@ class CheckBackupPolicies(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__block_volumes = parallel_executor([x[0] for x in block_storage_clients], compartments, self.__search_block_volumes, len(compartments), "__block_volumes")
+        self.__block_volume_objects = ParallelExecutor.executor([x[0] for x in block_storage_clients], compartments, ParallelExecutor.get_block_volumes, len(compartments), ParallelExecutor.block_volumes)
 
-        self.__boot_volumes = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_boot_volumes, len(compartments), "__boot_volumes")
+        self.__boot_volume_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, compartments, ParallelExecutor.get_boot_volumes, len(compartments), ParallelExecutor.boot_volumes)
+
+        for block_volume in self.__block_volume_objects:
+            record = {
+                'availability_domain': block_volume.availability_domain,
+                'compartment_id': block_volume.compartment_id,
+                'display_name': block_volume.display_name,
+                'id': block_volume.id,
+                'image_id': '',
+                'is_auto_tune_enabled': block_volume.is_auto_tune_enabled,
+                'is_hydrated': block_volume.is_hydrated,
+                'kms_key_id': block_volume.kms_key_id,
+                'lifecycle_state': block_volume.lifecycle_state,
+                'size_in_gbs': block_volume.size_in_gbs,
+                'volume_group_id': block_volume.volume_group_id,
+                'vpus_per_gb': block_volume.vpus_per_gb,
+                'time_created': block_volume.time_created,
+                'metered_bytes': '',
+                'is_clone_parent': '',
+                'lifecycle_details': '',
+                'source_details': '',
+            }
+            self.__block_volumes.append(record)
+
+        for boot_volume in self.__boot_volume_objects:
+            record = {
+                'availability_domain': boot_volume.availability_domain,
+                'compartment_id': boot_volume.compartment_id,
+                'display_name': boot_volume.display_name,
+                'id': boot_volume.id,
+                'image_id': boot_volume.image_id,
+                'is_auto_tune_enabled': boot_volume.is_auto_tune_enabled,
+                'is_hydrated': boot_volume.is_hydrated,
+                'kms_key_id': boot_volume.kms_key_id,
+                'lifecycle_state': boot_volume.lifecycle_state,
+                'size_in_gbs': boot_volume.size_in_gbs,
+                'volume_group_id': boot_volume.volume_group_id,
+                'vpus_per_gb': boot_volume.vpus_per_gb,
+                'time_created': boot_volume.time_created,
+                'metered_bytes': '',
+                'is_clone_parent': '',
+                'lifecycle_details': '',
+                'source_details': '',
+            }
+            self.__block_volumes.append(record)
 
         if len(self.__block_volumes + self.__boot_volumes) > 0:
-            self.__storages_with_no_policy = parallel_executor(block_storage_clients, self.__block_volumes + self.__boot_volumes, self.__search_for_policy, len(self.__block_volumes + self.__boot_volumes), "__storages_with_no_policy")
+            self.__storages_with_no_policy = ParallelExecutor.executor(block_storage_clients, self.__block_volumes + self.__boot_volumes, ParallelExecutor.get_block_storages_with_no_policy, len(self.__block_volumes + self.__boot_volumes), ParallelExecutor.storages_with_no_policy)
 
-        self.__file_systems = parallel_executor(file_system_clients_with_ADs, compartments, self.__search_file_systems, len(compartments), "__file_systems")
+        self.__file_system_objects = ParallelExecutor.executor(file_system_clients_with_ADs, compartments, ParallelExecutor.get_file_systems, len(compartments), ParallelExecutor.file_systems)
+
+        for file_system in self.__file_system_objects:
+            record = {
+                'availability_domain': file_system.availability_domain,
+                'compartment_id': file_system.compartment_id,
+                'id': file_system.id,
+                'display_name': file_system.display_name,
+                'is_clone_parent': file_system.is_clone_parent,
+                'is_hydrated': file_system.is_hydrated,
+                'kms_key_id': file_system.kms_key_id,
+                'lifecycle_state': file_system.lifecycle_state,
+                'lifecycle_details': file_system.lifecycle_details,
+                'metered_bytes': file_system.metered_bytes,
+                'source_details': file_system.source_details,
+                'time_created': file_system.time_created,
+                'vpus_per_gb': '',
+                'size_in_gbs': '',
+                'is_auto_tune_enabled': '',
+                'image_id': '',
+                'volume_group_id': '',
+            }
+            self.__file_systems.append(record)
 
         if len(self.__file_systems) > 0:
-            self.__file_system_snapshots = parallel_executor(file_storage_clients, self.__file_systems, self.__search_for_snapshots, len(self.__file_systems), "__file_system_snapshots")
+            self.__file_system_snapshots = ParallelExecutor.executor(file_storage_clients, self.__file_systems, ParallelExecutor.get_file_systems_with_no_snapshots, len(self.__file_systems), ParallelExecutor.file_system_with_no_snapshots)
 
-        return self.__storages_with_no_policy, self.__file_system_snapshots 
+        return self.__storages_with_no_policy, self.__file_system_snapshots
 
 
     def analyze_entity(self, entry):
@@ -113,154 +182,3 @@ class CheckBackupPolicies(ReviewPoint):
             dictionary[entry]['mitigations'].append('Make sure file system '+str(file_system['display_name'])+' is creating a snapshot weekly.')
 
         return dictionary
-
-    
-    def __search_block_volumes(self, item):
-        block_storage_client = item[0]
-        compartments = item[1:]
-
-        block_volumes = []
-
-        for compartment in compartments:
-            block_volume_data = get_block_volume_data(block_storage_client, compartment.id)
-            for block_volume in block_volume_data:
-                record = {
-                    'availability_domain': block_volume.availability_domain,
-                    'block_volume_replicas': block_volume.block_volume_replicas,
-                    'boot_volume_replicas': '',
-                    'compartment_id': block_volume.compartment_id,
-                    'display_name': block_volume.display_name,
-                    'id': block_volume.id,
-                    'image_id': '',
-                    'is_auto_tune_enabled': block_volume.is_auto_tune_enabled,
-                    'is_hydrated': block_volume.is_hydrated,
-                    'kms_key_id': block_volume.kms_key_id,
-                    'lifecycle_state': block_volume.lifecycle_state,
-                    'size_in_gbs': block_volume.size_in_gbs,
-                    'volume_group_id': block_volume.volume_group_id,
-                    'vpus_per_gb': block_volume.vpus_per_gb,
-                    'time_created': block_volume.time_created,
-                    'metered_bytes': '',
-                    'is_clone_parent': '',
-                    'lifecycle_details': '',
-                    'source_details': '',
-                }
-
-                block_volumes.append(record)
-
-        return block_volumes
-
-
-    def __search_boot_volumes(self, item):
-        block_storage_client = item[0][0]
-        availability_domain = item[0][1]
-        compartments = item[1:]
-
-        boot_volumes = []
-
-        for compartment in compartments:
-            boot_volume_data = get_boot_volume_data(block_storage_client, availability_domain, compartment.id)
-            for boot_volume in boot_volume_data:
-                record = {
-                    'availability_domain': boot_volume.availability_domain,
-                    'block_volume_replicas': '',
-                    'boot_volume_replicas': boot_volume.boot_volume_replicas,
-                    'compartment_id': boot_volume.compartment_id,
-                    'display_name': boot_volume.display_name,
-                    'id': boot_volume.id,
-                    'image_id': boot_volume.image_id,
-                    'is_auto_tune_enabled': boot_volume.is_auto_tune_enabled,
-                    'is_hydrated': boot_volume.is_hydrated,
-                    'kms_key_id': boot_volume.kms_key_id,
-                    'lifecycle_state': boot_volume.lifecycle_state,
-                    'size_in_gbs': boot_volume.size_in_gbs,
-                    'volume_group_id': boot_volume.volume_group_id,
-                    'vpus_per_gb': boot_volume.vpus_per_gb,
-                    'time_created': boot_volume.time_created,
-                    'metered_bytes': '',
-                    'is_clone_parent': '',
-                    'lifecycle_details': '',
-                    'source_details': '',
-                }
-
-                boot_volumes.append(record)
-
-        return boot_volumes
-
-
-    def __search_for_policy(self, item):
-        client = item[0]
-        block_storages = item[1:]
-
-        findings = []
-
-        for block_storage in block_storages:
-            id = block_storage['id']
-            region = block_storage['id'].split('.')[3]
-            if block_storage['lifecycle_state'].lower() != 'terminated':
-                if client[1] in region or client[2] in region:
-                    if len(client[0].get_volume_backup_policy_asset_assignment(id).data) == 0:
-                        findings.append(block_storage)
-
-        return findings
-
-
-    def __search_file_systems(self, item):
-        file_storage_client = item[0][0]
-        availability_domain = item[0][1]
-        compartments = item[1:]
-
-        file_systems = []
-
-        for compartment in compartments:
-            file_system_data = get_file_system_data(file_storage_client, compartment.id, availability_domain)
-            for file_system in file_system_data:
-                record = {
-                    'availability_domain': file_system.availability_domain,
-                    'compartment_id': file_system.compartment_id,
-                    'id': file_system.id,
-                    'display_name': file_system.display_name,
-                    'is_clone_parent': file_system.is_clone_parent,
-                    'is_hydrated': file_system.is_hydrated,
-                    'kms_key_id': file_system.kms_key_id,
-                    'lifecycle_state': file_system.lifecycle_state,
-                    'lifecycle_details': file_system.lifecycle_details,
-                    'metered_bytes': file_system.metered_bytes,
-                    'source_details': file_system.source_details,
-                    'time_created': file_system.time_created,
-                    'block_volume_replicas': '',
-                    'boot_volume_replicas': '',
-                    'vpus_per_gb': '',
-                    'size_in_gbs': '',
-                    'is_auto_tune_enabled': '',
-                    'image_id': '',
-                    'volume_group_id': '',
-                }
-
-                file_systems.append(record)
-
-        return file_systems
-
-
-    def __search_for_snapshots(self, item):
-        client = item[0]
-        file_systems = item[1:]
-
-        findings = []
-
-        for file_system in file_systems:
-            id = file_system['id']
-            region = file_system['id'].split('.')[3]
-            # Replace added here as file systems use underscores in regions OCID
-            if file_system['lifecycle_state'].lower() != 'terminated':
-                if client[1] in region or client[1].replace('-', '_') in region or client[2] in region:
-                    # Gets latest snapshot of each file system and checks its date is recent
-                    snapshots = client[0].list_snapshots(id).data
-                    if len(snapshots) > 0:
-                        latest = snapshots[0].time_created.replace(tzinfo=None)
-                        if datetime.now() > (latest + timedelta(days=10)):
-                            findings.append(file_system)
-                    else:
-                        findings.append(file_system)
-
-        return findings

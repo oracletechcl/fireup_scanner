@@ -15,7 +15,7 @@ class SeparateCIDRBlocks(ReviewPoint):
 
     # Class Variables
     __vcns = []
-    __vcns_objects = []
+    __vcn_objects = []
     __identity = None
 
     def __init__(self,
@@ -65,14 +65,15 @@ class SeparateCIDRBlocks(ReviewPoint):
 
         # self.__vcns = parallel_executor(network_clients, compartments, self.__search_compartments, len(compartments), "__vcns")
 
-        self.__vcns_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_vcns_in_compartments, len(compartments), ParallelExecutor.vcns)
+        self.__vcn_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_vcns_in_compartments, len(compartments), ParallelExecutor.vcns)
 
-        for vcn in self.__vcns_objects:
+        for vcn in self.__vcn_objects:
             record = {
                 'cidr_blocks': vcn.cidr_blocks,
                 'compartment_id': vcn.compartment_id,
                 'display_name': vcn.display_name,
                 'id': vcn.id,
+                'lifecycle_state': vcn.lifecycle_state,
             }
             self.__vcns.append(record)
 

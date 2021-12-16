@@ -358,27 +358,3 @@ def list_quota_data(quotas_client, tenancy_id):
         __quotas_client.list_quotas,
         __tenancy_id
     ).data
-
-def get_availability_domains(identity_clients, tenancy_id):
-    """
-    Get all availability domains in a region using an identity client from each region
-    """
-    availability_domains = paraexecvars.__availability_domains
-
-    # Return if function has already been run
-    if len(availability_domains) > 0:
-        return availability_domains
-
-    with futures.ThreadPoolExecutor(len(identity_clients)) as executor:
-        processes = [
-            executor.submit(identity_client.list_availability_domains, tenancy_id)
-            for identity_client in identity_clients
-        ]
-
-        futures.wait(processes)
-
-        for p in processes:
-            for value in p.result().data:
-                availability_domains.append(value.name)
-        
-    return availability_domains
