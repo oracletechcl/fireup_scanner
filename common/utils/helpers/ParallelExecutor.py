@@ -34,7 +34,7 @@ policies = []
 
 ### ApiKeys.py Global Variables
 # Api Key list for use with parallel_executor
-api_keys = []
+users_with_api_keys = []
 
 ### InstancePrincipal.py
 instancePrincipal_dictionary = []
@@ -190,7 +190,6 @@ def get_load_balancer_healths(item):
     healths = []
 
     for load_balancer in load_balancers:
-        debug_with_color_date('here', 'red')
         id = load_balancer.id
         if "networkloadbalancer" in id:
             if client[1] in id or client[2] in id:
@@ -363,24 +362,64 @@ def get_db_systems_with_no_backups(item):
     return disabled_backups
 
 
-def __search_user_for_api_keys(self, item):
+def get_user_with_api_keys(item):
     indentity_client = item[0]
     users = item[1:]
 
     user_data = []
 
     for user in users:
-        api_key_data = get_api_key_data(indentity_client, user['id'])
+        api_key_data = get_api_key_data(indentity_client, user.id)
+        user_api_keys = []
         for api_key in api_key_data:
-            api_key_record = {
-                'fingerprint': api_key.fingerprint,
-                'inactive_status': api_key.inactive_status,
-                'lifecycle_state': api_key.lifecycle_state,
-                'user_id': api_key.user_id,
-                'time_created': api_key.time_created,  
-            }
-            user['api_key'].append(api_key_record) 
+            user_api_keys.append(api_key) 
         
-        user_data.append(user)
+        user_data.append( (user, user_api_keys) )
 
     return user_data
+
+
+def get_policies_per_compartment(item):
+    identity_client = item[0]
+    compartments = item[1:]
+
+    policies_per_compartment = []
+
+    for compartment in compartments:
+        policies = []
+        policy_data = get_policies_data(identity_client, compartment.id)
+        for policy in policy_data:
+            policies.append(policy)
+        policies_per_compartment.append(policies)
+
+    return policies_per_compartment
+
+
+def get_instances(item):
+        compute_client = item[0]
+        compartments = item[1:]
+
+        instances = []
+
+        for compartment in compartments:
+            instance_data = get_instance_data(compute_client, compartment.id)
+
+            for instance in instance_data:
+                if instance.lifecycle_state != "TERMINATED":
+                    instances.append(instance)
+
+        return instances
+
+
+def get_security_lists(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    sec_lists = []
+
+    for compartment in compartments:
+        sec_list_data = get_security_list_data(network_client, compartment.id)
+        for sec_list in sec_list_data:
+            sec_lists.append(sec_list)
+
+    return sec_lists
