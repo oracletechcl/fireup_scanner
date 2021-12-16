@@ -61,6 +61,14 @@ mysql_dbs_with_no_backups = []
 instances = []
 
 
+### DBSystemContro.py Global Variables
+# Subnet list for use with parallel_executor
+
+subnets = []
+oracle_dbsystems = []
+mysql_dbsystems = []
+mysql_full_data = []
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
 
     values = data_variable
@@ -423,3 +431,62 @@ def get_security_lists(item):
             sec_lists.append(sec_list)
 
     return sec_lists
+
+
+def get_subnets_in_compartments(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    subnets = []
+    for compartment in compartments:
+        subnet_list_data = get_subnets_per_compartment_data(network_client, compartment.id)
+        for snet in subnet_list_data:
+            subnets.append(snet)
+        
+    return subnets
+
+def get_oracle_dbsystem(item):
+    database_client = item[0]
+    compartments = item[1:]
+
+    oracle_dbsystem = []
+    for compartment in compartments:
+        dbdata = get_db_system_data(database_client, compartment.id)
+        if (len(dbdata) > 0):
+            for db in dbdata:
+                if db.lifecycle_state != "DELETED":
+                    oracle_dbsystem.append(db)
+    
+    return oracle_dbsystem
+
+def get_mysql_dbsystem(item):
+    database_client =item[0]
+    compartments = item[1:]
+
+    mysql_dbsystem = []
+    for compartment in compartments:
+        dbdata = get_db_system_data(database_client, compartment.id)
+        if (len(dbdata) > 0):
+            for db in dbdata:
+                if db.lifecycle_state != "DELETED":
+                    mysql_dbsystem.append(db)
+    return mysql_dbsystem
+
+def get_mysql_dbsystem_full_info(item):
+    database_client = item[0]
+    dbsystem_id = item[1:]
+
+    mysql_full_data = []
+    for dbid in dbsystem_id:
+       #region = dbid.id.split('.')[3]       
+       debug_with_color_date(dbid, "green")
+       #debug_with_color_date(dbid.id, "yellow")
+       debug_with_color_date(dbid.compartment_id, "blue")
+    #     if database_client[1] in region or database_client[2] in region:
+    #         dbdata = get_mysql_dbsystem_data(database_client, dbid.id)
+    #         if (len(dbdata) > 0):
+    #             for db in dbdata:
+    #                 if db.lifecycle_state != "DELETED":
+    #                     mysql_full_data.append(db)
+
+    return mysql_full_data

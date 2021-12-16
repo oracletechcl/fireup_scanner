@@ -364,3 +364,15 @@ def list_quota_data(quotas_client, tenancy_id):
         __quotas_client.list_quotas,
         __tenancy_id
     ).data
+
+def get_subnets_per_compartment_data(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_subnets,
+        compartment_id, 
+    ).data
+
+def get_mysql_dbsystem_data(database_client, dbsystem_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.get_db_system,
+        dbsystem_id,
+    ).data
