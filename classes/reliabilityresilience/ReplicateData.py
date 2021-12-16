@@ -14,6 +14,7 @@ class ReplicateData(ReviewPoint):
     __block_volumes = []
     __boot_volumes = []
     __block_volume_replicas = []
+    __boot_volume_replicas = []
     __identity = None
 
     def __init__(self,
@@ -58,6 +59,16 @@ class ReplicateData(ReviewPoint):
             block_storage_clients.append( (get_block_storage_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
             identity_clients.append(get_identity_client(region_config, self.signer))
 
+        # TODO: TEMP
+        # region_config = self.config
+        # region_config['region'] = "uk-london-1"
+        # block_storage_clients.append( (get_block_storage_client(region_config, self.signer), "uk-london-1", "lhr") )
+        # identity_clients.append(get_identity_client(region_config, self.signer))
+        # region_config['region'] = "eu-frankfurt-1"
+        # block_storage_clients.append( (get_block_storage_client(region_config, self.signer), "eu-frankfurt-1", "fra") )
+        # identity_clients.append(get_identity_client(region_config, self.signer))
+        # TEMP
+
         # Retrieve all availability domains
         availability_domains = get_availability_domains(identity_clients, tenancy.id)
 
@@ -71,16 +82,19 @@ class ReplicateData(ReviewPoint):
         # Get all compartments including root compartment
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
-
+        debug_with_date('start1')
         self.__block_volumes = parallel_executor([x[0] for x in block_storage_clients], compartments, self.__search_block_volumes, len(compartments), "__block_volumes")
-
-        # TODO: Should boot volumes be checked??
-        # self.__boot_volumes = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_boot_volumes, len(compartments), "__boot_volumes")
-
+        debug_with_date('start2')
+        self.__boot_volumes = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_boot_volumes, len(compartments), "__boot_volumes")
+        debug_with_date('start3')
         if len(self.__block_volumes) > 0:
             self.__block_volume_replicas = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_for_block_volume_replicas, len(compartments), "__block_volume_replicas")
+        debug_with_date('start4')
+        if len(self.__boot_volumes) > 0:
+            self.__boot_volume_replicas = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_for_boot_volume_replicas, len(compartments), "__boot_volume_replicas")
+        debug_with_date('end')
 
-        return self.__block_volume_replicas
+        return self.__block_volume_replicas, self.__boot_volume_replicas
 
 
     def analyze_entity(self, entry):
@@ -88,20 +102,28 @@ class ReplicateData(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        debug_with_date(len(self.__block_volume_replicas))
+        debug_with_color_date(self.__block_volume_replicas, "red")
+        debug_with_color_date(self.__boot_volume_replicas, "green")
 
-        for block_volume in self.__block_volumes:
-            for block_volume_replica in self.__block_volume_replicas:
-                if block_volume['id'] == block_volume_replica['block_volume_id']:
-                    break
+        block_storages = self.__block_volumes + self.__boot_volumes
+        block_storage_replicas = self.__block_volume_replicas + self.__boot_volume_replicas
+
+        for block_storage in block_storages:
+            for block_storage_replica in block_storage_replicas:
+                if "block_volume_id" in block_storage_replica:
+                    if block_storage['id'] == block_storage_replica['block_volume_id']:
+                        debug_with_color_date('here', 'magenta')
+                        break
+                if "boot_volume_id" in block_storage_replica:
+                    if block_storage['id'] == block_storage_replica['boot_volume_id']:
+                        debug_with_color_date('here', 'cyan')
+                        break
             else:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(block_volume)
+                dictionary[entry]['findings'].append(block_storage)
                 dictionary[entry]['failure_cause'].append('Each block storages should be replicated to a disaster recovery region.')
-                dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_volume['display_name'])+' has is replicated to a disaster recovery region.')
+                dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_storage['display_name'])+' is replicated to a disaster recovery region.')
 
-        
-        
         return dictionary
 
     
@@ -201,8 +223,39 @@ class ReplicateData(ReviewPoint):
                         'lifecycle_state': block_volume_replica.lifecycle_state,
                         'size_in_gbs': block_volume_replica.size_in_gbs,
                         'time_created': block_volume_replica.time_created,
+                        'image_id': '',
                     }
 
                     block_volume_replicas.append(record)
 
         return block_volume_replicas
+
+    
+    def __search_for_boot_volume_replicas(self, item):
+        block_storage_client = item[0][0]
+        availability_domain = item[0][1]
+        compartments = item[1:]
+
+        boot_volume_replicas = []
+
+        for compartment in compartments:
+            boot_volume_replica_data = get_boot_volume_replica_data(block_storage_client, availability_domain, compartment.id)
+            for boot_volume_replica in boot_volume_replica_data:
+                if "TERMINATED" not in boot_volume_replica.lifecycle_state:
+                    record = {
+                        'availability_domain': boot_volume_replica.availability_domain,
+                        'boot_volume_id': boot_volume_replica.boot_volume_id,
+                        'compartment_id': boot_volume_replica.compartment_id,
+                        'defined_tags': boot_volume_replica.defined_tags,
+                        'display_name': boot_volume_replica.display_name,
+                        'id': boot_volume_replica.id,
+                        'lifecycle_state': boot_volume_replica.lifecycle_state,
+                        'size_in_gbs': boot_volume_replica.size_in_gbs,
+                        'time_created': boot_volume_replica.time_created,
+                        'image_id': boot_volume_replica.image_id,
+                        'block_volume_id': '',
+                    }
+
+                    boot_volume_replicas.append(record)
+
+        return boot_volume_replicas

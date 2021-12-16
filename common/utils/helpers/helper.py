@@ -5,8 +5,8 @@
 
 import oci
 from common.utils.tokenizer.signer import *
+from common.utils.formatter.printer import *
 from concurrent import futures
-from common.utils.formatter.printer import debug_with_date
 
 
 __identity_client = None
@@ -63,8 +63,9 @@ __instances = []
 
 ### ReplicatData.py Global Variables
 # TODO check comments still make sense here
-# Block volume replica list for use with parallel_executor 
+# Block storage replica lists for use with parallel_executor 
 __block_volume_replicas = []
+__boot_volume_replicas = []
 
 
 def get_config_and_signer():
@@ -362,6 +363,14 @@ def get_boot_volume_data(block_storage_client, availability_domain, compartment_
 
         return oci.pagination.list_call_get_all_results(
         block_storage_client.list_boot_volumes,
+        availability_domain,
+        compartment_id
+    ).data
+
+def get_boot_volume_replica_data(block_storage_client, availability_domain, compartment_id): 
+
+        return oci.pagination.list_call_get_all_results(
+        block_storage_client.list_boot_volume_replicas,
         availability_domain,
         compartment_id
     ).data
