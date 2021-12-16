@@ -8,7 +8,6 @@ from common.utils.tokenizer.signer import *
 from common.utils.formatter.printer import *
 from concurrent import futures
 
-
 __identity_client = None
 __network_client = None
 
@@ -61,11 +60,12 @@ __mysql_backups = []
 # Instance list for use with parallel_executor
 __instances = []
 
-### ReplicatData.py Global Variables
-# TODO check comments still make sense here
-# Block storage replica lists for use with parallel_executor 
+### ReplicateData.py Global Variables
+# Lists for use with parallel_executor 
 __block_volume_replicas = []
 __boot_volume_replicas = []
+__buckets = []
+__autonomous_databases = []
 
 
 def get_config_and_signer():
@@ -167,6 +167,7 @@ def get_compute_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create compute client: {}".format(e))
     return compute_client
+
 def get_block_storage_client(config, signer):
     try:
         block_storage_client = oci.core.BlockstorageClient(config, signer=signer)
@@ -180,6 +181,13 @@ def get_file_storage_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create file storage client: {}".format(e))
     return file_storage_client
+
+def get_object_storage_client(config, signer):
+    try:
+        object_storage_client = oci.object_storage.ObjectStorageClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create object storage client: {}".format(e))
+    return object_storage_client
 
 def get_database_client(config, signer):
     try:
@@ -372,6 +380,14 @@ def get_boot_volume_replica_data(block_storage_client, availability_domain, comp
         return oci.pagination.list_call_get_all_results(
         block_storage_client.list_boot_volume_replicas,
         availability_domain,
+        compartment_id
+    ).data
+
+def get_bucket_data(object_storage_client, namespace, compartment_id):
+
+    return oci.pagination.list_call_get_all_results(
+        object_storage_client.list_buckets,
+        str(namespace),
         compartment_id
     ).data
 

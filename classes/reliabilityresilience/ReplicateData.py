@@ -15,6 +15,8 @@ class ReplicateData(ReviewPoint):
     __boot_volumes = []
     __block_volume_replicas = []
     __boot_volume_replicas = []
+    __buckets = []
+    __autonomous_databases = []
     __identity = None
 
     def __init__(self,
@@ -49,24 +51,34 @@ class ReplicateData(ReviewPoint):
         regions = get_regions_data(self.__identity, self.config)
         block_storage_clients = []
         identity_clients = []
+        object_storage_clients = []
+        database_clients = []
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
-        for region in regions:
-            region_config = self.config
-            region_config['region'] = region.region_name
-            # Create a block_storage and identity_client for each region
-            block_storage_clients.append( (get_block_storage_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
-            identity_clients.append(get_identity_client(region_config, self.signer))
+        namespace = get_object_storage_client(self.config, self.signer).get_namespace().data
+
+        # for region in regions:
+        #     region_config = self.config
+        #     region_config['region'] = region.region_name
+        #     # Create clients for each region
+        #     block_storage_clients.append( (get_block_storage_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
+        #     identity_clients.append(get_identity_client(region_config, self.signer))
+        #     object_storage_clients.append( (get_object_storage_client(region_config, self.signer), namespace) )
+        #     database_clients.append(get_database_client(region_config, self.signer))
 
         # TODO: TEMP
-        # region_config = self.config
-        # region_config['region'] = "uk-london-1"
-        # block_storage_clients.append( (get_block_storage_client(region_config, self.signer), "uk-london-1", "lhr") )
-        # identity_clients.append(get_identity_client(region_config, self.signer))
-        # region_config['region'] = "eu-frankfurt-1"
-        # block_storage_clients.append( (get_block_storage_client(region_config, self.signer), "eu-frankfurt-1", "fra") )
-        # identity_clients.append(get_identity_client(region_config, self.signer))
+        region_config = self.config
+        region_config['region'] = "uk-london-1"
+        block_storage_clients.append( (get_block_storage_client(region_config, self.signer), "uk-london-1", "lhr") )
+        identity_clients.append(get_identity_client(region_config, self.signer))
+        object_storage_clients.append( (get_object_storage_client(region_config, self.signer), namespace) )
+        database_clients.append(get_database_client(region_config, self.signer))
+        region_config['region'] = "eu-frankfurt-1"
+        block_storage_clients.append( (get_block_storage_client(region_config, self.signer), "eu-frankfurt-1", "fra") )
+        identity_clients.append(get_identity_client(region_config, self.signer))
+        object_storage_clients.append( (get_object_storage_client(region_config, self.signer), namespace) )
+        database_clients.append(get_database_client(region_config, self.signer))
         # TEMP
 
         # Retrieve all availability domains
@@ -82,28 +94,36 @@ class ReplicateData(ReviewPoint):
         # Get all compartments including root compartment
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
-        debug_with_date('start1')
-        self.__block_volumes = parallel_executor([x[0] for x in block_storage_clients], compartments, self.__search_block_volumes, len(compartments), "__block_volumes")
-        debug_with_date('start2')
-        self.__boot_volumes = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_boot_volumes, len(compartments), "__boot_volumes")
-        debug_with_date('start3')
-        if len(self.__block_volumes) > 0:
-            self.__block_volume_replicas = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_for_block_volume_replicas, len(compartments), "__block_volume_replicas")
-        debug_with_date('start4')
-        if len(self.__boot_volumes) > 0:
-            self.__boot_volume_replicas = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_for_boot_volume_replicas, len(compartments), "__boot_volume_replicas")
-        debug_with_date('end')
+        # debug_with_date('start1')
+        # self.__block_volumes = parallel_executor([x[0] for x in block_storage_clients], compartments, self.__search_block_volumes, len(compartments), "__block_volumes")
+        # debug_with_date('start2')
+        # self.__boot_volumes = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_boot_volumes, len(compartments), "__boot_volumes")
+        # debug_with_date('start3')
+        # if len(self.__block_volumes) > 0:
+        #     self.__block_volume_replicas = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_for_block_volume_replicas, len(compartments), "__block_volume_replicas")
+        # debug_with_date('start4')
+        # if len(self.__boot_volumes) > 0:
+        #     self.__boot_volume_replicas = parallel_executor(block_storage_clients_with_ADs, compartments, self.__search_for_boot_volume_replicas, len(compartments), "__boot_volume_replicas")
+        # debug_with_date('end')
 
-        return self.__block_volume_replicas, self.__boot_volume_replicas
+        # self.__buckets = parallel_executor(object_storage_clients, compartments, self.__search_for_buckets, len(compartments), "__buckets")
+
+        self.__autonomous_databases = parallel_executor(database_clients, compartments, self.__search_for_autonomous_databases, len(compartments), "__autonomous_databases")
+
+        debug_with_color_date(len(self.__autonomous_databases), "blue")
+        
+        for adb in self.__autonomous_databases:
+            if adb.dataguard_region_type == None:
+                debug_with_color_date(f"{adb.display_name} {adb.dataguard_region_type}", "magenta")
+
+
+        return self.__block_volume_replicas, self.__boot_volume_replicas, self.__buckets
 
 
     def analyze_entity(self, entry):
         self.load_entity()
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-
-        debug_with_color_date(self.__block_volume_replicas, "red")
-        debug_with_color_date(self.__boot_volume_replicas, "green")
 
         block_storages = self.__block_volumes + self.__boot_volumes
         block_storage_replicas = self.__block_volume_replicas + self.__boot_volume_replicas
@@ -112,17 +132,23 @@ class ReplicateData(ReviewPoint):
             for block_storage_replica in block_storage_replicas:
                 if "block_volume_id" in block_storage_replica:
                     if block_storage['id'] == block_storage_replica['block_volume_id']:
-                        debug_with_color_date('here', 'magenta')
                         break
                 if "boot_volume_id" in block_storage_replica:
                     if block_storage['id'] == block_storage_replica['boot_volume_id']:
-                        debug_with_color_date('here', 'cyan')
                         break
             else:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(block_storage)
                 dictionary[entry]['failure_cause'].append('Each block storages should be replicated to a disaster recovery region.')
                 dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_storage['display_name'])+' is replicated to a disaster recovery region.')
+
+        
+        for bucket in self.__buckets:
+            if not bucket['is_read_only'] and not bucket['replication_enabled']:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(bucket)
+                dictionary[entry]['failure_cause'].append('Each bucket should be replicated to a disaster recovery region.')
+                dictionary[entry]['mitigations'].append('Make sure bucket '+str(bucket['name'])+' is replicated to a disaster recovery region.')
 
         return dictionary
 
@@ -259,3 +285,56 @@ class ReplicateData(ReviewPoint):
                     boot_volume_replicas.append(record)
 
         return boot_volume_replicas
+
+
+    def __search_for_buckets(self, item):
+        object_storage_client = item[0][0]
+        namespace = item[0][1]
+        compartments = item[1:]
+
+        buckets = []
+
+        for compartment in compartments:
+            bucket_data = get_bucket_data(object_storage_client, namespace, compartment.id)
+            for bucket in bucket_data:
+                extended_bucket_data = object_storage_client.get_bucket(namespace, bucket.name).data
+                record = {
+                    'compartment_id': extended_bucket_data.compartment_id,
+                    'created_by': extended_bucket_data.created_by,
+                    'defined_tags': extended_bucket_data.defined_tags,
+                    'etag': extended_bucket_data.etag,
+                    'name': extended_bucket_data.name,
+                    'namespace': extended_bucket_data.namespace,
+                    'time_created': extended_bucket_data.time_created,
+                    'id': extended_bucket_data.id,
+                    'is_read_only': extended_bucket_data.is_read_only,
+                    'public_access_type': extended_bucket_data.public_access_type,
+                    'storage_tier': extended_bucket_data.storage_tier,
+                    'auto_tiering': extended_bucket_data.auto_tiering,
+                    'approximate_size': extended_bucket_data.approximate_size,
+                    'approximate_count': extended_bucket_data.approximate_count,
+                    'versioning': extended_bucket_data.versioning,
+                    'replication_enabled': extended_bucket_data.replication_enabled,
+                }
+
+                buckets.append(record)
+
+        return buckets
+
+
+    def __search_for_autonomous_databases(self, item):
+        database_client = item[0]
+        compartments = item[1:]
+
+        autonomous_databases = []
+
+        for compartment in compartments:
+            autonomous_databases_data = get_auto_db_data(database_client, compartment.id)
+            for autonomous_database in autonomous_databases_data:
+                record = {
+                    ''
+                }
+
+                autonomous_databases.append(autonomous_database)
+
+        return autonomous_databases
