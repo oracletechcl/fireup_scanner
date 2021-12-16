@@ -3,22 +3,18 @@
 # SecurityList.py
 # Description: Implementation of class SecurityList based on abstract
 
-
-
-from common.utils.formatter.printer import debug, debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
-from collections import defaultdict
 
 
 class SecurityList(ReviewPoint):
 
     # Class Variables
     __identity = None
+    __sec_list_objects = []
     __non_compliant_sec_list = []
-
-
 
 
     def __init__(self,
@@ -65,7 +61,26 @@ class SecurityList(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__non_compliant_sec_list = parallel_executor(network_clients, compartments, self.__search_sec_lists, len(compartments), "__security_lists")
+        self.__sec_list_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_security_lists, len(compartments), ParallelExecutor.security_lists)
+
+        for sec_list in self.__sec_list_objects:
+            for ingress in sec_list.ingress_security_rules:
+                if ingress.source == '0.0.0.0/0':
+                    sec_list_record = {
+                        'compartment_id': sec_list.compartment_id,
+                        'defined_tags': sec_list.defined_tags,
+                        'display_name': sec_list.display_name,
+                        'egress_security_rules': sec_list.egress_security_rules,
+                        'id': sec_list.id,
+                        'ingress_security_rules': sec_list.ingress_security_rules,
+                        'lifecycle_state': sec_list.lifecycle_state,
+                        'time_created': sec_list.time_created,
+                        'vcn_id': sec_list.vcn_id,
+                    }
+                    self.__non_compliant_sec_list.append(sec_list_record)
+                break
+            else:
+                continue
 
         return self.__non_compliant_sec_list
 
@@ -85,33 +100,3 @@ class SecurityList(ReviewPoint):
                                        
         return dictionary
 
-
-    def __search_sec_lists(self, item):
-        network_client = item[0]
-        compartments = item[1:]
-
-        sec_lists = []
-
-        for compartment in compartments:
-            sec_list_data = get_security_list_data(network_client, compartment.id)
-            for sec_list in sec_list_data:
-                sec_list_record = {
-                    'compartment_id': sec_list.compartment_id,
-                    'defined_tags': sec_list.defined_tags,
-                    'display_name': sec_list.display_name,
-                    'egress_security_rules': sec_list.egress_security_rules,
-                    'id': sec_list.id,
-                    'ingress_security_rules': sec_list.ingress_security_rules,
-                    'lifecycle_state': sec_list.lifecycle_state,
-                    'time_created': sec_list.time_created,
-                    'vcn_id': sec_list.vcn_id,
-                }
-                    
-                for ingress in sec_list_record['ingress_security_rules']:
-                    if ingress.source == '0.0.0.0/0':
-                        sec_lists.append(sec_list_record)
-                    break
-                else:
-                    continue
-
-        return sec_lists
