@@ -12,14 +12,13 @@ from common.utils.tokenizer import *
 class CheckBackupPolicies(ReviewPoint):
 
     # Class Variables
-    __block_volumes = []
     __block_volume_objects = []
-    __boot_volumes = []
     __boot_volume_objects = []
     __storages_with_no_policy = []
-    __file_systems = []
+    __block_storages_with_no_policy_dicts = []
     __file_system_objects = []
-    __file_system_snapshots = []
+    __file_systems_with_no_snapshots = []
+    __file_systems_with_no_snapshots_dicts = []
     __identity = None
 
     def __init__(self,
@@ -87,56 +86,59 @@ class CheckBackupPolicies(ReviewPoint):
 
         self.__boot_volume_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, compartments, ParallelExecutor.get_boot_volumes, len(compartments), ParallelExecutor.boot_volumes)
 
-        for block_volume in self.__block_volume_objects:
-            record = {
-                'availability_domain': block_volume.availability_domain,
-                'compartment_id': block_volume.compartment_id,
-                'display_name': block_volume.display_name,
-                'id': block_volume.id,
-                'image_id': '',
-                'is_auto_tune_enabled': block_volume.is_auto_tune_enabled,
-                'is_hydrated': block_volume.is_hydrated,
-                'kms_key_id': block_volume.kms_key_id,
-                'lifecycle_state': block_volume.lifecycle_state,
-                'size_in_gbs': block_volume.size_in_gbs,
-                'volume_group_id': block_volume.volume_group_id,
-                'vpus_per_gb': block_volume.vpus_per_gb,
-                'time_created': block_volume.time_created,
-                'metered_bytes': '',
-                'is_clone_parent': '',
-                'lifecycle_details': '',
-                'source_details': '',
-            }
-            self.__block_volumes.append(record)
+        if len(self.__block_volume_objects + self.__boot_volume_objects) > 0:
+            self.__storages_with_no_policy = ParallelExecutor.executor(block_storage_clients, self.__block_volume_objects + self.__boot_volume_objects, ParallelExecutor.get_block_storages_with_no_policy, len(self.__block_volume_objects + self.__boot_volume_objects), ParallelExecutor.storages_with_no_policy)
 
-        for boot_volume in self.__boot_volume_objects:
-            record = {
-                'availability_domain': boot_volume.availability_domain,
-                'compartment_id': boot_volume.compartment_id,
-                'display_name': boot_volume.display_name,
-                'id': boot_volume.id,
-                'image_id': boot_volume.image_id,
-                'is_auto_tune_enabled': boot_volume.is_auto_tune_enabled,
-                'is_hydrated': boot_volume.is_hydrated,
-                'kms_key_id': boot_volume.kms_key_id,
-                'lifecycle_state': boot_volume.lifecycle_state,
-                'size_in_gbs': boot_volume.size_in_gbs,
-                'volume_group_id': boot_volume.volume_group_id,
-                'vpus_per_gb': boot_volume.vpus_per_gb,
-                'time_created': boot_volume.time_created,
-                'metered_bytes': '',
-                'is_clone_parent': '',
-                'lifecycle_details': '',
-                'source_details': '',
-            }
-            self.__block_volumes.append(record)
-
-        if len(self.__block_volumes + self.__boot_volumes) > 0:
-            self.__storages_with_no_policy = ParallelExecutor.executor(block_storage_clients, self.__block_volumes + self.__boot_volumes, ParallelExecutor.get_block_storages_with_no_policy, len(self.__block_volumes + self.__boot_volumes), ParallelExecutor.storages_with_no_policy)
+        for block_storage in self.__storages_with_no_policy:
+            if "bootvolume" in block_storage.id:
+                record = {
+                    'availability_domain': block_storage.availability_domain,
+                    'compartment_id': block_storage.compartment_id,
+                    'display_name': block_storage.display_name,
+                    'id': block_storage.id,
+                    'image_id': block_storage.image_id,
+                    'is_auto_tune_enabled': block_storage.is_auto_tune_enabled,
+                    'is_hydrated': block_storage.is_hydrated,
+                    'kms_key_id': block_storage.kms_key_id,
+                    'lifecycle_state': block_storage.lifecycle_state,
+                    'size_in_gbs': block_storage.size_in_gbs,
+                    'volume_group_id': block_storage.volume_group_id,
+                    'vpus_per_gb': block_storage.vpus_per_gb,
+                    'time_created': block_storage.time_created,
+                    'metered_bytes': '',
+                    'is_clone_parent': '',
+                    'lifecycle_details': '',
+                    'source_details': '',
+                }
+            else:
+                record = {
+                    'availability_domain': block_storage.availability_domain,
+                    'compartment_id': block_storage.compartment_id,
+                    'display_name': block_storage.display_name,
+                    'id': block_storage.id,
+                    'image_id': '',
+                    'is_auto_tune_enabled': block_storage.is_auto_tune_enabled,
+                    'is_hydrated': block_storage.is_hydrated,
+                    'kms_key_id': block_storage.kms_key_id,
+                    'lifecycle_state': block_storage.lifecycle_state,
+                    'size_in_gbs': block_storage.size_in_gbs,
+                    'volume_group_id': block_storage.volume_group_id,
+                    'vpus_per_gb': block_storage.vpus_per_gb,
+                    'time_created': block_storage.time_created,
+                    'metered_bytes': '',
+                    'is_clone_parent': '',
+                    'lifecycle_details': '',
+                    'source_details': '',
+                }
+            
+            self.__block_storages_with_no_policy_dicts.append(record)
 
         self.__file_system_objects = ParallelExecutor.executor(file_system_clients_with_ADs, compartments, ParallelExecutor.get_file_systems, len(compartments), ParallelExecutor.file_systems)
 
-        for file_system in self.__file_system_objects:
+        if len(self.__file_system_objects) > 0:
+            self.__file_systems_with_no_snapshots = ParallelExecutor.executor(file_storage_clients, self.__file_system_objects, ParallelExecutor.get_file_systems_with_no_snapshots, len(self.__file_system_objects), ParallelExecutor.file_systems_with_no_snapshots)
+
+        for file_system in self.__file_systems_with_no_snapshots:
             record = {
                 'availability_domain': file_system.availability_domain,
                 'compartment_id': file_system.compartment_id,
@@ -156,12 +158,9 @@ class CheckBackupPolicies(ReviewPoint):
                 'image_id': '',
                 'volume_group_id': '',
             }
-            self.__file_systems.append(record)
+            self.__file_systems_with_no_snapshots_dicts.append(record)
 
-        if len(self.__file_systems) > 0:
-            self.__file_system_snapshots = ParallelExecutor.executor(file_storage_clients, self.__file_systems, ParallelExecutor.get_file_systems_with_no_snapshots, len(self.__file_systems), ParallelExecutor.file_system_with_no_snapshots)
-
-        return self.__storages_with_no_policy, self.__file_system_snapshots
+        return self.__block_storages_with_no_policy_dicts, self.__file_systems_with_no_snapshots_dicts
 
 
     def analyze_entity(self, entry):
@@ -169,13 +168,13 @@ class CheckBackupPolicies(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        for block_storage in self.__storages_with_no_policy:
+        for block_storage in self.__block_storages_with_no_policy_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(block_storage)
             dictionary[entry]['failure_cause'].append('Each block storages should have a backup policy.')
             dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_storage['display_name'])+' has a backup policy assigned to it.')
 
-        for file_system in self.__file_system_snapshots:
+        for file_system in self.__file_systems_with_no_snapshots_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(file_system)
             dictionary[entry]['failure_cause'].append('Each file system should have snapshots within the last week.')

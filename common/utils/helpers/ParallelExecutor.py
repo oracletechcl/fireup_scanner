@@ -46,7 +46,7 @@ block_volumes = []
 boot_volumes = []
 storages_with_no_policy = []
 file_systems = []
-file_system_with_no_snapshots = []
+file_systems_with_no_snapshots = []
 
 
 ### BackupDatabases.py Global Variables
@@ -190,7 +190,8 @@ def get_load_balancer_healths(item):
     healths = []
 
     for load_balancer in load_balancers:
-        id = load_balancer['id']
+        debug_with_color_date('here', 'red')
+        id = load_balancer.id
         if "networkloadbalancer" in id:
             if client[1] in id or client[2] in id:
                 healths.append( (load_balancer, client[0].get_network_load_balancer_health(id).data) )
@@ -239,9 +240,9 @@ def get_block_storages_with_no_policy(item):
     findings = []
 
     for block_storage in block_storages:
-        id = block_storage['id']
-        region = block_storage['id'].split('.')[3]
-        if block_storage['lifecycle_state'].lower() != 'terminated':
+        id = block_storage.id
+        region = id.split('.')[3]
+        if "TERMINATED" not in block_storage.lifecycle_state:
             if client[1] in region or client[2] in region:
                 if len(client[0].get_volume_backup_policy_asset_assignment(id).data) == 0:
                     findings.append(block_storage)
@@ -272,10 +273,10 @@ def get_file_systems_with_no_snapshots(item):
     findings = []
 
     for file_system in file_systems:
-        id = file_system['id']
-        region = file_system['id'].split('.')[3]
+        id = file_system.id
+        region = id.split('.')[3]
         # Replace added here as file systems use underscores in regions OCID
-        if file_system['lifecycle_state'].lower() != 'terminated':
+        if "TERMINATED" not in file_system.lifecycle_state:
             if client[1] in region or client[1].replace('-', '_') in region or client[2] in region:
                 # Gets latest snapshot of each file system and checks its date is recent
                 snapshots = client[0].list_snapshots(id).data
@@ -328,20 +329,21 @@ def get_mysql_dbs_with_no_backups(item):
 
     # Checks that each MySQL DB has a backup within the last `backup_window` days
     for mysql_database in mysql_databases:
-        region = mysql_database['id'].split('.')[3]
+        region = mysql_database.id.split('.')[3]
         if mysql_backup_client[1] in region or mysql_backup_client[2] in region:
-            backup_data = get_mysql_backup_data(mysql_backup_client[0], mysql_database['compartment_id'])
+            backup_data = get_mysql_backup_data(mysql_backup_client[0], mysql_database.compartment_id)
             # Checks if there are any backups, the newest isn't deleted, 
             # matches to the current db, and is within the last `backup_window` days
             if len(backup_data) > 0: 
                 if ("DELETED" not in backup_data[0].lifecycle_state and
-                mysql_database['id'] == backup_data[0].db_system_id and
+                mysql_database.id == backup_data[0].db_system_id and
                 datetime.now() > (backup_data[0].time_created.replace(tzinfo=None) + timedelta(days=backup_window))):
                     backups.append(mysql_database)
             else:
                 backups.append(mysql_database)
 
     return backups
+
 
 def get_db_systems_with_no_backups(item):
     database_client = item[0]
@@ -350,9 +352,9 @@ def get_db_systems_with_no_backups(item):
     disabled_backups = []
 
     for db_home in db_system_homes:
-        region = db_home['id'].split('.')[3]
+        region = db_home.id.split('.')[3]
         if database_client[1] in region or database_client[2] in region:
-            databases = database_client[0].list_databases(db_home_id=db_home['id'], system_id=db_home['db_system_id'], compartment_id=db_home['compartment_id']).data
+            databases = database_client[0].list_databases(db_home_id=db_home.id, system_id=db_home.db_system_id, compartment_id=db_home.compartment_id).data
             for db in databases:
                 if "TERMINATED" not in db.lifecycle_state:
                     if not db.db_backup_config.auto_backup_enabled:
@@ -361,3 +363,24 @@ def get_db_systems_with_no_backups(item):
     return disabled_backups
 
 
+def __search_user_for_api_keys(self, item):
+    indentity_client = item[0]
+    users = item[1:]
+
+    user_data = []
+
+    for user in users:
+        api_key_data = get_api_key_data(indentity_client, user['id'])
+        for api_key in api_key_data:
+            api_key_record = {
+                'fingerprint': api_key.fingerprint,
+                'inactive_status': api_key.inactive_status,
+                'lifecycle_state': api_key.lifecycle_state,
+                'user_id': api_key.user_id,
+                'time_created': api_key.time_created,  
+            }
+            user['api_key'].append(api_key_record) 
+        
+        user_data.append(user)
+
+    return user_data

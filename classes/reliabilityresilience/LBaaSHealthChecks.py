@@ -12,9 +12,13 @@ from common.utils.tokenizer import *
 class LBaaSHealthChecks(ReviewPoint):
 
     # Class Variables
+    __load_balancer_objects = []
+    __network_load_balancer_objects = []
     __load_balancers = []
     __network_load_balancers = []
     __load_balancer_healths = []
+    __network_load_balancer_healths = []
+    __combined_load_balancers = []
     __identity = None
     
 
@@ -55,7 +59,7 @@ class LBaaSHealthChecks(ReviewPoint):
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
-            # Create a network client for each region
+            # Create clients for each region
             load_balancer_clients.append( (get_load_balancer_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
             network_load_balancer_clients.append( (get_network_load_balancer_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
 
@@ -69,7 +73,13 @@ class LBaaSHealthChecks(ReviewPoint):
         
         self.__network_load_balancer_objects = ParallelExecutor.executor([x[0] for x in network_load_balancer_clients], compartments, ParallelExecutor.get_network_load_balancers, len(compartments), ParallelExecutor.network_load_balancers)
 
-        for load_balancer in self.__load_balancer_objects:
+        if len(self.__load_balancer_objects) > 0:
+            self.__load_balancer_healths = ParallelExecutor.executor(load_balancer_clients, self.__load_balancer_objects, ParallelExecutor.get_load_balancer_healths, len(self.__load_balancer_objects), ParallelExecutor.load_balancer_healths)
+
+        if len(self.__network_load_balancer_objects) > 0:
+            self.__network_load_balancer_healths = ParallelExecutor.executor(network_load_balancer_clients, self.__network_load_balancer_objects, ParallelExecutor.get_load_balancer_healths, len(self.__network_load_balancer_objects), ParallelExecutor.network_load_balancer_healths)
+
+        for load_balancer, health in self.__load_balancer_healths:
             record = {
                 'display_name': load_balancer.display_name,
                 'id': load_balancer.id,
@@ -80,9 +90,9 @@ class LBaaSHealthChecks(ReviewPoint):
                 'lifecycle_state': load_balancer.lifecycle_state,
                 'time_created': load_balancer.time_created,
             }
-            self.__load_balancers.append(record)
+            self.__load_balancers.append( (record, health) )
 
-        for network_load_balancer in self.__network_load_balancer_objects:
+        for network_load_balancer, health in self.__network_load_balancer_healths:
             record = {
                 'display_name': network_load_balancer.display_name,
                 'id': network_load_balancer.id,
@@ -93,17 +103,11 @@ class LBaaSHealthChecks(ReviewPoint):
                 'lifecycle_state': network_load_balancer.lifecycle_state,
                 'time_created': network_load_balancer.time_created,
             }
-            self.__network_load_balancers.append(record)
+            self.__network_load_balancers.append( (record, health) )
 
-        if len(self.__load_balancers) > 0:
-            self.__load_balancer_healths = ParallelExecutor.executor(load_balancer_clients, self.__load_balancers, ParallelExecutor.get_load_balancer_healths, len(self.__load_balancer_objects), ParallelExecutor.load_balancer_healths)
+        self.__combined_load_balancers = self.__load_balancers + self.__network_load_balancers
 
-        if len(self.__network_load_balancers) > 0:
-            self.__network_load_balancer_healths = ParallelExecutor.executor(network_load_balancer_clients, self.__network_load_balancers, ParallelExecutor.get_load_balancer_healths, len(self.__network_load_balancer_objects), ParallelExecutor.network_load_balancer_healths)
-
-        self.__load_balancer_healths = self.__load_balancer_healths + self.__network_load_balancer_healths
-
-        return self.__load_balancer_healths
+        return self.__combined_load_balancers
 
 
     def analyze_entity(self, entry):
@@ -111,7 +115,7 @@ class LBaaSHealthChecks(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        for load_balancer, health in self.__load_balancer_healths:
+        for load_balancer, health in self.__combined_load_balancers:
             if "OK" not in health.status:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(load_balancer)

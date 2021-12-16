@@ -12,13 +12,13 @@ from common.utils.tokenizer import *
 class BackupDatabases(ReviewPoint):
 
     # Class Variables
-    __db_system_homes = []
     __db_system_home_objects = []
-    __mysql_databases = []
     __mysql_database_objects = []
 
     __db_systems_with_no_backups = []
+    __db_systems_with_no_backups_dicts = []
     __mysql_dbs_with_no_backups = []
+    __mysql_dbs_with_no_backups_dicts = []
     __identity = None
 
     def __init__(self,
@@ -71,7 +71,10 @@ class BackupDatabases(ReviewPoint):
 
         self.__db_system_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], compartments, ParallelExecutor.get_database_homes, len(compartments), ParallelExecutor.db_system_homes)
 
-        for db_home in self.__db_system_home_objects:
+        if len(self.__db_system_home_objects) > 0:
+            self.__db_systems_with_no_backups = ParallelExecutor.executor(db_system_clients, self.__db_system_home_objects, ParallelExecutor.get_db_systems_with_no_backups, len(self.__db_system_home_objects), ParallelExecutor.db_systems_with_no_backups)
+
+        for db, db_home in self.__db_systems_with_no_backups:
             record = {
                 'compartment_id': db_home.compartment_id,
                 'defined_tags': db_home.defined_tags,
@@ -90,11 +93,14 @@ class BackupDatabases(ReviewPoint):
                 'availability_domain': '',
                 'is_highly_available': '',
             }
-            self.__db_system_homes.append(record)
+            self.__db_systems_with_no_backups_dicts.append( (db, record) )
 
         self.__mysql_database_objects = ParallelExecutor.executor(mysql_clients, compartments, ParallelExecutor.get_mysql_dbs, len(compartments), ParallelExecutor.mysql_databases)
 
-        for mysql_db in self.__mysql_database_objects:
+        if len(self.__mysql_database_objects) > 0:
+            self.__mysql_dbs_with_no_backups = ParallelExecutor.executor(mysql_backup_clients, self.__mysql_database_objects, ParallelExecutor.get_mysql_dbs_with_no_backups, len(self.__mysql_database_objects), ParallelExecutor.mysql_dbs_with_no_backups)
+
+        for mysql_db in self.__mysql_dbs_with_no_backups:
             record = {
                 'availability_domain': mysql_db.availability_domain,
                 'compartment_id': mysql_db.compartment_id,
@@ -113,15 +119,9 @@ class BackupDatabases(ReviewPoint):
                 'db_version': '',
                 'vm_cluster_id': '',
             }
-            self.__mysql_databases.append(record)
+            self.__mysql_dbs_with_no_backups_dicts.append(record)
 
-        if len(self.__mysql_databases) > 0:
-            self.__mysql_dbs_with_no_backups = ParallelExecutor.executor(mysql_backup_clients, self.__mysql_databases, ParallelExecutor.get_mysql_dbs_with_no_backups, len(self.__mysql_databases), ParallelExecutor.mysql_dbs_with_no_backups)
-
-        if len(self.__db_system_homes) > 0:
-            self.__db_systems_with_no_backups = ParallelExecutor.executor(db_system_clients, self.__db_system_homes, ParallelExecutor.get_db_systems_with_no_backups, len(self.__db_system_homes), ParallelExecutor.db_systems_with_no_backups)
-
-        return self.__mysql_dbs_with_no_backups, self.__db_systems_with_no_backups
+        return self.__db_systems_with_no_backups_dicts, self.__mysql_dbs_with_no_backups_dicts
 
 
     def analyze_entity(self, entry):
@@ -129,13 +129,13 @@ class BackupDatabases(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        for db, db_home in self.__db_systems_with_no_backups:
+        for db, db_home in self.__db_systems_with_no_backups_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(db_home)
             dictionary[entry]['failure_cause'].append('Each Database System database should have automatic backup enabled')
             dictionary[entry]['mitigations'].append(f"Make sure database {db.db_name} within database home {db_home['display_name']} has automatic backup enabled.")
 
-        for mysql_database in self.__mysql_dbs_with_no_backups:
+        for mysql_database in self.__mysql_dbs_with_no_backups_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(mysql_database)
             dictionary[entry]['failure_cause'].append('Each MySQL Database should have automatic backup enabled')

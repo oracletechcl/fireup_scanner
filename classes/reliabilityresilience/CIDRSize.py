@@ -3,10 +3,10 @@
 # CIDRSize.py
 # Description: Implementation of class CIDRSize based on abstract
 
-from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
+from common.utils.helpers.helper import *
 
 
 class CIDRSize(ReviewPoint):

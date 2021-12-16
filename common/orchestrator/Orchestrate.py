@@ -47,12 +47,12 @@ def main_orchestrator(config,signer, report_directory):
     # __call_1_10(config, signer, report_directory)
     # __call_1_13(config, signer, report_directory)
     
-    __call_2_5(config, signer, report_directory)
-    __call_2_8(config, signer, report_directory)
-    __call_2_9(config, signer, report_directory)
-    __call_2_10(config, signer, report_directory)
-    __call_2_13(config, signer, report_directory)
-    __call_2_14(config, signer, report_directory)
+    # __call_2_5(config, signer, report_directory)
+    # __call_2_8(config, signer, report_directory)
+    # __call_2_9(config, signer, report_directory)
+    # __call_2_10(config, signer, report_directory)
+    # __call_2_13(config, signer, report_directory)
+    # __call_2_14(config, signer, report_directory)
     __call_2_15(config, signer, report_directory)
 
 
