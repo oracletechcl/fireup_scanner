@@ -7,7 +7,6 @@ import oci
 from common.utils.tokenizer.signer import *
 from concurrent import futures
 from common.utils.formatter.printer import debug_with_color_date, debug_with_date
-import common.utils.helpers.paraexecvars as paraexecvars
 
 
 def get_config_and_signer():
@@ -343,39 +342,6 @@ def get_mysql_backup_data(mysql_client, compartment_id):
         mysql_client.list_backups,
         compartment_id,
     ).data
-
-def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
-
-    values = data_variable
-
-    if len(values) > 0:
-        return values
-
-    items = []
-
-    for client in dependent_clients:
-        item = [client]
-        for i, independent in enumerate(independent_iterator):
-            item.append(independent)
-            if i > 0 and i % 20 == 0:
-                items.append(item)
-                item = [client]
-        items.append(item)
-
-    with futures.ThreadPoolExecutor(threads) as executor:
-
-        processes = [
-            executor.submit(fuction_to_execute, item) 
-            for item in items
-        ]
-
-        futures.wait(processes)
-
-        for p in processes:
-            for value in p.result():
-                values.append(value)
-
-    return values
 
 def get_quotas_client(config, signer):
     try:
