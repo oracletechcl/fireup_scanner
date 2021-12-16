@@ -6,61 +6,8 @@
 import oci
 from common.utils.tokenizer.signer import *
 from concurrent import futures
-from common.utils.formatter.printer import debug_with_date
-
-
-__identity_client = None
-__network_client = None
-
-__compartment_id = None
-__compartments = None
-
-__availability_domains = []
-
-__vcns = []
-__security_lists = []
-
-### LBaasBackends.py + LBaaSHealthChecks.py Global Variables
-# LBaas Clients
-__load_balancer_client = None
-__network_load_balancer_client = None
-# LBaas lists for use with parallel_executor
-__load_balancers = []
-__network_load_balancers = []
-__load_balancer_healths = []
-__network_load_balancer_healths = []
-
-### Rbac.py Global Variables
-__policies = []
-
-### ApiKeys.py Global Variables
-# Api Key list for use with parallel_executor
-__api_keys = []
-
-### InstancePrincipal.py
-__instancePrincipal_dictionary = []
-__dyn_groups_per_compartment = []
-
-### CheckBackupPolicies.py Global Variables
-# Block storage lists for use with parallel_executor
-__block_volumes = []
-__boot_volumes = []
-__storages_with_no_policy = []
-__file_systems = []
-__file_system_snapshots = []
-
-
-### BackupDatabases.py Global Variables
-# Database list for use with parallel_executor
-__db_system_homes = []
-__mysql_databases = []
-__db_system_backups = []
-__mysql_backups = []
-
-### InstancePrincipal.py Global Variables
-# Instance list for use with parallel_executor
-__instances = []
-
+from common.utils.formatter.printer import debug_with_color_date, debug_with_date
+import common.utils.helpers.paraexecvars as paraexecvars
 
 
 def get_config_and_signer():
@@ -397,9 +344,9 @@ def get_mysql_backup_data(mysql_client, compartment_id):
         compartment_id,
     ).data
 
-def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, storage_variable_name:str):
+def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
 
-    values = globals()[storage_variable_name]
+    values = data_variable
 
     if len(values) > 0:
         return values
@@ -450,7 +397,7 @@ def get_availability_domains(identity_clients, tenancy_id):
     """
     Get all availability domains in a region using an identity client from each region
     """
-    availability_domains = globals()["__availability_domains"]
+    availability_domains = paraexecvars.__availability_domains
 
     # Return if function has already been run
     if len(availability_domains) > 0:

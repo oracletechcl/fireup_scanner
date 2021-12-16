@@ -70,7 +70,11 @@ class ApiKeys(ReviewPoint):
             }
             self.__users.append(user_record)
 
-        self.__users = parallel_executor([self.__identity], self.__users, self.__search_user_for_api_keys, len(self.__users), "__api_keys")
+        debug_with_color_date(paraexecvars, "red")
+
+        debug_with_color_date(paraexecvars.globals()["__api_keys"], "green")
+
+        # self.__users = parallel_executor([self.__identity], self.__users, self.__search_user_for_api_keys, len(self.__users), paraexecvars.__api_keys)
 
         return self.__users
         
