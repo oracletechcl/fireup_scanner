@@ -1,0 +1,1724 @@
+
+########################################################################################################################################################################################################
+#[36m                                                                                            Fireup v0.0.8                                                                                             [0m#
+########################################################################################################################################################################################################
+Num   Area                                     Sub-Area                                                               OK    Findings   Review Point                                      
+########################################################################################################################################################################################################
+[33m[15/12/2021 20:33:30] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaabcqh7g6wo2tspi65mjnyoztrbjy6qoioka4ypeddjsqe7jxzlsaq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": "DB for wordpress on OKE demonstration",
+  "display_name": "mysqlendevour",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.2.44",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "ACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaa4wwpunqbgck2iiqqsrymkfcy4xbpgnolvb6zse22bpneime7232a",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "ACTIVE",
+  "mysql_version": "8.0.27",
+  "time_created": "2021-08-25T22:42:37.609000+00:00",
+  "time_updated": "2021-12-09T22:47:33.640000+00:00"
+}][0m
+[33m[15/12/2021 20:33:31] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaf443swpjfv32baejcmoc5ngrih66evzcn2kphj453jphowelm6vq",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "testdb",
+  "endpoints": [
+    {
+      "hostname": "testdb.sub01110844011.testvcn.oraclevcn.com",
+      "ip_address": "10.0.2.3",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "ACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaa7mi2azlrn4til5wwvv6wu3m42tkrjcqa5zeamvo5233vde6vdaoa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "ACTIVE",
+  "mysql_version": "8.0.27",
+  "time_created": "2021-01-11T09:34:18.544000+00:00",
+  "time_updated": "2021-12-15T00:04:36.588000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaf443swpjfv32baejcmoc5ngrih66evzcn2kphj453jphowelm6vq",
+  "current_placement": {
+    "availability_domain": null,
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "testingmysql",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "192.168.0.46",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaatielg2242ilku4paxifoc22hu4fsaixoqhiljuwbeqwylcwzwqoa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.22",
+  "time_created": "2020-10-22T09:04:53.342000+00:00",
+  "time_updated": "2021-01-07T02:05:52.323000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaaf443swpjfv32baejcmoc5ngrih66evzcn2kphj453jphowelm6vq",
+  "current_placement": {
+    "availability_domain": null,
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "testmysql",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaa2dsnq2z3m3dxfqfj3vr6cqpokylqftk2iboap4wyga7chmark2kq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": null,
+  "time_created": "2020-10-22T08:57:01.110000+00:00",
+  "time_updated": "2020-10-22T08:57:01.110000+00:00"
+}][0m
+[33m[15/12/2021 20:33:32] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaazr3jvkpq34dbccsnaqwzyqirjdwi476vdzdgitiztizkos7azica",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql20201228132016",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.0.3",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaarsatvlmz64njuo2avdqddfty66hch2xgn4lhlb25wc6io47y4d2a",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.23",
+  "time_created": "2020-12-28T07:51:15.099000+00:00",
+  "time_updated": "2021-04-26T06:24:24.668000+00:00"
+}][0m
+[33m[15/12/2021 20:33:32] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa2c6oy4l6ofh3c6mtty6qsewa2x6eaeflekn5ozsywnn7thswatbq",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-3"
+  },
+  "defined_tags": {
+    "default_namespace": {
+      "creator": "oracleidentitycloudservice/vikas.raina@oracle.com"
+    }
+  },
+  "description": null,
+  "display_name": "mysql-aws-oci",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.1.99",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "ACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-3",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaaihl2gwpbzkr3hpghsnawccbolk2tqzdqkozh6kzd3vhmj5bkegma",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "ACTIVE",
+  "mysql_version": "8.0.27",
+  "time_created": "2021-12-02T03:58:32.749000+00:00",
+  "time_updated": "2021-12-14T04:19:11.496000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa2c6oy4l6ofh3c6mtty6qsewa2x6eaeflekn5ozsywnn7thswatbq",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-3"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "MysqlPublic",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.0.195",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-3",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaaqj554qw6qnnixsj5k6n62evisnf4kbz3lqdpu5fydwx2tyzbqv5a",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-04-27T06:26:41.869000+00:00",
+  "time_updated": "2021-12-02T03:59:41.767000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa2c6oy4l6ofh3c6mtty6qsewa2x6eaeflekn5ozsywnn7thswatbq",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-3"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysqlbastion",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.1.136",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-3",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaar5glc3vpsek3mw7i266ei7f3wfwj4zqfiblejrhwg7vbbsbfh5ha",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.27",
+  "time_created": "2021-04-27T06:22:55.574000+00:00",
+  "time_updated": "2021-12-02T10:07:31.552000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa2c6oy4l6ofh3c6mtty6qsewa2x6eaeflekn5ozsywnn7thswatbq",
+  "current_placement": {
+    "availability_domain": null,
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": "MYSQL",
+  "display_name": "mysqlVR",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.0.30",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaanbar5qgwerdngwvuam6hhqvjl7lwrcyravj5jueoubyme7m3jivq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.23",
+  "time_created": "2020-11-06T05:28:48.522000+00:00",
+  "time_updated": "2021-04-27T06:24:33.901000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa2c6oy4l6ofh3c6mtty6qsewa2x6eaeflekn5ozsywnn7thswatbq",
+  "current_placement": {
+    "availability_domain": null,
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql20200815110309",
+  "endpoints": [
+    {
+      "hostname": "bmuthuv.subnet.vcn.oraclevcn.com",
+      "ip_address": "10.0.0.99",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaaea43w3qhpxresm43zhojce2vwthgcwooyknv4ptvjavhnronhscq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.21-u1-cloud",
+  "time_created": "2020-08-15T05:34:25.647000+00:00",
+  "time_updated": "2020-08-15T05:34:25.647000+00:00"
+}][0m
+[33m[15/12/2021 20:33:33] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-3"
+  },
+  "defined_tags": {
+    "default_namespace": {
+      "creator": "oracleidentitycloudservice/denny.alquinta@oracle.com"
+    }
+  },
+  "description": "Wordpress Demo for Aerosim",
+  "display_name": "aerosimwp",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.3.138",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-3",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaap3vbannfgclw4tphj6cz7vkwo2bjshbcqt45rmlazh7o7dv5rc4q",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": true,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26-u2-cloud",
+  "time_created": "2021-09-29T13:47:46.425000+00:00",
+  "time_updated": "2021-09-29T14:27:56.110000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaadtsuzqedihnrixtwfpf4cu2gwlfdsh4dcsw5bbwdjsdxx3o4puiq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T15:32:33.192000+00:00",
+  "time_updated": "2021-08-23T15:36:29.664000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaaeuxuisaeixt32jpzekzefldhqb2g6nthmitp4qwufhbite3wv4nq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T15:24:41.913000+00:00",
+  "time_updated": "2021-08-23T15:32:51.760000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "wpress",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.2.163",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaa2wc6tjgl2lvzys4og3t4gtn5fbomphnjwt52v4xzp7cgjn224tza",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-02T21:40:21.300000+00:00",
+  "time_updated": "2021-09-29T13:48:26.123000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "wordpress",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.3.214",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaafye2xxzyzxq5bctutczm37uwkbjuadgz6ghevoezugb2ekgpb2aq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26-cloud",
+  "time_created": "2021-08-02T15:56:59.024000+00:00",
+  "time_updated": "2021-08-02T21:42:39.855000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "wordpressmysql",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.2.255",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaagksdvv3vuhl6ur7baxff7a5glenjapxogfv577a5gwu5nakhzhia",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26-cloud",
+  "time_created": "2021-08-02T15:27:47.480000+00:00",
+  "time_updated": "2021-08-02T15:58:54.558000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "wordpress_mysql",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.2.202",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaaqunpwgxheisasbhv2ww5w25ewfzsls7rmyyvlb7df75y7kcvsmqa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26-cloud",
+  "time_created": "2021-07-27T13:27:38.218000+00:00",
+  "time_updated": "2021-07-27T14:10:38.093000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysqlwp",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.3.103",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaavz6gewgvv6szhuamjihgful67j2heemjqp6pw7hreqf5xdomnujq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26-cloud",
+  "time_created": "2021-07-26T20:47:33.385000+00:00",
+  "time_updated": "2021-07-26T21:13:36.693000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.2.104",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaabrmz46rvablcpo5gaag2usti7y4bgaab3k7jy3wr3o7oghy6qoda",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.25-u3-cloud",
+  "time_created": "2021-07-16T03:52:11.510000+00:00",
+  "time_updated": "2021-07-16T04:11:49.364000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "wordpressmysql",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.2.111",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaazxiwazm6eh25h3nmwtho56e7k5bpd5uazalseqvxyanleepyu7ra",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.25-u3-cloud",
+  "time_created": "2021-07-16T03:32:59.413000+00:00",
+  "time_updated": "2021-07-16T03:53:47.426000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaalx77hsir4r2kc36twf3f3twf3ff3b5jtam7wbe5jmtq3bjzvjgzq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "wordpressmysql",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.2.6",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaamknq5hiyopjcpk422d5ghj6dtzd2yfadru27rfxivzl5dq22pnha",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.25-u3-cloud",
+  "time_created": "2021-07-16T02:01:11.280000+00:00",
+  "time_updated": "2021-07-16T03:19:39.269000+00:00"
+}][0m
+[33m[15/12/2021 20:33:33] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaablnmjeso7efq4jqzht6ldeqrwho4fqtq26subyvzckt7kr4cp3tq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": "Springboot MySQL Database",
+  "display_name": "springbootmysql",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.1.137",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "ACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaa4wyvp3kcv5pvvnrhmbmumcbtj5xu46bwjnuouytalbavzc5hzqga",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "ACTIVE",
+  "mysql_version": "8.0.27",
+  "time_created": "2021-06-08T01:56:51.530000+00:00",
+  "time_updated": "2021-12-15T00:01:52.691000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaablnmjeso7efq4jqzht6ldeqrwho4fqtq26subyvzckt7kr4cp3tq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Sample MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [
+    {
+      "hostname": "unitarymysqlha.dalquinthubpubs.dalquinthubvcn.oraclevcn.com",
+      "ip_address": "10.0.1.148",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaai7qd5ffkxyvwg4zhk75n57swxgfwe2ydi4y7xphxgx6jz7c5ekka",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.25-u1-cloud",
+  "time_created": "2021-05-28T14:28:54.906000+00:00",
+  "time_updated": "2021-05-28T14:39:05.688000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaablnmjeso7efq4jqzht6ldeqrwho4fqtq26subyvzckt7kr4cp3tq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Sample MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [
+    {
+      "hostname": "unitarymysqlha.dalquinthubpubs.dalquinthubvcn.oraclevcn.com",
+      "ip_address": "10.0.0.158",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaa4bpvbqzcenwptppcdftmtgwblutoqsi4onq4ncwts6rrpycj5paa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": true,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.25-u1-cloud",
+  "time_created": "2021-05-27T17:23:59.291000+00:00",
+  "time_updated": "2021-05-28T14:28:09.433000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaablnmjeso7efq4jqzht6ldeqrwho4fqtq26subyvzckt7kr4cp3tq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Testing HA MYSQL",
+  "display_name": "testha",
+  "endpoints": [
+    {
+      "hostname": "hamysql.pvtsubnet01.dalquintvcnterr.oraclevcn.com",
+      "ip_address": "10.0.1.236",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaaidxjczplpmxqq4sp2ycttbfenjbafcpdfhmv7go2idrhbnqs44sa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": true,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.25-cloud",
+  "time_created": "2021-05-25T17:02:21.392000+00:00",
+  "time_updated": "2021-05-25T17:30:14.856000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaablnmjeso7efq4jqzht6ldeqrwho4fqtq26subyvzckt7kr4cp3tq",
+  "current_placement": {
+    "availability_domain": "oDQF:SA-SANTIAGO-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Stand Alone MYSQL Instance",
+  "display_name": "standalonemysql",
+  "endpoints": [
+    {
+      "hostname": "standalonemysql.pvtsubnet01.dalquintvcnterr.oraclevcn.com",
+      "ip_address": "10.0.0.232",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaanobkbvnbrpgfcjb7np6robrfdp6qabfl2azgyeop6fz7c6xdrehq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.25-cloud",
+  "time_created": "2021-05-25T16:12:48.024000+00:00",
+  "time_updated": "2021-05-25T16:28:48.747000+00:00"
+}][0m
+[33m[15/12/2021 20:33:33] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-2",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-2",
+    "fault_domain": "FAULT-DOMAIN-3"
+  },
+  "defined_tags": {
+    "default_namespace": {
+      "creator": "oracleidentitycloudservice/matthew.mcloughlin@oracle.com"
+    }
+  },
+  "description": "Temporary testing database with Fireup",
+  "display_name": "UnitaryMySQL",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.0.235",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-3",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaa3jrsjantiseeultlzlm6gggsslt546fi2fel5fqlytg7iacpmqjq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.27-u2-cloud",
+  "time_created": "2021-12-14T09:22:00.087000+00:00",
+  "time_updated": "2021-12-14T11:14:27.518000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {
+    "default_namespace": {
+      "creator": "oracleidentitycloudservice/matthew.mcloughlin@oracle.com"
+    }
+  },
+  "description": "Unitary Test MySQL Database",
+  "display_name": "MySQLBrickLibs",
+  "endpoints": [
+    {
+      "hostname": "unitarymysqlha2.cloudbrickspubl.vcn08171526.oraclevcn.com",
+      "ip_address": "10.0.0.69",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaaolib43qe6mrainksws6udybskafhdyhyi73huapalefu63abmh5a",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": true,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.27-u1-cloud",
+  "time_created": "2021-11-18T11:50:59.491000+00:00",
+  "time_updated": "2021-11-18T12:16:10.059000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {
+    "default_namespace": {
+      "creator": "oracleidentitycloudservice/matthew.mcloughlin@oracle.com"
+    }
+  },
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [
+    {
+      "hostname": "unitarymysqlha2.cloudbrickspubl.vcn08171526.oraclevcn.com",
+      "ip_address": "10.0.0.61",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaaa5ybhg6ktepei33xxw4qt2xijca3eqquwtgxkcyr7zxhp644lvyq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.27-u1-cloud",
+  "time_created": "2021-11-18T11:15:22.416000+00:00",
+  "time_updated": "2021-11-18T11:28:41.302000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": null,
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaa4zdeej5m2alwus322ki7mxnd3xbxfib52rta6vlzhqwm52pfw4pa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": null,
+  "time_created": "2021-08-24T08:01:32.335000+00:00",
+  "time_updated": "2021-08-24T08:02:23.047000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaatsoe4pyiivo5ahwlwzlgdixyrfk7rtdlwrenerz3zlwksmez26pa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-24T08:00:41.110000+00:00",
+  "time_updated": "2021-08-24T08:04:18.199000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaauva7i3x22ohugi2jbqxzpwp4awppmpqx2dfw7pqihhsdrnsbiksa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T15:33:14.312000+00:00",
+  "time_updated": "2021-08-23T15:34:05.702000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaakqhl6vt7wnujkboaojje4qwh23sgqc2cootj7lxkqyb6smu5tgxq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T15:32:06.108000+00:00",
+  "time_updated": "2021-08-23T15:35:37.478000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaa7zkxjqmm5urloqofjpnaeevjhoz3i42j4wwrpbdfuusyrf6p7aka",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T15:29:04.839000+00:00",
+  "time_updated": "2021-08-23T15:32:43.226000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaabgrcg7khe2a4xhznueljimlepp75gfgb232ajlqbeiu4lajhcocq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T15:27:17.219000+00:00",
+  "time_updated": "2021-08-23T15:31:03.607000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaaclf5uq2y7q5r7bj74b3nolt7ltldvli7eal4f634qynpue3jmqaa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T15:18:06.573000+00:00",
+  "time_updated": "2021-08-23T15:27:24.156000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [
+    {
+      "hostname": "unitarymysqlha2.cloudbrickspubl.vcn08171526.oraclevcn.com",
+      "ip_address": "10.0.0.3",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaag4nizmzqwgxomibuifq54pgtlzxnlzvrixzkpcbfryamn7iil7ia",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26-u1-cloud",
+  "time_created": "2021-08-23T14:57:38.508000+00:00",
+  "time_updated": "2021-08-23T15:11:53.620000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [
+    {
+      "hostname": "unitarymysqlha2.cloudbrickspubl.vcn08171526.oraclevcn.com",
+      "ip_address": "10.0.0.99",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaalf6mugnn5rvh6erplzrvzgfusfhp4nvqqkz3uf6xlnrtm23iqa7a",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26-u1-cloud",
+  "time_created": "2021-08-23T14:35:22.916000+00:00",
+  "time_updated": "2021-08-23T14:55:51.510000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql20210823153157",
+  "endpoints": [],
+  "fault_domain": null,
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaafyoocsjcknsj2kmddiwuxba4u3ymshzhssjunt3tc4xfephmhwoq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T14:32:35.557000+00:00",
+  "time_updated": "2021-08-23T14:35:42.534000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaav7vnqndwlvzh75y5u6oxyi5qd62uw66xh4s4ra7dxwk45j43gdla",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T14:29:58.995000+00:00",
+  "time_updated": "2021-08-23T14:37:03.268000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": "FAULT-DOMAIN-2"
+  },
+  "defined_tags": {},
+  "description": "Unitary Test MySQL Database",
+  "display_name": "unitarymysqlha",
+  "endpoints": [
+    {
+      "hostname": "unitarymysqlha.cloudbrickspubl.vcn08171526.oraclevcn.com",
+      "ip_address": "10.0.0.14",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaasu7zlj24ka6wi3ju22ky3mwedxjtgv2v5mcs2t7gqcmj4pvcxmza",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": true,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26-u1-cloud",
+  "time_created": "2021-08-23T14:05:38.057000+00:00",
+  "time_updated": "2021-08-23T14:25:12.449000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa64avkdb57tsivakndt6o3xobvevg6edjolheaescjw2oadormyna",
+  "current_placement": {
+    "availability_domain": "oDQF:UK-LONDON-1-AD-1",
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "BaseDB",
+  "endpoints": [],
+  "fault_domain": null,
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaas2x4xo2totg6zt2iuedq6n7gs4b2vchuavuhoiahzioeyqjvrs2q",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-23T10:55:23.893000+00:00",
+  "time_updated": "2021-08-23T11:00:48.367000+00:00"
+}][0m
+[33m[15/12/2021 20:33:35] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaabn4tjcxawd7mhf6hxfnaamweyvgh65h7x32vkje7xtky2ltel2sq",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql-db",
+  "endpoints": [
+    {
+      "hostname": "mysql-db.testpub.testvcn.oraclevcn.com",
+      "ip_address": "10.0.0.4",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaankp4yzodnpzplbkbimixrmujtvohscoijscyq2vpny5ztbxdi4fq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.22-u4-cloud",
+  "time_created": "2021-01-04T11:42:58.267000+00:00",
+  "time_updated": "2021-01-04T11:42:58.267000+00:00"
+}][0m
+[33m[15/12/2021 20:33:35] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa7aivist5nns3z7j7tdexppqbkeu5oqf6zh72xwaahzq3kdp7zuva",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-3"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql-wordpress-arch",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.1.125",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "ACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-3",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaaca7kvr3rxrxofwwethw452svlht5jpvodvhcpym5og6c2sgpjdra",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "ACTIVE",
+  "mysql_version": "8.0.27",
+  "time_created": "2021-06-04T19:07:11.432000+00:00",
+  "time_updated": "2021-12-15T00:03:49.193000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaa7aivist5nns3z7j7tdexppqbkeu5oqf6zh72xwaahzq3kdp7zuva",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-3"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql20210226150150",
+  "endpoints": [
+    {
+      "hostname": "kostamysql.sub12112018081.vcnkostatest.oraclevcn.com",
+      "ip_address": "10.0.1.3",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-3",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaam4wdpclw4n63gvml2b3kownmgeoqnm6z3qld4uop7hzpauj6ik4q",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.23-u2-cloud",
+  "time_created": "2021-02-26T20:04:21.230000+00:00",
+  "time_updated": "2021-02-26T20:04:21.230000+00:00"
+}][0m
+[33m[15/12/2021 20:33:36] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.tenancy.oc1..aaaaaaaaoqdygmiidrabhv3y4hkr3rb3z6dpmgotvq2scffra6jt7rubresa",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-3"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "MYSQLBastion",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.1.72",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "ACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-3",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaakirjmsywt2u3g33voia5tch62vvisqvnnc5szdpmwc3ygmbhrsqa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "ACTIVE",
+  "mysql_version": "8.0.27",
+  "time_created": "2021-04-26T14:13:25.650000+00:00",
+  "time_updated": "2021-12-15T04:02:39.957000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.tenancy.oc1..aaaaaaaaoqdygmiidrabhv3y4hkr3rb3z6dpmgotvq2scffra6jt7rubresa",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-1"
+  },
+  "defined_tags": {},
+  "description": "custom",
+  "display_name": "mysql20210226142048",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.0.10",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-1",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaa72swyequepvyxsvpov3mrt62ityahhtaaykuql7nch3ojl6sx4pa",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.23-u2-cloud",
+  "time_created": "2021-02-26T20:22:20.677000+00:00",
+  "time_updated": "2021-02-26T20:22:20.677000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.tenancy.oc1..aaaaaaaaoqdygmiidrabhv3y4hkr3rb3z6dpmgotvq2scffra6jt7rubresa",
+  "current_placement": {
+    "availability_domain": null,
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql20201202104104",
+  "endpoints": [
+    {
+      "hostname": "ecrtestdb.pubsub1.bmuthuv.oraclevcn.com",
+      "ip_address": "10.99.1.8",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "INACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-2",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaarw5acoq54jwvilfb3wjgl7v7yr6t6vt5ctqwndw3o762jvtigsbq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "DELETED",
+  "mysql_version": "8.0.27",
+  "time_created": "2020-12-02T15:43:22.016000+00:00",
+  "time_updated": "2021-12-02T10:05:05.800000+00:00"
+}][0m
+[33m[15/12/2021 20:33:38] DEBUG: [{
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaapnlnelsic6undk2w36zq6a54xznvs2ypvzxwr54lt2htiewc2fga",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql20210819230607",
+  "endpoints": [],
+  "fault_domain": null,
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaanpwedib2kki4hnr4ovlrfmqc3seklhkc65cvouplktch5zazwxgq",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "FAILED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-20T04:07:42.023000+00:00",
+  "time_updated": "2021-08-20T04:23:48.499000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaapnlnelsic6undk2w36zq6a54xznvs2ypvzxwr54lt2htiewc2fga",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": null
+  },
+  "defined_tags": {},
+  "description": "test",
+  "display_name": "mysql20210819185204",
+  "endpoints": [],
+  "fault_domain": null,
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaa54wo6ii3qikcraurvxz3rf67kczocsjhp2yicwpgwymauaap6n2a",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "FAILED",
+  "mysql_version": "8.0.26",
+  "time_created": "2021-08-19T23:52:27.911000+00:00",
+  "time_updated": "2021-08-20T00:09:16.937000+00:00"
+}, {
+  "analytics_cluster": null,
+  "availability_domain": "oDQF:US-ASHBURN-AD-1",
+  "compartment_id": "ocid1.compartment.oc1..aaaaaaaapnlnelsic6undk2w36zq6a54xznvs2ypvzxwr54lt2htiewc2fga",
+  "current_placement": {
+    "availability_domain": "oDQF:US-ASHBURN-AD-1",
+    "fault_domain": "FAULT-DOMAIN-3"
+  },
+  "defined_tags": {},
+  "description": null,
+  "display_name": "mysql20210226140310",
+  "endpoints": [
+    {
+      "hostname": null,
+      "ip_address": "10.0.1.6",
+      "modes": [
+        "READ",
+        "WRITE"
+      ],
+      "port": 3306,
+      "port_x": 33060,
+      "status": "ACTIVE",
+      "status_details": null
+    }
+  ],
+  "fault_domain": "FAULT-DOMAIN-3",
+  "freeform_tags": {},
+  "heat_wave_cluster": null,
+  "id": "ocid1.mysqldbsystem.oc1.iad.aaaaaaaawa4wjbbonafncsyxjhcdhdxbkqowptgpo463yuhg67qjggnbxyla",
+  "is_analytics_cluster_attached": false,
+  "is_heat_wave_cluster_attached": false,
+  "is_highly_available": false,
+  "lifecycle_state": "ACTIVE",
+  "mysql_version": "8.0.27",
+  "time_created": "2021-02-26T20:04:17.333000+00:00",
+  "time_updated": "2021-12-13T06:14:31.725000+00:00"
+}][0m
+Traceback (most recent call last):
+  File "fireup.py", line 42, in <module>
+    __main__()
+  File "fireup.py", line 39, in __main__
+    __exec_orchestrator()   
+  File "fireup.py", line 34, in __exec_orchestrator
+    main_orchestrator(config, signer, cmd.report_directory)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/common/orchestrator/Orchestrate.py", line 49, in main_orchestrator
+    __call_1_12(config, signer, report_directory)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/common/orchestrator/Orchestrate.py", line 210, in __call_1_12
+    __instancePrincipal_dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/classes/securitycompliance/DBSystemControl.py", line 94, in analyze_entity
+    self.load_entity()    
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/classes/securitycompliance/DBSystemControl.py", line 85, in load_entity
+    placeholder_returner = parallel_executor(mysql_clients, self.__mysql_db_ocids, self.__search_mysql_dbs_subnet_ocids, len(self.__mysql_db_ocids), "__mysql_subnets")
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/common/utils/helpers/helper.py", line 443, in parallel_executor
+    for value in p.result():
+  File "/usr/lib64/python3.6/concurrent/futures/_base.py", line 425, in result
+    return self.__get_result()
+  File "/usr/lib64/python3.6/concurrent/futures/_base.py", line 384, in __get_result
+    raise self._exception
+  File "/usr/lib64/python3.6/concurrent/futures/thread.py", line 56, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/classes/securitycompliance/DBSystemControl.py", line 139, in __search_mysql_dbs_subnet_ocids
+    mysqldbdata = get_mysql_dbsystem_data(mysql_client, db_ocid)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/common/utils/helpers/helper.py", line 384, in get_mysql_dbsystem_data
+    db_system_id,
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/venv/lib64/python3.6/site-packages/oci/pagination/pagination_utils.py", line 205, in list_call_get_all_results
+    for response in list_call_get_all_results_generator(list_func_ref, 'response', *list_func_args, **list_func_kwargs):
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/venv/lib64/python3.6/site-packages/oci/pagination/pagination_utils.py", line 274, in list_call_get_all_results_generator
+    call_result = retry.DEFAULT_RETRY_STRATEGY.make_retrying_call(list_func_ref, *list_func_args, **list_func_kwargs)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/venv/lib64/python3.6/site-packages/oci/retry/retry.py", line 293, in make_retrying_call
+    return func_ref(*func_args, **func_kwargs)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/venv/lib64/python3.6/site-packages/oci/mysql/db_system_client.py", line 1131, in get_db_system
+    response_type="DbSystem")
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/venv/lib64/python3.6/site-packages/oci/base_client.py", line 454, in call_api
+    response = self.request(request)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/venv/lib64/python3.6/site-packages/circuitbreaker.py", line 52, in wrapper
+    return self.call(function, *args, **kwargs)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/venv/lib64/python3.6/site-packages/circuitbreaker.py", line 67, in call
+    result = func(*args, **kwargs)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/venv/lib64/python3.6/site-packages/oci/base_client.py", line 583, in request
+    self.raise_service_error(request, response, service_code, message)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12/fireup/venv/lib64/python3.6/site-packages/oci/base_client.py", line 745, in raise_service_error
+    original_request=request)
+oci.exceptions.ServiceError: {'opc-request-id': 'C2BA6DA6112D45748A1C10BB36E2610C/932367E9FA5FB4B7E4DBD2D688CD85CB/5F60252AD665D98810BB0BAA385BFBB9', 'code': 'NotAuthorizedOrNotFound', 'message': "mysqldbsystem with ID 'ocid1.mysqldbsystem.oc1.sa-santiago-1.aaaaaaaa4wwpunqbgck2iiqqsrymkfcy4xbpgnolvb6zse22bpneime7232a' does not exist or you are not authorized to access it.", 'status': 404}

@@ -57,6 +57,15 @@ __mysql_databases = []
 __db_system_backups = []
 __mysql_backups = []
 
+### DBSystemControl.py Global variables
+# Database subnet lists to store type
+
+__mysql_subnets = []
+__db_system_subnets = []
+__odb_dbsystems = []
+__mysql_dbsystems_ocids = []
+__mysql_subnets = []
+
 ### InstancePrincipal.py Global Variables
 # Instance list for use with parallel_executor
 __instances = []
@@ -367,6 +376,12 @@ def get_db_system_data(database_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_systems,
         compartment_id,
+    ).data
+
+def get_mysql_dbsystem_data(database_client, db_system_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.get_db_system,
+        db_system_id,
     ).data
 
 def get_db_system_home_data(database_client, compartment_id):
