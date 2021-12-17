@@ -71,7 +71,7 @@ class StoragePermissions(ReviewPoint):
     
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        __bad_policies = []
+        __problem_policies = []
         __criteria_1 = 'manage'
         __criteria_2_list = ['all-resources', 'volume-family','file-family', 'object-family',
                              'volumes', 'volume-attachments', 'volume-backups',
@@ -87,14 +87,16 @@ class StoragePermissions(ReviewPoint):
                     for criteria in __criteria_2_list:
                         if criteria.upper() in statement.upper():
                             counter+=1
-                            __bad_policies.append(policy)
+                            __problem_policies.append({counter:statement})
                 
         if counter > 0:
-            for policy in __bad_policies:            
+            for idx, policy in enumerate(__problem_policies):        
+
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(policy)    
                 dictionary[entry]['failure_cause'].append('This policy allow users to Delete Storage Resources')                
-                dictionary[entry]['mitigations'].append('If any type of storage is in place, make sure that the permissions are granted to appropriate Users' + str(policy['statements']))
+                dictionary[entry]['mitigations'].append('Make sure that users in the following policy are allowed to Delete Storage Resources : ' + str(policy[idx+1]))
+                
                             
         else:
             dictionary[entry]['status'] = True
