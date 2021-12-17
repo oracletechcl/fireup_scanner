@@ -364,3 +364,9 @@ def get_subnets_per_compartment_data(network_client, compartment_id):
         network_client.list_subnets,
         compartment_id, 
     ).data
+
+def get_compartment_name(compartments, compartment_id):
+    for compartment in compartments:
+        if compartment_id == compartment.id:
+            return compartment.name
+    return None

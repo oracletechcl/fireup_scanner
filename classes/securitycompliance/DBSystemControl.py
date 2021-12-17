@@ -30,8 +30,8 @@ class DBSystemControl(ReviewPoint):
     __oracle_database_subnet_ocids = []
     __mysql_database_objects = []
     __mysql_database_ocids = []
-    __mysql_database_dicts = []
-    __mysql_database_subnet_ocids = []
+    __compartments = []
+  
     
 
 
@@ -68,7 +68,7 @@ class DBSystemControl(ReviewPoint):
         db_system_clients = []
         mysql_clients = []
         network_clients = []
-        mysql_ocids = []
+
 
         for region in regions:
             region_config = self.config
@@ -80,43 +80,36 @@ class DBSystemControl(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(tenancy)
 
-        # TODO: Remove
-        # Using a placeholder returner, which is a ephemeral variable that's discarded. Require this to avoid breaking the paralel
-        # execution of threads. All values are stored on global private variables.
-        # placeholder_returner = parallel_executor(network_clients, compartments, self.__search_vcns, len(compartments), "__vcns")
-        # placeholder_returner = parallel_executor([x[0] for x in db_system_clients], compartments, self.__search_oracledb_dbs_subnet_ocids, len(compartments), "__odb_dbsystems")
-        # placeholder_returner = parallel_executor([x[0] for x in mysql_clients], compartments, self.__search_mysql_dbs_ocids, len(compartments), "__mysql_dbsystems_ocids")
-        # placeholder_returner = parallel_executor(mysql_clients, self.__mysql_db_ocids, self.__search_mysql_dbs_subnet_ocids, len(self.__mysql_db_ocids), "__mysql_subnets")
-
-        # self.__subnet_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_subnets_in_compartments, len(compartments), ParallelExecutor.subnets)
-        # self.__oracle_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], compartments, ParallelExecutor.get_oracle_dbsystem, len(compartments), ParallelExecutor.oracle_dbsystems)
-        self.__mysql_database_objects = ParallelExecutor.executor([x[0] for x in mysql_clients], compartments, ParallelExecutor.get_mysql_dbs, len(compartments), ParallelExecutor.mysql_dbsystems)
+        self.__subnet_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_subnets_in_compartments, len(self.__compartments), ParallelExecutor.subnets)
+        self.__oracle_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_oracle_dbsystem, len(self.__compartments), ParallelExecutor.oracle_dbsystems)
+        self.__mysql_database_objects = ParallelExecutor.executor([x[0] for x in mysql_clients], self.__compartments, ParallelExecutor.get_mysql_dbs, len(self.__compartments), ParallelExecutor.mysql_dbsystems)
         self.__mysql_full_objects = ParallelExecutor.executor(mysql_clients, self.__mysql_database_objects, ParallelExecutor.get_mysql_dbsystem_full_info, len(self.__mysql_database_objects), ParallelExecutor.mysql_full_data)
 
         # Filling local array object for MySQL Database OCIDS
-        for mysqldbobject in self.__mysql_full_objects: 
+        for mysqldbobject in self.__mysql_full_objects:           
             mysql_db_record = {
                 'compartment_id': mysqldbobject.compartment_id,
                 'display_name': mysqldbobject.display_name,
                 'id': mysqldbobject.id,
+                'subnet_id': mysqldbobject.subnet_id,
                 # TODO: Add any records you need here
             }
             # Appends to new array. TODO: (remove this comment)
-            self.__mysql_database_dicts.append(mysql_db_record)
+            self.__mysql_database_ocids.append(mysql_db_record)
 
-
-        for mysql in self.__mysql_database_dicts:
-            debug_with_color_date(mysql, "yellow")
-        
+       
         # Filling local array object for Oracle Database Subnet OCIDs
-        for dbobject in self.__oracle_database_objects:
+        for dbobject in self.__oracle_database_objects:            
             orcl_db_record = {
                 'compartment_id': dbobject.compartment_id,
-                'subnet_id': dbobject.subnet_id,
                 'display_name': dbobject.display_name,
+                'id': dbobject.id,
+                'subnet_id': dbobject.subnet_id,
+                'nsg_ids': dbobject.nsg_ids,
+                
             }
             self.__oracle_database_subnet_ocids.append(orcl_db_record)
 
@@ -136,18 +129,40 @@ class DBSystemControl(ReviewPoint):
                 'prohibit_public_ip_on_vnic': subnet.prohibit_public_ip_on_vnic,
             }
             self.__subnets.append(subnet_record)
-
-
-        #debug_with_color_date(self.__vcns[0], "cyan")
-        #debug_with_color_date(self.__odb_dbsystems_subnet_ocids, "yellow")
-        #debug_with_color_date(self.__mysql_dbsystems_subnet_ocids, "cyan")
      
-
 
     def analyze_entity(self, entry):
     
         self.load_entity()    
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
-                                       
+        # Cycle Check for MySQL Databases
+        for mysql in self.__mysql_database_ocids:
+            for subnet in self.__subnets:
+               if mysql['subnet_id'] == subnet['id']:
+                   if subnet['prohibit_public_ip_on_vnic'] == False:
+                       dictionary[entry]['status'] = False
+                       dictionary[entry]['findings'].append(mysql)   
+                       dictionary[entry]['failure_cause'].append("MySQL Database is in a public subnet")
+                       dictionary[entry]['mitigations'].append("MySQL Database: "+mysql['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, mysql['compartment_id'])+" needs to be in a private subnet")
+        
+        # Cycle Check for Oracle Databases
+        for orcldb in self.__oracle_database_subnet_ocids:
+            for subnet in self.__subnets:
+               if orcldb['subnet_id'] == subnet['id']:
+                   if subnet['prohibit_public_ip_on_vnic'] == False:
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['findings'].append(orcldb)                           
+                        if orcldb['nsg_ids'] != None:                                     
+                            dictionary[entry]['failure_cause'].append("Oracle Database in Public Subnet without NSG Attached")
+                            dictionary[entry]['mitigations'].append("Oracle Database: "+orcldb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, orcldb['compartment_id'])+" needs to be in a private subnet or attach a NSG")
+                        else:
+                            dictionary[entry]['failure_cause'].append("Oracle Database is in a public subnet")
+                            dictionary[entry]['mitigations'].append("Oracle Database: "+orcldb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, orcldb['compartment_id'])+" needs to be in a private subnet")                      
+                        
+                                     
         return dictionary
+
+
+
+        
