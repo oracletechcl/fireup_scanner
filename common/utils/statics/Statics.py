@@ -101,10 +101,10 @@ __rp_1_10 = {
 __rp_1_11 = {
     'entry': '1.11',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Define Maximum Security Zones',    
+    'success_criteria': 'Check if Maximum Security Zone is enabled for compartments that holster production workdload. Check Public and Private subnets are in place',
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
 __rp_1_12 = {
