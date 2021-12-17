@@ -405,3 +405,18 @@ def get_nsg_rules_data(network_client, nsg_id):
         network_client.list_network_security_group_security_rules,
         nsg_id
     ).data
+
+def get_max_security_zone_data(identity_client, compartment_id):
+    path_params = {
+        "compartmentId": compartment_id
+    }
+    header_params = {
+        "accept": "application/json",
+        "content-type": "application/json"
+    }
+    return identity_client.base_client.call_api(
+        resource_path="/compartments/{compartmentId}?verboseLevel=securityZone",
+        method="GET",
+        path_params=path_params,
+        header_params=header_params,
+        response_type="json").data
