@@ -389,7 +389,7 @@ Next you need whatever you will be looping through. More often than not, this is
 ```python
 # Get all compartments including root compartment
 compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-compartments.append(self.__tenancy.id)
+compartments.append(self.__tenancy)
 ```
 *Note: If you don't need the root compartmewnt for whatever reason, omit the second line.*
 
