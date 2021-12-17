@@ -15,6 +15,8 @@ class StoragePermissions(ReviewPoint):
 
     # Class Variables
     __identity = None
+    __tenancy = None
+    __policies = []
  
     def __init__(self,
                 entry:str, 
@@ -42,17 +44,61 @@ class StoragePermissions(ReviewPoint):
        self.config = config
        self.signer = signer
        self.__identity = get_identity_client(self.config, self.signer)
+       self.__tenancy = get_tenancy_data(self.__identity, self.config)
 
 
     def load_entity(self):
+        
+        policy_data = get_policies_data(self.__identity, self.__tenancy.id)      
 
-        return self.__identity
+        for policy in policy_data:  
+            record = {
+                "compartment_id": policy.compartment_id,
+                "defined_tags": policy.defined_tags,
+                "description": policy.description,
+                "freeform_tags": policy.freeform_tags,
+                "id": policy.id,
+                "lifecycle_state": policy.lifecycle_state,
+                "name": policy.name,
+                "statements": policy.statements,
+                "time_created": policy.time_created,
+                "version_date": policy.version_date
+            }
+            self.__policies.append(record)
 
 
     def analyze_entity(self, entry):
     
-        self.load_entity()    
+        self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-                                       
+        __bad_policies = []
+        __criteria_1 = 'manage'
+        __criteria_2_list = ['all-resources', 'volume-family','file-family', 'object-family',
+                             'volumes', 'volume-attachments', 'volume-backups',
+                             'file-systems', 'mount-targets','export-sets',
+                             'buckets', 'objects'
+                             ]
+    
+        counter = 0        
+
+        for policy in self.__policies:
+            for statement in policy['statements']:
+                if __criteria_1.upper() in statement.upper():
+                    for criteria in __criteria_2_list:
+                        if criteria.upper() in statement.upper():
+                            counter+=1
+                            __bad_policies.append(policy)
+                
+        if counter > 0:
+            for policy in __bad_policies:            
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(policy)    
+                dictionary[entry]['failure_cause'].append('This policy allow users to Delete Storage Resources')                
+                dictionary[entry]['mitigations'].append('If any type of storage is in place, make sure that the permissions are granted to appropriate Users' + str(policy['statements']))
+                            
+        else:
+            dictionary[entry]['status'] = True
+            
+
         return dictionary
 
