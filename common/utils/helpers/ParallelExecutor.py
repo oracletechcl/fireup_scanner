@@ -16,8 +16,11 @@ compartments = None
 
 availability_domains = []
 
-vcns = []
 security_lists = []
+
+### CIDRSize.py Global Variables
+# VCN list for use with parallel_executor
+vcns = []
 
 ### LBaasBackends.py + LBaaSHealthChecks.py Global Variables
 # LBaas Clients
