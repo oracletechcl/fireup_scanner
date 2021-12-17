@@ -19,6 +19,7 @@ class Mfa(ReviewPoint):
     __groups_to_users = []
     __identity = None
     __tenancy = None
+    __policies = []
 
 
 
@@ -74,18 +75,51 @@ class Mfa(ReviewPoint):
                         record['groups'].append(group['name'])                                                     
 
                 self.__users.append(record)
+
+
+        policy_data = get_policies_data(self.__identity, self.__tenancy.id)    
+        for policy in policy_data:  
+            record = {
+                "compartment_id": policy.compartment_id,
+                "defined_tags": policy.defined_tags,
+                "description": policy.description,
+                "freeform_tags": policy.freeform_tags,
+                "id": policy.id,
+                "lifecycle_state": policy.lifecycle_state,
+                "name": policy.name,
+                "statements": policy.statements,
+                "time_created": policy.time_created,
+                "version_date": policy.version_date
+            }
+            self.__policies.append(record)
+
+
         return self.__users
                 
 
     def analyze_entity(self, entry):
         self.load_entity()       
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
+        counter = 0
+        __criteria_1 = "in tenancy where request.user.mfaTotpVerified='true'"
+        
         for user in self.__users:
             if user['is_mfa_activated'] == False and user['lifecycle_state'] == 'ACTIVE':
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(user)
                 dictionary[entry]['failure_cause'].append("User does not have MFA activated")                
-                dictionary[entry]['mitigations'].append('Enable MFA on user: ' + user['name'])                                
+                dictionary[entry]['mitigations'].append('Enable MFA on user: ' + user['name'])      
+
+        for policy in self.__policies:
+            for statement in policy['statements']:
+                if __criteria_1.upper() in statement.upper() :                                        
+                    counter+=1
+
+
+        if counter < 1: 
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append('No Policies for enforcing MFA have been detected')                
+            dictionary[entry]['mitigations'].append('Add the following policies into the tenancy to enforce MFA: allow group GroupA to manage instance-family in tenancy where request.user.mfaTotpVerified=\'true\'')                          
 
         return dictionary
 
