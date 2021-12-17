@@ -5,6 +5,7 @@
   - [Get Started](#get-started)
   - [Branch and Collaboration](#branch-and-collaboration)
   - [How Create new review point](#how-create-new-review-point)
+  - [Using Parallel Executor](#using-parallel-executor)
   - [Unitary Testing](#unitary-testing)
   - [Github Best Practices](#github-best-practices)
 
@@ -335,6 +336,152 @@ def __call_1_1(config, signer, report_directory):
 from classes.reviewarea.ConcreteClass import ConcreteObject 
 
 ```
+
+<div id="UsingParallelExecutor"></div>
+
+## Using Parallel Executor
+
+### What Is It For?
+
+The parallel executor is not always going to be necessary with every review point. 
+
+However, when needing all of a specific resource, a parallel executor is likely to be needed.
+
+The example I will use here is related to review point 2.9 [CIDRSize.py](https://github.com/oraclecloudbricks/fireup/blob/main/classes/reliabilityresilience/CIDRSize.py).
+
+Within this example, I needed to retrieve every VCN from the tenancy. To do this I needed to use the `VirtualNetworkClient.list_vcns(compartment_id)` API call.
+
+As you can see, this method requires a `VirtualNetworkClient` and `compartment_id` to retrieve the data necessary. The thing that makes this complicated is that a client is region specific. This means that the method needs to be run in every compartment within each region. At the time of writing, the `ecrcloud` tenancy is subscribed to `18` regions and has `~160` compartments. This means almost `3000` API calls are necessary to check for all VCNs.
+
+Doing these API calls consecutively takes about `10 minutes`! This is far too long.
+
+The parallel executor was built to tackle this problem and reduces the fetching process to takes anywhere between `10-30 seconds`.
+
+### How Do I Use It?
+
+The parallel executor is surprisingly simple to work with, once you get an understanding of how it works.
+
+Place this at the top with the other imports:
+
+```python
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
+```
+
+The next step is to create all the clients that you are going to require. This can be done as follows:
+
+```python
+# Get all the regions using a helper method
+regions = get_regions_data(self.__identity, self.config)
+network_clients = []
+
+for region in regions:
+    # Clone the config used for creation of clients
+    region_config = self.config
+    # Modify the region in the config for each region
+    region_config['region'] = region.region_name
+    # Create a network client for each region
+    network_clients.append(get_virtual_network_client(region_config, self.signer))
+```
+*Note that this is extracted from review point 2.9 [CIDRSize.py](https://github.com/oraclecloudbricks/fireup/blob/main/classes/reliabilityresilience/CIDRSize.py) but with additional comments.*
+
+Next you need whatever you will be looping through. More often than not, this is the compartments and can be retrieved as follows:
+
+```python
+# Get all compartments including root compartment
+compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+compartments.append(self.__tenancy)
+```
+*Note: If you don't need the root compartmewnt for whatever reason, omit the second line.*
+
+Now we can actually retrieve the data we need with `ParallelExecutor.executor`.
+
+This method is strucutered as follows:<br>
+*Note: You don't need to read all the comments here and understand the exact inner workings of this function. However, this will help you know exactly what you're interfacing with in the event you have any errors.*
+```python
+def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
+    # The `values` variable is assigned with the global variable in the file
+    values = data_variable
+    # If there is already data within the variable, the data can immediately be returned
+    if len(values) > 0:
+        return values
+
+    items = []
+    # This nested for loop seperates each of the `dependent_clients` and `independent_iterators`
+    # into a structure that the threads can work on. This looks like this example:
+    # [[client1, compart1, compart2, ... compart20], [client2, compart21, compart22, ... compart40] ...]
+    # This essetialy maps each client to each and every compartment, but in smaller blocks of 20
+    # rather than making each client check every compartment in the tenancy - allowing for concurrency.
+    for client in dependent_clients:
+        item = [client]
+        for i, independent in enumerate(independent_iterator):
+            item.append(independent)
+            if i > 0 and i % 20 == 0:
+                items.append(item)
+                item = [client]
+        items.append(item)
+    # This is where the threads are spun up
+    with futures.ThreadPoolExecutor(threads) as executor:
+        # A list of processes is made, running a function with each of the items as described above
+        # the function that is executed will be explained below
+        processes = [
+            executor.submit(fuction_to_execute, item) 
+            for item in items
+        ]
+        # Wait for all threads to finish
+        futures.wait(processes)
+        # Extract all of the data from threads into a single array
+        for p in processes:
+            for value in p.result():
+                values.append(value)
+    # return all retrieved values
+    return values
+```
+
+Before creating function call below, you will need to check [ParallelExecutor.py](https://github.com/oraclecloudbricks/fireup/blob/main/common/utils/helpers/ParallelExecutor.py)
+
+You will want to look for a variable that stores the objects (at the top of the file) and a method that already gets the VCN objects. If there is no evidence the resource has been retrieved before, you will need to create a new variable and method.
+
+In your class:
+```python
+self.__vcn_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_vcns_in_compartments, len(compartments), ParallelExecutor.vcns)
+```
+
+In [ParallelExecutor.py](https://github.com/oraclecloudbricks/fireup/blob/main/common/utils/helpers/ParallelExecutor.py):<br>
+Add something like this to the top of the file along with the other variables:
+```python
+### CIDRSize.py Global Variables
+# VCN list for use with parallel_executor
+vcns = []
+```
+
+Add something like this to the bottom of the file along with the other functions:
+```python
+def get_vcns_in_compartments(item):
+    # Pull out the client that you need as well as the list of compartments from the passed item
+    network_client = item[0]
+    compartments = item[1:]
+
+    vcns = []
+    # Loop through each compartment and run the get_vcn_data function
+    # in the compartment. Then loop through the list of returned VCNs,
+    # if they are not terminated, add them to the list, that is then returned.
+    for compartment in compartments:
+        vcn_data = get_vcn_data(network_client, compartment.id)
+        for vcn in vcn_data:
+            if "TERMINATED" not in vcn.lifecycle_state:
+                vcns.append(vcn)
+
+    return vcns
+```
+*Note: You will need to create the helper function (`get_vcn_data` in this example) in [helper.py](https://github.com/oraclecloudbricks/fireup/blob/main/common/utils/helpers/helper.py) if it doesn't already exist.*
+
+That is now a complete example on how to get all the objects of a specific resource.
+
+Once retrieved, you can modify these objects into a dictionary however you please.
+
+**Important Note: If you need to use these objects again in another parallel executor call, DO NOT modify them. Pass the objects as is and then modify the returned values. This is essential so that the objects are kept general and can be used again anywhere that they are needed.**
+
+If anything I've said in this section isn't clear, please reach out to me on slack if you are internal, and/or mention me in your GitHub issue with `@Matt-Mcl`.
 
 <div id="UnitTesting"></div>
 

@@ -8,3 +8,5 @@
 | 2.13         | [LBaaSHealthChecks.py](LBaaSHealthChecks.py)
 | 2.14         | [CheckBackupPolicies.py](CheckBackupPolicies.py)
 | 2.15         | [BackupDatabases.py](BackupDatabases.py)
+| 2.16         | [DataSecurity.py](DataSecurity.py)
+| 2.17         | [ReplicateData.py](ReplicateData.py)
