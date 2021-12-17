@@ -6,6 +6,9 @@
   - [Branch and Collaboration](#branch-and-collaboration)
   - [How Create new review point](#how-create-new-review-point)
   - [Using Parallel Executor](#using-parallel-executor)
+    - [What Is It For?](#what-is-it-for)
+    - [How Do I Use It?](#how-do-i-use-it)
+    - [Common Issues](#common-issues)
   - [Unitary Testing](#unitary-testing)
   - [Github Best Practices](#github-best-practices)
 
@@ -397,6 +400,7 @@ Now we can actually retrieve the data we need with `ParallelExecutor.executor`.
 
 This method is strucutered as follows:<br>
 *Note: You don't need to read all the comments here and understand the exact inner workings of this function. However, this will help you know exactly what you're interfacing with in the event you have any errors.*
+
 ```python
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     # The `values` variable is assigned with the global variable in the file
@@ -482,6 +486,58 @@ Once retrieved, you can modify these objects into a dictionary however you pleas
 **Important Note: If you need to use these objects again in another parallel executor call, DO NOT modify them. Pass the objects as is and then modify the returned values. This is essential so that the objects are kept general and can be used again anywhere that they are needed.**
 
 If anything I've said in this section isn't clear, please reach out to me on slack if you are internal, and/or mention me in your GitHub issue with `@Matt-Mcl`.
+
+
+### Common Issues
+
+Exception: `AttributeError: 'tuple' object has no attribute 'foo_bar_list'`
+
+Example: 
+```bash
+Traceback (most recent call last):
+  File "fireup.py", line 42, in <module>
+    __main__()
+  File "fireup.py", line 39, in __main__
+    __exec_orchestrator()   
+  File "fireup.py", line 34, in __exec_orchestrator
+    main_orchestrator(config, signer, cmd.report_directory)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12_UPDATED/fireup/common/orchestrator/Orchestrate.py", line 50, in main_orchestrator
+    __call_1_12(config, signer, report_directory)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12_UPDATED/fireup/common/orchestrator/Orchestrate.py", line 210, in __call_1_12
+    __instancePrincipal_dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12_UPDATED/fireup/classes/securitycompliance/DBSystemControl.py", line 149, in analyze_entity
+    self.load_entity()    
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12_UPDATED/fireup/classes/securitycompliance/DBSystemControl.py", line 92, in load_entity
+    self.__autonomous_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12_UPDATED/fireup/common/utils/helpers/ParallelExecutor.py", line 108, in executor
+    for value in p.result():
+  File "/usr/lib64/python3.6/concurrent/futures/_base.py", line 425, in result
+    return self.__get_result()
+  File "/usr/lib64/python3.6/concurrent/futures/_base.py", line 384, in __get_result
+    raise self._exception
+  File "/usr/lib64/python3.6/concurrent/futures/thread.py", line 56, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12_UPDATED/fireup/common/utils/helpers/ParallelExecutor.py", line 538, in get_autonomous_databases
+    autonomous_databases_data = get_auto_db_data(database_client, compartment.id)
+  File "/home/opc/REPOS/OCIBE/FIREUP/rp_1_12_UPDATED/fireup/common/utils/helpers/helper.py", line 357, in get_auto_db_data
+    database_client.list_autonomous_databases,
+AttributeError: 'tuple' object has no attribute 'list_autonomous_databases'
+```
+
+*Reason:*
+
+This happens because the parallel executor is called with the wrong amount of entries into the client list
+
+`self.__autonomous_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)`
+
+*Solution:*
+
+- Make sure to call the parallel executor function with the correct client list as follows: 
+
+`self.__autonomous_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)`
+
+
+
 
 <div id="UnitTesting"></div>
 
