@@ -94,15 +94,15 @@ class DBSystemControl(ReviewPoint):
 
 
         # Filling local array object for MySQL Database OCIDS
-        if self.__mysql_full_objects is not None:
-            for mysqldbobject in self.__mysql_full_objects:           
-                mysql_db_record = {
-                    'compartment_id': mysqldbobject.compartment_id,
-                    'display_name': mysqldbobject.display_name,
-                    'id': mysqldbobject.id,
-                    'subnet_id': mysqldbobject.subnet_id,
-                }                
-                self.__mysql_database_ocids.append(mysql_db_record)
+        for mysqldbobject in self.__mysql_full_objects:           
+            mysql_db_record = {
+                'compartment_id': mysqldbobject.compartment_id,
+                'display_name': mysqldbobject.display_name,
+                'id': mysqldbobject.id,
+                'subnet_id': mysqldbobject.subnet_id,
+            }
+            # Appends to new array. TODO: (remove this comment)
+            self.__mysql_database_ocids.append(mysql_db_record)
 
        
         # Filling local array object for Oracle Database Subnet OCIDs
@@ -118,52 +118,50 @@ class DBSystemControl(ReviewPoint):
             self.__oracle_database_subnet_ocids.append(orcl_db_record)
         
         # Filling local array object for Autonomous Databases Subnet OCIDS
-        if self.__autonomous_database_objects is not None:
-            for adb in self.__autonomous_database_objects:   
-                record = {
-                    'display_name': adb.display_name,
-                    'dataguard_region_type': adb.dataguard_region_type,
-                    'compartment_id': adb.compartment_id,
-                    'id': adb.id,
-                    'time_created': adb.time_created,
-                    'nsg_ids': adb.nsg_ids,
-                    'subnet_id': adb.subnet_id,
-                    'compartment_id': adb.compartment_id,
+        for adb in self.__autonomous_database_objects:   
+            record = {
+                'display_name': adb.display_name,
+                'dataguard_region_type': adb.dataguard_region_type,
+                'compartment_id': adb.compartment_id,
+                'id': adb.id,
+                'time_created': adb.time_created,
+                'nsg_ids': adb.nsg_ids,
+                'subnet_id': adb.subnet_id,
+                'compartment_id': adb.compartment_id,
 
-                }
-                self.__autonomous_database_ocids.append(record)
+            }
+            self.__autonomous_database_ocids.append(record)
 
         # Filling local array for NSG contents
-        if self.__adb_nsg_objects is not None:
-            for nsgs, adb in self.__adb_nsg_objects:
-                for nsg in nsgs:             
-                    adb_nsg_record = {
-                        'description': nsg.description,
-                        'direction': nsg.direction,
-                        'is_stateless': nsg.is_stateless,
-                        'source': nsg.source,
-                        'source_type': nsg.source_type,
-                        'adb': adb.display_name,
-                        'adb_id': adb.id,
-                    }
-                    self.__adb_nsgs.append(adb_nsg_record)
+
+        for nsgs, adb in self.__adb_nsg_objects:
+            for nsg in nsgs:             
+                adb_nsg_record = {
+                    'description': nsg.description,
+                    'direction': nsg.direction,
+                    'is_stateless': nsg.is_stateless,
+                    'source': nsg.source,
+                    'source_type': nsg.source_type,
+                    'adb': adb.display_name,
+                    'adb_id': adb.id,
+                }
+                self.__adb_nsgs.append(adb_nsg_record)
 
         # Filling local array for Subnet OCIDS and it's corresponding private flag
-        if self.__subnet_objects is not None:
-            for subnet in self.__subnet_objects:
-                subnet_record = {
-                    'cidr_block': subnet.cidr_block,
-                    'compartment_id': subnet.compartment_id,
-                    'display_name': subnet.display_name,
-                    'dns_label': subnet.dns_label,
-                    'id': subnet.id,
-                    'lifecycle_state': subnet.lifecycle_state,
-                    'time_created': subnet.time_created,
-                    'vcn_id': subnet.vcn_id,
-                    'prohibit_internet_ingress': subnet.prohibit_internet_ingress,
-                    'prohibit_public_ip_on_vnic': subnet.prohibit_public_ip_on_vnic,
-                }
-                self.__subnets.append(subnet_record)
+        for subnet in self.__subnet_objects:
+            subnet_record = {
+                'cidr_block': subnet.cidr_block,
+                'compartment_id': subnet.compartment_id,
+                'display_name': subnet.display_name,
+                'dns_label': subnet.dns_label,
+                'id': subnet.id,
+                'lifecycle_state': subnet.lifecycle_state,
+                'time_created': subnet.time_created,
+                'vcn_id': subnet.vcn_id,
+                'prohibit_internet_ingress': subnet.prohibit_internet_ingress,
+                'prohibit_public_ip_on_vnic': subnet.prohibit_public_ip_on_vnic,
+            }
+            self.__subnets.append(subnet_record)
      
 
     def analyze_entity(self, entry):
@@ -172,43 +170,40 @@ class DBSystemControl(ReviewPoint):
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
         # Cycle Check for MySQL Databases
-        if self.__mysql_full_objects is not None:
-            for mysql in self.__mysql_database_ocids:
-                for subnet in self.__subnets:
-                    if mysql['subnet_id'] == subnet['id']:
-                        if subnet['prohibit_public_ip_on_vnic'] == False:
-                            dictionary[entry]['status'] = False
-                            dictionary[entry]['findings'].append(mysql)   
-                            dictionary[entry]['failure_cause'].append("MySQL Database is in a public subnet")
-                            dictionary[entry]['mitigations'].append("MySQL Database: "+mysql['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, mysql['compartment_id'])+" needs to be in a private subnet")
-            
+        for mysql in self.__mysql_database_ocids:
+            for subnet in self.__subnets:
+               if mysql['subnet_id'] == subnet['id']:
+                   if subnet['prohibit_public_ip_on_vnic'] == False:
+                       dictionary[entry]['status'] = False
+                       dictionary[entry]['findings'].append(mysql)   
+                       dictionary[entry]['failure_cause'].append("MySQL Database is in a public subnet")
+                       dictionary[entry]['mitigations'].append("MySQL Database: "+mysql['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, mysql['compartment_id'])+" needs to be in a private subnet")
+        
         # Cycle Check for Oracle Databases
-        if self.__oracle_database_subnet_ocids is not None:
-            for orcldb in self.__oracle_database_subnet_ocids:
-                for subnet in self.__subnets:
-                    if orcldb['subnet_id'] == subnet['id']:
-                        if subnet['prohibit_public_ip_on_vnic'] == False:
-                                dictionary[entry]['status'] = False
-                                dictionary[entry]['findings'].append(orcldb)                           
-                                if orcldb['nsg_ids'] != None:                                     
-                                    dictionary[entry]['failure_cause'].append("Oracle Database in Public Subnet without NSG Attached")
-                                    dictionary[entry]['mitigations'].append("Oracle Database: "+orcldb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, orcldb['compartment_id'])+" needs to be in a private subnet or attach a NSG")
-                                else:
-                                    dictionary[entry]['failure_cause'].append("Oracle Database is in a public subnet")
-                                    dictionary[entry]['mitigations'].append("Oracle Database: "+orcldb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, orcldb['compartment_id'])+" needs to be in a private subnet")                      
+        for orcldb in self.__oracle_database_subnet_ocids:
+            for subnet in self.__subnets:
+               if orcldb['subnet_id'] == subnet['id']:
+                   if subnet['prohibit_public_ip_on_vnic'] == False:
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['findings'].append(orcldb)                           
+                        if orcldb['nsg_ids'] != None:                                     
+                            dictionary[entry]['failure_cause'].append("Oracle Database in Public Subnet without NSG Attached")
+                            dictionary[entry]['mitigations'].append("Oracle Database: "+orcldb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, orcldb['compartment_id'])+" needs to be in a private subnet or attach a NSG")
+                        else:
+                            dictionary[entry]['failure_cause'].append("Oracle Database is in a public subnet")
+                            dictionary[entry]['mitigations'].append("Oracle Database: "+orcldb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, orcldb['compartment_id'])+" needs to be in a private subnet")                      
 
         # Check for empty NSGs into Autonomous Databases
-        if self.__autonomous_database_ocids is not None:
-            for adbs in self.__autonomous_database_ocids:
-                for nsg_protected_adbs in self.__adb_nsgs:        
-                    if adbs['id'] == nsg_protected_adbs['adb_id']:
-                        break
-                else:
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['findings'].append(adbs)   
-                    dictionary[entry]['failure_cause'].append("Autonomous Database protected with an Empty NSG")
-                    dictionary[entry]['mitigations'].append("NSG of Autonomous Database: "+str(adbs['display_name'])+" located in compartment: "+get_compartment_name(self.__compartments, adbs['compartment_id'])+" is empty")
-                                                        
+        for adbs in self.__autonomous_database_ocids:
+            for nsg_protected_adbs in self.__adb_nsgs:        
+                if adbs['id'] == nsg_protected_adbs['adb_id']:
+                    break
+            else:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(adbs)   
+                dictionary[entry]['failure_cause'].append("Autonomous Database protected with an Empty NSG")
+                dictionary[entry]['mitigations'].append("NSG of Autonomous Database: "+str(adbs['display_name'])+" located in compartment: "+get_compartment_name(self.__compartments, adbs['compartment_id'])+" is empty")
+                                                     
         return dictionary
 
 
