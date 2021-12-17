@@ -399,3 +399,9 @@ def get_compartment_name(compartments, compartment_id):
         if compartment_id == compartment.id:
             return compartment.name
     return None
+
+def get_nsg_rules_data(network_client, nsg_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_network_security_group_security_rules,
+        nsg_id
+    ).data

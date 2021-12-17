@@ -18,19 +18,18 @@ class DBSystemControl(ReviewPoint):
     # Class Variables
     __identity = None
 
-    # __mysql_db_ocids = []
-    
-    # __odb_dbsystems_subnet_ocids = []
-    # __mysql_dbsystems_subnet_ocids = []
-    # __vcns = []
-
     __subnet_objects = []
     __subnets = []
     __oracle_database_objects = []
     __oracle_database_subnet_ocids = []
-    __mysql_database_objects = []
     __mysql_database_ocids = []
+    __mysql_full_objects = []
     __compartments = []
+    __autonomous_database_objects = []
+    __autonomous_database_ocids = []
+    __autonomous_database_nsgs = []
+    __adb_nsg_objects = []
+    __adb_nsgs = []
   
     
 
@@ -75,18 +74,24 @@ class DBSystemControl(ReviewPoint):
             region_config['region'] = region.region_name
             db_system_clients.append( (get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
             mysql_clients.append( (get_mysql_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
-            network_clients.append(get_virtual_network_client(region_config, self.signer))
+            network_clients.append( (get_virtual_network_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(tenancy)
-
-        self.__subnet_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_subnets_in_compartments, len(self.__compartments), ParallelExecutor.subnets)
+        
+        self.__subnet_objects = ParallelExecutor.executor([x[0] for x in network_clients], self.__compartments, ParallelExecutor.get_subnets_in_compartments, len(self.__compartments), ParallelExecutor.subnets)
         self.__oracle_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_oracle_dbsystem, len(self.__compartments), ParallelExecutor.oracle_dbsystems)
         self.__mysql_database_objects = ParallelExecutor.executor([x[0] for x in mysql_clients], self.__compartments, ParallelExecutor.get_mysql_dbs, len(self.__compartments), ParallelExecutor.mysql_dbsystems)
         self.__mysql_full_objects = ParallelExecutor.executor(mysql_clients, self.__mysql_database_objects, ParallelExecutor.get_mysql_dbsystem_full_info, len(self.__mysql_database_objects), ParallelExecutor.mysql_full_data)
+        self.__autonomous_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
+        self.__adb_nsg_objects = ParallelExecutor.executor(network_clients, self.__autonomous_database_objects, ParallelExecutor.get_nsgs, len(self.__autonomous_database_objects), ParallelExecutor.adb_nsgs)
+        
+
+
+
 
         # Filling local array object for MySQL Database OCIDS
         for mysqldbobject in self.__mysql_full_objects:           
@@ -95,7 +100,6 @@ class DBSystemControl(ReviewPoint):
                 'display_name': mysqldbobject.display_name,
                 'id': mysqldbobject.id,
                 'subnet_id': mysqldbobject.subnet_id,
-                # TODO: Add any records you need here
             }
             # Appends to new array. TODO: (remove this comment)
             self.__mysql_database_ocids.append(mysql_db_record)
@@ -112,7 +116,36 @@ class DBSystemControl(ReviewPoint):
                 
             }
             self.__oracle_database_subnet_ocids.append(orcl_db_record)
+        
+        # Filling local array object for Autonomous Databases Subnet OCIDS
+        for adb in self.__autonomous_database_objects:   
+            record = {
+                'display_name': adb.display_name,
+                'dataguard_region_type': adb.dataguard_region_type,
+                'compartment_id': adb.compartment_id,
+                'id': adb.id,
+                'time_created': adb.time_created,
+                'nsg_ids': adb.nsg_ids,
+                'subnet_id': adb.subnet_id,
+                'compartment_id': adb.compartment_id,
 
+            }
+            self.__autonomous_database_ocids.append(record)
+
+        # Filling local array for NSG contents
+
+        for nsgs, adb in self.__adb_nsg_objects:
+            for nsg in nsgs:             
+                adb_nsg_record = {
+                    'description': nsg.description,
+                    'direction': nsg.direction,
+                    'is_stateless': nsg.is_stateless,
+                    'source': nsg.source,
+                    'source_type': nsg.source_type,
+                    'adb': adb.display_name,
+                    'adb_id': adb.id,
+                }
+                self.__adb_nsgs.append(adb_nsg_record)
 
         # Filling local array for Subnet OCIDS and it's corresponding private flag
         for subnet in self.__subnet_objects:
@@ -159,8 +192,18 @@ class DBSystemControl(ReviewPoint):
                         else:
                             dictionary[entry]['failure_cause'].append("Oracle Database is in a public subnet")
                             dictionary[entry]['mitigations'].append("Oracle Database: "+orcldb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, orcldb['compartment_id'])+" needs to be in a private subnet")                      
-                        
-                                     
+
+        # Check for empty NSGs into Autonomous Databases
+        for adbs in self.__autonomous_database_ocids:
+            for nsg_protected_adbs in self.__adb_nsgs:        
+                if adbs['id'] == nsg_protected_adbs['adb_id']:
+                    break
+            else:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(adbs)   
+                dictionary[entry]['failure_cause'].append("Autonomous Database protected with an Empty NSG")
+                dictionary[entry]['mitigations'].append("NSG of Autonomous Database: "+str(adbs['display_name'])+" located in compartment: "+get_compartment_name(self.__compartments, adbs['compartment_id'])+" is empty")
+                                                     
         return dictionary
 
 

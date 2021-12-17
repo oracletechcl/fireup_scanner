@@ -75,6 +75,7 @@ block_volume_replicas = []
 boot_volume_replicas = []
 buckets = []
 autonomous_databases = []
+adb_nsgs = []
 
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
@@ -452,6 +453,23 @@ def get_subnets_in_compartments(item):
         
     return subnets
 
+def get_nsgs(item):
+    # Executor will get all nsgs that are associated to an Autonomous Database
+    network_client = item[0]
+    adbs = item[1:]
+
+    adb_nsgs = []
+    for adb in adbs:        
+        region = adb.id.split('.')[3]
+        if network_client[1] in region or network_client[2] in region:                                        
+            nsg_id = adb.nsg_ids
+            if nsg_id != None:
+                for id in nsg_id:                    
+                    nsg_list_data = get_nsg_rules_data(network_client[0], id)
+                    adb_nsgs.append( (nsg_list_data, adb) )
+        
+    return adb_nsgs
+
 
 def get_oracle_dbsystem(item):
     database_client = item[0]
@@ -537,6 +555,7 @@ def get_autonomous_databases(item):
     for compartment in compartments:
         autonomous_databases_data = get_auto_db_data(database_client, compartment.id)
         for autonomous_database in autonomous_databases_data:
-            autonomous_databases.append(autonomous_database)
+            if autonomous_database.lifecycle_state != "TERMINATED":
+                autonomous_databases.append(autonomous_database)
 
     return autonomous_databases

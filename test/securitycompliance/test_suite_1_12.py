@@ -4,8 +4,7 @@
 # Description: Main test suite for fireup review tool
 # Dependencies: pytest
 
-from os import write
-from classes.securitycompliance.SecurityList import SecurityList
+from classes.securitycompliance.DBSystemControl import DBSystemControl
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug_with_date
 from common.utils.statics import Statics
@@ -20,7 +19,7 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = SecurityList(Statics.__rp_1_12['entry'], 
+    result_dictionary = DBSystemControl(Statics.__rp_1_12['entry'], 
     Statics.__rp_1_12['area'], 
     Statics.__rp_1_12['sub_area'], 
     Statics.__rp_1_12['review_point'], 
@@ -36,6 +35,6 @@ def test_review_point(capsys):
         debug_with_date(item)
         results_in_fault += 1    
 
-    assert results_in_fault == 0
+    assert results_in_fault == 13
 
     __test_suite_log(capsys)
