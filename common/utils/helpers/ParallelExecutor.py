@@ -61,6 +61,14 @@ mysql_dbs_with_no_backups = []
 instances = []
 
 
+### ReplicateData.py Global Variables
+# Lists for use with parallel_executor
+block_volume_replicas = []
+boot_volume_replicas = []
+buckets = []
+autonomous_databases = []
+
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
 
     values = data_variable
@@ -403,9 +411,8 @@ def get_instances(item):
 
         for compartment in compartments:
             instance_data = get_instance_data(compute_client, compartment.id)
-
             for instance in instance_data:
-                if instance.lifecycle_state != "TERMINATED":
+                if "TERMINATED" not in instance.lifecycle_state:
                     instances.append(instance)
 
         return instances
@@ -423,3 +430,65 @@ def get_security_lists(item):
             sec_lists.append(sec_list)
 
     return sec_lists
+
+
+def get_block_volume_replicas(item):
+    block_storage_client = item[0][0]
+    availability_domain = item[0][1]
+    compartments = item[1:]
+
+    block_volume_replicas = []
+
+    for compartment in compartments:
+        block_volume_replica_data = get_block_volume_replica_data(block_storage_client, availability_domain, compartment.id)
+        for block_volume_replica in block_volume_replica_data:
+            if "TERMINATED" not in block_volume_replica.lifecycle_state:
+                block_volume_replicas.append(block_volume_replica)
+
+    return block_volume_replicas
+
+
+def get_boot_volume_replicas(item):
+    block_storage_client = item[0][0]
+    availability_domain = item[0][1]
+    compartments = item[1:]
+
+    boot_volume_replicas = []
+
+    for compartment in compartments:
+        boot_volume_replica_data = get_boot_volume_replica_data(block_storage_client, availability_domain, compartment.id)
+        for boot_volume_replica in boot_volume_replica_data:
+            if "TERMINATED" not in boot_volume_replica.lifecycle_state:
+                boot_volume_replicas.append(boot_volume_replica)
+
+    return boot_volume_replicas
+
+
+def get_buckets(item):
+    object_storage_client = item[0][0]
+    namespace = item[0][1]
+    compartments = item[1:]
+
+    buckets = []
+
+    for compartment in compartments:
+        bucket_data = get_bucket_data(object_storage_client, namespace, compartment.id)
+        for bucket in bucket_data:
+            extended_bucket_data = object_storage_client.get_bucket(namespace, bucket.name).data
+            buckets.append(extended_bucket_data)
+
+    return buckets
+
+
+def get_autonomous_databases(item):
+    database_client = item[0]
+    compartments = item[1:]
+
+    autonomous_databases = []
+
+    for compartment in compartments:
+        autonomous_databases_data = get_auto_db_data(database_client, compartment.id)
+        for autonomous_database in autonomous_databases_data:
+            autonomous_databases.append(autonomous_database)
+
+    return autonomous_databases
