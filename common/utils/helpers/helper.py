@@ -6,66 +6,6 @@
 import oci
 from common.utils.tokenizer.signer import *
 from common.utils.formatter.printer import *
-from concurrent import futures
-
-__identity_client = None
-__network_client = None
-
-__compartment_id = None
-__compartments = None
-
-__availability_domains = []
-
-__vcns = []
-__security_lists = []
-
-### LBaasBackends.py + LBaaSHealthChecks.py Global Variables
-# LBaas Clients
-__load_balancer_client = None
-__network_load_balancer_client = None
-# LBaas lists for use with parallel_executor
-__load_balancers = []
-__network_load_balancers = []
-__load_balancer_healths = []
-__network_load_balancer_healths = []
-
-### Rbac.py Global Variables
-__policies = []
-
-### ApiKeys.py Global Variables
-# Api Key list for use with parallel_executor
-__api_keys = []
-
-### InstancePrincipal.py
-__instancePrincipal_dictionary = []
-__dyn_groups_per_compartment = []
-
-### CheckBackupPolicies.py Global Variables
-# Block storage lists for use with parallel_executor
-__block_volumes = []
-__boot_volumes = []
-__storages_with_no_policy = []
-__file_systems = []
-__file_system_snapshots = []
-
-
-### BackupDatabases.py Global Variables
-# Database list for use with parallel_executor
-__db_system_homes = []
-__mysql_databases = []
-__db_system_backups = []
-__mysql_backups = []
-
-### InstancePrincipal.py Global Variables
-# Instance list for use with parallel_executor
-__instances = []
-
-### ReplicateData.py Global Variables
-# Lists for use with parallel_executor 
-__block_volume_replicas = []
-__boot_volume_replicas = []
-__buckets = []
-__autonomous_databases = []
 
 
 def get_config_and_signer():
@@ -74,8 +14,6 @@ def get_config_and_signer():
     except Exception as e:
         raise RuntimeError("Failed to load configuration: {}".format(e))
     return config, signer
-
-
 
 def get_identity_client(config, signer):
     try:
@@ -434,39 +372,6 @@ def get_mysql_backup_data(mysql_client, compartment_id):
         compartment_id,
     ).data
 
-def parallel_executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, storage_variable_name:str):
-
-    values = globals()[storage_variable_name]
-
-    if len(values) > 0:
-        return values
-
-    items = []
-
-    for client in dependent_clients:
-        item = [client]
-        for i, independent in enumerate(independent_iterator):
-            item.append(independent)
-            if i > 0 and i % 20 == 0:
-                items.append(item)
-                item = [client]
-        items.append(item)
-
-    with futures.ThreadPoolExecutor(threads) as executor:
-
-        processes = [
-            executor.submit(fuction_to_execute, item) 
-            for item in items
-        ]
-
-        futures.wait(processes)
-
-        for p in processes:
-            for value in p.result():
-                values.append(value)
-
-    return values
-
 def get_quotas_client(config, signer):
     try:
         quotas_client = oci.limits.QuotasClient(config, signer=signer)
@@ -482,27 +387,3 @@ def list_quota_data(quotas_client, tenancy_id):
         __quotas_client.list_quotas,
         __tenancy_id
     ).data
-
-def get_availability_domains(identity_clients, tenancy_id):
-    """
-    Get all availability domains in a region using an identity client from each region
-    """
-    availability_domains = globals()["__availability_domains"]
-
-    # Return if function has already been run
-    if len(availability_domains) > 0:
-        return availability_domains
-
-    with futures.ThreadPoolExecutor(len(identity_clients)) as executor:
-        processes = [
-            executor.submit(identity_client.list_availability_domains, tenancy_id)
-            for identity_client in identity_clients
-        ]
-
-        futures.wait(processes)
-
-        for p in processes:
-            for value in p.result().data:
-                availability_domains.append(value.name)
-        
-    return availability_domains

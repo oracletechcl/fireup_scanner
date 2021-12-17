@@ -5,14 +5,16 @@
 
 from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 
 
 class LBaaSBackends(ReviewPoint):
 
     # Class Variables
-    __load_balancers = []
-    __network_load_balancers = []
+    __combined_load_balancers = []
+    __load_balancer_objects = []
+    __network_load_balancer_objects = []
     __identity = None
 
     def __init__(self,
@@ -62,11 +64,24 @@ class LBaaSBackends(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__load_balancers = parallel_executor(load_balancer_clients, compartments, self.__search_load_balancers, len(compartments), "__load_balancers")
+        self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, compartments, ParallelExecutor.get_load_balancers, len(compartments), ParallelExecutor.load_balancers)
         
-        self.__network_load_balancers = parallel_executor(network_load_balancer_clients, compartments, self.__search_network_load_balancers, len(compartments), "__network_load_balancers")
+        self.__network_load_balancer_objects = ParallelExecutor.executor(network_load_balancer_clients, compartments, ParallelExecutor.get_network_load_balancers, len(compartments), ParallelExecutor.network_load_balancers)
 
-        return self.__load_balancers, self.__network_load_balancers
+        for load_balancer in self.__load_balancer_objects + self.__network_load_balancer_objects:
+            record = {
+                'display_name': load_balancer.display_name,
+                'id': load_balancer.id,
+                'compartment_id': load_balancer.compartment_id,
+                'ip_addresses': load_balancer.ip_addresses,
+                'backend_sets': load_balancer.backend_sets,
+                'is_private': load_balancer.is_private,
+                'lifecycle_state': load_balancer.lifecycle_state,
+                'time_created': load_balancer.time_created,
+            }
+            self.__combined_load_balancers.append(record)
+
+        return self.__combined_load_balancers
 
 
     def analyze_entity(self, entry):
@@ -74,10 +89,8 @@ class LBaaSBackends(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        load_balancers = self.__load_balancers + self.__network_load_balancers
-
         # Loop through each load balancer and look for those without backends
-        for load_balancer in load_balancers:
+        for load_balancer in self.__combined_load_balancers:
             for backend_set in load_balancer['backend_sets']:
                 backend_set_dict = load_balancer['backend_sets'][backend_set].backends
 
@@ -92,64 +105,3 @@ class LBaaSBackends(ReviewPoint):
                     break
 
         return dictionary
-
-
-    def __search_load_balancers(self, item):
-        network_load_balancer_client = item[0]
-        compartments = item[1:]
-
-        load_balancers = []
-
-        for compartment in compartments:
-            load_balancer_data = get_load_balancer_data(network_load_balancer_client, compartment.id)
-            for load_balancer in load_balancer_data:
-                if "TERMINATED" not in load_balancer.lifecycle_state:
-                    record = {
-                        'display_name': load_balancer.display_name,
-                        'id': load_balancer.id,
-                        'compartment_id': load_balancer.compartment_id,
-                        'ip_addresses': load_balancer.ip_addresses,
-                        'backend_sets': load_balancer.backend_sets,
-                        'is_private': load_balancer.is_private,
-                        'lifecycle_state': load_balancer.lifecycle_state,
-                        'listeners': load_balancer.listeners,
-                        'shape_name': load_balancer.shape_name,
-                        'subnet_ids': load_balancer.subnet_ids,
-                        'network_security_group_ids': load_balancer.network_security_group_ids,
-                        'routing_policies': load_balancer.routing_policies,
-                        'time_created': load_balancer.time_created,
-                        'is_preserve_source_destination': '',
-                    }
-
-                    load_balancers.append(record)
-
-        return load_balancers
-
-
-    def __search_network_load_balancers(self, item):
-        load_balancer_client = item[0]
-        compartments = item[1:]
-
-        network_load_balancers = []
-
-        for compartment in compartments:
-            network_load_balancer_data = get_network_load_balancer_data(load_balancer_client, compartment.id)
-            for network_load_balancer in network_load_balancer_data:
-                if "TERMINATED" not in network_load_balancer.lifecycle_state:
-                    record = {
-                        'display_name': network_load_balancer.display_name,
-                        'id': network_load_balancer.id,
-                        'compartment_id': network_load_balancer.compartment_id,
-                        'ip_addresses': network_load_balancer.ip_addresses,
-                        'backend_sets': network_load_balancer.backend_sets,
-                        'is_private': network_load_balancer.is_private,
-                        'lifecycle_state': network_load_balancer.lifecycle_state,
-                        'listeners': network_load_balancer.listeners,
-                        'network_security_group_ids': network_load_balancer.network_security_group_ids,
-                        'is_preserve_source_destination': network_load_balancer.is_preserve_source_destination,
-                        'time_created': network_load_balancer.time_created
-                    }
-
-                    network_load_balancers.append(record)
-
-        return network_load_balancers
