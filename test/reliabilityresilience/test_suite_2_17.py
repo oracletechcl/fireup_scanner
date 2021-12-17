@@ -35,10 +35,6 @@ def test_review_point(capsys):
         debug_with_date(item)
         results_in_fault += 1
 
-<<<<<<< HEAD
-    assert results_in_fault == 275
-=======
     assert results_in_fault == 274
->>>>>>> 4225f2375fb37dcb51172f2831b15f76bdf432a1
 
     __test_suite_log(capsys)

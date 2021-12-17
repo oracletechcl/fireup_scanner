@@ -18,11 +18,8 @@ from classes.securitycompliance.PolicyAdmins import PolicyAdmins
 from classes.securitycompliance.FederatedUsers import FederatedUsers
 from classes.securitycompliance.DBSystemControl import DBSystemControl
 from classes.securitycompliance.DBPermissions import DBPermissions
-<<<<<<< HEAD
 from classes.securitycompliance.StoragePermissions import StoragePermissions
-=======
 from classes.securitycompliance.MaxSecurityZone import MaxSecurityZone
->>>>>>> 4225f2375fb37dcb51172f2831b15f76bdf432a1
 from classes.securitycompliance.Rbac import Rbac
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
