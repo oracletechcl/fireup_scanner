@@ -537,49 +537,6 @@ This happens because the parallel executor is called with the wrong amount of en
 `self.__autonomous_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)`
 
 
-
-Exception: ```
-
-Example: 
-```shell
-Traceback (most recent call last):
-  File "fireup.py", line 42, in <module>
-    __main__()
-  File "fireup.py", line 39, in __main__
-    __exec_orchestrator()   
-  File "fireup.py", line 34, in __exec_orchestrator
-    main_orchestrator(config, signer, cmd.report_directory)
-  File "/home/opc/REPOS/OCIBE/fireup/common/orchestrator/Orchestrate.py", line 53, in main_orchestrator
-    __call_1_12(config, signer, report_directory)
-  File "/home/opc/REPOS/OCIBE/fireup/common/orchestrator/Orchestrate.py", line 239, in __call_1_12
-    __instancePrincipal_dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
-  File "/home/opc/REPOS/OCIBE/fireup/classes/securitycompliance/DBSystemControl.py", line 182, in analyze_entity
-    self.load_entity()    
-  File "/home/opc/REPOS/OCIBE/fireup/classes/securitycompliance/DBSystemControl.py", line 108, in load_entity
-    for mysqldbobject in self.__mysql_full_objects:           
-TypeError: 'NoneType' object is not iterable
-```
-
-*Reason:*
-This happens because the object you're trying to iterate over is null
-
-*Solution:*
-Always add a null check to all resources that may potentially be nullified. 
-This is an example: 
-
-```python
-        if self.__mysql_full_objects is not None:
-            for mysqldbobject in self.__mysql_full_objects:           
-                mysql_db_record = {
-                    'compartment_id': mysqldbobject.compartment_id,
-                    'display_name': mysqldbobject.display_name,
-                    'id': mysqldbobject.id,
-                    'subnet_id': mysqldbobject.subnet_id,
-                }                
-                self.__mysql_database_ocids.append(mysql_db_record)
-```
-
-
 <div id="UnitTesting"></div>
 
 ## Unitary Testing
