@@ -537,8 +537,6 @@ This happens because the parallel executor is called with the wrong amount of en
 `self.__autonomous_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)`
 
 
-
-
 <div id="UnitTesting"></div>
 
 ## Unitary Testing

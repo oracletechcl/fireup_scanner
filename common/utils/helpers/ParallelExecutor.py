@@ -79,11 +79,13 @@ adb_nsgs = []
 
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
+    if threads == 0:
+        return []
 
     values = data_variable
 
     if len(values) > 0:
-        return values
+        return values    
 
     items = []
 
