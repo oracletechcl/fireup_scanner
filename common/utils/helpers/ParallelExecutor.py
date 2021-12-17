@@ -440,7 +440,6 @@ def get_security_lists(item):
     return sec_lists
 
 
-<<<<<<< HEAD
 def get_subnets_in_compartments(item):
     network_client = item[0]
     compartments = item[1:]
@@ -481,7 +480,6 @@ def get_mysql_dbsystem_full_info(item):
                 mysql_full_data.append(db)
 
     return mysql_full_data
-=======
 def get_block_volume_replicas(item):
     block_storage_client = item[0][0]
     availability_domain = item[0][1]
@@ -542,4 +540,3 @@ def get_autonomous_databases(item):
             autonomous_databases.append(autonomous_database)
 
     return autonomous_databases
->>>>>>> 30b88ce6cb97f7ab260de680afffd0766da7d6ac
