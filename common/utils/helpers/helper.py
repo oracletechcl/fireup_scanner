@@ -315,12 +315,6 @@ def get_db_system_data(database_client, compartment_id):
         compartment_id,
     ).data
 
-def get_mysql_dbsystem_data(database_client, db_system_id):
-    return oci.pagination.list_call_get_all_results(
-        database_client.get_db_system,
-        db_system_id,
-    ).data
-
 def get_db_system_home_data(database_client, compartment_id):
     
     return oci.pagination.list_call_get_all_results(
@@ -369,10 +363,4 @@ def get_subnets_per_compartment_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_subnets,
         compartment_id, 
-    ).data
-
-def get_mysql_dbsystem_data(database_client, dbsystem_id):
-    return oci.pagination.list_call_get_all_results(
-        database_client.get_db_system,
-        dbsystem_id,
     ).data

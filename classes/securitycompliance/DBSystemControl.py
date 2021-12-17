@@ -30,6 +30,7 @@ class DBSystemControl(ReviewPoint):
     __oracle_database_subnet_ocids = []
     __mysql_database_objects = []
     __mysql_database_ocids = []
+    __mysql_database_dicts = []
     __mysql_database_subnet_ocids = []
     
 
@@ -66,16 +67,14 @@ class DBSystemControl(ReviewPoint):
         regions = get_regions_data(self.__identity, self.config)
         db_system_clients = []
         mysql_clients = []
-        mysql_backup_clients = []
         network_clients = []
-        placeholder_returner = []
         mysql_ocids = []
 
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
-            db_system_clients.append((get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()))
-            mysql_clients.append((get_mysql_client(region_config, self.signer), region.region_name, region.region_key.lower()))
+            db_system_clients.append( (get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
+            mysql_clients.append( (get_mysql_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
             network_clients.append(get_virtual_network_client(region_config, self.signer))
 
         tenancy = get_tenancy_data(self.__identity, self.config)
@@ -84,6 +83,7 @@ class DBSystemControl(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
+        # TODO: Remove
         # Using a placeholder returner, which is a ephemeral variable that's discarded. Require this to avoid breaking the paralel
         # execution of threads. All values are stored on global private variables.
         # placeholder_returner = parallel_executor(network_clients, compartments, self.__search_vcns, len(compartments), "__vcns")
@@ -91,25 +91,24 @@ class DBSystemControl(ReviewPoint):
         # placeholder_returner = parallel_executor([x[0] for x in mysql_clients], compartments, self.__search_mysql_dbs_ocids, len(compartments), "__mysql_dbsystems_ocids")
         # placeholder_returner = parallel_executor(mysql_clients, self.__mysql_db_ocids, self.__search_mysql_dbs_subnet_ocids, len(self.__mysql_db_ocids), "__mysql_subnets")
 
-        
+        # self.__subnet_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_subnets_in_compartments, len(compartments), ParallelExecutor.subnets)
+        # self.__oracle_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], compartments, ParallelExecutor.get_oracle_dbsystem, len(compartments), ParallelExecutor.oracle_dbsystems)
+        self.__mysql_database_objects = ParallelExecutor.executor([x[0] for x in mysql_clients], compartments, ParallelExecutor.get_mysql_dbs, len(compartments), ParallelExecutor.mysql_dbsystems)
+        self.__mysql_full_objects = ParallelExecutor.executor(mysql_clients, self.__mysql_database_objects, ParallelExecutor.get_mysql_dbsystem_full_info, len(self.__mysql_database_objects), ParallelExecutor.mysql_full_data)
 
-        self.__subnet_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_subnets_in_compartments, len(compartments), ParallelExecutor.subnets)
-        self.__oracle_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], compartments, ParallelExecutor.get_oracle_dbsystem, len(compartments), ParallelExecutor.oracle_dbsystems)
-        self.__mysql_database_objects = ParallelExecutor.executor([x[0] for x in mysql_clients], compartments, ParallelExecutor.get_mysql_dbsystem, len(compartments), ParallelExecutor.mysql_dbsystems)
-        
         # Filling local array object for MySQL Database OCIDS
-        for mysqldbobject in self.__mysql_database_objects: 
-            #debug_with_color_date(mysqldbobject, "green")           
+        for mysqldbobject in self.__mysql_full_objects: 
             mysql_db_record = {
                 'compartment_id': mysqldbobject.compartment_id,
                 'display_name': mysqldbobject.display_name,
                 'id': mysqldbobject.id,
+                # TODO: Add any records you need here
             }
-            self.__mysql_database_ocids.append(mysql_db_record)
+            # Appends to new array. TODO: (remove this comment)
+            self.__mysql_database_dicts.append(mysql_db_record)
 
-        self.__mysql_full_objects = ParallelExecutor.executor([x[0] for x in mysql_clients], self.__mysql_database_ocids, ParallelExecutor.get_mysql_dbsystem_full_info, len(self.__mysql_database_ocids), ParallelExecutor.mysql_full_data)
 
-        for mysql in self.__mysql_full_objects:
+        for mysql in self.__mysql_database_dicts:
             debug_with_color_date(mysql, "yellow")
         
         # Filling local array object for Oracle Database Subnet OCIDs
@@ -139,9 +138,6 @@ class DBSystemControl(ReviewPoint):
             self.__subnets.append(subnet_record)
 
 
-
-        
-
         #debug_with_color_date(self.__vcns[0], "cyan")
         #debug_with_color_date(self.__odb_dbsystems_subnet_ocids, "yellow")
         #debug_with_color_date(self.__mysql_dbsystems_subnet_ocids, "cyan")
@@ -155,71 +151,3 @@ class DBSystemControl(ReviewPoint):
         
                                        
         return dictionary
-
-    
-
-    def __search_mysql_dbs_ocids(self, item):
-        mysql_client = item[0]
-        compartments = item[1:]       
- 
-        # This subroutinte adds for each valid MySQL Database, it's OCID into a list. 
-        # Value is stored in a global variable given multi-threading corruption
-        for compartment in compartments:            
-            dbdata = get_db_system_data(mysql_client, compartment.id)
-            if (len(dbdata) > 0):
-                for db in dbdata:           
-                  if db.lifecycle_state == "ACTIVE":
-                      self.__mysql_db_ocids.append(db.id)                         
-        
-        return self.__mysql_db_ocids
-
-    def __search_mysql_dbs_subnet_ocids(self, item):
-        mysql_client = item[0]
-        mysql_ocids = item[1:]
-
-        # Using recommendation listed here: https://github.com/oracle/oci-python-sdk/issues/408#issuecomment-994956936
-        for db_ocid in mysql_ocids:
-            region = db_ocid['id'].split('.')[3]
-            if mysql_client[1] in region or mysql_client[2] in region:
-                mysqldbdata = get_mysql_dbsystem_data(mysql_client[0], db_ocid)
-                for dbdata in mysqldbdata:
-                    record = {
-                        'display_name': dbdata.display_name,
-                        'subnet_id': dbdata.subnet_id,
-                    }
-                    self.__mysql_dbsystems_subnet_ocids.append(record)
-
-        return self.__mysql_dbsystems_subnet_ocids
-
-
-
-    def __search_vcns(self, item):
-        network_client = item[0]
-        compartments = item[1:]
-
-
-        vcns = []
-
-        for compartment in compartments:
-            vcn_data = get_vcn_data(network_client, compartment.id)
-            for vcn in vcn_data:
-                record = {
-                    'cidr_blocks': vcn.cidr_blocks,
-                    'compartment_id': vcn.compartment_id,
-                    'default_dhcp_options_id': vcn.default_dhcp_options_id,
-                    'default_route_table_id': vcn.default_route_table_id,
-                    'default_security_list_id': vcn.default_security_list_id,
-                    'defined_tags': vcn.defined_tags,
-                    'display_name': vcn.display_name,
-                    'dns_label': vcn.dns_label,
-                    'freeform_tags': vcn.freeform_tags,
-                    'id': vcn.id,
-                    'ipv6_cidr_blocks': vcn.ipv6_cidr_blocks,
-                    'lifecycle_state': vcn.lifecycle_state,
-                    'time_created': vcn.time_created,
-                    'vcn_domain_name': vcn.vcn_domain_name,
-                }
-
-                self.__vcns.append(record)
-
-        return self.__vcns

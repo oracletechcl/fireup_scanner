@@ -52,7 +52,7 @@ file_systems_with_no_snapshots = []
 ### BackupDatabases.py Global Variables
 # Database list for use with parallel_executor
 db_system_homes = []
-mysql_databases = []
+mysql_dbsystems = []
 db_systems_with_no_backups = []
 mysql_dbs_with_no_backups = []
 
@@ -63,10 +63,8 @@ instances = []
 
 ### DBSystemContro.py Global Variables
 # Subnet list for use with parallel_executor
-
 subnets = []
 oracle_dbsystems = []
-mysql_dbsystems = []
 mysql_full_data = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
@@ -329,13 +327,13 @@ def get_mysql_dbs(item):
 
 def get_mysql_dbs_with_no_backups(item):
     mysql_backup_client = item[0]
-    mysql_databases = item[1:]
+    mysql_dbsystems = item[1:]
 
     backups = []
     backup_window = 10
 
     # Checks that each MySQL DB has a backup within the last `backup_window` days
-    for mysql_database in mysql_databases:
+    for mysql_database in mysql_dbsystems:
         region = mysql_database.id.split('.')[3]
         if mysql_backup_client[1] in region or mysql_backup_client[2] in region:
             backup_data = get_mysql_backup_data(mysql_backup_client[0], mysql_database.compartment_id)
@@ -445,6 +443,7 @@ def get_subnets_in_compartments(item):
         
     return subnets
 
+
 def get_oracle_dbsystem(item):
     database_client = item[0]
     compartments = item[1:]
@@ -452,41 +451,23 @@ def get_oracle_dbsystem(item):
     oracle_dbsystem = []
     for compartment in compartments:
         dbdata = get_db_system_data(database_client, compartment.id)
-        if (len(dbdata) > 0):
-            for db in dbdata:
-                if db.lifecycle_state != "DELETED":
-                    oracle_dbsystem.append(db)
+        for db in dbdata:
+            if db.lifecycle_state != "DELETED":
+                oracle_dbsystem.append(db)
     
     return oracle_dbsystem
 
-def get_mysql_dbsystem(item):
-    database_client =item[0]
-    compartments = item[1:]
-
-    mysql_dbsystem = []
-    for compartment in compartments:
-        dbdata = get_db_system_data(database_client, compartment.id)
-        if (len(dbdata) > 0):
-            for db in dbdata:
-                if db.lifecycle_state != "DELETED":
-                    mysql_dbsystem.append(db)
-    return mysql_dbsystem
 
 def get_mysql_dbsystem_full_info(item):
     database_client = item[0]
-    dbsystem_id = item[1:]
+    mysql_dbs = item[1:]
 
     mysql_full_data = []
-    for dbid in dbsystem_id:
-       #region = dbid.id.split('.')[3]       
-       debug_with_color_date(dbid, "green")
-       #debug_with_color_date(dbid.id, "yellow")
-       debug_with_color_date(dbid.compartment_id, "blue")
-    #     if database_client[1] in region or database_client[2] in region:
-    #         dbdata = get_mysql_dbsystem_data(database_client, dbid.id)
-    #         if (len(dbdata) > 0):
-    #             for db in dbdata:
-    #                 if db.lifecycle_state != "DELETED":
-    #                     mysql_full_data.append(db)
+    for mysql_db in mysql_dbs:
+        region = mysql_db.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            db = database_client[0].get_db_system(mysql_db.id).data
+            if db.lifecycle_state != "DELETED":
+                mysql_full_data.append(db)
 
     return mysql_full_data

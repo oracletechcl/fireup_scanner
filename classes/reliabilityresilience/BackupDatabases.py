@@ -95,7 +95,7 @@ class BackupDatabases(ReviewPoint):
             }
             self.__db_systems_with_no_backups_dicts.append( (db, record) )
 
-        self.__mysql_database_objects = ParallelExecutor.executor(mysql_clients, compartments, ParallelExecutor.get_mysql_dbs, len(compartments), ParallelExecutor.mysql_databases)
+        self.__mysql_database_objects = ParallelExecutor.executor(mysql_clients, compartments, ParallelExecutor.get_mysql_dbs, len(compartments), ParallelExecutor.mysql_dbsystems)
 
         if len(self.__mysql_database_objects) > 0:
             self.__mysql_dbs_with_no_backups = ParallelExecutor.executor(mysql_backup_clients, self.__mysql_database_objects, ParallelExecutor.get_mysql_dbs_with_no_backups, len(self.__mysql_database_objects), ParallelExecutor.mysql_dbs_with_no_backups)
