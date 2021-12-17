@@ -481,7 +481,7 @@ Once retrieved, you can modify these objects into a dictionary however you pleas
 
 **Important Note: If you need to use these objects again in another parallel executor call, DO NOT modify them. Pass the objects as is and then modify the returned values. This is essential so that the objects are kept general and can be used again anywhere that they are needed.**
 
-If anything I've said in this section doesn't isn't clear, please reach out to me on slack if you are internal, and/or mention me in your GitHub issue with `@Matt-Mcl`.
+If anything I've said in this section isn't clear, please reach out to me on slack if you are internal, and/or mention me in your GitHub issue with `@Matt-Mcl`.
 
 <div id="UnitTesting"></div>
 
