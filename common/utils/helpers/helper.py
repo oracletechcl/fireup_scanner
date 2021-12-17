@@ -387,3 +387,21 @@ def list_quota_data(quotas_client, tenancy_id):
         __quotas_client.list_quotas,
         __tenancy_id
     ).data
+
+def get_subnets_per_compartment_data(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_subnets,
+        compartment_id, 
+    ).data
+
+def get_compartment_name(compartments, compartment_id):
+    for compartment in compartments:
+        if compartment_id == compartment.id:
+            return compartment.name
+    return None
+
+def get_nsg_rules_data(network_client, nsg_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_network_security_group_security_rules,
+        nsg_id
+    ).data

@@ -55,7 +55,7 @@ file_systems_with_no_snapshots = []
 ### BackupDatabases.py Global Variables
 # Database list for use with parallel_executor
 db_system_homes = []
-mysql_databases = []
+mysql_dbsystems = []
 db_systems_with_no_backups = []
 mysql_dbs_with_no_backups = []
 
@@ -64,12 +64,18 @@ mysql_dbs_with_no_backups = []
 instances = []
 
 
+### DBSystemContro.py Global Variables
+# Subnet list for use with parallel_executor
+subnets = []
+oracle_dbsystems = []
+mysql_full_data = []
 ### ReplicateData.py Global Variables
 # Lists for use with parallel_executor
 block_volume_replicas = []
 boot_volume_replicas = []
 buckets = []
 autonomous_databases = []
+adb_nsgs = []
 
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
@@ -332,13 +338,13 @@ def get_mysql_dbs(item):
 
 def get_mysql_dbs_with_no_backups(item):
     mysql_backup_client = item[0]
-    mysql_databases = item[1:]
+    mysql_dbsystems = item[1:]
 
     backups = []
     backup_window = 10
 
     # Checks that each MySQL DB has a backup within the last `backup_window` days
-    for mysql_database in mysql_databases:
+    for mysql_database in mysql_dbsystems:
         region = mysql_database.id.split('.')[3]
         if mysql_backup_client[1] in region or mysql_backup_client[2] in region:
             backup_data = get_mysql_backup_data(mysql_backup_client[0], mysql_database.compartment_id)
@@ -435,6 +441,63 @@ def get_security_lists(item):
     return sec_lists
 
 
+def get_subnets_in_compartments(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    subnets = []
+    for compartment in compartments:
+        subnet_list_data = get_subnets_per_compartment_data(network_client, compartment.id)
+        for snet in subnet_list_data:
+            subnets.append(snet)
+        
+    return subnets
+
+def get_nsgs(item):
+    # Executor will get all nsgs that are associated to an Autonomous Database
+    network_client = item[0]
+    adbs = item[1:]
+
+    adb_nsgs = []
+    for adb in adbs:        
+        region = adb.id.split('.')[3]
+        if network_client[1] in region or network_client[2] in region:                                        
+            nsg_id = adb.nsg_ids
+            if nsg_id != None:
+                for id in nsg_id:                    
+                    nsg_list_data = get_nsg_rules_data(network_client[0], id)
+                    adb_nsgs.append( (nsg_list_data, adb) )
+        
+    return adb_nsgs
+
+
+def get_oracle_dbsystem(item):
+    database_client = item[0]
+    compartments = item[1:]
+
+    oracle_dbsystem = []
+    for compartment in compartments:
+        dbdata = get_db_system_data(database_client, compartment.id)
+        for db in dbdata:
+            if db.lifecycle_state != "DELETED":
+                oracle_dbsystem.append(db)
+    
+    return oracle_dbsystem
+
+
+def get_mysql_dbsystem_full_info(item):
+    database_client = item[0]
+    mysql_dbs = item[1:]
+
+    mysql_full_data = []
+    for mysql_db in mysql_dbs:
+        region = mysql_db.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            db = database_client[0].get_db_system(mysql_db.id).data
+            if db.lifecycle_state != "DELETED":
+                mysql_full_data.append(db)
+
+    return mysql_full_data
 def get_block_volume_replicas(item):
     block_storage_client = item[0][0]
     availability_domain = item[0][1]
@@ -492,6 +555,7 @@ def get_autonomous_databases(item):
     for compartment in compartments:
         autonomous_databases_data = get_auto_db_data(database_client, compartment.id)
         for autonomous_database in autonomous_databases_data:
-            autonomous_databases.append(autonomous_database)
+            if autonomous_database.lifecycle_state != "TERMINATED":
+                autonomous_databases.append(autonomous_database)
 
     return autonomous_databases
