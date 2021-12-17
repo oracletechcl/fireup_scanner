@@ -101,8 +101,7 @@ class DBSystemControl(ReviewPoint):
                     'display_name': mysqldbobject.display_name,
                     'id': mysqldbobject.id,
                     'subnet_id': mysqldbobject.subnet_id,
-                }
-                # Appends to new array. TODO: (remove this comment)
+                }                
                 self.__mysql_database_ocids.append(mysql_db_record)
 
        
