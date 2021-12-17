@@ -155,10 +155,10 @@ __rp_1_16 = {
 __rp_1_17 = {
     'entry': '1.17',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Restrict Permissions for Deleting Storage Resources',    
+    'success_criteria': 'If any type of storage is in place, make sure that the permissions listed on link are restricted',
+    'fireup_items': ['Fireup Task: 21 - Who has permissions to delete resources?'],
 }
 
 __rp_1_18 = {
