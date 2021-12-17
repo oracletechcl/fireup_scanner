@@ -162,7 +162,6 @@ class CheckBackupPolicies(ReviewPoint):
 
         return self.__block_storages_with_no_policy_dicts, self.__file_systems_with_no_snapshots_dicts
 
-
     def analyze_entity(self, entry):
         self.load_entity()
 

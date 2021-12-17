@@ -5,8 +5,7 @@
 
 import oci
 from common.utils.tokenizer.signer import *
-from concurrent import futures
-from common.utils.formatter.printer import debug_with_color_date, debug_with_date
+from common.utils.formatter.printer import *
 
 
 def get_config_and_signer():
@@ -15,8 +14,6 @@ def get_config_and_signer():
     except Exception as e:
         raise RuntimeError("Failed to load configuration: {}".format(e))
     return config, signer
-
-
 
 def get_identity_client(config, signer):
     try:
@@ -108,6 +105,7 @@ def get_compute_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create compute client: {}".format(e))
     return compute_client
+
 def get_block_storage_client(config, signer):
     try:
         block_storage_client = oci.core.BlockstorageClient(config, signer=signer)
@@ -121,6 +119,13 @@ def get_file_storage_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create file storage client: {}".format(e))
     return file_storage_client
+
+def get_object_storage_client(config, signer):
+    try:
+        object_storage_client = oci.object_storage.ObjectStorageClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create object storage client: {}".format(e))
+    return object_storage_client
 
 def get_database_client(config, signer):
     try:
@@ -292,11 +297,35 @@ def get_block_volume_data(block_storage_client, compartment_id):
         compartment_id
     ).data
 
+def get_block_volume_replica_data(block_storage_client, availability_domain, compartment_id): 
+
+        return oci.pagination.list_call_get_all_results(
+        block_storage_client.list_block_volume_replicas,
+        availability_domain,
+        compartment_id
+    ).data
+
 def get_boot_volume_data(block_storage_client, availability_domain, compartment_id): 
 
         return oci.pagination.list_call_get_all_results(
         block_storage_client.list_boot_volumes,
         availability_domain,
+        compartment_id
+    ).data
+
+def get_boot_volume_replica_data(block_storage_client, availability_domain, compartment_id): 
+
+        return oci.pagination.list_call_get_all_results(
+        block_storage_client.list_boot_volume_replicas,
+        availability_domain,
+        compartment_id
+    ).data
+
+def get_bucket_data(object_storage_client, namespace, compartment_id):
+
+    return oci.pagination.list_call_get_all_results(
+        object_storage_client.list_buckets,
+        str(namespace),
         compartment_id
     ).data
 

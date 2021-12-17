@@ -132,13 +132,16 @@ def __print_to_csv_file(report_directory, header, file_subject, data):
         file_path = os.path.join(report_directory, file_name)
 
         # add start_date to each dictionary
-        result = [
+        results = [
             dict(item, extract_date=__start_time_str)
             for item in data
         ]
 
         # generate fields
-        fields = [key for key in result[0].keys()]
+        fields = set()
+        for result in results:
+            for key in result.keys():
+                fields.add(key)
 
         with open(file_path, mode='w', newline='') as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=fields)
@@ -146,7 +149,7 @@ def __print_to_csv_file(report_directory, header, file_subject, data):
             # write header
             writer.writeheader()
 
-            for row in result:
+            for row in results:
                 writer.writerow(row)
 
         # Used by Upload to
