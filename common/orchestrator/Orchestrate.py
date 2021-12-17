@@ -17,6 +17,7 @@ from classes.securitycompliance.AdminAbility import AdminAbility
 from classes.securitycompliance.PolicyAdmins import PolicyAdmins
 from classes.securitycompliance.FederatedUsers import FederatedUsers
 from classes.securitycompliance.DBPermissions import DBPermissions
+from classes.securitycompliance.StoragePermissions import StoragePermissions
 from classes.securitycompliance.Rbac import Rbac
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
@@ -46,6 +47,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_9(config, signer, report_directory)
     __call_1_10(config, signer, report_directory)
     __call_1_13(config, signer, report_directory)
+    __call_1_17(config, signer, report_directory)
     
     __call_2_5(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
@@ -195,6 +197,18 @@ def __call_1_13(config, signer, report_directory):
     __instancePrincipal_dictionary = dbPerms.analyze_entity(Statics.__rp_1_13['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_13['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_13['fireup_items'])
+
+    def __call_1_17(config, signer, report_directory):
+        storagePerms = StoragePermissions(
+        Statics.__rp_1_17['entry'], 
+        Statics.__rp_1_17['area'], 
+        Statics.__rp_1_17['sub_area'], 
+        Statics.__rp_1_17['review_point'], 
+        True, [], [], [], [], config, signer)
+        mitigation_report_name = Statics.__rp_1_17['entry']+"_"+Statics.__rp_1_17['area']+"_"+Statics.__rp_1_17['sub_area']+"_mitigations"
+        __instancePrincipal_dictionary = storagePerms.analyze_entity(Statics.__rp_1_17['entry'])
+        generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_17['entry'])
+        generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_17['fireup_items'])
 
 
 def __call_2_5(config, signer, report_directory):    
