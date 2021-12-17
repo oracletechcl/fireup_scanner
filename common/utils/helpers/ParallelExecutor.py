@@ -83,33 +83,34 @@ def executor(dependent_clients:list, independent_iterator:list, fuction_to_execu
     values = data_variable
 
     if len(values) > 0:
+        return values   
+
+    if threads > 0:
+        items = []
+
+        for client in dependent_clients:
+            item = [client]
+            for i, independent in enumerate(independent_iterator):
+                item.append(independent)
+                if i > 0 and i % 20 == 0:
+                    items.append(item)
+                    item = [client]
+            items.append(item)
+
+        with futures.ThreadPoolExecutor(threads) as executor:
+
+            processes = [
+                executor.submit(fuction_to_execute, item) 
+                for item in items
+            ]
+
+            futures.wait(processes)
+
+            for p in processes:
+                for value in p.result():
+                    values.append(value)
+
         return values
-
-    items = []
-
-    for client in dependent_clients:
-        item = [client]
-        for i, independent in enumerate(independent_iterator):
-            item.append(independent)
-            if i > 0 and i % 20 == 0:
-                items.append(item)
-                item = [client]
-        items.append(item)
-
-    with futures.ThreadPoolExecutor(threads) as executor:
-
-        processes = [
-            executor.submit(fuction_to_execute, item) 
-            for item in items
-        ]
-
-        futures.wait(processes)
-
-        for p in processes:
-            for value in p.result():
-                values.append(value)
-
-    return values
 
 def get_availability_domains(identity_clients, tenancy_id):
     """
