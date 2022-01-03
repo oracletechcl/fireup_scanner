@@ -128,10 +128,10 @@ __rp_1_13 = {
 __rp_1_14 = {
     'entry': '1.14',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure your Databases',
+    'review_point': 'Encrypt Data',    
+    'success_criteria': 'Check that Oracle Database created has a TDE Master Key rotated each 90 days',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_1_15 = {

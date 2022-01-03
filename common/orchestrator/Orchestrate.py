@@ -21,6 +21,7 @@ from classes.securitycompliance.DBPermissions import DBPermissions
 from classes.securitycompliance.StoragePermissions import StoragePermissions
 from classes.securitycompliance.MaxSecurityZone import MaxSecurityZone
 from classes.securitycompliance.Rbac import Rbac
+from classes.securitycompliance.DBKeys import DBKeys
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
 
@@ -52,6 +53,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_11(config, signer, report_directory)
     __call_1_12(config, signer, report_directory)
     __call_1_13(config, signer, report_directory)
+    __call_1_14(config, signer, report_directory)
     __call_1_17(config, signer, report_directory)
     
     __call_2_5(config, signer, report_directory)
@@ -214,6 +216,19 @@ def __call_1_13(config, signer, report_directory):
     __instancePrincipal_dictionary = dbPerms.analyze_entity(Statics.__rp_1_13['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_13['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_13['fireup_items'])
+
+def __call_1_14(config, signer, report_directory):
+    dbKeys = DBKeys(
+    Statics.__rp_1_14['entry'], 
+    Statics.__rp_1_14['area'], 
+    Statics.__rp_1_14['sub_area'], 
+    Statics.__rp_1_14['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_14['entry']+"_"+Statics.__rp_1_14['area']+"_"+Statics.__rp_1_14['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = dbKeys.analyze_entity(Statics.__rp_1_14['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_14['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_14['fireup_items'])
+
 
 def __call_1_17(config, signer, report_directory):
     storagePerms = StoragePermissions(
