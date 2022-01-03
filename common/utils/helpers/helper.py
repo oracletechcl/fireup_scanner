@@ -351,12 +351,6 @@ def get_db_system_home_data(database_client, compartment_id):
         compartment_id,
     ).data
 
-def list_key_store_data(database_client, compartment_id):
-    return oci.pagination.list_call_get_all_results(
-        database_client.list_key_stores,
-        compartment_id,
-    ).data
-
 def get_auto_db_data(database_client, compartment_id):
     
     return oci.pagination.list_call_get_all_results(

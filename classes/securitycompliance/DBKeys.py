@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# SecurityList.py
-# Description: Implementation of class SecurityList based on abstract
+# DBKeys.py
+# Description: Implementation of class DBKeys based on abstract
 
 
 
