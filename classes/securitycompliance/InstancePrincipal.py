@@ -3,10 +3,8 @@
 # InstancePrincipal.py
 # Description: Implementation of class InstancePrincipal based on abstract
 
-
-
-from common.utils.formatter.printer import debug, debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 import re
@@ -15,11 +13,11 @@ import re
 class InstancePrincipal(ReviewPoint):
 
     # Class Variables
-    __compartments = []
     __identity = None
     __tenancy = None
     __dyn_groups = []
     __instances = []
+    __instance_objects = []
     __dyn_groups_with_inst_prins = []
     __inst_prin_compartment_id_list = []
     __inst_prin_instance_id_list = []
@@ -91,7 +89,15 @@ class InstancePrincipal(ReviewPoint):
         compartments = get_compartments_data(self.__identity, self.__tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__instances = parallel_executor(compute_clients, compartments, self.__search_for_computes, len(compartments), "__instances")
+        self.__instance_objects = ParallelExecutor.executor(compute_clients, compartments, ParallelExecutor.get_instances, len(compartments), ParallelExecutor.instances)
+
+        for instance in self.__instance_objects:
+            instance_record = {
+                'id': instance.id,
+                'display_name': instance.display_name,
+                'compartment_id': instance.compartment_id,
+            }
+            self.__instances.append(instance_record)
     
 
     def analyze_entity(self, entry):
@@ -134,34 +140,3 @@ class InstancePrincipal(ReviewPoint):
 
     def __remove_repeated_from_list(self, list_to_clean):
         return list(dict.fromkeys(list_to_clean))
-
-
-    def __search_for_computes(self, item):
-        compute_client = item[0]
-        compartments = item[1:]
-
-        instances = []
-
-        for compartment in compartments:
-            instance_data = get_instance_data(compute_client, compartment.id)
-
-            for instance in instance_data:
-                if instance.lifecycle_state != "TERMINATED":
-                    instance_record = {
-                        'id': instance.id,
-                        'display_name': instance.display_name,
-                        'compartment_id': instance.compartment_id,
-                        'availability_config': instance.availability_config,
-                        'availability_domain': instance.availability_domain,
-                        'fault_domain': instance.fault_domain,
-                        'image_id': instance.image_id,
-                        'launch_options': instance.launch_options,
-                        'lifecycle_state': instance.lifecycle_state,
-                        'shape': instance.shape,
-                        'shape_config': instance.shape_config,
-                        'time_created': instance.time_created,
-                    }
-
-                    instances.append(instance_record)
-
-        return instances

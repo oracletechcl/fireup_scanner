@@ -1,12 +1,10 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# Mfa.py
-# Description: Implementation of class MFA based on abstract
+# Rbac.py
+# Description: Implementation of class Rbac based on abstract
 
-
-
-from common.utils.formatter.printer import debug, debug_with_date, print_with_date
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 from collections import defaultdict
@@ -15,7 +13,9 @@ from collections import defaultdict
 class Rbac(ReviewPoint):
 
     # Class Variables    
-    __compartments = []    
+    __compartments = [] 
+    __policies = []
+    __policies_per_compartment = []
     __identity = None
     __tenancy = None
     __policy_dictionary = defaultdict(list)
@@ -56,9 +56,27 @@ class Rbac(ReviewPoint):
         identity_clients = []
         identity_clients.append(get_identity_client(self.config, self.signer))       
         
+        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
 
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id) 
-        #self.__compartments.append(get_tenancy_data(self.__identity, self.config))  
+        self.__policies_per_compartment = ParallelExecutor.executor([self.__identity], compartments, ParallelExecutor.get_policies_per_compartment, len(compartments), ParallelExecutor.policies)
+
+        for policy in self.__policies_per_compartment:
+            policy_record = []
+            if len(policy_record) > 0:
+                policy_record = [{
+                    "compartment_id": policy.compartment_id,
+                    "defined_tags": policy.defined_tags,
+                    "description": policy.description,
+                    "freeform_tags": policy.freeform_tags,
+                    "id": policy.id,
+                    "lifecycle_state": policy.lifecycle_state,
+                    "name": policy.name,
+                    "statements": policy.statements,
+                    "time_created": policy.time_created,
+                    "version_date": policy.version_date
+                }]
+            self.__policies.append(policy_record)
+
         for compartment in compartments:
             compartment_record = {
                 "compartment_id": compartment.compartment_id,
@@ -72,10 +90,8 @@ class Rbac(ReviewPoint):
             }
             self.__compartments.append(compartment_record)
 
-        policies_per_compartment = parallel_executor([self.__identity], compartments, self.__get_policies_per_compartment, len(compartments), "__policies")
-
         for i, compartment in enumerate(compartments):
-            self.__policy_dictionary.setdefault(compartment.id, []).append(policies_per_compartment[i])
+            self.__policy_dictionary.setdefault(compartment.id, []).append(self.__policies[i])
 
     def analyze_entity(self, entry):
         entry_check = ['inspect', 'read', 'update', 'manage', 'in compartment']
@@ -89,7 +105,7 @@ class Rbac(ReviewPoint):
 
         for key, value in self.__compartment_count_results.items():
             for compartment in self.__compartments:
-                if key == compartment['id']:                    
+                if key == compartment['id']:
                     if value < 5:
                         dictionary[entry]['status'] = False
                         dictionary[entry]['findings'].append(compartment)
@@ -116,33 +132,6 @@ class Rbac(ReviewPoint):
             
         return dictionary
 
-    def __get_policies_per_compartment(self, item):
-        identity_client = item[0]
-        compartments = item[1:]
-
-        policies_per_compartment = []
-        for compartment in compartments:
-            policies = []
-            policy_data = get_policies_data(identity_client, compartment.id)        
-            for policy in policy_data:  
-                policy_record = {
-                    "compartment_id": policy.compartment_id,
-                    "defined_tags": policy.defined_tags,
-                    "description": policy.description,
-                    "freeform_tags": policy.freeform_tags,
-                    "id": policy.id,
-                    "lifecycle_state": policy.lifecycle_state,
-                    "name": policy.name,
-                    "statements": policy.statements,
-                    "time_created": policy.time_created,
-                    "version_date": policy.version_date
-                }
-                
-                policies.append(policy_record)
-
-            policies_per_compartment.append(policies)
-
-        return policies_per_compartment
 
     def __set_compartment_finding_count(self, entry_check):
         for compartment in self.__compartments:
@@ -159,6 +148,7 @@ class Rbac(ReviewPoint):
                                     self.__compartment_count_results[comp_id]=policy_counter
                         else:                            
                             self.__no_policy_compartments[comp_id]=no_policy_counter
+
 
     def __get_policies_in_root_compartment(self):
         policies = []

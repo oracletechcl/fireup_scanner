@@ -3,18 +3,19 @@
 # SecurityList.py
 # Description: Implementation of class SecurityList based on abstract
 
+from oci.identity import identity_client
 from classes.abstract.ReviewPoint import ReviewPoint
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
 
-class SecurityList(ReviewPoint):
+class MaxSecurityZone(ReviewPoint):
 
     # Class Variables
     __identity = None
-    __sec_list_objects = []
-    __non_compliant_sec_list = []
+    __max_sec_zone = []
+
 
 
     def __init__(self,
@@ -60,43 +61,29 @@ class SecurityList(ReviewPoint):
         # Get all compartments including root compartment
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
+        
 
-        self.__sec_list_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_security_lists, len(compartments), ParallelExecutor.security_lists)
+        for comp in compartments:
+            comp_max_sec_zone = get_max_security_zone_data(self.__identity, comp.id)            
+            if "isMaximumSecurityZone" not in comp_max_sec_zone:                
+                self.__max_sec_zone.append(comp_max_sec_zone)
+                
+                
+  
 
-        for sec_list in self.__sec_list_objects:
-            for ingress in sec_list.ingress_security_rules:
-                if ingress.source == '0.0.0.0/0':
-                    sec_list_record = {
-                        'compartment_id': sec_list.compartment_id,
-                        'defined_tags': sec_list.defined_tags,
-                        'display_name': sec_list.display_name,
-                        'egress_security_rules': sec_list.egress_security_rules,
-                        'id': sec_list.id,
-                        'ingress_security_rules': sec_list.ingress_security_rules,
-                        'lifecycle_state': sec_list.lifecycle_state,
-                        'time_created': sec_list.time_created,
-                        'vcn_id': sec_list.vcn_id,
-                    }
-                    self.__non_compliant_sec_list.append(sec_list_record)
-                break
-            else:
-                continue
-
-        return self.__non_compliant_sec_list
-
+            
 
     def analyze_entity(self, entry):
     
         self.load_entity()    
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-
-        if len(self.__non_compliant_sec_list) > 0:
-            dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Security List contains a wide open \"0.0.0.0/0\" CIDR in ingress rule that needs to be closed')
-            for sec_list in self.__non_compliant_sec_list:
-                if sec_list not in dictionary[entry]['findings']:
-                    dictionary[entry]['findings'].append(sec_list)
-                    dictionary[entry]['mitigations'].append('Make sure to reduce access and set more granular permissions into: '+sec_list['display_name'])
+                
+        for msc in self.__max_sec_zone:
+               if len(self.__max_sec_zone) > 0:             
+                dictionary[entry]['status'] = False
+                dictionary[entry]['failure_cause'].append('Compartments do not have maximum security zone enabled')
+                dictionary[entry]['findings'].append(msc)
+                dictionary[entry]['mitigations'].append('If compartment: '+msc['name']+ ' contains a production workload, Enable Maximum Security Zone into it')                              
                                        
         return dictionary
 

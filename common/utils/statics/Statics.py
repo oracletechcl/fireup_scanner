@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v0.0.8'
+__version__ = 'v0.0.9'
 __lenght_print__ = "200"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -101,19 +101,19 @@ __rp_1_10 = {
 __rp_1_11 = {
     'entry': '1.11',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Define Maximum Security Zones',    
+    'success_criteria': 'Check if Maximum Security Zone is enabled for compartments that holster production workdload. Check Public and Private subnets are in place',
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
 __rp_1_12 = {
     'entry': '1.12',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure Your Databases',
+    'review_point': 'Control User and Network Access',    
+    'success_criteria': 'Check if DBSystems are in private subnets or not. Use NSG into DBSystems',
+    'fireup_items': ['Fireup Task: 21 - Who has permissions to delete resources?', 'Fireup Task: 23 - Are databases and other confidential resources locked down in private subnets?'],
 }
 
 __rp_1_13 = {
@@ -155,10 +155,10 @@ __rp_1_16 = {
 __rp_1_17 = {
     'entry': '1.17',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Restrict Permissions for Deleting Storage Resources',    
+    'success_criteria': 'If any type of storage is in place, make sure that the permissions listed on link are restricted',
+    'fireup_items': ['Fireup Task: 21 - Who has permissions to delete resources?'],
 }
 
 __rp_1_18 = {
@@ -390,10 +390,10 @@ __rp_2_16 = {
 __rp_2_17 = {
     'entry': '2.17',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Back Up Your Data',
+    'review_point': 'Replicate Your Data for Disaster Recovery',    
+    'success_criteria': 'If block storage in place, make sure that there is regional backup enabled. If Object storage, make sure to copy objects into another region. If Oracle DB In place, make sure to create a regional DR Dataguard.',
+    'fireup_items': ['Fireup Task: 34 - Have backups for failure (VMs, Block Storage, Object Storage, SSD, Database, have appropriate RPO/RTO).'],
 }
 
 __rp_3_1 = {

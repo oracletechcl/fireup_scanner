@@ -3,20 +3,22 @@
 # BackupDatabases.py
 # Description: Implementation of class BackupDatabases based on abstract
 
-from datetime import datetime, timedelta
 from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 
 
 class BackupDatabases(ReviewPoint):
 
     # Class Variables
-    __db_system_homes = []
-    __mysql_databases = []
+    __db_system_home_objects = []
+    __mysql_database_objects = []
 
-    __db_system_backups = []
-    __mysql_backups = []
+    __db_systems_with_no_backups = []
+    __db_systems_with_no_backups_dicts = []
+    __mysql_dbs_with_no_backups = []
+    __mysql_dbs_with_no_backups_dicts = []
     __identity = None
 
     def __init__(self,
@@ -67,17 +69,59 @@ class BackupDatabases(ReviewPoint):
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__db_system_homes = parallel_executor([x[0] for x in db_system_clients], compartments, self.__search_compartments, len(compartments), "__db_system_homes")
+        self.__db_system_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], compartments, ParallelExecutor.get_database_homes, len(compartments), ParallelExecutor.db_system_homes)
 
-        self.__mysql_databases = parallel_executor(mysql_clients, compartments, self.__search_mysql_dbs, len(compartments), "__mysql_databases")
+        if len(self.__db_system_home_objects) > 0:
+            self.__db_systems_with_no_backups = ParallelExecutor.executor(db_system_clients, self.__db_system_home_objects, ParallelExecutor.get_db_systems_with_no_backups, len(self.__db_system_home_objects), ParallelExecutor.db_systems_with_no_backups)
 
-        if len(self.__mysql_databases) > 0:
-            self.__mysql_backups = parallel_executor(mysql_backup_clients, self.__mysql_databases, self.__search_mysql_backups, len(self.__mysql_databases), "__mysql_backups")
+        for db, db_home in self.__db_systems_with_no_backups:
+            record = {
+                'compartment_id': db_home.compartment_id,
+                'defined_tags': db_home.defined_tags,
+                'display_name': db_home.display_name,
+                'id': db_home.id,
+                'time_created': db_home.time_created,
+                'db_system_id': db_home.db_system_id,
+                'db_version': db_home.db_version,
+                'lifecycle_state': db_home.lifecycle_state,
+                'vm_cluster_id': db_home.vm_cluster_id,
+                'current_placement': '',
+                'description': '',
+                'endpoints': '',
+                'heat_wave_cluster': '',
+                'mysql_version': '',
+                'availability_domain': '',
+                'is_highly_available': '',
+            }
+            self.__db_systems_with_no_backups_dicts.append( (db, record) )
 
-        if len(self.__db_system_homes) > 0:
-            self.__db_system_backups = parallel_executor(db_system_clients, self.__db_system_homes, self.__search_db_system_backups, len(self.__db_system_homes), "__db_system_backups")
+        self.__mysql_database_objects = ParallelExecutor.executor(mysql_clients, compartments, ParallelExecutor.get_mysql_dbs, len(compartments), ParallelExecutor.mysql_dbsystems)
 
-        return self.__mysql_backups, self.__db_system_backups
+        if len(self.__mysql_database_objects) > 0:
+            self.__mysql_dbs_with_no_backups = ParallelExecutor.executor(mysql_backup_clients, self.__mysql_database_objects, ParallelExecutor.get_mysql_dbs_with_no_backups, len(self.__mysql_database_objects), ParallelExecutor.mysql_dbs_with_no_backups)
+
+        for mysql_db in self.__mysql_dbs_with_no_backups:
+            record = {
+                'availability_domain': mysql_db.availability_domain,
+                'compartment_id': mysql_db.compartment_id,
+                'current_placement': mysql_db.current_placement,
+                'defined_tags': mysql_db.defined_tags,
+                'description': mysql_db.description,
+                'display_name': mysql_db.display_name,
+                'endpoints': mysql_db.endpoints,
+                'heat_wave_cluster': mysql_db.heat_wave_cluster,
+                'id': mysql_db.id,
+                'is_highly_available': mysql_db.is_highly_available,
+                'lifecycle_state': mysql_db.lifecycle_state,
+                'mysql_version': mysql_db.mysql_version,
+                'time_created': mysql_db.time_created,
+                'db_system_id': '',
+                'db_version': '',
+                'vm_cluster_id': '',
+            }
+            self.__mysql_dbs_with_no_backups_dicts.append(record)
+
+        return self.__db_systems_with_no_backups_dicts, self.__mysql_dbs_with_no_backups_dicts
 
 
     def analyze_entity(self, entry):
@@ -85,126 +129,16 @@ class BackupDatabases(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        for db, db_home in self.__db_system_backups:
+        for db, db_home in self.__db_systems_with_no_backups_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(db_home)
             dictionary[entry]['failure_cause'].append('Each Database System database should have automatic backup enabled')
             dictionary[entry]['mitigations'].append(f"Make sure database {db.db_name} within database home {db_home['display_name']} has automatic backup enabled.")
 
-        for mysql_database in self.__mysql_backups:
+        for mysql_database in self.__mysql_dbs_with_no_backups_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(mysql_database)
             dictionary[entry]['failure_cause'].append('Each MySQL Database should have automatic backup enabled')
             dictionary[entry]['mitigations'].append(f"Make sure MySQL Database {mysql_database['display_name']} has automatic backup enabled.")
 
         return dictionary
-
-
-    def __search_compartments(self, item):
-        database_client = item[0]
-        compartments = item[1:]
-
-        db_homes = []
-
-        for compartment in compartments:
-            database_home_data = get_db_system_home_data(database_client, compartment.id)
-            for db_home in database_home_data:
-                if "DELETED" not in db_home.lifecycle_state:
-                    record = {
-                        'compartment_id': db_home.compartment_id,
-                        'defined_tags': db_home.defined_tags,
-                        'display_name': db_home.display_name,
-                        'id': db_home.id,
-                        'time_created': db_home.time_created,
-                        'db_system_id': db_home.db_system_id,
-                        'db_version': db_home.db_version,
-                        'lifecycle_state': db_home.lifecycle_state,
-                        'vm_cluster_id': db_home.vm_cluster_id,
-                        'current_placement': '',
-                        'description': '',
-                        'endpoints': '',
-                        'heat_wave_cluster': '',
-                        'mysql_version': '',
-                        'availability_domain': '',
-                        'is_highly_available': '',
-                    }
-
-                    db_homes.append(record)
-
-        return db_homes
-
-
-    def __search_mysql_dbs(self, item):
-        mysql_client = item[0]
-        compartments = item[1:]
-
-        databases = []
-
-        for compartment in compartments:
-            mysql_data = get_db_system_data(mysql_client, compartment.id)
-            for mysql_db in mysql_data:
-                if "DELETED" not in mysql_db.lifecycle_state:
-                    record = {
-                        'availability_domain': mysql_db.availability_domain,
-                        'compartment_id': mysql_db.compartment_id,
-                        'current_placement': mysql_db.current_placement,
-                        'defined_tags': mysql_db.defined_tags,
-                        'description': mysql_db.description,
-                        'display_name': mysql_db.display_name,
-                        'endpoints': mysql_db.endpoints,
-                        'heat_wave_cluster': mysql_db.heat_wave_cluster,
-                        'id': mysql_db.id,
-                        'is_highly_available': mysql_db.is_highly_available,
-                        'lifecycle_state': mysql_db.lifecycle_state,
-                        'mysql_version': mysql_db.mysql_version,
-                        'time_created': mysql_db.time_created,
-                        'db_system_id': '',
-                        'db_version': '',
-                        'vm_cluster_id': '',
-                    }
-
-                    databases.append(record)
-
-        return databases
-
-
-    def __search_mysql_backups(self, item):
-        mysql_backup_client = item[0]
-        mysql_databases = item[1:]
-
-        backups = []
-        backup_window = 10
-
-        # Checks that each MySQL DB has a backup within the last `backup_window` days
-        for mysql_database in mysql_databases:
-            region = mysql_database['id'].split('.')[3]
-            if mysql_backup_client[1] in region or mysql_backup_client[2] in region:
-                backup_data = get_mysql_backup_data(mysql_backup_client[0], mysql_database['compartment_id'])
-                # Checks if there are any backups, the newest isn't deleted, 
-                # matches to the current db, and is within the last `backup_window` days
-                if len(backup_data) > 0: 
-                    if ("DELETED" not in backup_data[0].lifecycle_state and
-                    mysql_database['id'] == backup_data[0].db_system_id and
-                    datetime.now() > (backup_data[0].time_created.replace(tzinfo=None) + timedelta(days=backup_window))):
-                        backups.append(mysql_database)
-                else:
-                    backups.append(mysql_database)
-
-        return backups
-
-
-    def __search_db_system_backups(self, item):
-        database_client = item[0]
-        db_system_homes = item[1:]
-
-        disabled_backups = []
-
-        for db_home in db_system_homes:
-            region = db_home['id'].split('.')[3]
-            if database_client[1] in region or database_client[2] in region:
-                databases = database_client[0].list_databases(db_home_id=db_home['id'], system_id=db_home['db_system_id'], compartment_id=db_home['compartment_id']).data
-                for db in databases:
-                    if not db.db_backup_config.auto_backup_enabled:
-                        disabled_backups.append( (db, db_home) )
-
-        return disabled_backups
