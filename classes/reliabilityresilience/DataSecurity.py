@@ -3,16 +3,18 @@
 # DataSecurity.py
 # Description: Implementation of class DataSecurity based on abstract
 
-from datetime import datetime, timedelta
-from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
+from common.utils.helpers.helper import *
 
 
 class DataSecurity(ReviewPoint):
 
     # Class Variables
+    __instance_objects = []
     __instances = []
+    __policies = []
     __identity = None
 
     def __init__(self,
@@ -59,10 +61,39 @@ class DataSecurity(ReviewPoint):
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
         debug_with_date('start')
-        self.__instances = parallel_executor(compute_clients, compartments, self.__search_for_computes, len(compartments), "__instances")
+        self.__instance_objects = ParallelExecutor.executor(compute_clients, compartments, ParallelExecutor.get_instances, len(compartments), ParallelExecutor.instances)
         debug_with_date('stop')
 
-        return self.__instances
+        for instance in self.__instance_objects:
+            instance_record = {
+                'id': instance.id,
+                'display_name': instance.display_name,
+                'compartment_id': instance.compartment_id,
+                'availability_domain': instance.availability_domain,
+                'lifecycle_state': instance.lifecycle_state,
+                'launch_options': instance.launch_options,
+                'time_created': instance.time_created,
+            }
+            self.__instances.append(instance_record)
+
+        policy_data = get_policies_data(self.__identity, self.__tenancy.id)      
+
+        for policy in policy_data:  
+            record = {
+                "compartment_id": policy.compartment_id,
+                "defined_tags": policy.defined_tags,
+                "description": policy.description,
+                "freeform_tags": policy.freeform_tags,
+                "id": policy.id,
+                "lifecycle_state": policy.lifecycle_state,
+                "name": policy.name,
+                "statements": policy.statements,
+                "time_created": policy.time_created,
+                "version_date": policy.version_date
+            }
+            self.__policies.append(record)
+
+        return self.__instances, self.__policies
 
 
     def analyze_entity(self, entry):
@@ -77,34 +108,5 @@ class DataSecurity(ReviewPoint):
                 dictionary[entry]['mitigations'].append(f"Enabled in-transit encryption for instance: {instance['display_name']}")
                 dictionary[entry]['failure_cause'].append('Instances detected without in-transit encryption between boot volume and instance.')
 
+
         return dictionary
-
-    
-    def __search_for_computes(self, item):
-        compute_client = item[0]
-        compartments = item[1:]
-
-        instances = []
-
-        for compartment in compartments:
-            instance_data = get_instance_data(compute_client, compartment.id)
-            for instance in instance_data:
-                if instance.lifecycle_state != "TERMINATED":
-                    record = {
-                        'id': instance.id,
-                        'display_name': instance.display_name,
-                        'compartment_id': instance.compartment_id,
-                        'availability_config': instance.availability_config,
-                        'availability_domain': instance.availability_domain,
-                        'fault_domain': instance.fault_domain,
-                        'image_id': instance.image_id,
-                        'launch_options': instance.launch_options,
-                        'lifecycle_state': instance.lifecycle_state,
-                        'shape': instance.shape,
-                        'shape_config': instance.shape_config,
-                        'time_created': instance.time_created,
-                    }
-
-                    instances.append(record)
-
-        return instances
