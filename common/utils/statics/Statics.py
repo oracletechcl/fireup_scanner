@@ -128,10 +128,10 @@ __rp_1_13 = {
 __rp_1_14 = {
     'entry': '1.14',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure your Databases',
+    'review_point': 'Encrypt Data',    
+    'success_criteria': 'Check that Oracle Database created has a TDE Master Key rotated each 90 days',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_1_15 = {
@@ -381,10 +381,10 @@ __rp_2_15 = {
 __rp_2_16 = {
     'entry': '2.16',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Back Up Your Data',
+    'review_point': 'Validate Backup Security and Encryption',    
+    'success_criteria': 'Check policies are in place to provide access control for data and its backups. Check block volume in-transit encryption is enabled.',
+    'fireup_items': ['Fireup Task: 34 - Have backups for failure (VMs, Block Storage, Object Storage, SSD, Database, have appropriate RPO/RTO).'],
 }
 
 __rp_2_17 = {
@@ -417,10 +417,10 @@ __rp_3_2 = {
 __rp_3_3 = {
     'entry': '3.3',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Tune and Monitor Network',
+    'review_point': 'Learn About and Leverage SSL Termination Features',    
+    'success_criteria': 'If Lbaas exists, check that SSL is implemented on it',
+    'fireup_items': ['Fireup Task: 48 - Are you using load balancers? If so, where would you like to terminate SSL.'],
 }
 
 __rp_3_4 = {
