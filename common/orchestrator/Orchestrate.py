@@ -33,6 +33,8 @@ from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
 
+from classes.performancecost.LBaaSEncryption import LBaaSEncryption
+
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
 
@@ -66,6 +68,8 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_15(config, signer, report_directory)
     __call_2_16(config, signer, report_directory)
     __call_2_17(config, signer, report_directory)
+
+    __call_3_3(config, signer, report_directory)
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -373,3 +377,16 @@ def __call_2_17(config, signer, report_directory):
     __replicateData_dictionary = replicateData.analyze_entity(Statics.__rp_2_17['entry'])
     generate_on_screen_report(__replicateData_dictionary, report_directory, Statics.__rp_2_17['entry'])
     generate_mitigation_report(__replicateData_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_17['fireup_items'])
+
+
+def __call_3_3(config, signer, report_directory):    
+    lbaasEncryption = LBaaSEncryption(
+    Statics.__rp_3_3['entry'],
+    Statics.__rp_3_3['area'],
+    Statics.__rp_3_3['sub_area'],
+    Statics.__rp_3_3['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_3['entry']+"_"+Statics.__rp_3_3['area']+"_"+Statics.__rp_3_3['sub_area']+"_mitigations"
+    __lbaasEncryption_dictionary = lbaasEncryption.analyze_entity(Statics.__rp_3_3['entry'])
+    generate_on_screen_report(__lbaasEncryption_dictionary, report_directory, Statics.__rp_3_3['entry'])
+    generate_mitigation_report(__lbaasEncryption_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_3['fireup_items'])
