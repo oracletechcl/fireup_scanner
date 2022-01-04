@@ -137,10 +137,10 @@ __rp_1_14 = {
 __rp_1_15 = {
     'entry': '1.15',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure your Databases',
+    'review_point': 'Apply Security Patches',    
+    'success_criteria': 'If Oracle Database is in place, make sure that its in the lastest patch set update available',
+    'fireup_items': ['Fireup Task: 20 - Do you have an update / patching schedule on OS, Applications, etc?'],
 }
 
 __rp_1_16 = {

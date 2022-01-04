@@ -420,3 +420,9 @@ def get_max_security_zone_data(identity_client, compartment_id):
         path_params=path_params,
         header_params=header_params,
         response_type="json").data
+
+def get_db_home_patches(database_client, db_home_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_home_patches,
+        db_home_id
+    ).data
