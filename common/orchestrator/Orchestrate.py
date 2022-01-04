@@ -31,6 +31,8 @@ from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicie
 from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 from classes.reliabilityresilience.ReplicateData import ReplicateData
 
+from classes.performancecost.CheckAutoTuning import CheckAutoTuning
+
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
 
@@ -62,6 +64,8 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_14(config, signer, report_directory)
     __call_2_15(config, signer, report_directory)
     __call_2_17(config, signer, report_directory)
+
+    __call_3_10(config, signer, report_directory)
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -343,3 +347,16 @@ def __call_2_17(config, signer, report_directory):
     __replicateData_dictionary = replicateData.analyze_entity(Statics.__rp_2_17['entry'])
     generate_on_screen_report(__replicateData_dictionary, report_directory, Statics.__rp_2_17['entry'])
     generate_mitigation_report(__replicateData_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_17['fireup_items'])
+
+
+def __call_3_10(config, signer, report_directory):    
+    checkAutoTuning = CheckAutoTuning(
+    Statics.__rp_3_10['entry'],
+    Statics.__rp_3_10['area'],
+    Statics.__rp_3_10['sub_area'],
+    Statics.__rp_3_10['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_10['entry']+"_"+Statics.__rp_3_10['area']+"_"+Statics.__rp_3_10['sub_area']+"_mitigations"
+    __checkAutoTuning_dictionary = checkAutoTuning.analyze_entity(Statics.__rp_3_10['entry'])
+    generate_on_screen_report(__checkAutoTuning_dictionary, report_directory, Statics.__rp_3_10['entry'])
+    generate_mitigation_report(__checkAutoTuning_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_10['fireup_items'])
