@@ -164,9 +164,9 @@ __rp_1_17 = {
 __rp_1_18 = {
     'entry': '1.18',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Ensure Secure Access to File Storage',
+    'success_criteria': 'Mounting must be restricted only to consumers IP CIDR Blocks.',
     'fireup_items': [],
 }
 

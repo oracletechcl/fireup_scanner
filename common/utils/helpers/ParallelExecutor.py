@@ -50,6 +50,7 @@ boot_volumes = []
 storages_with_no_policy = []
 file_systems = []
 file_systems_with_no_snapshots = []
+mount_targets = []
 
 
 ### BackupDatabases.py Global Variables
@@ -282,6 +283,23 @@ def get_file_systems(item):
                 file_systems.append(file_system)
 
     return file_systems
+
+def get_mounts(item):
+    file_storage_client = item[0][0]
+    availability_domain = item[0][1]
+    compartments = item[1:]
+
+
+    mount_targets = []
+    exports = []
+
+    for compartment in compartments:
+        mount_target_data = get_mount_target_data(file_storage_client, compartment_id=compartment.id,
+                                                    availability_domain=availability_domain)
+        for mount_target in mount_target_data:
+            if "TERMINATED" not in mount_target.lifecycle_state:
+                mount_targets.append(mount_target)
+    return mount_targets
 
 
 def get_file_systems_with_no_snapshots(item):
