@@ -146,10 +146,10 @@ __rp_1_15 = {
 __rp_1_16 = {
     'entry': '1.16',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure Your Databases',
+    'review_point': 'Enable Private Endpoints for Autonomous Databases',    
+    'success_criteria': 'If ATP is in place, make sure that a dedicated private subnet is allocated for it. For the private endpoint, define stateless security ingress rule and stateless egress rule. Restrict traffic only to subnets that will consume the service',
+    'fireup_items': ['Fireup Task: 23 - Are databases and other confidential resources locked down in private subnets?'],
 }
 
 __rp_1_17 = {
