@@ -29,6 +29,7 @@ from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
 from classes.reliabilityresilience.LBaaSHealthChecks import LBaaSHealthChecks
 from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicies
 from classes.reliabilityresilience.BackupDatabases import BackupDatabases
+from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
 
 from common.utils.reporter.report import *
@@ -61,6 +62,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_13(config, signer, report_directory)
     __call_2_14(config, signer, report_directory)
     __call_2_15(config, signer, report_directory)
+    __call_2_16(config, signer, report_directory)
     __call_2_17(config, signer, report_directory)
 
 
@@ -330,6 +332,19 @@ def __call_2_15(config, signer, report_directory):
     __backupDatabases_dictionary = backupDatabases.analyze_entity(Statics.__rp_2_15['entry'])
     generate_on_screen_report(__backupDatabases_dictionary, report_directory, Statics.__rp_2_15['entry'])
     generate_mitigation_report(__backupDatabases_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_15['fireup_items'])
+
+
+def __call_2_16(config, signer, report_directory):    
+    dataSecurity = DataSecurity(
+    Statics.__rp_2_16['entry'],
+    Statics.__rp_2_16['area'],
+    Statics.__rp_2_16['sub_area'],
+    Statics.__rp_2_16['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_16['entry']+"_"+Statics.__rp_2_16['area']+"_"+Statics.__rp_2_16['sub_area']+"_mitigations"
+    __dataSecurity_dictionary = dataSecurity.analyze_entity(Statics.__rp_2_16['entry'])
+    generate_on_screen_report(__dataSecurity_dictionary, report_directory, Statics.__rp_2_16['entry'])
+    generate_mitigation_report(__dataSecurity_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_16['fireup_items'])
 
 
 def __call_2_17(config, signer, report_directory):    
