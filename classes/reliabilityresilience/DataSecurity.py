@@ -15,6 +15,7 @@ class DataSecurity(ReviewPoint):
     __instance_objects = []
     __instances = []
     __policies = []
+    __compartments = []
     __identity = None
 
     def __init__(self,
@@ -57,12 +58,10 @@ class DataSecurity(ReviewPoint):
             compute_clients.append(get_compute_client(region_config, self.signer))
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        debug_with_date('start')
-        self.__instance_objects = ParallelExecutor.executor(compute_clients, compartments, ParallelExecutor.get_instances, len(compartments), ParallelExecutor.instances)
-        debug_with_date('stop')
+        self.__instance_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_instances, len(self.__compartments), ParallelExecutor.instances)
 
         for instance in self.__instance_objects:
             instance_record = {
@@ -78,7 +77,7 @@ class DataSecurity(ReviewPoint):
 
         policy_data = get_policies_data(self.__identity, self.__tenancy.id)      
 
-        for policy in policy_data:  
+        for policy in policy_data:
             record = {
                 "compartment_id": policy.compartment_id,
                 "defined_tags": policy.defined_tags,
@@ -101,12 +100,26 @@ class DataSecurity(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
+        # Checks in transit encryption is enabled per instance
         for instance in self.__instances:
             if not instance['launch_options'].is_pv_encryption_in_transit_enabled:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(instance)
-                dictionary[entry]['mitigations'].append(f"Enabled in-transit encryption for instance: {instance['display_name']}")
+                dictionary[entry]['mitigations'].append(f"Instance: {instance['display_name']}, located in {get_compartment_name(self.__compartments, instance['compartment_id'])}, does not have in-transit encryption enabled.")
                 dictionary[entry]['failure_cause'].append('Instances detected without in-transit encryption between boot volume and instance.')
 
+        # Checks a policy exists relating to each of the following families
+        __criteria = ["file-family", "object-family", "volume-family", "autonomous-database-family", "database-family"]
+
+        for policy in self.__policies:
+            for statement in policy['statements']:
+                for criteria in __criteria:
+                    if criteria.lower() in statement.lower():
+                        __criteria.remove(criteria)
+
+        for criteria in __criteria:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['mitigations'].append(f"Add a policy for managing the family: {criteria}.")
+            dictionary[entry]['failure_cause'].append('Add missing policies for providing granular access controls for your data and its backups.')
 
         return dictionary
