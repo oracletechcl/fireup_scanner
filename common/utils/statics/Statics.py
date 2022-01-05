@@ -173,10 +173,10 @@ __rp_1_18 = {
 __rp_1_19 = {
     'entry': '1.19',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Ensure Secure Access to Object Storage',    
+    'success_criteria': 'Ensure that BUCKET_UPDATE is granted to minimal to none amount of users (less than 5%)',
+    'fireup_items': []'Fireup Task: None',
 }
 
 __rp_1_20 = {
