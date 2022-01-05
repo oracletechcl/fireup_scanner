@@ -420,3 +420,11 @@ def get_max_security_zone_data(identity_client, compartment_id):
         path_params=path_params,
         header_params=header_params,
         response_type="json").data
+
+
+def get_drg_data(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_drgs,
+        compartment_id
+    ).data
+

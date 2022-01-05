@@ -17,6 +17,7 @@ compartments = None
 availability_domains = []
 
 security_lists = []
+drgs = []
 
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
@@ -560,3 +561,18 @@ def get_autonomous_databases(item):
                 autonomous_databases.append(autonomous_database)
 
     return autonomous_databases
+
+
+def get_drgs(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    drgs = []
+
+    for compartment in compartments:
+        drg_data = get_drg_data(network_client, compartment.id)
+        for drg in drg_data:
+            # if "DELETED" not in cross_connect.lifecycle_state:
+            drgs.append(drg)
+
+    return drgs
