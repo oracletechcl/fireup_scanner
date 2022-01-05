@@ -77,11 +77,15 @@ class DBSystemPatch(ReviewPoint):
         self.__compartments.append(tenancy)
         
         self.__oracle_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_homes, len(self.__compartments), ParallelExecutor.db_system_homes)      
+        self.__oracle_database_systems = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_systems, len(self.__compartments), ParallelExecutor.db_systems)      
         self.__oracle_databases_patches = ParallelExecutor.executor(db_system_clients, self.__oracle_database_objects, ParallelExecutor.get_database_patches, len(self.__oracle_database_objects), ParallelExecutor.oracle_dbsystems_patches)      
        
         
         
-        debug_with_date(self.__oracle_databases_patches)
+        
+        debug_with_color_date(self.__oracle_databases_patches, "yellow")
+        debug_with_color_date(self.__oracle_database_systems, "green")
+        debug_with_color_date(self.__oracle_database_objects, "red")
       
         # Filling local array object for Oracle Database 
         # for dbobject in self.__oracle_database_objects:            

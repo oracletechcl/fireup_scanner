@@ -80,6 +80,7 @@ adb_nsgs = []
 ### DBSystemPatch.py Global Variables
 # Lists for use with parallel_executor
 oracle_dbsystems_patches = []
+db_systems = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -324,6 +325,21 @@ def get_database_homes(item):
                 db_system_homes.append(db_home)
 
     return db_system_homes
+
+
+def get_database_systems(item):
+    database_client = item[0]
+    compartments = item[1:]
+
+    db_systems = []
+
+    for compartment in compartments:
+        database_system_data = get_db_system_data(database_client, compartment.id)
+        for db_sys in database_system_data:
+            if "DELETED" not in db_sys.lifecycle_state:
+                db_systems.append(db_sys)
+
+    return db_systems
 
 
 def get_mysql_dbs(item):
