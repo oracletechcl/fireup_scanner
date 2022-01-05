@@ -176,7 +176,7 @@ __rp_1_19 = {
     'sub_area': 'Protect Data at Rest',
     'review_point': 'Ensure Secure Access to Object Storage',    
     'success_criteria': 'Ensure that BUCKET_UPDATE is granted to minimal to none amount of users (less than 5%)',
-    'fireup_items': []'Fireup Task: None',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_1_20 = {

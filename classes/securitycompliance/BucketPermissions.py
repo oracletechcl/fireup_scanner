@@ -1,4 +1,3 @@
-print(hi)
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 # BucketPermissions.py
@@ -17,6 +16,7 @@ class BucketPermissions(ReviewPoint):
     # Class Variables
     __identity = None
     __tenancy = None
+    __policies = []
  
     def __init__(self,
                 entry:str, 
@@ -49,7 +49,22 @@ class BucketPermissions(ReviewPoint):
 
     def load_entity(self):
         
-       return None
+        policy_data = get_policies_data(self.__identity, self.__tenancy.id)      
+
+        for policy in policy_data:  
+            record = {
+                "compartment_id": policy.compartment_id,
+                "defined_tags": policy.defined_tags,
+                "description": policy.description,
+                "freeform_tags": policy.freeform_tags,
+                "id": policy.id,
+                "lifecycle_state": policy.lifecycle_state,
+                "name": policy.name,
+                "statements": policy.statements,
+                "time_created": policy.time_created,
+                "version_date": policy.version_date
+            }
+            self.__policies.append(record)
 
 
     def analyze_entity(self, entry):
@@ -57,6 +72,34 @@ class BucketPermissions(ReviewPoint):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        return None
-        
+        __problem_policies = []
+        __criteria_1 = 'manage'
+        __criteria_2 = 'use'
+        __criteria_3_list = ['all-resources', 'object-family', 'buckets']
+    
+        counter = 0        
+
+        for policy in self.__policies:
+            for statement in policy['statements']:
+                if __criteria_1.upper() in statement.upper() or __criteria_2.upper() in statement.upper():
+                    for criteria in __criteria_3_list:
+                        if criteria.upper() in statement.upper():
+                            counter+=1
+                            __problem_policies.append({counter:statement})
+                
+        if counter > 0:
+            for idx, policy in enumerate(__problem_policies):        
+
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(policy)    
+                dictionary[entry]['failure_cause'].append('This policy allows users to update private bucket to public access')                
+                dictionary[entry]['mitigations'].append('Make sure that users in the following policy are allowed to update bucket access : ' + str(policy[idx+1]) +
+                                                         ' : the number of users able to update bucket access should be none or minimal (less than 5 %)')
+                
+                            
+        else:
+            dictionary[entry]['status'] = True
+            
+
+        return dictionary
 
