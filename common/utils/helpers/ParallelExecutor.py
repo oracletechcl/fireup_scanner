@@ -17,6 +17,7 @@ compartments = None
 availability_domains = []
 
 security_lists = []
+steering_policies = []
 
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
@@ -560,3 +561,19 @@ def get_autonomous_databases(item):
                 autonomous_databases.append(autonomous_database)
 
     return autonomous_databases
+
+
+def get_steering_policies(item):
+    dns_client = item[0]
+    compartments = item[1:]
+
+    steering_policies = []
+    # debug_with_color_date('thread started', 'green')
+    for compartment in compartments:
+        steering_policy_data = get_steering_policy_data(dns_client, compartment.id)
+        for steering_policy in steering_policy_data:
+            # if steering_policy.lifecycle_state != "TERMINATED":
+            steering_policies.append(steering_policy)
+    # debug_with_color_date('thread stopped', 'red')
+    return steering_policies
+
