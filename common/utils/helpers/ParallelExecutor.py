@@ -51,6 +51,8 @@ storages_with_no_policy = []
 file_systems = []
 file_systems_with_no_snapshots = []
 mount_targets = []
+security_lists_from_files = []
+exports = []
 
 
 ### BackupDatabases.py Global Variables
@@ -518,6 +520,36 @@ def get_mysql_dbsystem_full_info(item):
                 mysql_full_data.append(db)
 
     return mysql_full_data
+
+def get_security_lists_from_mounts(item):
+    network_client = item[0]
+    mounts = item[1:]
+
+    security_lists_from_mount_targets = []
+    for mount in mounts:
+        region = mount.subnet_id.split('.')[3]
+        if network_client[1] in region or network_client[2] in region:
+            subnet_info = network_client[0].get_subnet(subnet_id=mount.subnet_id)
+            security_lists_info = network_client[0].get_security_list(security_list_id=subnet_info.data.security_list_ids)
+            security_lists_from_mount_targets.append(security_lists_info.data)
+
+    return security_lists_from_mount_targets
+
+def get_export_options(item):
+    file_storage_client = item[0]
+    mounts = item[1:]
+
+    export_options = []
+    for mount in mounts:
+        region = mount.subnet_id.split('.')[3]
+        if file_storage_client[1] in region or file_storage_client[2] in region:
+            export_info = file_storage_client[0].list_exports(export_set_id=mount.export_set_id)
+            if len(export_info.data) != 0:
+                export_details = file_storage_client[0].get_export(export_id=export_info.data[0].id)
+                export_options.append(export_details.data)
+
+    return export_options
+
 def get_block_volume_replicas(item):
     block_storage_client = item[0][0]
     availability_domain = item[0][1]
