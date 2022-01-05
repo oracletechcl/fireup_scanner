@@ -5,6 +5,7 @@
   - [Get Started](#get-started)
   - [Branch and Collaboration](#branch-and-collaboration)
   - [How Create new review point](#how-create-new-review-point)
+  - [How to add a dependency that I use in my Review Point to the venv being used?](#how-to-add-a-dependency-that-i-use-in-my-review-point-to-the-venv-being-used)
   - [Using Parallel Executor](#using-parallel-executor)
     - [What Is It For?](#what-is-it-for)
     - [How Do I Use It?](#how-do-i-use-it)
@@ -339,6 +340,18 @@ def __call_1_1(config, signer, report_directory):
 from classes.reviewarea.ConcreteClass import ConcreteObject 
 
 ```
+
+<div id="AddCodeLibDependency"></div>
+
+## How to add a dependency that I use in my Review Point to the venv being used?
+
+Often in your code, you will need to use a library that is not available by default on the environment. This project makes heavy usage of virtual environment (venv) to make sure that all the runs are consistent and isolated from the host environment. 
+
+In order to add a dependency to your venv, follow these steps: 
+
+- Go to file [`common/bash/dependencies.sh`](./common/bash/dependencies.sh)
+- Go to part `Installing app dependencies` and add `pip3 install YOUR_DEPENDENCY_NAME`
+
 
 <div id="UsingParallelExecutor"></div>
 
