@@ -420,3 +420,17 @@ def get_max_security_zone_data(identity_client, compartment_id):
         path_params=path_params,
         header_params=header_params,
         response_type="json").data
+
+def get_limits_client(config, signer):
+    try:
+        limits_client = oci.limits.LimitsClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create limits client: {}".format(e))
+    return limits_client
+
+def list_limit_value_data(limits_client, compartment_id, service_name): 
+    return oci.pagination.list_call_get_all_results(
+        limits_client.list_limit_values,
+        compartment_id,
+        service_name
+    ).data

@@ -34,6 +34,7 @@ from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
 
 from classes.performancecost.CheckAutoTuning import CheckAutoTuning
+from classes.performancecost.ComputeLimits import ComputeLimits
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 
 from common.utils.reporter.report import *
@@ -44,34 +45,35 @@ def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+Statics.__version__)
     print_report_sub_header()
 
-    __call_1_1(config, signer, report_directory)
-    __call_1_2(config, signer, report_directory)
-    __call_1_3(config, signer, report_directory)
-    __call_1_4(config, signer, report_directory)
-    __call_1_5(config, signer, report_directory)
-    __call_1_6(config, signer, report_directory)
-    __call_1_7(config, signer, report_directory)
-    __call_1_8(config, signer, report_directory)
-    __call_1_9(config, signer, report_directory)
-    __call_1_10(config, signer, report_directory)
-    __call_1_11(config, signer, report_directory)
-    __call_1_12(config, signer, report_directory)
-    __call_1_13(config, signer, report_directory)
-    __call_1_14(config, signer, report_directory)
-    __call_1_17(config, signer, report_directory)
+    # __call_1_1(config, signer, report_directory)
+    # __call_1_2(config, signer, report_directory)
+    # __call_1_3(config, signer, report_directory)
+    # __call_1_4(config, signer, report_directory)
+    # __call_1_5(config, signer, report_directory)
+    # __call_1_6(config, signer, report_directory)
+    # __call_1_7(config, signer, report_directory)
+    # __call_1_8(config, signer, report_directory)
+    # __call_1_9(config, signer, report_directory)
+    # __call_1_10(config, signer, report_directory)
+    # __call_1_11(config, signer, report_directory)
+    # __call_1_12(config, signer, report_directory)
+    # __call_1_13(config, signer, report_directory)
+    # __call_1_14(config, signer, report_directory)
+    # __call_1_17(config, signer, report_directory)
     
-    __call_2_5(config, signer, report_directory)
-    __call_2_8(config, signer, report_directory)
-    __call_2_9(config, signer, report_directory)
-    __call_2_10(config, signer, report_directory)
-    __call_2_13(config, signer, report_directory)
-    __call_2_14(config, signer, report_directory)
-    __call_2_15(config, signer, report_directory)
-    __call_2_16(config, signer, report_directory)
-    __call_2_17(config, signer, report_directory)
+    # __call_2_5(config, signer, report_directory)
+    # __call_2_8(config, signer, report_directory)
+    # __call_2_9(config, signer, report_directory)
+    # __call_2_10(config, signer, report_directory)
+    # __call_2_13(config, signer, report_directory)
+    # __call_2_14(config, signer, report_directory)
+    # __call_2_15(config, signer, report_directory)
+    # __call_2_16(config, signer, report_directory)
+    # __call_2_17(config, signer, report_directory)
 
-    __call_3_3(config, signer, report_directory)
-    __call_3_10(config, signer, report_directory)
+    # __call_3_3(config, signer, report_directory)
+    __call_3_2(config, signer, report_directory)
+    # __call_3_10(config, signer, report_directory)
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -379,6 +381,19 @@ def __call_2_17(config, signer, report_directory):
     __replicateData_dictionary = replicateData.analyze_entity(Statics.__rp_2_17['entry'])
     generate_on_screen_report(__replicateData_dictionary, report_directory, Statics.__rp_2_17['entry'])
     generate_mitigation_report(__replicateData_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_17['fireup_items'])
+
+
+def __call_3_2(config, signer, report_directory):    
+    computeLimits = ComputeLimits(
+    Statics.__rp_3_2['entry'],
+    Statics.__rp_3_2['area'],
+    Statics.__rp_3_2['sub_area'],
+    Statics.__rp_3_2['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_2['entry']+"_"+Statics.__rp_3_2['area']+"_"+Statics.__rp_3_2['sub_area']+"_mitigations"
+    __computeLimits_dictionary = computeLimits.analyze_entity(Statics.__rp_3_2['entry'])
+    generate_on_screen_report(__computeLimits_dictionary, report_directory, Statics.__rp_3_2['entry'])
+    generate_mitigation_report(__computeLimits_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_2['fireup_items'])
 
 
 def __call_3_3(config, signer, report_directory):    
