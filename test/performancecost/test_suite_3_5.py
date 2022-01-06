@@ -4,41 +4,37 @@
 # Description: Main test suite for fireup review tool
 # Dependencies: pytest
 
-from classes.reliabilityresilience.ReplicateData import ReplicateData
+from classes.performancecost.TrafficSteering import TrafficSteering
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug_with_date
 from common.utils.statics import Statics
 from common.utils.tokenizer.signer import *
 
   
-
 def __test_suite_log(capsys):
     out, err = capsys.readouterr()
     open("stderr.out", "w").write(err)
     open("stdout.out", "w").write(out)
 
+
 def test_review_point(capsys):     
     
-    result_dictionary = ReplicateData(Statics.__rp_2_17['entry'], 
-    Statics.__rp_2_17['area'], 
-    Statics.__rp_2_17['sub_area'], 
-    Statics.__rp_2_17['review_point'], 
+    result_dictionary = TrafficSteering(Statics.__rp_3_5['entry'], 
+    Statics.__rp_3_5['area'], 
+    Statics.__rp_3_5['sub_area'], 
+    Statics.__rp_3_5['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_17['entry'])   
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_3_5['entry'])   
 
-    for item in dictionary[Statics.__rp_2_17['entry']]['findings']:
+    for item in dictionary[Statics.__rp_3_5['entry']]['findings']:
         debug_with_date(item)
         results_in_fault += 1
 
-<<<<<<< HEAD
-    assert results_in_fault == 298
-=======
-    assert results_in_fault == 297
->>>>>>> ec3562d9c85c0930fe6691b18f79f5bf5af60553
+    assert results_in_fault == 0
 
     __test_suite_log(capsys)

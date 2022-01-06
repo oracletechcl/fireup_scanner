@@ -3,4 +3,5 @@
 | Review Point | Concrete Class Implementation                           
 |--------------|---------------------------------------------------------
 | 3.3          | [LBaaSEncryption.py](LBaaSEncryption.py)                                        
+| 3.5          | [TrafficSteering.py](TrafficSteering.py)
 | 3.10         | [CheckAutoTuning.py](CheckAutoTuning.py)                                    
