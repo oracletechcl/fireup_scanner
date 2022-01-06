@@ -80,7 +80,6 @@ buckets = []
 autonomous_databases = []
 adb_nsgs = []
 
-
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
         return []

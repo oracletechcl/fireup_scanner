@@ -22,9 +22,10 @@ from classes.securitycompliance.StoragePermissions import StoragePermissions
 from classes.securitycompliance.MaxSecurityZone import MaxSecurityZone
 from classes.securitycompliance.Rbac import Rbac
 from classes.securitycompliance.SecureFileStorage import SecureFileStorage
+from classes.securitycompliance.DBKeys import DBKeys
+
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
-
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
 from classes.reliabilityresilience.LBaaSHealthChecks import LBaaSHealthChecks
@@ -32,6 +33,9 @@ from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicie
 from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
+
+from classes.performancecost.CheckAutoTuning import CheckAutoTuning
+from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -54,6 +58,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_11(config, signer, report_directory)
     __call_1_12(config, signer, report_directory)
     __call_1_13(config, signer, report_directory)
+    __call_1_14(config, signer, report_directory)
     __call_1_17(config, signer, report_directory)
     __call_1_18(config, signer, report_directory)
     
@@ -66,6 +71,9 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_15(config, signer, report_directory)
     __call_2_16(config, signer, report_directory)
     __call_2_17(config, signer, report_directory)
+
+    __call_3_3(config, signer, report_directory)
+    __call_3_10(config, signer, report_directory)
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -218,6 +226,19 @@ def __call_1_13(config, signer, report_directory):
     __instancePrincipal_dictionary = dbPerms.analyze_entity(Statics.__rp_1_13['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_13['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_13['fireup_items'])
+
+def __call_1_14(config, signer, report_directory):
+    dbKeys = DBKeys(
+    Statics.__rp_1_14['entry'], 
+    Statics.__rp_1_14['area'], 
+    Statics.__rp_1_14['sub_area'], 
+    Statics.__rp_1_14['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_14['entry']+"_"+Statics.__rp_1_14['area']+"_"+Statics.__rp_1_14['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = dbKeys.analyze_entity(Statics.__rp_1_14['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_14['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_14['fireup_items'])
+
 
 def __call_1_17(config, signer, report_directory):
     storagePerms = StoragePermissions(
@@ -372,3 +393,30 @@ def __call_2_17(config, signer, report_directory):
     __replicateData_dictionary = replicateData.analyze_entity(Statics.__rp_2_17['entry'])
     generate_on_screen_report(__replicateData_dictionary, report_directory, Statics.__rp_2_17['entry'])
     generate_mitigation_report(__replicateData_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_17['fireup_items'])
+
+
+def __call_3_3(config, signer, report_directory):    
+    lbaasEncryption = LBaaSEncryption(
+    Statics.__rp_3_3['entry'],
+    Statics.__rp_3_3['area'],
+    Statics.__rp_3_3['sub_area'],
+    Statics.__rp_3_3['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_3['entry']+"_"+Statics.__rp_3_3['area']+"_"+Statics.__rp_3_3['sub_area']+"_mitigations"
+    __lbaasEncryption_dictionary = lbaasEncryption.analyze_entity(Statics.__rp_3_3['entry'])
+    generate_on_screen_report(__lbaasEncryption_dictionary, report_directory, Statics.__rp_3_3['entry'])
+    generate_mitigation_report(__lbaasEncryption_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_3['fireup_items'])
+
+
+def __call_3_10(config, signer, report_directory):    
+    checkAutoTuning = CheckAutoTuning(
+    Statics.__rp_3_10['entry'],
+    Statics.__rp_3_10['area'],
+    Statics.__rp_3_10['sub_area'],
+    Statics.__rp_3_10['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_10['entry']+"_"+Statics.__rp_3_10['area']+"_"+Statics.__rp_3_10['sub_area']+"_mitigations"
+    __checkAutoTuning_dictionary = checkAutoTuning.analyze_entity(Statics.__rp_3_10['entry'])
+    generate_on_screen_report(__checkAutoTuning_dictionary, report_directory, Statics.__rp_3_10['entry'])
+    generate_mitigation_report(__checkAutoTuning_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_10['fireup_items'])
+
