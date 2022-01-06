@@ -68,7 +68,7 @@ class ADBSystemAccess(ReviewPoint):
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
-            db_system_clients.append( (get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()) )            
+            db_system_clients.append(get_database_client(region_config, self.signer))       
             network_clients.append( (get_virtual_network_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
 
         tenancy = get_tenancy_data(self.__identity, self.config)
@@ -77,7 +77,7 @@ class ADBSystemAccess(ReviewPoint):
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(tenancy)        
              
-        self.__autonomous_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
+        self.__autonomous_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
         self.__adb_nsg_objects = ParallelExecutor.executor(network_clients, self.__autonomous_database_objects, ParallelExecutor.get_adb_nsgs, len(self.__autonomous_database_objects), ParallelExecutor.adb_nsgs)
         
 
