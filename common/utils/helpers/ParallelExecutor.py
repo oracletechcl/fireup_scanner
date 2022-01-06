@@ -18,6 +18,7 @@ availability_domains = []
 
 security_lists = []
 steering_policies = []
+vcns_in_multiple_regions = []
 
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
@@ -577,3 +578,28 @@ def get_steering_policies(item):
     # debug_with_color_date('thread stopped', 'red')
     return steering_policies
 
+
+def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_variable):
+
+    workload_status = data_variable
+
+    if len(workload_status) > 0:
+        return workload_status[0]
+
+    vcn_objects = executor(network_clients, compartments, get_vcns_in_compartments, len(compartments), vcns)
+
+    vcn_regions = []
+
+    for region in regions:
+        for vcn in vcn_objects:
+            vcn_region = vcn.id.split('.')[3]
+            if region.region_name in vcn_region or region.region_key in vcn_region:
+                if region not in vcn_regions:
+                    vcn_regions.append(region)
+
+    if len(vcn_regions) > 1:
+        workload_status.append(True)
+    else:
+        workload_status.append(False)
+
+    return workload_status[0]

@@ -14,6 +14,7 @@ class TrafficSteering(ReviewPoint):
     # Class Variables
     __steering_policy_objects = []
     __steering_policies = []
+    __vcns_in_multiple_regions = []
     __compartments = []
     __identity = None
 
@@ -46,7 +47,16 @@ class TrafficSteering(ReviewPoint):
 
 
     def load_entity(self):
-        dns_client = get_dns_client(self.config, self.signer)
+        regions = get_regions_data(self.__identity, self.config)
+
+        dns_clients = []
+        network_clients = []
+
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            dns_clients.append(get_dns_client(self.config, self.signer))
+            network_clients.append(get_virtual_network_client(region_config, self.signer))
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
@@ -54,24 +64,10 @@ class TrafficSteering(ReviewPoint):
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        debug_with_date(len(self.__compartments))
+        self.__steering_policy_objects = ParallelExecutor.executor(dns_clients, self.__compartments, ParallelExecutor.get_steering_policies, len(self.__compartments), ParallelExecutor.steering_policies)
+        self.__vcns_in_multiple_regions = ParallelExecutor.check_vcns_in_multiple_regions(network_clients, regions, self.__compartments, ParallelExecutor.vcns_in_multiple_regions)
 
-        debug_with_date('start')
-        self.__steering_policy_objects = ParallelExecutor.executor([dns_client], self.__compartments, ParallelExecutor.get_steering_policies, len(self.__compartments), ParallelExecutor.steering_policies)
-        
-        # for compartment in self.__compartments:
-        #     steering_policy_data = get_steering_policy_data(dns_clients[0], compartment.id)
-        #     for steering_policy in steering_policy_data:
-        #         self.__steering_policy_objects.append(steering_policy)
-
-        
-        debug_with_date('stop')
-        # debug_with_color_date(self.__steering_policy_objects[0], "cyan")
-
-        debug_with_color_date(len(self.__steering_policy_objects), "green")
-        debug_with_color_date(self.__steering_policy_objects, "green")
-
-        return
+        return self.__steering_policy_objects, self.__vcns_in_multiple_regions
 
 
     def analyze_entity(self, entry):
@@ -79,6 +75,9 @@ class TrafficSteering(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-
-
+        if self.__vcns_in_multiple_regions and len(self.__steering_policy_objects) == 0:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append('No steering policies found but VCNs are in multiple regions')
+            dictionary[entry]['mitigations'].append('Consider using steering policies if workload is split across multiple regions.')
+            
         return dictionary
