@@ -79,6 +79,7 @@ buckets = []
 autonomous_databases = []
 adb_nsgs = []
 
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
         return []
@@ -113,6 +114,7 @@ def executor(dependent_clients:list, independent_iterator:list, fuction_to_execu
                 values.append(value)
 
     return values
+
 
 def get_availability_domains(identity_clients, tenancy_id):
     """
@@ -456,6 +458,7 @@ def get_subnets_in_compartments(item):
         
     return subnets
 
+
 def get_nsgs(item):
     # Executor will get all nsgs that are associated to an Autonomous Database
     network_client = item[0]
@@ -501,6 +504,8 @@ def get_mysql_dbsystem_full_info(item):
                 mysql_full_data.append(db)
 
     return mysql_full_data
+
+
 def get_block_volume_replicas(item):
     block_storage_client = item[0][0]
     availability_domain = item[0][1]
@@ -569,13 +574,11 @@ def get_steering_policies(item):
     compartments = item[1:]
 
     steering_policies = []
-    # debug_with_color_date('thread started', 'green')
     for compartment in compartments:
         steering_policy_data = get_steering_policy_data(dns_client, compartment.id)
         for steering_policy in steering_policy_data:
-            # if steering_policy.lifecycle_state != "TERMINATED":
             steering_policies.append(steering_policy)
-    # debug_with_color_date('thread stopped', 'red')
+
     return steering_policies
 
 
