@@ -17,6 +17,8 @@ compartments = None
 availability_domains = []
 
 security_lists = []
+steering_policies = []
+vcns_in_multiple_regions = []
 
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
@@ -77,6 +79,7 @@ buckets = []
 autonomous_databases = []
 adb_nsgs = []
 
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
         return []
@@ -111,6 +114,7 @@ def executor(dependent_clients:list, independent_iterator:list, fuction_to_execu
                 values.append(value)
 
     return values
+
 
 def get_availability_domains(identity_clients, tenancy_id):
     """
@@ -454,6 +458,7 @@ def get_subnets_in_compartments(item):
         
     return subnets
 
+
 def get_nsgs(item):
     # Executor will get all nsgs that are associated to an Autonomous Database
     network_client = item[0]
@@ -499,6 +504,8 @@ def get_mysql_dbsystem_full_info(item):
                 mysql_full_data.append(db)
 
     return mysql_full_data
+
+
 def get_block_volume_replicas(item):
     block_storage_client = item[0][0]
     availability_domain = item[0][1]
@@ -560,3 +567,42 @@ def get_autonomous_databases(item):
                 autonomous_databases.append(autonomous_database)
 
     return autonomous_databases
+
+
+def get_steering_policies(item):
+    dns_client = item[0]
+    compartments = item[1:]
+
+    steering_policies = []
+    for compartment in compartments:
+        steering_policy_data = get_steering_policy_data(dns_client, compartment.id)
+        for steering_policy in steering_policy_data:
+            steering_policies.append(steering_policy)
+
+    return steering_policies
+
+
+def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_variable):
+
+    workload_status = data_variable
+
+    if len(workload_status) > 0:
+        return workload_status[0]
+
+    vcn_objects = executor(network_clients, compartments, get_vcns_in_compartments, len(compartments), vcns)
+
+    vcn_regions = []
+
+    for region in regions:
+        for vcn in vcn_objects:
+            vcn_region = vcn.id.split('.')[3]
+            if region.region_name in vcn_region or region.region_key in vcn_region:
+                if region not in vcn_regions:
+                    vcn_regions.append(region)
+
+    if len(vcn_regions) > 1:
+        workload_status.append(True)
+    else:
+        workload_status.append(False)
+
+    return workload_status[0]
