@@ -46,27 +46,9 @@ class TrafficSteering(ReviewPoint):
 
 
     def load_entity(self):
-
-        regions = get_regions_data(self.__identity, self.config)
-        dns_clients = []
-
-        # for region in regions:
-        #     region_config = self.config
-        #     region_config['region'] = region.region_name
-        #     # Create a network client for each region
-        #     dns_clients.append(get_dns_client(region_config, self.signer))
-
-        region_config = self.config
-        region_config['region'] = "uk-london-1"
-        # Create a network client for each region
-        dns_clients.append(get_dns_client(region_config, self.signer))
+        dns_client = get_dns_client(self.config, self.signer)
 
         tenancy = get_tenancy_data(self.__identity, self.config)
-
-        # debug_with_date('start')
-        # debug_with_color_date(get_steering_policy_data(dns_clients[0], tenancy.id), 'cyan')
-
-        # return
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
@@ -75,20 +57,19 @@ class TrafficSteering(ReviewPoint):
         debug_with_date(len(self.__compartments))
 
         debug_with_date('start')
-        self.__steering_policy_objects = ParallelExecutor.executor(dns_clients, self.__compartments, ParallelExecutor.get_steering_policies, len(self.__compartments), ParallelExecutor.steering_policies)
-        debug_with_date('stop')
-        debug_with_color_date(self.__steering_policy_objects[0], "cyan")
+        self.__steering_policy_objects = ParallelExecutor.executor([dns_client], self.__compartments, ParallelExecutor.get_steering_policies, len(self.__compartments), ParallelExecutor.steering_policies)
+        
+        # for compartment in self.__compartments:
+        #     steering_policy_data = get_steering_policy_data(dns_clients[0], compartment.id)
+        #     for steering_policy in steering_policy_data:
+        #         self.__steering_policy_objects.append(steering_policy)
 
-        # for load_balancer in self.__load_balancer_objects:
-        #     record = {
-        #         'display_name': load_balancer.display_name,
-        #         'id': load_balancer.id,
-        #         'compartment_id': load_balancer.compartment_id,
-        #         'listeners': load_balancer.listeners,
-        #         'lifecycle_state': load_balancer.lifecycle_state,
-        #         'time_created': load_balancer.time_created,
-        #     }
-        #     self.__load_balancers.append(record)
+        
+        debug_with_date('stop')
+        # debug_with_color_date(self.__steering_policy_objects[0], "cyan")
+
+        debug_with_color_date(len(self.__steering_policy_objects), "green")
+        debug_with_color_date(self.__steering_policy_objects, "green")
 
         return
 

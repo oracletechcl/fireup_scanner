@@ -428,23 +428,8 @@ def get_dns_client(config, signer):
         raise RuntimeError("Failed to create DNS client: {}".format(e))
     return dns_client
 
-# def get_steering_policy_data(dns_client, compartment_id):
-#     return oci.pagination.list_call_get_all_results(
-#         dns_client.list_steering_policies,
-#         compartment_id
-#     ).data
-
 def get_steering_policy_data(dns_client, compartment_id):
-    path_params = {
-        "compartmentId": compartment_id
-    }
-    header_params = {
-        "accept": "application/json",
-        "content-type": "application/json"
-    }
-    return dns_client.base_client.call_api(
-        resource_path="/compartments/{compartmentId}?verboseLevel=securityZone",
-        method="GET",
-        path_params=path_params,
-        header_params=header_params,
-        response_type="json").data
+    return oci.pagination.list_call_get_all_results(
+        dns_client.list_steering_policies,
+        compartment_id
+    ).data
