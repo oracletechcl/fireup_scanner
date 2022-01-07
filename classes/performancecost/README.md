@@ -4,4 +4,5 @@
 |--------------|---------------------------------------------------------
 | 3.3          | [LBaaSEncryption.py](LBaaSEncryption.py)                                        
 | 3.5          | [TrafficSteering.py](TrafficSteering.py)
+| 3.6          | [CompartmentWorkload.py](CompartmentWorkload.py)
 | 3.10         | [CheckAutoTuning.py](CheckAutoTuning.py)                                    

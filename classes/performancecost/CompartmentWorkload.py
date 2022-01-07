@@ -54,6 +54,8 @@ class CompartmentWorkload(ReviewPoint):
         compute_clients = []
         load_balancer_clients = []
         network_load_balancer_clients = []
+        db_system_clients = []
+        container_engine_clients = []
 
         for region in regions:
             region_config = self.config
@@ -62,22 +64,20 @@ class CompartmentWorkload(ReviewPoint):
             network_clients.append(get_virtual_network_client(region_config, self.signer))
             load_balancer_clients.append(get_load_balancer_client(region_config, self.signer))
             network_load_balancer_clients.append(get_network_load_balancer_client(region_config, self.signer))
+            db_system_clients.append(get_database_client(region_config, self.signer))
+            container_engine_clients.append(get_container_engine_client(region_config, self.signer))
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
         self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        debug_with_date('start1')
         self.__vcn_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_vcns_in_compartments, len(self.__compartments), ParallelExecutor.vcns)
-        debug_with_date('start2')
         self.__instance_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_instances, len(self.__compartments), ParallelExecutor.instances)
-        debug_with_date('start3')
         self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
-        debug_with_date('start4')
         self.__network_load_balancer_objects = ParallelExecutor.executor(network_load_balancer_clients, self.__compartments, ParallelExecutor.get_network_load_balancers, len(self.__compartments), ParallelExecutor.network_load_balancers)
-        debug_with_date('stop')
-
-        return self.__vcn_objects, self.__instance_objects
+        self.__oracle_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_oracle_dbsystem, len(self.__compartments), ParallelExecutor.oracle_dbsystems)
+        self.__autonomous_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
+        self.__oke_cluster_objects = ParallelExecutor.executor(container_engine_clients, self.__compartments, ParallelExecutor.get_oke_cluster, len(self.__compartments), ParallelExecutor.oke_clusters)
 
 
     def analyze_entity(self, entry):
@@ -86,6 +86,8 @@ class CompartmentWorkload(ReviewPoint):
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         aggregate_items = self.__vcn_objects + self.__instance_objects + self.__load_balancer_objects + self.__network_load_balancer_objects
+        aggregate_items += self.__oracle_database_objects + self.__autonomous_database_objects + self.__oke_cluster_objects
+
         # Copy compartments list
         empty_compartments = self.__compartments[:]
 
@@ -94,10 +96,6 @@ class CompartmentWorkload(ReviewPoint):
             for compartment in empty_compartments:
                 if item.compartment_id == compartment.id:
                     empty_compartments.remove(compartment)
-
-        debug_with_color_date(len(self.__compartments), "red")
-        debug_with_color_date(len(empty_compartments), "green")
-        debug_with_color_date(len(self.__compartments) - len(empty_compartments), "cyan")
 
         # If less that 3 compartments are being utilised (including root), fail.
         if len(self.__compartments) - len(empty_compartments) < 3:
