@@ -137,3 +137,6 @@ dmypy.json
 
 # Debug Output file
 output.out
+
+#Pycharm .idea
+.idea/

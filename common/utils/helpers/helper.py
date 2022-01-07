@@ -347,6 +347,12 @@ def get_file_system_data(file_storage_client, compartment_id, availability_domai
         availability_domain
     ).data
 
+def get_mount_target_data(file_storage_client, compartment_id, availability_domain):
+    return oci.pagination.list_call_get_all_results(
+        file_storage_client.list_mount_targets,
+        compartment_id,
+        availability_domain
+    ).data
 def get_db_system_data(database_client, compartment_id):
     
     return oci.pagination.list_call_get_all_results(

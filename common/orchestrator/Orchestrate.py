@@ -22,12 +22,12 @@ from classes.securitycompliance.BucketPermissions import BucketPermissions
 from classes.securitycompliance.StoragePermissions import StoragePermissions
 from classes.securitycompliance.MaxSecurityZone import MaxSecurityZone
 from classes.securitycompliance.Rbac import Rbac
+from classes.securitycompliance.SecureFileStorage import SecureFileStorage
 from classes.securitycompliance.DBKeys import DBKeys
 from classes.securitycompliance.ADBSystemAccess import ADBSystemAccess
 
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
-
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
 from classes.reliabilityresilience.LBaaSHealthChecks import LBaaSHealthChecks
@@ -64,6 +64,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_14(config, signer, report_directory)
     __call_1_16(config, signer, report_directory)
     __call_1_17(config, signer, report_directory)
+    __call_1_18(config, signer, report_directory)
     __call_1_19(config, signer, report_directory)
     
     __call_2_5(config, signer, report_directory)
@@ -268,6 +269,18 @@ def __call_1_17(config, signer, report_directory):
     __instancePrincipal_dictionary = storagePerms.analyze_entity(Statics.__rp_1_17['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_17['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_17['fireup_items'])
+
+def __call_1_18(config, signer, report_directory):
+    secureFileStorage = SecureFileStorage(
+    Statics.__rp_1_18['entry'],
+    Statics.__rp_1_18['area'],
+    Statics.__rp_1_18['sub_area'],
+    Statics.__rp_1_18['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_18['entry']+"_"+Statics.__rp_1_18['area']+"_"+Statics.__rp_1_18['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = secureFileStorage.analyze_entity(Statics.__rp_1_18['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_18['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_18['fireup_items'])
 
 
 def __call_1_12(config, signer, report_directory):
