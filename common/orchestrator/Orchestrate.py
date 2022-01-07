@@ -36,6 +36,7 @@ from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
 
+from classes.performancecost.TenancyQuotas import TenancyQuotas
 from classes.performancecost.CheckAutoTuning import CheckAutoTuning
 from classes.performancecost.ComputeLimits import ComputeLimits
 from classes.performancecost.TrafficSteering import TrafficSteering
@@ -78,6 +79,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_16(config, signer, report_directory)
     __call_2_17(config, signer, report_directory)
 
+    __call_3_1(config, signer, report_directory)
     __call_3_2(config, signer, report_directory)
     __call_3_3(config, signer, report_directory)
     __call_3_5(config, signer, report_directory)
@@ -435,6 +437,19 @@ def __call_2_17(config, signer, report_directory):
     generate_mitigation_report(__replicateData_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_17['fireup_items'])
 
 
+def __call_3_1(config, signer, report_directory):    
+    tenancyQuotas = TenancyQuotas(
+    Statics.__rp_3_1['entry'],
+    Statics.__rp_3_1['area'],
+    Statics.__rp_3_1['sub_area'],
+    Statics.__rp_3_1['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_1['entry']+"_"+Statics.__rp_3_1['area']+"_"+Statics.__rp_3_1['sub_area']+"_mitigations"
+    __tenancyQuotas_dictionary = tenancyQuotas.analyze_entity(Statics.__rp_3_1['entry'])
+    generate_on_screen_report(__tenancyQuotas_dictionary, report_directory, Statics.__rp_3_1['entry'])
+    generate_mitigation_report(__tenancyQuotas_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_1['fireup_items'])
+
+   
 def __call_3_2(config, signer, report_directory):    
     computeLimits = ComputeLimits(
     Statics.__rp_3_2['entry'],
