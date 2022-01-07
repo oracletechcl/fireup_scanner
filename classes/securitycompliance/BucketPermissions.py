@@ -9,6 +9,9 @@ from common.utils.formatter.printer import debug, debug_with_date, print_with_da
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
+from datetime import datetime
+
 
 
 class BucketPermissions(ReviewPoint):
@@ -17,6 +20,9 @@ class BucketPermissions(ReviewPoint):
     __identity = None
     __tenancy = None
     __policies = []
+    __buckets = []
+    __bucket_objects = []
+    __par_data = {}
  
     def __init__(self,
                 entry:str, 
@@ -47,9 +53,31 @@ class BucketPermissions(ReviewPoint):
        self.__tenancy = get_tenancy_data(self.__identity, self.config)
 
 
+
     def load_entity(self):
+
+        obj_client = get_object_storage_client(self.config,self.signer)
+        obj_namespace = get_objectstorage_namespace_data(obj_client)
+
+        object_storage_clients = []
+        regions = get_regions_data(self.__identity, self.config)
+
+        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        compartments.append(get_tenancy_data(self.__identity, self.config))
+
+        # get clients from each region 
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            object_storage_clients.append((get_object_storage_client(region_config, self.signer), obj_namespace))
+      
+        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_buckets, len(compartments), ParallelExecutor.buckets)
+        par_data = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_preauthenticated_requests_per_bucket, len(compartments), ParallelExecutor.requests)
         
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)      
+        for par in par_data:
+            self.__par_data.update(par)
+      
+        policy_data = get_policies_data(self.__identity, self.__tenancy.id)   
 
         for policy in policy_data:  
             record = {
@@ -69,9 +97,36 @@ class BucketPermissions(ReviewPoint):
 
     def analyze_entity(self, entry):
     
-        self.load_entity()        
+        self.load_entity()     
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
+        total_private_buckets = 0
+        total_public_buckets = 0
+        
+        # Find expired PARs
+        for bucket in self.__bucket_objects: 
+            if bucket.public_access_type == 'NoPublicAccess':
+                total_private_buckets+=1
+                             
+                if self.__par_data[bucket.name]:
+                    for par in self.__par_data[bucket.name]:
+                        past = par.time_expires
+                        present = datetime.now()
+                        if past.date() < present.date():
+                            dictionary[entry]['status'] = False
+                            dictionary[entry]['findings'].append({bucket.name:par.name})
+                            dictionary[entry]['failure_cause'].append(f'The pre-authenticated request is expired')   
+                            dictionary[entry]['mitigations'].append(f'Following PAR: "{par.name}" related to bucket: "{bucket.name}" is expired with the date: {par.time_expires.date()}, check if the access is still needed')      
+            else:
+                total_public_buckets+=1      
+        # Check if there is too many public buckets
+        if total_public_buckets > (total_public_buckets + total_private_buckets)/2:
+             dictionary[entry]['status'] = False
+             dictionary[entry]['findings'].append({'Public_buckets':f'Total public buckets: {total_public_buckets}'})    
+             dictionary[entry]['failure_cause'].append(f'Majority of buckets are public: {total_public_buckets}/{total_private_buckets + total_public_buckets}')   
+             dictionary[entry]['mitigations'].append(f'Consider creating private buckets and use pre-authenticated requests (PARs) to provide access to objects stored in buckets')
+            
+        # Check how many users have access to update bucket access
         __problem_policies = []
         __criteria_1 = 'manage'
         __criteria_2 = 'use'
@@ -95,11 +150,5 @@ class BucketPermissions(ReviewPoint):
                 dictionary[entry]['failure_cause'].append('This policy allows users to update private bucket to public access')                
                 dictionary[entry]['mitigations'].append('Make sure that users in the following policy are allowed to update bucket access : ' + str(policy[idx+1]) +
                                                          ' : the number of users able to update bucket access should be none or minimal (less than 5 %)')
-                
-                            
-        else:
-            dictionary[entry]['status'] = True
-            
-
         return dictionary
 
