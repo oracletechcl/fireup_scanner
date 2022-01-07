@@ -16,6 +16,7 @@ class SecureFileStorage(ReviewPoint):
     __non_compliant_sec_list = []
     __non_compliant_export_list = []
     __mount_targets_info_objects = []
+    __non_compliant_open_sec_list = []
     __security_lists_from_mount_targets = []
     __export_options = []
     __compartments = []
@@ -87,6 +88,28 @@ class SecureFileStorage(ReviewPoint):
             tcp_ports = []
             udp_ports = []
             for ingress in sec_list.ingress_security_rules:
+                if ingress.protocol == '6' and ingress.source == '0.0.0.0/0' and ingress.tcp_options is None:
+                    open_sec_list_record = {
+                        'compartment_id': sec_list.compartment_id,
+                        'display_name': sec_list.display_name,
+                        'vcn_id': sec_list.vcn_id,
+                        'id': sec_list.id,
+                        'ingress_tcp_options': ingress.tcp_options,
+                        'ingress_udp_options': ingress.udp_options,
+                    }
+                    self.__non_compliant_open_sec_list.append(open_sec_list_record)
+                if ingress.protocol == '17' and ingress.source == '0.0.0.0/0' and ingress.udp_options is None:
+                    open_sec_list_record = {
+                        'compartment_id': sec_list.compartment_id,
+                        'display_name': sec_list.display_name,
+                        'vcn_id': sec_list.vcn_id,
+                        'id': sec_list.id,
+                        'ingress_tcp_options': ingress.tcp_options,
+                        'ingress_udp_options': ingress.udp_options,
+                    }
+                    self.__non_compliant_open_sec_list.append(open_sec_list_record)
+
+            for ingress in sec_list.ingress_security_rules:
                 if ingress.tcp_options is not None:
                     if ingress.tcp_options.destination_port_range is not None:
                         min = ingress.tcp_options.destination_port_range.min
@@ -131,8 +154,7 @@ class SecureFileStorage(ReviewPoint):
                             'identity_squash': export_details.export_options[0].identity_squash,
                         }
                         self.__non_compliant_export_list.append(export_list_record)
-
-        return self.__non_compliant_sec_list, self.__non_compliant_export_list
+        return self.__non_compliant_sec_list, self.__non_compliant_export_list, self.__non_compliant_open_sec_list
 
     def analyze_entity(self, entry):
 
@@ -161,4 +183,16 @@ class SecureFileStorage(ReviewPoint):
                     dictionary[entry]['findings'].append(export)
                     dictionary[entry]['mitigations'].append(
                         'Make sure to set squash options to ALL: ' + (str(export['path'])) + ' ' + ('Compartment name: ' + str(get_compartment_name(self.__compartments,export['compartment_id']))))
+
+        if len(self.__non_compliant_open_sec_list) > 0:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append(
+                'An all in rule is in place where destination ports are open')
+            for source in self.__non_compliant_open_sec_list:
+                if source not in dictionary[entry]['findings']:
+                    dictionary[entry]['findings'].append(source)
+                    dictionary[entry]['mitigations'].append(
+                        'Consider closing this to a micro-segmented CIDR Block: ' + source[
+                            'display_name'] + ('Compartment name: ' + str(get_compartment_name(self.__compartments,source['compartment_id']))))
+
         return dictionary

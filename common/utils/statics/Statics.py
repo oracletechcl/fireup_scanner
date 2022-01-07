@@ -167,7 +167,7 @@ __rp_1_18 = {
     'sub_area': 'Protect Data at Rest',
     'review_point': 'Ensure Secure Access to File Storage',
     'success_criteria': 'Mounting must be restricted only to consumers IP CIDR Blocks.',
-    'fireup_items': ['Fireup Task: None'],
+    'fireup_items': ['Fireup Task: 25 - Are permissions for authorizing deletion of sensitive data locked down to certain users?'],
 }
 
 __rp_1_19 = {
