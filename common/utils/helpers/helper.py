@@ -234,6 +234,16 @@ def get_bucket_per_compartment(objectstorage_client, compartment_id, namespace):
         raise RuntimeError("Failed to get bucket per compartment: {}".format(e))
     return bucket_per_compartment
 
+def get_preauthenticated_requests(objectstorage_client, namespace, bucket_name):
+    try:
+        preauthenticated_requests = oci.pagination.list_call_get_all_results(
+            objectstorage_client.list_preauthenticated_requests,
+            namespace,
+            bucket_name
+        ).data
+    except Exception as e:
+        raise RuntimeError("Failed to get preauthenticated requests per bucket: {}".format(e))
+    return preauthenticated_requests
 
 def get_vcn_data(network_client, compartment_id): 
         __network_client = network_client
