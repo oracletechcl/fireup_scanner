@@ -15,7 +15,6 @@ class ComputeLimits(ReviewPoint):
     __limit_data_objects = []
     __compute_limits = []
     __non_compliant_compute_limits = dict()
-    __compartments = []
     __identity = None
 
     def __init__(self,
@@ -51,10 +50,6 @@ class ComputeLimits(ReviewPoint):
         regions = get_regions_data(self.__identity, self.config)
 
         tenancy = get_tenancy_data(self.__identity, self.config)
-
-        # Get all compartments including root compartment
-        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
         limits_clients = []
         for region in regions:
