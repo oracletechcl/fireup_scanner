@@ -3,8 +3,8 @@
 # ComputeLimits.py
 # Description: Implementation of class ComputeLimits based on abstract
 
+from concurrent import futures
 from classes.abstract.ReviewPoint import ReviewPoint
-import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
@@ -12,7 +12,11 @@ from common.utils.helpers.helper import *
 class ComputeLimits(ReviewPoint):
 
     # Class Variables
+    __limit_data_objects = []
     __limit_value_objects = []
+    __limit_definitions_objects = []
+    __compute_limits = []
+    __non_compliant_compute_limits = dict()
     __compartments = []
     __identity = None
 
@@ -47,18 +51,6 @@ class ComputeLimits(ReviewPoint):
     def load_entity(self):
 
         regions = get_regions_data(self.__identity, self.config)
-        limits_clients = []
-
-        # for region in regions:
-        #     region_config = self.config
-        #     region_config['region'] = region.region_name
-        #     limits_clients.append(get_limits_client(region_config, self.signer))
-
-        region_config = self.config
-        region_config['region'] = 'uk-london-1'
-        limits_clients.append(get_limits_client(region_config, self.signer))
-        region_config['region'] = 'us-ashburn-1'
-        limits_clients.append(get_limits_client(region_config, self.signer))
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
@@ -66,33 +58,71 @@ class ComputeLimits(ReviewPoint):
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        # self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
+        limits_clients = []
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            limits_clients.append(get_limits_client(region_config, self.signer))
 
-        # self.__limit_value_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
+        # Specialised parallel execution method for getting the limits in each region
+        with futures.ThreadPoolExecutor(len(limits_clients)) as executor:
+            processes = [
+                executor.submit(get_limits_data, limits_client, tenancy.id)
+                for limits_client in limits_clients
+            ]
 
-        limit_value_objects1 = list_limit_value_data(limits_clients[0], tenancy.id, "compute")
-        limit_value_objects2 = list_limit_value_data(limits_clients[1], tenancy.id, "compute")
+            futures.wait(processes)
 
-        # test = limits_clients[1].get_resource_availability(service_name="compute", limit_name="standard2-core-count", compartment_id=tenancy.id, availability_domain="oDQF:US-ASHBURN-AD-1").data
+            for p in processes:
+                self.__limit_data_objects.append(p.result())
+            
+        compute_types = ['dense', 'gpu', 'hpc', 'bm']
 
-        test2 = limits_clients[0].list_services(tenancy.id).data
+        for limit_values, limit_definitions in self.__limit_data_objects:
+            for limit_definition in limit_definitions:
+                if limit_definition.is_deprecated:
+                    for limit_value in limit_values:
+                        if limit_definition.name == limit_value.name:
+                            # Checks if limit name matches any of the compute types
+                            if any(compute in limit_value.name for compute in compute_types):
+                                record = {
+                                    "availability_domain": limit_value.availability_domain,
+                                    "name": limit_value.name,
+                                    "scope_type": limit_value.scope_type,
+                                    "value": limit_value.value,
+                                }
+                                self.__compute_limits.append(record)
 
-        debug_with_color_date(test2, "green")
-
-        
-        # for limit_value in limit_value_objects1 + limit_value_objects2:
-        #     if "gpu3-count" in limit_value.name:
-        #         debug_with_color_date(limit_value, "green")
-
-
-        return 
+        return self.__compute_limits
 
 
     def analyze_entity(self, entry):
+        debug_with_color_date('start', 'green')
         self.load_entity()
+        debug_with_color_date('stop', 'red')
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        
+        for limit in self.__compute_limits:
+            if limit['value'] > 5:
+                dictionary[entry]['findings'].append(limit)
+                if limit['name'] in self.__non_compliant_compute_limits:
+                    self.__non_compliant_compute_limits[limit['name']].append(limit['availability_domain'])
+                else:
+                    self.__non_compliant_compute_limits[limit['name']] = [limit['availability_domain']]
+
+        for key, value in self.__non_compliant_compute_limits.items():
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append('Limits should be correctly configured to what is required for the workload.')
+            dictionary[entry]['mitigations'].append(f"Limit name: {key}, is set greater than 5 in all of these ADs: {value}")
 
         return dictionary
+
+
+def get_limits_data(limits_client, tenancy_id):
+
+    limits_value_data = list_limit_value_data(limits_client, tenancy_id, "compute")
+
+    limits_definition_data = list_limit_definition_data(limits_client, tenancy_id, "compute")
+
+    return (limits_value_data, limits_definition_data)

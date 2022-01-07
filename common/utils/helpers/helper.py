@@ -434,3 +434,11 @@ def list_limit_value_data(limits_client, compartment_id, service_name):
         compartment_id,
         service_name
     ).data
+
+def list_limit_definition_data(limits_client, compartment_id, service_name): 
+    return oci.pagination.list_call_get_all_results(
+        limits_client.list_limit_definitions,
+        compartment_id=compartment_id,
+        service_name=service_name
+    ).data
+
