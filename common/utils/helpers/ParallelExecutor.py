@@ -459,8 +459,7 @@ def get_subnets_in_compartments(item):
         
     return subnets
 
-
-def get_nsgs(item):
+def get_adb_nsgs(item):
     # Executor will get all nsgs that are associated to an Autonomous Database
     network_client = item[0]
     adbs = item[1:]
