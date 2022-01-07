@@ -13,8 +13,6 @@ class ComputeLimits(ReviewPoint):
 
     # Class Variables
     __limit_data_objects = []
-    __limit_value_objects = []
-    __limit_definitions_objects = []
     __compute_limits = []
     __non_compliant_compute_limits = dict()
     __compartments = []
@@ -75,7 +73,8 @@ class ComputeLimits(ReviewPoint):
 
             for p in processes:
                 self.__limit_data_objects.append(p.result())
-            
+
+        # List of compute keywords checked against
         compute_types = ['dense', 'gpu', 'hpc', 'bm']
 
         for limit_values, limit_definitions in self.__limit_data_objects:
@@ -85,31 +84,33 @@ class ComputeLimits(ReviewPoint):
                         if limit_definition.name == limit_value.name:
                             # Checks if limit name matches any of the compute types
                             if any(compute in limit_value.name for compute in compute_types):
-                                record = {
-                                    "availability_domain": limit_value.availability_domain,
-                                    "name": limit_value.name,
-                                    "scope_type": limit_value.scope_type,
-                                    "value": limit_value.value,
-                                }
-                                self.__compute_limits.append(record)
+                                # Only appends if the limit is set in AD 1
+                                if limit_value.availability_domain[-1] == "1":
+                                    record = {
+                                        "availability_domain": limit_value.availability_domain,
+                                        "name": limit_value.name,
+                                        "scope_type": limit_value.scope_type,
+                                        "value": limit_value.value,
+                                    }
+                                    self.__compute_limits.append(record)
 
         return self.__compute_limits
 
 
     def analyze_entity(self, entry):
-        debug_with_color_date('start', 'green')
         self.load_entity()
-        debug_with_color_date('stop', 'red')
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         for limit in self.__compute_limits:
             if limit['value'] > 5:
                 dictionary[entry]['findings'].append(limit)
+                # Coverts AD to look like a region
+                ad = "-".join(limit['availability_domain'].split(':')[1].split('-')[:3])
                 if limit['name'] in self.__non_compliant_compute_limits:
-                    self.__non_compliant_compute_limits[limit['name']].append(limit['availability_domain'])
+                    self.__non_compliant_compute_limits[limit['name']].append(ad)
                 else:
-                    self.__non_compliant_compute_limits[limit['name']] = [limit['availability_domain']]
+                    self.__non_compliant_compute_limits[limit['name']] = [ad]
 
         for key, value in self.__non_compliant_compute_limits.items():
             dictionary[entry]['status'] = False
