@@ -2,6 +2,7 @@
 reports*
 stderr.out
 stdout.out
+results.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -136,3 +137,6 @@ dmypy.json
 
 # Debug Output file
 output.out
+
+#Pycharm .idea
+.idea/

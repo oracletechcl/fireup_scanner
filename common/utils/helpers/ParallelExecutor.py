@@ -17,6 +17,8 @@ compartments = None
 availability_domains = []
 
 security_lists = []
+steering_policies = []
+vcns_in_multiple_regions = []
 
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
@@ -50,6 +52,9 @@ boot_volumes = []
 storages_with_no_policy = []
 file_systems = []
 file_systems_with_no_snapshots = []
+mount_targets = []
+security_lists_from_files = []
+exports = []
 
 
 ### BackupDatabases.py Global Variables
@@ -76,6 +81,8 @@ boot_volume_replicas = []
 buckets = []
 autonomous_databases = []
 adb_nsgs = []
+requests = []
+
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -111,6 +118,7 @@ def executor(dependent_clients:list, independent_iterator:list, fuction_to_execu
                 values.append(value)
 
     return values
+
 
 def get_availability_domains(identity_clients, tenancy_id):
     """
@@ -281,6 +289,23 @@ def get_file_systems(item):
                 file_systems.append(file_system)
 
     return file_systems
+
+def get_mounts(item):
+    file_storage_client = item[0][0]
+    availability_domain = item[0][1]
+    compartments = item[1:]
+
+
+    mount_targets = []
+    exports = []
+
+    for compartment in compartments:
+        mount_target_data = get_mount_target_data(file_storage_client, compartment_id=compartment.id,
+                                                    availability_domain=availability_domain)
+        for mount_target in mount_target_data:
+            if "TERMINATED" not in mount_target.lifecycle_state:
+                mount_targets.append(mount_target)
+    return mount_targets
 
 
 def get_file_systems_with_no_snapshots(item):
@@ -454,7 +479,7 @@ def get_subnets_in_compartments(item):
         
     return subnets
 
-def get_nsgs(item):
+def get_adb_nsgs(item):
     # Executor will get all nsgs that are associated to an Autonomous Database
     network_client = item[0]
     adbs = item[1:]
@@ -499,6 +524,36 @@ def get_mysql_dbsystem_full_info(item):
                 mysql_full_data.append(db)
 
     return mysql_full_data
+
+def get_security_lists_from_mounts(item):
+    network_client = item[0]
+    mounts = item[1:]
+
+    security_lists_from_mount_targets = []
+    for mount in mounts:
+        region = mount.subnet_id.split('.')[3]
+        if network_client[1] in region or network_client[2] in region:
+            subnet_info = network_client[0].get_subnet(subnet_id=mount.subnet_id)
+            security_lists_info = network_client[0].get_security_list(security_list_id=subnet_info.data.security_list_ids)
+            security_lists_from_mount_targets.append(security_lists_info.data)
+
+    return security_lists_from_mount_targets
+
+def get_export_options(item):
+    file_storage_client = item[0]
+    mounts = item[1:]
+
+    export_options = []
+    for mount in mounts:
+        region = mount.subnet_id.split('.')[3]
+        if file_storage_client[1] in region or file_storage_client[2] in region:
+            export_info = file_storage_client[0].list_exports(export_set_id=mount.export_set_id)
+            if len(export_info.data) != 0:
+                export_details = file_storage_client[0].get_export(export_id=export_info.data[0].id)
+                export_options.append(export_details.data)
+
+    return export_options
+
 def get_block_volume_replicas(item):
     block_storage_client = item[0][0]
     availability_domain = item[0][1]
@@ -546,6 +601,21 @@ def get_buckets(item):
 
     return buckets
 
+def get_preauthenticated_requests_per_bucket(item):
+    object_storage_client = item[0][0]
+    namespace = item[0][1]
+    compartments = item[1:]
+
+    requests = []
+
+    for compartment in compartments:
+        bucket_data = get_bucket_data(object_storage_client, namespace, compartment.id)
+        for bucket in bucket_data:
+            preauthenticated_requests = get_preauthenticated_requests(object_storage_client,namespace,bucket.name)
+            requests.append({bucket.name:preauthenticated_requests})
+            
+    return requests
+
 
 def get_autonomous_databases(item):
     database_client = item[0]
@@ -560,3 +630,42 @@ def get_autonomous_databases(item):
                 autonomous_databases.append(autonomous_database)
 
     return autonomous_databases
+
+
+def get_steering_policies(item):
+    dns_client = item[0]
+    compartments = item[1:]
+
+    steering_policies = []
+    for compartment in compartments:
+        steering_policy_data = get_steering_policy_data(dns_client, compartment.id)
+        for steering_policy in steering_policy_data:
+            steering_policies.append(steering_policy)
+
+    return steering_policies
+
+
+def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_variable):
+
+    workload_status = data_variable
+
+    if len(workload_status) > 0:
+        return workload_status[0]
+
+    vcn_objects = executor(network_clients, compartments, get_vcns_in_compartments, len(compartments), vcns)
+
+    vcn_regions = []
+
+    for region in regions:
+        for vcn in vcn_objects:
+            vcn_region = vcn.id.split('.')[3]
+            if region.region_name in vcn_region or region.region_key in vcn_region:
+                if region not in vcn_regions:
+                    vcn_regions.append(region)
+
+    if len(vcn_regions) > 1:
+        workload_status.append(True)
+    else:
+        workload_status.append(False)
+
+    return workload_status[0]

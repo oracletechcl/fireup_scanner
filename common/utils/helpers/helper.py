@@ -234,6 +234,16 @@ def get_bucket_per_compartment(objectstorage_client, compartment_id, namespace):
         raise RuntimeError("Failed to get bucket per compartment: {}".format(e))
     return bucket_per_compartment
 
+def get_preauthenticated_requests(objectstorage_client, namespace, bucket_name):
+    try:
+        preauthenticated_requests = oci.pagination.list_call_get_all_results(
+            objectstorage_client.list_preauthenticated_requests,
+            namespace,
+            bucket_name
+        ).data
+    except Exception as e:
+        raise RuntimeError("Failed to get preauthenticated requests per bucket: {}".format(e))
+    return preauthenticated_requests
 
 def get_vcn_data(network_client, compartment_id): 
         __network_client = network_client
@@ -337,6 +347,12 @@ def get_file_system_data(file_storage_client, compartment_id, availability_domai
         availability_domain
     ).data
 
+def get_mount_target_data(file_storage_client, compartment_id, availability_domain):
+    return oci.pagination.list_call_get_all_results(
+        file_storage_client.list_mount_targets,
+        compartment_id,
+        availability_domain
+    ).data
 def get_db_system_data(database_client, compartment_id):
     
     return oci.pagination.list_call_get_all_results(
@@ -440,5 +456,18 @@ def list_limit_definition_data(limits_client, compartment_id, service_name):
         limits_client.list_limit_definitions,
         compartment_id=compartment_id,
         service_name=service_name
+    ).data
+
+def get_dns_client(config, signer):
+    try:
+        dns_client = oci.dns.DnsClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create DNS client: {}".format(e))
+    return dns_client
+
+def get_steering_policy_data(dns_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        dns_client.list_steering_policies,
+        compartment_id
     ).data
 

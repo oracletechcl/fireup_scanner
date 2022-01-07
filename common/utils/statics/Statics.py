@@ -146,10 +146,10 @@ __rp_1_15 = {
 __rp_1_16 = {
     'entry': '1.16',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure Your Databases',
+    'review_point': 'Enable Private Endpoints for Autonomous Databases',    
+    'success_criteria': 'If ATP is in place, make sure that a dedicated private subnet is allocated for it. For the private endpoint, define stateless security ingress rule and stateless egress rule. Restrict traffic only to subnets that will consume the service',
+    'fireup_items': ['Fireup Task: 23 - Are databases and other confidential resources locked down in private subnets?'],
 }
 
 __rp_1_17 = {
@@ -164,19 +164,19 @@ __rp_1_17 = {
 __rp_1_18 = {
     'entry': '1.18',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Ensure Secure Access to File Storage',
+    'success_criteria': 'Mounting must be restricted only to consumers IP CIDR Blocks.',
+    'fireup_items': ['Fireup Task: 25 - Are permissions for authorizing deletion of sensitive data locked down to certain users?'],
 }
 
 __rp_1_19 = {
     'entry': '1.19',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Ensure Secure Access to Object Storage',    
+    'success_criteria': 'Ensure that BUCKET_UPDATE is granted to minimal to none amount of users (less than 5%)',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_1_20 = {
