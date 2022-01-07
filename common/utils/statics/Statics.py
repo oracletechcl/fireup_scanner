@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v0.0.9'
+__version__ = 'v0.0.10'
 __lenght_print__ = "200"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -146,10 +146,10 @@ __rp_1_15 = {
 __rp_1_16 = {
     'entry': '1.16',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure Your Databases',
+    'review_point': 'Enable Private Endpoints for Autonomous Databases',    
+    'success_criteria': 'If ATP is in place, make sure that a dedicated private subnet is allocated for it. For the private endpoint, define stateless security ingress rule and stateless egress rule. Restrict traffic only to subnets that will consume the service',
+    'fireup_items': ['Fireup Task: 23 - Are databases and other confidential resources locked down in private subnets?'],
 }
 
 __rp_1_17 = {
@@ -164,19 +164,19 @@ __rp_1_17 = {
 __rp_1_18 = {
     'entry': '1.18',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Ensure Secure Access to File Storage',
+    'success_criteria': 'Mounting must be restricted only to consumers IP CIDR Blocks.',
+    'fireup_items': ['Fireup Task: 25 - Are permissions for authorizing deletion of sensitive data locked down to certain users?'],
 }
 
 __rp_1_19 = {
     'entry': '1.19',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Ensure Secure Access to Object Storage',    
+    'success_criteria': 'Ensure that BUCKET_UPDATE is granted to minimal to none amount of users (less than 5%)',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_1_20 = {
@@ -408,19 +408,19 @@ __rp_3_1 = {
 __rp_3_2 = {
     'entry': '3.2',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Plan the Compute Resources',
+    'review_point': 'Learn About the Available Compute Instance Shapes',    
+    'success_criteria': 'Check if default quotas are still implemented for compute shapes',
+    'fireup_items': ['Fireup Task: 42 - How do you select your compute solution?'],
 }
 
 __rp_3_3 = {
     'entry': '3.3',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Tune and Monitor Network',
+    'review_point': 'Learn About and Leverage SSL Termination Features',    
+    'success_criteria': 'If Lbaas exists, check that SSL is implemented on it',
+    'fireup_items': ['Fireup Task: 48 - Are you using load balancers? If so, where would you like to terminate SSL.'],
 }
 
 __rp_3_4 = {
