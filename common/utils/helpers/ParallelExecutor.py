@@ -81,7 +81,7 @@ boot_volume_replicas = []
 buckets = []
 autonomous_databases = []
 adb_nsgs = []
-requests = []
+bucket_preauthenticated_requests = []
 
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
@@ -606,15 +606,15 @@ def get_preauthenticated_requests_per_bucket(item):
     namespace = item[0][1]
     compartments = item[1:]
 
-    requests = []
+    bucket_preauthenticated_requests = []
 
     for compartment in compartments:
         bucket_data = get_bucket_data(object_storage_client, namespace, compartment.id)
         for bucket in bucket_data:
             preauthenticated_requests = get_preauthenticated_requests(object_storage_client,namespace,bucket.name)
-            requests.append({bucket.name:preauthenticated_requests})
+            bucket_preauthenticated_requests.append({bucket.name:preauthenticated_requests})
             
-    return requests
+    return bucket_preauthenticated_requests
 
 
 def get_autonomous_databases(item):

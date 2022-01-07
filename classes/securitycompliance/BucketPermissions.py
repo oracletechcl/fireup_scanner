@@ -72,7 +72,7 @@ class BucketPermissions(ReviewPoint):
             object_storage_clients.append((get_object_storage_client(region_config, self.signer), obj_namespace))
       
         self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_buckets, len(compartments), ParallelExecutor.buckets)
-        par_data = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_preauthenticated_requests_per_bucket, len(compartments), ParallelExecutor.requests)
+        par_data = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_preauthenticated_requests_per_bucket, len(compartments), ParallelExecutor.bucket_preauthenticated_requests)
         
         for par in par_data:
             self.__par_data.update(par)
