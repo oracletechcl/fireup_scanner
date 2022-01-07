@@ -18,6 +18,7 @@ from classes.securitycompliance.PolicyAdmins import PolicyAdmins
 from classes.securitycompliance.FederatedUsers import FederatedUsers
 from classes.securitycompliance.DBSystemControl import DBSystemControl
 from classes.securitycompliance.DBPermissions import DBPermissions
+from classes.securitycompliance.BucketPermissions import BucketPermissions
 from classes.securitycompliance.StoragePermissions import StoragePermissions
 from classes.securitycompliance.MaxSecurityZone import MaxSecurityZone
 from classes.securitycompliance.Rbac import Rbac
@@ -35,6 +36,7 @@ from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
 
 from classes.performancecost.CheckAutoTuning import CheckAutoTuning
+from classes.performancecost.TrafficSteering import TrafficSteering
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 
 from common.utils.reporter.report import *
@@ -61,6 +63,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_14(config, signer, report_directory)
     __call_1_17(config, signer, report_directory)
     __call_1_18(config, signer, report_directory)
+    __call_1_19(config, signer, report_directory)
     
     __call_2_5(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
@@ -73,6 +76,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_17(config, signer, report_directory)
 
     __call_3_3(config, signer, report_directory)
+    __call_3_5(config, signer, report_directory)
     __call_3_10(config, signer, report_directory)
 
 
@@ -277,6 +281,18 @@ def __call_1_12(config, signer, report_directory):
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_12['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_12['fireup_items'])
 
+def __call_1_19(config, signer, report_directory):
+    bucket = BucketPermissions(
+    Statics.__rp_1_19['entry'], 
+    Statics.__rp_1_19['area'], 
+    Statics.__rp_1_19['sub_area'], 
+    Statics.__rp_1_19['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_19['entry']+"_"+Statics.__rp_1_19['area']+"_"+Statics.__rp_1_19['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = bucket.analyze_entity(Statics.__rp_1_19['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_19['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_19['fireup_items'])
+
 
 def __call_2_5(config, signer, report_directory):    
     compQuotas = CompartmentQuotas(
@@ -406,6 +422,19 @@ def __call_3_3(config, signer, report_directory):
     __lbaasEncryption_dictionary = lbaasEncryption.analyze_entity(Statics.__rp_3_3['entry'])
     generate_on_screen_report(__lbaasEncryption_dictionary, report_directory, Statics.__rp_3_3['entry'])
     generate_mitigation_report(__lbaasEncryption_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_3['fireup_items'])
+
+
+def __call_3_5(config, signer, report_directory):    
+    trafficSteering = TrafficSteering(
+    Statics.__rp_3_5['entry'],
+    Statics.__rp_3_5['area'],
+    Statics.__rp_3_5['sub_area'],
+    Statics.__rp_3_5['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_5['entry']+"_"+Statics.__rp_3_5['area']+"_"+Statics.__rp_3_5['sub_area']+"_mitigations"
+    __trafficSteering_dictionary = trafficSteering.analyze_entity(Statics.__rp_3_5['entry'])
+    generate_on_screen_report(__trafficSteering_dictionary, report_directory, Statics.__rp_3_5['entry'])
+    generate_mitigation_report(__trafficSteering_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_5['fireup_items'])
 
 
 def __call_3_10(config, signer, report_directory):    
