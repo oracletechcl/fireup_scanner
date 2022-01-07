@@ -408,10 +408,10 @@ __rp_3_1 = {
 __rp_3_2 = {
     'entry': '3.2',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Plan the Compute Resources',
+    'review_point': 'Learn About the Available Compute Instance Shapes',    
+    'success_criteria': 'Check if default quotas are still implemented for compute shapes',
+    'fireup_items': ['Fireup Task: 42 - How do you select your compute solution?'],
 }
 
 __rp_3_3 = {

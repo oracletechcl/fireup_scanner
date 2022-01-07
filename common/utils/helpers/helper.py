@@ -437,6 +437,27 @@ def get_max_security_zone_data(identity_client, compartment_id):
         header_params=header_params,
         response_type="json").data
 
+def get_limits_client(config, signer):
+    try:
+        limits_client = oci.limits.LimitsClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create limits client: {}".format(e))
+    return limits_client
+
+def list_limit_value_data(limits_client, compartment_id, service_name): 
+    return oci.pagination.list_call_get_all_results(
+        limits_client.list_limit_values,
+        compartment_id,
+        service_name
+    ).data
+
+def list_limit_definition_data(limits_client, compartment_id, service_name): 
+    return oci.pagination.list_call_get_all_results(
+        limits_client.list_limit_definitions,
+        compartment_id=compartment_id,
+        service_name=service_name
+    ).data
+
 def get_dns_client(config, signer):
     try:
         dns_client = oci.dns.DnsClient(config, signer=signer)
@@ -449,3 +470,4 @@ def get_steering_policy_data(dns_client, compartment_id):
         dns_client.list_steering_policies,
         compartment_id
     ).data
+
