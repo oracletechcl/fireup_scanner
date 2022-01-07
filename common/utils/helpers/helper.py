@@ -471,3 +471,17 @@ def get_steering_policy_data(dns_client, compartment_id):
         compartment_id
     ).data
 
+
+def get_container_engine_client(config, signer):
+    try:
+        container_engine_client = oci.container_engine.ContainerEngineClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create container engine client client: {}".format(e))
+    return container_engine_client
+
+def get_oke_clusters(container_engine_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        container_engine_client.list_clusters,
+        compartment_id
+    ).data
+

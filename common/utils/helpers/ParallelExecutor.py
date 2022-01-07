@@ -19,6 +19,7 @@ availability_domains = []
 security_lists = []
 steering_policies = []
 vcns_in_multiple_regions = []
+oke_clusters = []
 
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
@@ -669,3 +670,18 @@ def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_
         workload_status.append(False)
 
     return workload_status[0]
+
+
+def get_oke_cluster(item):
+    container_engine_client = item[0]
+    compartments = item[1:]
+
+    oke_clusters = []
+
+    for compartment in compartments:
+        oke_cluster_data = get_oke_clusters(container_engine_client, compartment.id)
+        for oke_cluster in oke_cluster_data:
+            if oke_cluster.lifecycle_state != "DELETED":
+                oke_clusters.append(oke_cluster)
+
+    return oke_clusters 
