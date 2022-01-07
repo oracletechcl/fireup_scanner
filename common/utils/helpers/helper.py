@@ -426,3 +426,9 @@ def get_db_home_patches(database_client, db_home_id):
         database_client.list_db_home_patches,
         db_home_id
     ).data
+
+def get_db_home_patch_history(database_client, db_home_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_home_patch_history_entries,
+        db_home_id
+    ).data

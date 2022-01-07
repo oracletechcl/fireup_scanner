@@ -23,3 +23,6 @@ pip3 install twine
 pip3 install oci
 pip3 install ipaddr
 pip3 install termcolor
+pip3 install requests
+pip3 install beautifulsoup4
+pip3 install pandas

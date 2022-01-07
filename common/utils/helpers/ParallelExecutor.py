@@ -81,6 +81,7 @@ adb_nsgs = []
 # Lists for use with parallel_executor
 oracle_dbsystems_patches = []
 db_systems = []
+oracle_db_home_patch_history = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -341,7 +342,6 @@ def get_database_systems(item):
 
     return db_systems
 
-
 def get_mysql_dbs(item):
     mysql_client = item[0]
     compartments = item[1:]
@@ -582,7 +582,7 @@ def get_autonomous_databases(item):
     return autonomous_databases
 
 
-def get_database_patches(item):
+def get_database_home_patches(item):
     database_client = item[0]
     database_objects = item[1:]
 
@@ -598,3 +598,19 @@ def get_database_patches(item):
                     oracle_dbsystems_patches.append(patch)
 
     return oracle_dbsystems_patches
+
+def get_database_homes_applied_patch_history(item):
+    database_client = item[0]
+    database_objects = item[1:]
+
+    oracle_db_home_patch_history = []
+
+
+    for db_ocids in database_objects:
+        region = db_ocids.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            if db_ocids.lifecycle_state == "AVAILABLE":            
+                patches_data = get_db_home_patch_history(database_client[0], db_ocids.id)                
+                oracle_db_home_patch_history.append(patches_data)
+
+    return oracle_db_home_patch_history
