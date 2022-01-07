@@ -34,6 +34,8 @@ from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
 
+from classes.performancecost.CheckAutoTuning import CheckAutoTuning
+from classes.performancecost.TrafficSteering import TrafficSteering
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 
 from common.utils.reporter.report import *
@@ -72,6 +74,8 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_17(config, signer, report_directory)
 
     __call_3_3(config, signer, report_directory)
+    __call_3_5(config, signer, report_directory)
+    __call_3_10(config, signer, report_directory)
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -404,3 +408,30 @@ def __call_3_3(config, signer, report_directory):
     __lbaasEncryption_dictionary = lbaasEncryption.analyze_entity(Statics.__rp_3_3['entry'])
     generate_on_screen_report(__lbaasEncryption_dictionary, report_directory, Statics.__rp_3_3['entry'])
     generate_mitigation_report(__lbaasEncryption_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_3['fireup_items'])
+
+
+def __call_3_5(config, signer, report_directory):    
+    trafficSteering = TrafficSteering(
+    Statics.__rp_3_5['entry'],
+    Statics.__rp_3_5['area'],
+    Statics.__rp_3_5['sub_area'],
+    Statics.__rp_3_5['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_5['entry']+"_"+Statics.__rp_3_5['area']+"_"+Statics.__rp_3_5['sub_area']+"_mitigations"
+    __trafficSteering_dictionary = trafficSteering.analyze_entity(Statics.__rp_3_5['entry'])
+    generate_on_screen_report(__trafficSteering_dictionary, report_directory, Statics.__rp_3_5['entry'])
+    generate_mitigation_report(__trafficSteering_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_5['fireup_items'])
+
+
+def __call_3_10(config, signer, report_directory):    
+    checkAutoTuning = CheckAutoTuning(
+    Statics.__rp_3_10['entry'],
+    Statics.__rp_3_10['area'],
+    Statics.__rp_3_10['sub_area'],
+    Statics.__rp_3_10['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_10['entry']+"_"+Statics.__rp_3_10['area']+"_"+Statics.__rp_3_10['sub_area']+"_mitigations"
+    __checkAutoTuning_dictionary = checkAutoTuning.analyze_entity(Statics.__rp_3_10['entry'])
+    generate_on_screen_report(__checkAutoTuning_dictionary, report_directory, Statics.__rp_3_10['entry'])
+    generate_mitigation_report(__checkAutoTuning_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_10['fireup_items'])
+
