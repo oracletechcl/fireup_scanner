@@ -9,6 +9,8 @@ from common.utils.formatter.printer import debug, debug_with_date, print_with_da
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
+
 
 
 class BucketEncryption(ReviewPoint):
@@ -16,8 +18,8 @@ class BucketEncryption(ReviewPoint):
     # Class Variables
     __identity = None
     __tenancy = None
-    __policies = []
- 
+    __bucket_objects = []
+     
     def __init__(self,
                 entry:str, 
                 area:str, 
@@ -48,14 +50,36 @@ class BucketEncryption(ReviewPoint):
 
 
     def load_entity(self):
-        
-        return None
 
+        obj_client = get_object_storage_client(self.config,self.signer)
+        obj_namespace = get_objectstorage_namespace_data(obj_client)
+
+        object_storage_clients = []
+        regions = get_regions_data(self.__identity, self.config)
+
+        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        compartments.append(get_tenancy_data(self.__identity, self.config))
+
+        # get clients from each region 
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            object_storage_clients.append((get_object_storage_client(region_config, self.signer), obj_namespace))
+      
+        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_buckets, len(compartments), ParallelExecutor.buckets)     
 
     def analyze_entity(self, entry):
     
-        self.load_entity()        
+        self.load_entity()     
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
+        for index, bucket in enumerate(self.__bucket_objects):
+            if  not bucket.kms_key_id:               
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append({index:bucket.name})
+                dictionary[entry]['failure_cause'].append(f'The bucket is by default encrypted using an Oracle-managed master encryption key.')   
+                dictionary[entry]['mitigations'].append(f'For bucket: "{bucket.name}" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service and rotate at a schedule that you define.')   
+            else:
+                debug(f'Bucket: {bucket.name} has this key : {bucket.kms_key_id}')
         return dictionary
 
