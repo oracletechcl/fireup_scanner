@@ -20,6 +20,7 @@ from classes.securitycompliance.DBSystemControl import DBSystemControl
 from classes.securitycompliance.DBPermissions import DBPermissions
 from classes.securitycompliance.BucketPermissions import BucketPermissions
 from classes.securitycompliance.StoragePermissions import StoragePermissions
+from classes.securitycompliance.BucketEncryption import BucketEncryption
 from classes.securitycompliance.MaxSecurityZone import MaxSecurityZone
 from classes.securitycompliance.Rbac import Rbac
 from classes.securitycompliance.SecureFileStorage import SecureFileStorage
@@ -68,8 +69,10 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_16(config, signer, report_directory)
     __call_1_17(config, signer, report_directory)
     __call_1_18(config, signer, report_directory)
-    __call_1_19(config, signer, report_directory)
-
+    __call_1_19(config, signer, report_directory)   
+    __call_1_20(config, signer, report_directory)
+    
+    
     __call_2_5(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
     __call_2_9(config, signer, report_directory)
@@ -320,6 +323,18 @@ def __call_1_19(config, signer, report_directory):
     __instancePrincipal_dictionary = bucket.analyze_entity(Statics.__rp_1_19['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_19['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_19['fireup_items'])
+
+def __call_1_20(config, signer, report_directory):
+    bucket = BucketEncryption(
+    Statics.__rp_1_20['entry'], 
+    Statics.__rp_1_20['area'], 
+    Statics.__rp_1_20['sub_area'], 
+    Statics.__rp_1_20['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_20['entry']+"_"+Statics.__rp_1_20['area']+"_"+Statics.__rp_1_20['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = bucket.analyze_entity(Statics.__rp_1_20['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_20['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_20['fireup_items'])
 
 
 def __call_2_5(config, signer, report_directory):    
