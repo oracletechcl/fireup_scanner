@@ -79,7 +79,6 @@ class BucketEncryption(ReviewPoint):
                 dictionary[entry]['findings'].append({index:bucket.name})
                 dictionary[entry]['failure_cause'].append(f'The bucket is by default encrypted using an Oracle-managed master encryption key.')   
                 dictionary[entry]['mitigations'].append(f'For bucket: "{bucket.name}" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service and rotate at a schedule that you define.')   
-            else:
-                debug(f'Bucket: {bucket.name} has this key : {bucket.kms_key_id}')
+
         return dictionary
 
