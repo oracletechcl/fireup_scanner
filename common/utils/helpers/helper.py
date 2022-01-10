@@ -437,6 +437,7 @@ def get_max_security_zone_data(identity_client, compartment_id):
         header_params=header_params,
         response_type="json").data
 
+
 def get_drg_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_drgs,
@@ -487,3 +488,6 @@ def get_container_engine_client(config, signer):
 def get_oke_clusters(container_engine_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         container_engine_client.list_clusters,
+        compartment_id
+    ).data
+

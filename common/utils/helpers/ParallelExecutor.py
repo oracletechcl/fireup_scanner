@@ -17,6 +17,7 @@ compartments = None
 availability_domains = []
 
 security_lists = []
+
 drgs = []
 steering_policies = []
 vcns_in_multiple_regions = []

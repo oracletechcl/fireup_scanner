@@ -71,7 +71,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_17(config, signer, report_directory)
     __call_1_18(config, signer, report_directory)
     __call_1_19(config, signer, report_directory)
-    __call_1_20(config, signer, report_directory)
+    __call_1_20(config, signer, report_directory)    
 
     __call_2_5(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
