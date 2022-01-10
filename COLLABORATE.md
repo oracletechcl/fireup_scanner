@@ -53,7 +53,9 @@ key_file=/foo/bar/path/api_private_key.pem
   - region: The region where your tenancy is located
   - key_file: Absolute Path to the private API Key imported in your user. This is unique to you and it must be imported in the OCI CLI.
 
-- Put your associated SSH key in github under `/home/opc/.ssh/id_rsa` to be able to pull and push code to github. If you don't do this, you will get a permissions error when trying to clone, push or pull code to github.
+- Put your associated SSH key in github under `/home/opc/.ssh/id_rsa` to be able to pull and push code to github. If you don't do this, you will get a permissions error when trying to clone, push or pull code to github as depicted in below screenshot: 
+  
+![Wrong_Key_Github_SSH](./images/github_wrong_key.png)
 
 
 
