@@ -27,6 +27,9 @@ drgs = []
 drg_attachment_ids = []
 drg_attachments = []
 
+service_gateways = []
+local_peering_gateways = []
+
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
 vcns = []
@@ -741,6 +744,34 @@ def get_drg_attachments(item):
             except:
                 continue
             
-
     return drg_attachments
 
+
+def get_service_gateways(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    service_gateways = []
+
+    for compartment in compartments:
+        service_gateways_data = get_service_gateway_data(network_client, compartment.id)
+        for service_gateway in service_gateways_data:
+            if "TERMINATED" not in service_gateway.lifecycle_state:
+                service_gateways.append(service_gateway)
+
+    return service_gateways
+
+
+def get_local_peering_gateways(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    local_peering_gateways = []
+
+    for compartment in compartments:
+        local_peering_gateways_data = get_local_peering_gateway_data(network_client, compartment.id)
+        for local_peering_gateway in local_peering_gateways_data:
+            if "TERMINATED" not in local_peering_gateway.lifecycle_state:
+                local_peering_gateways.append(local_peering_gateway)
+
+    return local_peering_gateways

@@ -12,10 +12,14 @@ import common.utils.helpers.ParallelExecutor as ParallelExecutor
 class CheckGateways(ReviewPoint):
 
     # Class Variables
+    __compartments = []
     __drg_objects = []
     __drg_attachments_ids = []
     __drg_attachments = []
+    __service_gateway_objects = []
+    __local_peering_gateway_objects = []
     __identity = None
+
 
     def __init__(self,
                 entry:str, 
@@ -50,37 +54,28 @@ class CheckGateways(ReviewPoint):
         regions = get_regions_data(self.__identity, self.config)
         network_clients = []
 
-        # for region in regions:
-        #     region_config = self.config
-        #     region_config['region'] = region.region_name
-        #     # Create a network client for each region
-        #     network_clients.append( (get_virtual_network_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
-
-        region_config = self.config
-        region_config['region'] = 'uk-london-1'
-        # Create a network client for each region
-        network_clients.append( (get_virtual_network_client(region_config, self.signer), 'uk-london-1', 'REDACTED'.lower()) )
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            # Create a network client for each region
+            network_clients.append( (get_virtual_network_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
-        debug_with_date('start')
-        
-        # self.__drg_objects = ParallelExecutor.executor([x[0] for x in network_clients], compartments, ParallelExecutor.get_drgs, len(compartments), ParallelExecutor.drgs)
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments .append(get_tenancy_data(self.__identity, self.config))
+
+        self.__drg_objects = ParallelExecutor.executor([x[0] for x in network_clients], self.__compartments , ParallelExecutor.get_drgs, len(self.__compartments ), ParallelExecutor.drgs)
 
         if len(self.__drg_objects) > 0:
             self.__drg_attachments_ids = ParallelExecutor.executor(network_clients, self.__drg_objects, ParallelExecutor.get_drg_attachment_ids, len(self.__drg_objects), ParallelExecutor.drg_attachment_ids)
 
         if len(self.__drg_attachments_ids) > 0:    
             self.__drg_attachments = ParallelExecutor.executor(network_clients, self.__drg_attachments_ids, ParallelExecutor.get_drg_attachments, len(self.__drg_attachments_ids), ParallelExecutor.drg_attachments)
-        debug_with_date('stop')
 
-
-
-
-        return
+        self.__service_gateway_objects = ParallelExecutor.executor([x[0] for x in network_clients], self.__compartments, ParallelExecutor.get_service_gateways, len(self.__compartments), ParallelExecutor.service_gateways)
+        self.__local_peering_gateway_objects = ParallelExecutor.executor([x[0] for x in network_clients], self.__compartments, ParallelExecutor.get_local_peering_gateways, len(self.__compartments), ParallelExecutor.local_peering_gateways)
 
 
     def analyze_entity(self, entry):
@@ -92,13 +87,22 @@ class CheckGateways(ReviewPoint):
         # i.e some method of bypassing the internet is present
         dictionary[entry]['status'] = False
 
+        # Checks if and DRGs are attachment to IPSEC VPN Tunnels or Virtual Circuits
         valid_attachments = ['VIRTUAL_CIRCUIT', 'IPSEC_TUNNEL']
-
         for attachment in self.__drg_attachments:
             if attachment.network_details is not None:
                 if attachment.network_details.type in valid_attachments:
                     dictionary[entry]['status'] = True
+        
+        # Checks if a service gateway is present and tied to a route table
+        for service_gateway in self.__service_gateway_objects:
+            if service_gateway.route_table_id is not None:
+                dictionary[entry]['status'] = True
 
+        # Checks if an LPG is correctly peered to another VCN
+        for local_peering_gateway in self.__local_peering_gateway_objects:
+            if local_peering_gateway.peering_status == "PEERED":
+                dictionary[entry]['status'] = True
 
         if not dictionary[entry]['status']:
             dictionary[entry]['failure_cause'].append('No method of bypassing the internet to access OCI was found.')

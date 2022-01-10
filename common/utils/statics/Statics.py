@@ -336,10 +336,10 @@ __rp_2_10 = {
 __rp_2_11 = {
     'entry': '2.11',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Define Your Network and Connectivity Architecture',
+    'review_point': 'Bypass the Internet When Connecting to Public Resources',    
+    'success_criteria': 'Depending on the subnet, check that correct Gateway is in place to access the internet properly',
+    'fireup_items': ['Fireup Task: 31 - Are you leveraging traffic management, web firewall and load balancing for public resources?'],
 }
 
 __rp_2_12 = {
