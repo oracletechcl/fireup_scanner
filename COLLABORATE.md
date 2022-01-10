@@ -5,6 +5,7 @@
   - [Get Started](#get-started)
   - [Branch and Collaboration](#branch-and-collaboration)
   - [How Create new review point](#how-create-new-review-point)
+  - [How to add a dependency that I use in my Review Point to the venv being used?](#how-to-add-a-dependency-that-i-use-in-my-review-point-to-the-venv-being-used)
   - [Using Parallel Executor](#using-parallel-executor)
     - [What Is It For?](#what-is-it-for)
     - [How Do I Use It?](#how-do-i-use-it)
@@ -30,6 +31,8 @@ git config --global user.name "your github user"
 git config --global user.email "your email associated to above github user"
 ```
 
+**WARNING:** Above command is mandatory before start working. Neglecting this step, will mark your commits as user *"Oracle Public Cloud User"* and will break traceability
+
 - Finish the OCI CLI configuration by setting the contents of the file `~/.oci/config` to the following:
 
 ```shell
@@ -41,9 +44,20 @@ region=re-region-1
 key_file=/foo/bar/path/api_private_key.pem
 ```
 
-- Put your associated SSH key in github under `/home/opc/.ssh/id_rsa` to be able to pull and push code to github
+**Note:**
+- The content of above file should be replaced with what applies to your user. Do not copy this as-is. 
+- The data requested is:
+  - user: Your OCI User OCID
+  - fingerprint: The fingerprint associated to the private API Key imported in your user. This is unique to you and it must be imported in the OCI CLI. 
+  - tenancy: Your OCI Tenancy OCID
+  - region: The region where your tenancy is located
+  - key_file: Absolute Path to the private API Key imported in your user. This is unique to you and it must be imported in the OCI CLI.
 
-**Note:** Above command is mandatory before start working. Neglecting this step, will mark your commits as user *"Oracle Public Cloud User"* and will break traceability
+- Put your associated private SSH key in github under `/home/opc/.ssh/id_rsa` to be able to pull and push code to github. If you don't do this, you will get a permissions error when trying to clone, push or pull code to github as depicted in below screenshot: 
+  
+![Wrong_Key_Github_SSH](./images/github_wrong_key.png)
+
+
 
 <div id="BranchAndCollaboration"></div>
 
@@ -160,7 +174,7 @@ import oci
 class Mfa(ReviewPoint):
 
     # Class Variables
-     #TODO Add here all class variables as follow
+     # Add here all class variables as follow
      # __class_variable_1  = None
      # __sdk_api_client = None
      # __data_handler = None
@@ -340,6 +354,18 @@ from classes.reviewarea.ConcreteClass import ConcreteObject
 
 ```
 
+<div id="AddCodeLibDependency"></div>
+
+## How to add a dependency that I use in my Review Point to the venv being used?
+
+Often in your code, you will need to use a library that is not available by default on the environment. This project makes heavy usage of virtual environment (venv) to make sure that all the runs are consistent and isolated from the host environment. 
+
+In order to add a dependency to your venv, follow these steps: 
+
+- Go to file [`common/bash/dependencies.sh`](./common/bash/dependencies.sh)
+- Go to part `Installing app dependencies` and add `pip3 install YOUR_DEPENDENCY_NAME`
+
+
 <div id="UsingParallelExecutor"></div>
 
 ## Using Parallel Executor
@@ -490,6 +516,8 @@ If anything I've said in this section isn't clear, please reach out to me on sla
 
 ### Common Issues
 
+**This issue is involved with using already retrieved data to get further data in parallel executor**
+
 Exception: `AttributeError: 'tuple' object has no attribute 'foo_bar_list'`
 
 Example: 
@@ -526,15 +554,68 @@ AttributeError: 'tuple' object has no attribute 'list_autonomous_databases'
 
 *Reason:*
 
-This happens because the parallel executor is called with the wrong amount of entries into the client list
+This will happen when creating a list of clients that also includes the region like so:
 
-`self.__autonomous_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)`
+```python
+regions = get_regions_data(self.__identity, self.config)
+
+mysql_clients = []
+
+for region in regions:
+  region_config = self.config
+  region_config['region'] = region.region_name
+  mysql_clients.append( (get_mysql_client(region_config, self.signer), region.region_name, reregion_key.lower()) )
+```
+
+This error is then thrown because the parallel executor is called with the list of tuples in the client list.
+
+```python
+self.__mysql_database_objects = ParallelExecutor.executor(mysql_clients, self.__compartments, ParallelExecutor.get_mysql_dbs, len(self.__compartments), ParallelExecutor.mysql_dbsystems)
+```
 
 *Solution:*
 
-- Make sure to call the parallel executor function with the correct client list as follows: 
+Make sure to call the parallel executor function with the correct client list as below. This just extracts the clients, which is all that is needed in general cases.
 
-`self.__autonomous_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)`
+```python
+self.__mysql_database_objects = ParallelExecutor.executor([x[0] for x in mysql_clients], self.__compartments, ParallelExecutor.get_mysql_dbs, len(self.__compartments), ParallelExecutor.mysql_dbsystems)
+```
+
+The reason why you would want the regions as well is when doing something like so:
+
+```python
+self.__mysql_full_objects = ParallelExecutor.executor(mysql_clients, self.__mysql_database_objects, ParallelExecutor.get_mysql_dbsystem_full_info, len(self.__mysql_database_objects), ParallelExecutor.mysql_full_data)
+```
+
+This example requires you to pass in the MySQL objects again, in order to retrieve additional data about them. This needs the region because only the client which shares the same region that the MySQL database is located in can be used, otherwise errors are thrown due to the resource not being present. 
+
+These regions are then used within a function in [ParallelExecutor.py](https://github.com/oraclecloudbricks/fireup/blob/main/common/utils/helpers/ParallelExecutor.py) like below. This function looks very similar to that in [How Do I Use It?](#how-do-i-use-it) section, but with a key difference.
+
+```python
+def get_mysql_dbsystem_full_info(item):
+  # Here the client is extracted like normal, but this time it's a tuple in the form:
+  # (database_client:DatabaseClient, region_name:string, region_key:string)
+  # as made by the loop earlier to create the list of clients.
+  database_client = item[0]
+  mysql_dbs = item[1:]
+
+  mysql_full_data = []
+
+  for mysql_db in mysql_dbs:
+    # Here the region in extracted from the OCID of the MySQL database. 
+    # Any regional resource will contain the region in the OCID as it looks like so:
+    # ocid1.mysqldbsystem.oc1.uk-london-1.aaaaaaaaetc
+    region = mysql_db.id.split('.')[3]
+    # A check is then made to see whether the region of the database client matches the MySQL database.
+    # If either the region name in index 1 (e.g. uk-london-1) or region key in index 2 (e.g. phx) is in the id, the data can be retrieved.
+    if database_client[1] in region or database_client[2] in region:
+      # Index 0 has been used here to reference the client in the passed in tuple
+      db = database_client[0].get_db_system(mysql_db.id).data
+      if db.lifecycle_state != "DELETED":
+        mysql_full_data.append(db)
+
+  return mysql_full_data
+```
 
 
 <div id="UnitTesting"></div>

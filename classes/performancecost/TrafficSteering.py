@@ -1,18 +1,21 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# CheckGateways.py
-# Description: Implementation of class CheckGateways based on abstract
+# TrafficSteering.py
+# Description: Implementation of class TrafficSteering based on abstract
 
-from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
-from common.utils.tokenizer import *
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
+from common.utils.tokenizer import *
+from common.utils.helpers.helper import *
 
 
-class CheckGateways(ReviewPoint):
+class TrafficSteering(ReviewPoint):
 
     # Class Variables
-    __drg_objects = []
+    __steering_policy_objects = []
+    __steering_policies = []
+    __vcns_in_multiple_regions = []
+    __compartments = []
     __identity = None
 
     def __init__(self,
@@ -44,31 +47,27 @@ class CheckGateways(ReviewPoint):
 
 
     def load_entity(self):
-
         regions = get_regions_data(self.__identity, self.config)
+
+        dns_clients = []
         network_clients = []
 
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
-            # Create a network client for each region
+            dns_clients.append(get_dns_client(self.config, self.signer))
             network_clients.append(get_virtual_network_client(region_config, self.signer))
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
-        debug_with_date('start')
-        self.__drg_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_drgs, len(compartments), ParallelExecutor.drgs)
-        debug_with_date('stop')
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        colours = ['red', 'green', 'yellow', 'magenta', 'cyan']
+        self.__steering_policy_objects = ParallelExecutor.executor(dns_clients, self.__compartments, ParallelExecutor.get_steering_policies, len(self.__compartments), ParallelExecutor.steering_policies)
+        self.__vcns_in_multiple_regions = ParallelExecutor.check_vcns_in_multiple_regions(network_clients, regions, self.__compartments, ParallelExecutor.vcns_in_multiple_regions)
 
-        for i, v in enumerate(self.__drg_objects):
-            debug_with_color_date(v, colours[i % len(colours)])
-
-        return
+        return self.__steering_policy_objects, self.__vcns_in_multiple_regions
 
 
     def analyze_entity(self, entry):
@@ -76,5 +75,9 @@ class CheckGateways(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-
+        if self.__vcns_in_multiple_regions and len(self.__steering_policy_objects) == 0:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append('No steering policies found but VCNs are in multiple regions')
+            dictionary[entry]['mitigations'].append('Consider using steering policies if workload is split across multiple regions.')
+            
         return dictionary
