@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v0.0.9'
+__version__ = 'v0.0.10'
 __lenght_print__ = "200"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -408,10 +408,10 @@ __rp_3_1 = {
 __rp_3_2 = {
     'entry': '3.2',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Plan the Compute Resources',
+    'review_point': 'Learn About the Available Compute Instance Shapes',    
+    'success_criteria': 'Check if default quotas are still implemented for compute shapes',
+    'fireup_items': ['Fireup Task: 42 - How do you select your compute solution?'],
 }
 
 __rp_3_3 = {
