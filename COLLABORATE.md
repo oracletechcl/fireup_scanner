@@ -42,9 +42,18 @@ region=re-region-1
 key_file=/foo/bar/path/api_private_key.pem
 ```
 
-- Put your associated SSH key in github under `/home/opc/.ssh/id_rsa` to be able to pull and push code to github
+**Note:**
+- The content of above file should be replaced with what applies to your user. Do not copy this as-is. 
+- The data requested is:
+  - user: Your OCI User OCID
+  - fingerprint: The fingerprint associated to the private API Key imported in your user. This is unique to you and it must be imported in the OCI CLI. 
+  - tenancy: Your OCI Tenancy OCID
+  - region: The region where your tenancy is located
+  - key_file: Absolute Path to the private API Key imported in your user. This is unique to you and it must be imported in the OCI CLI.
 
-**Note:** Above command is mandatory before start working. Neglecting this step, will mark your commits as user *"Oracle Public Cloud User"* and will break traceability
+- Put your associated SSH key in github under `/home/opc/.ssh/id_rsa` to be able to pull and push code to github. If you don't do this, you will get a permissions error when trying to clone, push or pull code to github.
+
+**WARNING:** Above command is mandatory before start working. Neglecting this step, will mark your commits as user *"Oracle Public Cloud User"* and will break traceability
 
 <div id="BranchAndCollaboration"></div>
 
