@@ -31,6 +31,8 @@ git config --global user.name "your github user"
 git config --global user.email "your email associated to above github user"
 ```
 
+**WARNING:** Above command is mandatory before start working. Neglecting this step, will mark your commits as user *"Oracle Public Cloud User"* and will break traceability
+
 - Finish the OCI CLI configuration by setting the contents of the file `~/.oci/config` to the following:
 
 ```shell
@@ -53,7 +55,7 @@ key_file=/foo/bar/path/api_private_key.pem
 
 - Put your associated SSH key in github under `/home/opc/.ssh/id_rsa` to be able to pull and push code to github. If you don't do this, you will get a permissions error when trying to clone, push or pull code to github.
 
-**WARNING:** Above command is mandatory before start working. Neglecting this step, will mark your commits as user *"Oracle Public Cloud User"* and will break traceability
+
 
 <div id="BranchAndCollaboration"></div>
 
