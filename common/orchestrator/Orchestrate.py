@@ -26,6 +26,7 @@ from classes.securitycompliance.Rbac import Rbac
 from classes.securitycompliance.SecureFileStorage import SecureFileStorage
 from classes.securitycompliance.DBKeys import DBKeys
 from classes.securitycompliance.ADBSystemAccess import ADBSystemAccess
+from classes.securitycompliance.NetworkSources import NetworkSources
 
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
@@ -52,43 +53,44 @@ def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+Statics.__version__)
     print_report_sub_header()
 
-    __call_1_1(config, signer, report_directory)
-    __call_1_2(config, signer, report_directory)
-    __call_1_3(config, signer, report_directory)
-    __call_1_4(config, signer, report_directory)
-    __call_1_5(config, signer, report_directory)
-    __call_1_6(config, signer, report_directory)
-    __call_1_7(config, signer, report_directory)
-    __call_1_8(config, signer, report_directory)
-    __call_1_9(config, signer, report_directory)
-    __call_1_10(config, signer, report_directory)
-    __call_1_11(config, signer, report_directory)
-    __call_1_12(config, signer, report_directory)
-    __call_1_13(config, signer, report_directory)
-    __call_1_14(config, signer, report_directory)
-    __call_1_16(config, signer, report_directory)
-    __call_1_17(config, signer, report_directory)
-    __call_1_18(config, signer, report_directory)
-    __call_1_19(config, signer, report_directory)   
-    __call_1_20(config, signer, report_directory)
+    # __call_1_1(config, signer, report_directory)
+    # __call_1_2(config, signer, report_directory)
+    # __call_1_3(config, signer, report_directory)
+    # __call_1_4(config, signer, report_directory)
+    # __call_1_5(config, signer, report_directory)
+    # __call_1_6(config, signer, report_directory)
+    # __call_1_7(config, signer, report_directory)
+    # __call_1_8(config, signer, report_directory)
+    # __call_1_9(config, signer, report_directory)
+    # __call_1_10(config, signer, report_directory)
+    # __call_1_11(config, signer, report_directory)
+    # __call_1_12(config, signer, report_directory)
+    # __call_1_13(config, signer, report_directory)
+    # __call_1_14(config, signer, report_directory)
+    # __call_1_16(config, signer, report_directory)
+    # __call_1_17(config, signer, report_directory)
+    # __call_1_18(config, signer, report_directory)
+    # __call_1_19(config, signer, report_directory)   
+    # __call_1_20(config, signer, report_directory)
+    __call_1_22(config, signer, report_directory)
     
     
-    __call_2_5(config, signer, report_directory)
-    __call_2_8(config, signer, report_directory)
-    __call_2_9(config, signer, report_directory)
-    __call_2_10(config, signer, report_directory)
-    __call_2_13(config, signer, report_directory)
-    __call_2_14(config, signer, report_directory)
-    __call_2_15(config, signer, report_directory)
-    __call_2_16(config, signer, report_directory)
-    __call_2_17(config, signer, report_directory)
+    # __call_2_5(config, signer, report_directory)
+    # __call_2_8(config, signer, report_directory)
+    # __call_2_9(config, signer, report_directory)
+    # __call_2_10(config, signer, report_directory)
+    # __call_2_13(config, signer, report_directory)
+    # __call_2_14(config, signer, report_directory)
+    # __call_2_15(config, signer, report_directory)
+    # __call_2_16(config, signer, report_directory)
+    # __call_2_17(config, signer, report_directory)
 
-    __call_3_1(config, signer, report_directory)
-    __call_3_2(config, signer, report_directory)
-    __call_3_3(config, signer, report_directory)
-    __call_3_5(config, signer, report_directory)
-    __call_3_6(config, signer, report_directory)
-    __call_3_10(config, signer, report_directory)
+    # __call_3_1(config, signer, report_directory)
+    # __call_3_2(config, signer, report_directory)
+    # __call_3_3(config, signer, report_directory)
+    # __call_3_5(config, signer, report_directory)
+    # __call_3_6(config, signer, report_directory)
+    # __call_3_10(config, signer, report_directory)
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -335,6 +337,18 @@ def __call_1_20(config, signer, report_directory):
     __instancePrincipal_dictionary = bucket.analyze_entity(Statics.__rp_1_20['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_20['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_20['fireup_items'])
+
+def __call_1_22(config, signer, report_directory):
+    networkSources = NetworkSources(
+    Statics.__rp_1_22['entry'], 
+    Statics.__rp_1_22['area'], 
+    Statics.__rp_1_22['sub_area'], 
+    Statics.__rp_1_22['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_22['entry']+"_"+Statics.__rp_1_22['area']+"_"+Statics.__rp_1_22['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = networkSources.analyze_entity(Statics.__rp_1_22['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_22['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_22['fireup_items'])
 
 
 def __call_2_5(config, signer, report_directory):    

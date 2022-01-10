@@ -200,10 +200,10 @@ __rp_1_21 = {
 __rp_1_22 = {
     'entry': '1.22',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Ensure Secure Network Access',
+    'review_point': 'Restrict Access Using Network Sources',    
+    'success_criteria': 'Specify the network source in an IAM policy to restrict access to resources. When specified in a policy, IAM validates that requests to access a resource originate from an allowed IP address. For example, you can restrict access to Object Storage buckets in your tenancy to only users that are signed in to Oracle Cloud Infrastructure through your corporate network. Or, you can allow only resources belonging to specific subnets of a specific VCN to make requests over a Service Gateway. Specify the network source in your tenancy\'s authentication settings to restrict sign in to the Console. You can set up your tenancy\'s authentication policy to allow sign in to the Console from only those IP addresses specified in your network source. Users attempting to sign in from an IP address not on the allowed list in your network source will be denied access.',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_1_23 = {
