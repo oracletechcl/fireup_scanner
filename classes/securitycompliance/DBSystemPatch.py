@@ -229,7 +229,8 @@ def get_latest_patchset_per_db_version(db_version, patch_tuple):
 def get_db_home_latest_patching_details(db_home_collection):
     db_home_patches_dict = {
         'db_home_id': '',
-        'db_home_latest_applied_patch': None
+        'db_home_latest_applied_patch': None,
+        'db_home_version': ''
     }
     
     for db_registry in db_home_collection:
@@ -241,16 +242,17 @@ def get_db_home_latest_patching_details(db_home_collection):
             patch_details = get_db_home_patch_details(db_registry['database_client'], db_registry['db_home_ocid'], db_registry['patch_id'])
             patch_applied = patch_details.description
             db_home_patches_dict['db_home_latest_applied_patch'] = patch_applied
+            db_home_patches_dict['db_home_version'] = db_registry['db_version']
 
     return db_home_patches_dict
 
 def get_db_system_latest_patching_details(db_system_collection):
     db_system_patches_dict = {
         'db_system_id': '',
-        'db_system_latest_applied_patch': None
+        'db_system_latest_applied_patch': None,
+        'db_system_version': ''
     }
-    for db_registry in db_system_collection:
-       debug_with_color_date(db_registry, "red")
+    for db_registry in db_system_collection:       
        if db_registry['patch_id'] != "":
             db_system_patches_dict['db_system_id'] = db_registry['db_system_ocid']            
             debug_with_date(db_registry['database_client'])
@@ -259,6 +261,7 @@ def get_db_system_latest_patching_details(db_system_collection):
             patch_details = get_db_system_patch_details(db_registry['database_client'], db_registry['db_system_ocid'], db_registry['patch_id'])
             patch_applied = patch_details.description
             db_system_patches_dict['db_system_latest_applied_patch'] = patch_applied
+            db_system_patches_dict['db_system_version'] = db_registry['db_version']
 
     return db_system_patches_dict
 
