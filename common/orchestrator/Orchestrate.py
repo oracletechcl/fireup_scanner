@@ -73,11 +73,13 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_17(config, signer, report_directory)
     __call_1_18(config, signer, report_directory)
     __call_1_19(config, signer, report_directory)
+    __call_1_20(config, signer, report_directory)
 
     __call_2_5(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
     __call_2_9(config, signer, report_directory)
     __call_2_10(config, signer, report_directory)
+    __call_2_11(config, signer, report_directory)
     __call_2_13(config, signer, report_directory)
     __call_2_14(config, signer, report_directory)
     __call_2_15(config, signer, report_directory)
@@ -322,19 +324,6 @@ def __call_1_18(config, signer, report_directory):
     __instancePrincipal_dictionary = secureFileStorage.analyze_entity(Statics.__rp_1_18['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_18['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_18['fireup_items'])
-
-
-def __call_1_12(config, signer, report_directory):
-    dbSystem = DBSystemControl(
-    Statics.__rp_1_12['entry'], 
-    Statics.__rp_1_12['area'], 
-    Statics.__rp_1_12['sub_area'], 
-    Statics.__rp_1_12['review_point'], 
-    True, [], [], [], [], config, signer)
-    mitigation_report_name = Statics.__rp_1_12['entry']+"_"+Statics.__rp_1_12['area']+"_"+Statics.__rp_1_12['sub_area']+"_mitigations"
-    __instancePrincipal_dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
-    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_12['entry'])
-    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_12['fireup_items'])
 
 
 def __call_1_19(config, signer, report_directory):
