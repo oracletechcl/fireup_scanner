@@ -448,6 +448,20 @@ def get_db_home_patch_history(database_client, db_home_id):
         database_client.list_db_home_patch_history_entries,
         db_home_id
     ).data
+
+def get_db_system_patch_history(database_client, db_home_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_system_patch_history_entries,
+        db_home_id
+    ).data
+
+
+def get_db_system_patch_details(database_client, db_system_id, patch_id):
+    return database_client.get_db_system_patch(db_system_id, patch_id).data
+
+def get_db_home_patch_details(database_client, db_home_id, patch_id):
+    return database_client.get_db_home_patch(db_home_id,patch_id).data
+
 def get_limits_client(config, signer):
     try:
         limits_client = oci.limits.LimitsClient(config, signer=signer)

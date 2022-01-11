@@ -12,6 +12,7 @@ from common.utils.helpers.helper import *
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.helpers.WebScrapper import *
 import pandas as pd
+from operator import itemgetter
 
 
 
@@ -20,12 +21,22 @@ class DBSystemPatch(ReviewPoint):
     # Class Variables
     __identity = None
 
-    __subnet_objects = []
-    __subnets = []
-    __oracle_database_objects = []
+    #DB Full Objects
+    __oracle_database_home_objects = []
+    __oracle_database_systems_objects = []
+
+   # Patch history 
+    __oracle_databases_homes_patches_history = []
+    __oracle_database_system_patches_history = []
+
+
+    # Usable DB Objects
     __oracle_databases_homes = []
+    __oracle_database_systems = []
+
+    __oracle_database_dbsystems = []
     __oracle_databases_patches = []
-    __oracle_databases_patches_history = []
+    
 
     __compartments = []
     __autonomous_database_objects = []
@@ -85,20 +96,21 @@ class DBSystemPatch(ReviewPoint):
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(tenancy)
         
-        self.__oracle_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_homes, len(self.__compartments), ParallelExecutor.db_system_homes)      
-        #self.__oracle_database_systems = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_systems, len(self.__compartments), ParallelExecutor.db_systems)      
-        self.__oracle_databases_patches = ParallelExecutor.executor(db_system_clients, self.__oracle_database_objects, ParallelExecutor.get_database_home_patches, len(self.__oracle_database_objects), ParallelExecutor.oracle_dbsystems_patches)      
-        self.__oracle_databases_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_objects, ParallelExecutor.get_database_homes_applied_patch_history, len(self.__oracle_database_objects), ParallelExecutor.oracle_db_home_patch_history)      
+        self.__oracle_database_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_homes, len(self.__compartments), ParallelExecutor.db_system_homes)      
+        self.__oracle_database_systems_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_systems, len(self.__compartments), ParallelExecutor.db_systems)      
+
+        self.__oracle_databases_home_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_home_objects, ParallelExecutor.get_database_homes_applied_patch_history, len(self.__oracle_database_home_objects), ParallelExecutor.oracle_db_home_patch_history)      
+        self.__oracle_database_system_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_systems_objects, ParallelExecutor.get_database_systems_applied_patch_history, len(self.__oracle_database_systems_objects), ParallelExecutor.oracle_db_system_patch_history)
 
         self.__last_patch_level = get_db_patches(self.__patches_website, self.__patches_website_id)
               
                
         #debug_with_color_date(self.__oracle_databases_patches, "green")
         # debug_with_color_date(self.__oracle_database_systems, "green")
-        # debug_with_color_date(self.__oracle_database_objects, "red")
+        
 
         # Filling local array object for Oracle Database 
-        for dbobject in self.__oracle_database_objects:            
+        for dbobject in self.__oracle_database_home_objects:            
             orcl_db_record = {
                 'compartment_id': dbobject.compartment_id,
                 'display_name': dbobject.display_name,
@@ -106,15 +118,28 @@ class DBSystemPatch(ReviewPoint):
             }
             self.__oracle_databases_homes.append(orcl_db_record)
 
+        for dbobject in self.__oracle_database_systems_objects:
+            orcl_db_record = {
+                'compartment_id': dbobject.compartment_id,
+                'display_name': dbobject.display_name,
+                'id': dbobject.id,
+            }
+            self.__oracle_database_systems.append(orcl_db_record)
+
         
 
         debug_with_color_date(self.__last_patch_level, "cyan")
-        debug_with_color_date(self.__oracle_databases_homes, "red")
-        debug_with_color_date(self.__oracle_databases_patches, "green")
-        debug_with_color_date(self.__oracle_databases_patches_history, "blue")
+        debug_with_color_date(self.__oracle_databases_home_patches_history, "magenta")
+        debug_with_color_date(self.__oracle_database_system_patches_history, "green")
+
+        dbhome_patches = get_db_home_latest_patching_details(self.__oracle_databases_home_patches_history)
+        dbsystem_patches = get_db_system_latest_patching_details(self.__oracle_database_system_patches_history)
+
+        debug_with_color_date(dbhome_patches, "red")
+        debug_with_color_date(dbsystem_patches, "green")
         
 
-
+     #TODO: Error being received is because wrong client being sent when doing the lookup
        
         
      
@@ -199,3 +224,42 @@ def get_latest_patchset_per_db_version(db_version, patch_tuple):
     for tuple in patch_tuple:
         if tuple['db_version'] == db_version:
             return tuple['db_home_patch']
+
+
+def get_db_home_latest_patching_details(db_home_collection):
+    db_home_patches_dict = {
+        'db_home_id': '',
+        'db_home_latest_applied_patch': None
+    }
+    
+    for db_registry in db_home_collection:
+        if db_registry['patch_id'] != "":
+            db_home_patches_dict['db_home_id'] = db_registry['db_home_ocid']            
+            debug_with_date(db_registry['database_client'])
+            debug_with_date(db_registry['db_home_ocid'])
+            debug_with_date(db_registry['patch_id'])
+            patch_details = get_db_home_patch_details(db_registry['database_client'], db_registry['db_home_ocid'], db_registry['patch_id'])
+            patch_applied = patch_details.description
+            db_home_patches_dict['db_home_latest_applied_patch'] = patch_applied
+
+    return db_home_patches_dict
+
+def get_db_system_latest_patching_details(db_system_collection):
+    db_system_patches_dict = {
+        'db_system_id': '',
+        'db_system_latest_applied_patch': None
+    }
+    for db_registry in db_system_collection:
+       debug_with_color_date(db_registry, "red")
+       if db_registry['patch_id'] != "":
+            db_system_patches_dict['db_system_id'] = db_registry['db_system_ocid']            
+            debug_with_date(db_registry['database_client'])
+            debug_with_date(db_registry['db_system_ocid'])
+            debug_with_date(db_registry['patch_id']) 
+            patch_details = get_db_system_patch_details(db_registry['database_client'], db_registry['db_system_ocid'], db_registry['patch_id'])
+            patch_applied = patch_details.description
+            db_system_patches_dict['db_system_latest_applied_patch'] = patch_applied
+
+    return db_system_patches_dict
+
+
