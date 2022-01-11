@@ -4,8 +4,7 @@
 # Description: Main test suite for fireup review tool
 # Dependencies: pytest
 
-from os import write
-from classes.securitycompliance.Rbac import Rbac
+from classes.reliabilityresilience.CheckGateways import CheckGateways
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug_with_date
 from common.utils.statics import Statics
@@ -20,24 +19,22 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = Rbac(Statics.__rp_1_8['entry'], 
-    Statics.__rp_1_8['area'], 
-    Statics.__rp_1_8['sub_area'], 
-    Statics.__rp_1_8['review_point'], 
+    result_dictionary = CheckGateways(Statics.__rp_2_11['entry'], 
+    Statics.__rp_2_11['area'], 
+    Statics.__rp_2_11['sub_area'], 
+    Statics.__rp_2_11['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_8['entry'])   
-    
-    for item in dictionary[Statics.__rp_1_8['entry']]['findings']:
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_11['entry'])   
+
+    for item in dictionary[Statics.__rp_2_11['entry']]['findings']:
         debug_with_date(item)
-        results_in_fault += 1    
+        results_in_fault += 1
 
-
-    assert results_in_fault == 175
-
+    assert results_in_fault == 0
 
     __test_suite_log(capsys)

@@ -64,7 +64,8 @@ key_file=/foo/bar/path/api_private_key.pem
 ## Branch and Collaboration
 
 - In order to collaborate:
-  - Open new issue on [GitHub Fireup repo](https://github.com/oraclecloudbricks/fireup/issues)
+  - Open new issue on [GitHub Fireup repo](https://github.com/oraclecloudbricks/fireup/issues). If not create a new Issue.
+  - **Note**: Asume that if no Issue is created, nobody is working on issue you have selected.
   - Branch out the respository into your own personal branch
     - Branch out depending on what kind of issue you are dealing      
       - To create a new branch:
@@ -132,6 +133,7 @@ If code contains bugs or enhancements, then PR will be returned to owner for fix
 ## How Create new review point
 
 - Locate the review point to create in sprint spreadsheet
+- Check if the review point is already being worked in an issue declared under the [following link](https://github.com/oraclecloudbricks/fireup/issues) 
 - Update the dictionary entry on static definition under [statics.py](./common/utils/statics/Statics.py)
 
     For example: 

@@ -34,6 +34,7 @@ from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
 from classes.reliabilityresilience.LBaaSHealthChecks import LBaaSHealthChecks
 from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicies
+from classes.reliabilityresilience.CheckGateways import CheckGateways
 from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
@@ -79,6 +80,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_2_8(config, signer, report_directory)
     __call_2_9(config, signer, report_directory)
     __call_2_10(config, signer, report_directory)
+    __call_2_11(config, signer, report_directory)
     __call_2_13(config, signer, report_directory)
     __call_2_14(config, signer, report_directory)
     __call_2_15(config, signer, report_directory)
@@ -401,6 +403,19 @@ def __call_2_10(config, signer, report_directory):
     __lbaasBackends_dictionary = lbaasBackends.analyze_entity(Statics.__rp_2_10['entry'])
     generate_on_screen_report(__lbaasBackends_dictionary, report_directory, Statics.__rp_2_10['entry'])
     generate_mitigation_report(__lbaasBackends_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_10['fireup_items'])
+
+
+def __call_2_11(config, signer, report_directory):    
+    checkGateways = CheckGateways(
+    Statics.__rp_2_11['entry'],
+    Statics.__rp_2_11['area'],
+    Statics.__rp_2_11['sub_area'],
+    Statics.__rp_2_11['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_11['entry']+"_"+Statics.__rp_2_11['area']+"_"+Statics.__rp_2_11['sub_area']+"_mitigations"
+    __checkGateways_dictionary = checkGateways.analyze_entity(Statics.__rp_2_11['entry'])
+    generate_on_screen_report(__checkGateways_dictionary, report_directory, Statics.__rp_2_11['entry'])
+    generate_mitigation_report(__checkGateways_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_11['fireup_items'])
 
 
 def __call_2_13(config, signer, report_directory):    
