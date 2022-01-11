@@ -25,8 +25,8 @@ class DBSystemPatch(ReviewPoint):
     __oracle_database_home_objects = []
     __oracle_database_systems_objects = []
 
-   # Patch history 
-    __oracle_databases_homes_patches_history = []
+   # Patch history     
+    __oracle_databases_home_patches_history = []
     __oracle_database_system_patches_history = []
 
     # Patched curated objects
@@ -45,10 +45,6 @@ class DBSystemPatch(ReviewPoint):
     __patches_website = "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/patchingDB.htm"
     __patches_website_id = "patchingDB_topic-Currently_Available_Patches"
     __last_patch_level = None
-
-  
-    
-
 
     def __init__(self,
                 entry:str, 
@@ -124,12 +120,6 @@ class DBSystemPatch(ReviewPoint):
         self.__dbsystem_patches = get_db_system_latest_patching_details(self.__oracle_database_system_patches_history)
 
 
-        
-
-       
-        
-     
-
     def analyze_entity(self, entry):
     
         self.load_entity()    
@@ -201,9 +191,6 @@ def get_month_and_year(patchset_date):
         return month_year[0][0:3].lower() + " " + month_year[1]
     else:
         return month_year[0].lower() + " " + month_year[1]
-
-
-
 
 
 def get_db_patches(patches_website, patches_website_id):
@@ -307,5 +294,3 @@ def get_db_system_latest_patching_details(db_system_collection):
         
        
     return db_system_applied_patches
-
-
