@@ -485,3 +485,19 @@ def get_oke_clusters(container_engine_client, compartment_id):
         compartment_id
     ).data
 
+def get_network_sources(identity_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        identity_client.list_network_sources,
+        compartment_id
+    ).data
+
+def get_authentication_policy(identity_client, tenancy_id):
+    return identity_client.get_authentication_policy(tenancy_id).data
+    
+
+    
+       
+
+
+
+
