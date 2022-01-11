@@ -399,10 +399,10 @@ __rp_2_17 = {
 __rp_3_1 = {
     'entry': '3.1',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Performance Efficiency and Cost Optimization Practices',
+    'review_point': 'Understand and Optimize Your Spending',    
+    'success_criteria': 'Introduce Quotas on Compartments',
+    'fireup_items': ['Fireup Task: 51 - How do you monitor usage and cost?'],
 }
 
 __rp_3_2 = {
@@ -435,19 +435,19 @@ __rp_3_4 = {
 __rp_3_5 = {
     'entry': '3.5',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Tune and Monitor Network',
+    'review_point': 'Use Traffic Steering When Serving a Global Audience',    
+    'success_criteria': 'If workload is in more than one region, check if traffic steering policy is in place',
+    'fireup_items': ['Fireup Task: 33 - Do you anticipate failure and have a recovery procedure in place'],
 }
 
 __rp_3_6 = {
     'entry': '3.6',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Implement a Compartment Structure That Fits Your Organization',    
+    'success_criteria': 'Check if there is compartments beyond root, holstering the workload',
+    'fireup_items': ['Fireup Task: 51 - How do you monitor usage and cost?'],
 }
 
 __rp_3_7 = {
@@ -480,10 +480,10 @@ __rp_3_9 = {
 __rp_3_10 = {
     'entry': '3.10',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Enable Block Volume Performance Auto Tuning',    
+    'success_criteria': 'If block storage is in place, check that performance auto-tuning is implemented',
+    'fireup_items': ['Fireup Task: 55 - Do you have a process to regularly terminate or stop unused resources & do you encourage employees to stop unused resources?'],
 }
 
 __rp_3_11 = {
