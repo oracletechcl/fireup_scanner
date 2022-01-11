@@ -17,9 +17,18 @@ compartments = None
 availability_domains = []
 
 security_lists = []
+
+
 steering_policies = []
 vcns_in_multiple_regions = []
 oke_clusters = []
+
+drgs = []
+drg_attachment_ids = []
+drg_attachments = []
+
+service_gateways = []
+local_peering_gateways = []
 
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
@@ -778,3 +787,84 @@ def get_oke_cluster(item):
                 oke_clusters.append(oke_cluster)
 
     return oke_clusters 
+
+
+def get_drgs(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    drgs = []
+
+    for compartment in compartments:
+        drg_data = get_drg_data(network_client, compartment.id)
+        for drg in drg_data:
+            if "TERMINATED" not in drg.lifecycle_state:
+                drgs.append(drg)
+
+    return drgs
+
+
+def get_drg_attachment_ids(item):
+    network_client = item[0]
+    drgs = item[1:]
+
+    drg_attachment_ids = []
+
+    for drg in drgs:
+        region = drg.id.split('.')[3]
+        if network_client[1] in region or network_client[2] in region:
+            drg_attachment_ids_data = network_client[0].get_all_drg_attachments(drg.id).data
+            for drg_attachment_id in drg_attachment_ids_data:
+                drg_attachment_ids.append(drg_attachment_id)
+
+    return drg_attachment_ids
+
+
+def get_drg_attachments(item):
+    network_client = item[0]
+    drg_attachment_ids = item[1:]
+
+    drg_attachments = []
+
+    for drg_attachment_id in drg_attachment_ids:
+        region = drg_attachment_id.id.split('.')[3]
+        if network_client[1] in region or network_client[2] in region:
+            # Try + except necessary here as API seems to sometimes return
+            # DRG ids not within the tenancy, throwing an error.
+            try:
+                drg_attachment_data = network_client[0].get_drg_attachment(drg_attachment_id.id).data
+                drg_attachments.append(drg_attachment_data)
+            except:
+                continue
+            
+    return drg_attachments
+
+
+def get_service_gateways(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    service_gateways = []
+
+    for compartment in compartments:
+        service_gateways_data = get_service_gateway_data(network_client, compartment.id)
+        for service_gateway in service_gateways_data:
+            if "TERMINATED" not in service_gateway.lifecycle_state:
+                service_gateways.append(service_gateway)
+
+    return service_gateways
+
+
+def get_local_peering_gateways(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    local_peering_gateways = []
+
+    for compartment in compartments:
+        local_peering_gateways_data = get_local_peering_gateway_data(network_client, compartment.id)
+        for local_peering_gateway in local_peering_gateways_data:
+            if "TERMINATED" not in local_peering_gateway.lifecycle_state:
+                local_peering_gateways.append(local_peering_gateway)
+
+    return local_peering_gateways

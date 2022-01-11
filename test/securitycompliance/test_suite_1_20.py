@@ -5,7 +5,7 @@
 # Dependencies: pytest
 
 from os import write
-from classes.securitycompliance.Rbac import Rbac
+from classes.securitycompliance.BucketEncryption import BucketEncryption
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug_with_date
 from common.utils.statics import Statics
@@ -20,24 +20,22 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = Rbac(Statics.__rp_1_8['entry'], 
-    Statics.__rp_1_8['area'], 
-    Statics.__rp_1_8['sub_area'], 
-    Statics.__rp_1_8['review_point'], 
+    result_dictionary = BucketEncryption(Statics.__rp_1_20['entry'], 
+    Statics.__rp_1_20['area'], 
+    Statics.__rp_1_20['sub_area'], 
+    Statics.__rp_1_20['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_8['entry'])   
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_20['entry'])   
     
-    for item in dictionary[Statics.__rp_1_8['entry']]['findings']:
+    for item in dictionary[Statics.__rp_1_20['entry']]['findings']:
         debug_with_date(item)
         results_in_fault += 1    
 
-
-    assert results_in_fault == 175
-
+    assert results_in_fault == 102
 
     __test_suite_log(capsys)

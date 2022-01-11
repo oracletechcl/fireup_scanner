@@ -31,6 +31,8 @@ git config --global user.name "your github user"
 git config --global user.email "your email associated to above github user"
 ```
 
+**WARNING:** Above command is mandatory before start working. Neglecting this step, will mark your commits as user *"Oracle Public Cloud User"* and will break traceability
+
 - Finish the OCI CLI configuration by setting the contents of the file `~/.oci/config` to the following:
 
 ```shell
@@ -42,16 +44,28 @@ region=re-region-1
 key_file=/foo/bar/path/api_private_key.pem
 ```
 
-- Put your associated SSH key in github under `/home/opc/.ssh/id_rsa` to be able to pull and push code to github
+**Note:**
+- The content of above file should be replaced with what applies to your user. Do not copy this as-is. 
+- The data requested is:
+  - user: Your OCI User OCID
+  - fingerprint: The fingerprint associated to the private API Key imported in your user. This is unique to you and it must be imported in the OCI CLI. 
+  - tenancy: Your OCI Tenancy OCID
+  - region: The region where your tenancy is located
+  - key_file: Absolute Path to the private API Key imported in your user. This is unique to you and it must be imported in the OCI CLI.
 
-**Note:** Above command is mandatory before start working. Neglecting this step, will mark your commits as user *"Oracle Public Cloud User"* and will break traceability
+- Put your associated private SSH key in github under `/home/opc/.ssh/id_rsa` to be able to pull and push code to github. If you don't do this, you will get a permissions error when trying to clone, push or pull code to github as depicted in below screenshot: 
+  
+![Wrong_Key_Github_SSH](./images/github_wrong_key.png)
+
+
 
 <div id="BranchAndCollaboration"></div>
 
 ## Branch and Collaboration
 
 - In order to collaborate:
-  - Open new issue on [GitHub Fireup repo](https://github.com/oraclecloudbricks/fireup/issues)
+  - Open new issue on [GitHub Fireup repo](https://github.com/oraclecloudbricks/fireup/issues). If not create a new Issue.
+  - **Note**: Asume that if no Issue is created, nobody is working on issue you have selected.
   - Branch out the respository into your own personal branch
     - Branch out depending on what kind of issue you are dealing      
       - To create a new branch:
@@ -119,6 +133,7 @@ If code contains bugs or enhancements, then PR will be returned to owner for fix
 ## How Create new review point
 
 - Locate the review point to create in sprint spreadsheet
+- Check if the review point is already being worked in an issue declared under the [following link](https://github.com/oraclecloudbricks/fireup/issues) 
 - Update the dictionary entry on static definition under [statics.py](./common/utils/statics/Statics.py)
 
     For example: 
