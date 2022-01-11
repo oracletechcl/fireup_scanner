@@ -42,6 +42,7 @@ from classes.performancecost.ComputeLimits import ComputeLimits
 from classes.performancecost.TrafficSteering import TrafficSteering
 from classes.performancecost.CompartmentWorkload import CompartmentWorkload
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
+from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -83,6 +84,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_3_1(config, signer, report_directory)
     __call_3_2(config, signer, report_directory)
     __call_3_3(config, signer, report_directory)
+    __call_3_4(config, signer, report_directory)
     __call_3_5(config, signer, report_directory)
     __call_3_6(config, signer, report_directory)
     __call_3_10(config, signer, report_directory)
@@ -476,6 +478,18 @@ def __call_3_3(config, signer, report_directory):
     __lbaasEncryption_dictionary = lbaasEncryption.analyze_entity(Statics.__rp_3_3['entry'])
     generate_on_screen_report(__lbaasEncryption_dictionary, report_directory, Statics.__rp_3_3['entry'])
     generate_mitigation_report(__lbaasEncryption_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_3['fireup_items'])
+
+def __call_3_4(config, signer, report_directory):
+    oneRegionPerVCN = OneRegionPerVCN(
+    Statics.__rp_3_4['entry'],
+    Statics.__rp_3_4['area'],
+    Statics.__rp_3_4['sub_area'],
+    Statics.__rp_3_4['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_4['entry']+"_"+Statics.__rp_3_4['area']+"_"+Statics.__rp_3_4['sub_area']+"_mitigations"
+    __lbaasEncryption_dictionary = oneRegionPerVCN.analyze_entity(Statics.__rp_3_4['entry'])
+    generate_on_screen_report(__lbaasEncryption_dictionary, report_directory, Statics.__rp_3_4['entry'])
+    generate_mitigation_report(__lbaasEncryption_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_4['fireup_items'])
 
 
 def __call_3_5(config, signer, report_directory):    

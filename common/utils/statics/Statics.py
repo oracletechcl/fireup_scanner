@@ -426,10 +426,10 @@ __rp_3_3 = {
 __rp_3_4 = {
     'entry': '3.4',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Tune and Monitor Network',
+    'review_point': 'Choose a Region Location Based On Networking Requirements',
+    'success_criteria': 'Check if VCN is implemented in more than one region',
+    'fireup_items': ['Fireup Task: 45: Are you using the right regions and AD selections for high availability & good performance?'],
 }
 
 __rp_3_5 = {
