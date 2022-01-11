@@ -465,19 +465,22 @@ def get_max_security_zone_data(identity_client, compartment_id):
 def get_db_home_patches(database_client, db_home_id):
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_home_patches,
-        db_home_id
+        db_home_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
 def get_db_home_patch_history(database_client, db_home_id):
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_home_patch_history_entries,
-        db_home_id
+        db_home_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
 def get_db_system_patch_history(database_client, db_home_id):
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_system_patch_history_entries,
-        db_home_id
+        db_home_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
 
