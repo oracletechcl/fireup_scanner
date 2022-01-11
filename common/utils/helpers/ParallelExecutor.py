@@ -694,14 +694,22 @@ def get_database_homes_applied_patch_history(item):
             if db_home_ocids.lifecycle_state == "AVAILABLE":         
                 patches_data = get_db_home_patch_history(database_client[0], db_home_ocids.id)                               
                 if len(patches_data) > 0:
-                    patch_ocid = patches_data[0].patch_id            
+                    patch_ocid = patches_data[0].patch_id                
                     
-                db_home_patch_history_dict = {
-                    "db_home_ocid": db_home_ocids.id,
-                    'db_version': db_home_ocids.db_version,
-                    "patch_id" : patch_ocid,
-                    "database_client": database_client[0]
-                }   
+                    db_home_patch_history_dict = {
+                        "db_home_ocid": db_home_ocids.id,
+                        'db_version': db_home_ocids.db_version,
+                        "patch_id" : patch_ocid,
+                        "database_client": database_client[0]
+                    }
+                else:
+                    db_home_patch_history_dict = {
+                        "db_home_ocid": db_home_ocids.id,
+                        'db_version': db_home_ocids.db_version,
+                        "patch_id" : None,
+                        "database_client": None
+                    }
+
                 oracle_db_home_patch_history.append(db_home_patch_history_dict)
 
 
@@ -722,14 +730,21 @@ def get_database_systems_applied_patch_history(item):
                 patches_data = get_db_system_patch_history(database_client[0], db_system_ocids.id)
                            
                 if len(patches_data) > 0:
-                    patch_ocid = patches_data[0].patch_id  
+                    patch_ocid = patches_data[0].patch_id
 
-                db_system_patch_history_dict = {
-                    "db_system_ocid": db_system_ocids.id,
-                    "db_version": db_system_ocids.version,
-                    "patch_id" : patch_ocid,
-                    "database_client": database_client[0]
-                }                           
+                    db_system_patch_history_dict = {
+                        "db_system_ocid": db_system_ocids.id,
+                        "db_version": db_system_ocids.version,
+                        "patch_id" : patch_ocid,
+                        "database_client": database_client[0]
+                    }
+                else:
+                    db_system_patch_history_dict = {
+                        "db_system_ocid": db_system_ocids.id,
+                        "db_version": db_system_ocids.version,
+                        "patch_id" : None,
+                        "database_client": None
+                    }                           
 
                 oracle_db_system_patch_history.append(db_system_patch_history_dict)
 
