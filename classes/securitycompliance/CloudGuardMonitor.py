@@ -13,9 +13,10 @@ from common.utils.helpers.helper import *
 class CloudGuardMonitor(ReviewPoint):
 
     # Class Variables    
-    __compartments = []
-    __policies = []
+    # __compartments = []
+    __record = None # This record captures both tenancy id and cloud guard enable status
     __identity = None
+    __cloud_guard_client = None
     __tenancy = None
 
 
@@ -47,51 +48,30 @@ class CloudGuardMonitor(ReviewPoint):
        self.signer = signer
        self.__identity = get_identity_client(self.config, self.signer)
        self.__tenancy = get_tenancy_data(self.__identity, self.config)
+       self.__cloud_guard_client = oci.cloud_guard.CloudGuardClient(self.config)
 
 
     def load_entity(self):   
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)        
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)
-
-        for policy in policy_data:  
-            record = {
-                "compartment_id": policy.compartment_id,
-                "defined_tags": policy.defined_tags,
-                "description": policy.description,
-                "freeform_tags": policy.freeform_tags,
-                "id": policy.id,
-                "lifecycle_state": policy.lifecycle_state,
-                "name": policy.name,
-                "statements": policy.statements,
-                "time_created": policy.time_created,
-                "version_date": policy.version_date
+        cloud_guard_data = self.__cloud_guard_client.get_configuration(self.__tenancy.id).data
+        record = {
+            "tenancy_id" : self.__tenancy.id,
+            "tenancy_name" : self.__tenancy.name,
+            "tenancy_description" : self.__tenancy.description,
+            "tenancy_region_key" : self.__tenancy.home_region_key,
+            "cloud_guard_enable_stautus" : cloud_guard_data.status
             }
-            self.__policies.append(record)
-
+        self.__record = record
     
-       
-        
 
     def analyze_entity(self, entry):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        counter = 0
-        good_policy_list = []
-        # check if the policy contains in its statement the word manage and the word family if it does print ok
-
-        # for policy in self.__policies:
-        #     for statement in policy['statements']:
-        #         if "Administrators".upper() not in statement.upper(): # Drop the word Administrator from statement
-        #             if "dynamic-group".upper() not in statement.upper(): # Filter out all dynamic-group based policies
-        #                 if "service".upper() not in statement.upper(): # Filter out service policies
-        #                     if "group".upper() and "manage".upper() and "family".upper() in statement.upper(): # Check for segregated policies for manage, assigned to specific groups
-        #                         if "functions-family".upper() not in statement.upper(): # Filter out functions-family policies as this is mandatory policy in case of functions usage                                    
-        #                             counter+=1                 # count the value of a compliant policy
-        #                             good_policy_list.append(policy['statements'])
         
-        # if counter < 10: #criteria today is above 10 policies, will regard an IAM schema applied. 
-        #             dictionary[entry]['status'] = False
-        #             dictionary[entry]['findings'].append(policy)
-        #             dictionary[entry]['failure_cause'].append("Not enough policies found that are compliant with granularity. A minimum of 10 is considered acceptable")                
-        #             dictionary[entry]['mitigations'].append('Increase the amount of granular policies containing \'manage family\' as verbs. Sample: '+str(good_policy_list))                                  
+        # Check if Cloud Guard is enable
+        if self.__record['cloud_guard_enable_stautus'] != 'ENABLED':
+            dictionary[entry]['status'] = False
+            dictionary[entry]['findings'].append(self.__record) 
+            dictionary[entry]['failure_cause'].append("Root level of the tenancy does not have Cloud Guard enabled")
+            dictionary[entry]['mitigations'].append('Enable Cloud Guard on tenancy: ' + self.__record['tenancy_name'])
+                                  
         return dictionary
