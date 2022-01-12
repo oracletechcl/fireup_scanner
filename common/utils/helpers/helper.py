@@ -191,7 +191,7 @@ def get_home_region(identity_client, config):
             return region
 
 
-def get_compartments_data(identity_client, compartment_id): 
+def get_compartments_data(identity_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_compartments,
         compartment_id,
@@ -217,7 +217,7 @@ def get_user_data(identity_client, compartment_id):
     ).data
 
 
-def get_user_api_key_data(identity_client, user_id): 
+def get_user_api_key_data(identity_client, user_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_api_keys,
         user_id,
@@ -225,7 +225,7 @@ def get_user_api_key_data(identity_client, user_id):
     ).data
 
 
-def get_auth_token_data(identity_client, user_id): 
+def get_auth_token_data(identity_client, user_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_auth_tokens,
         user_id,
@@ -274,7 +274,7 @@ def get_load_balancer_data(load_balancer_client, compartment_id):
     ).data
 
 
-def get_network_load_balancer_data(network_load_balancer_client, compartment_id): 
+def get_network_load_balancer_data(network_load_balancer_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_load_balancer_client.list_network_load_balancers,
         compartment_id,
@@ -282,7 +282,7 @@ def get_network_load_balancer_data(network_load_balancer_client, compartment_id)
     ).data
 
 
-def get_dynamic_group_data(identity_client, compartment_id): 
+def get_dynamic_group_data(identity_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_dynamic_groups,
         compartment_id,
@@ -314,7 +314,7 @@ def get_block_volume_data(block_storage_client, compartment_id):
     ).data
 
 
-def get_block_volume_replica_data(block_storage_client, availability_domain, compartment_id): 
+def get_block_volume_replica_data(block_storage_client, availability_domain, compartment_id):
     return oci.pagination.list_call_get_all_results(
         block_storage_client.list_block_volume_replicas,
         availability_domain,
@@ -323,7 +323,7 @@ def get_block_volume_replica_data(block_storage_client, availability_domain, com
     ).data
 
 
-def get_boot_volume_data(block_storage_client, availability_domain, compartment_id): 
+def get_boot_volume_data(block_storage_client, availability_domain, compartment_id):
     return oci.pagination.list_call_get_all_results(
         block_storage_client.list_boot_volumes,
         availability_domain,
@@ -332,7 +332,7 @@ def get_boot_volume_data(block_storage_client, availability_domain, compartment_
     ).data
 
 
-def get_boot_volume_replica_data(block_storage_client, availability_domain, compartment_id): 
+def get_boot_volume_replica_data(block_storage_client, availability_domain, compartment_id):
     return oci.pagination.list_call_get_all_results(
         block_storage_client.list_boot_volume_replicas,
         availability_domain,
@@ -351,6 +351,7 @@ def get_bucket_data(object_storage_client, namespace, compartment_id):
 
 
 def get_file_system_data(file_storage_client, compartment_id, availability_domain):
+    
     return oci.pagination.list_call_get_all_results(
         file_storage_client.list_file_systems,
         compartment_id,
@@ -369,6 +370,7 @@ def get_mount_target_data(file_storage_client, compartment_id, availability_doma
 
 
 def get_db_system_data(database_client, compartment_id):
+    
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_systems,
         compartment_id,
@@ -385,6 +387,7 @@ def get_db_system_home_data(database_client, compartment_id):
 
 
 def get_auto_db_data(database_client, compartment_id):
+    
     return oci.pagination.list_call_get_all_results(
         database_client.list_autonomous_databases,
         compartment_id,
@@ -416,7 +419,7 @@ def get_quotas_client(config, signer):
     return quotas_client
 
 
-def list_quota_data(quotas_client, tenancy_id): 
+def list_quota_data(quotas_client, tenancy_id):
         return oci.pagination.list_call_get_all_results(
         quotas_client.list_quotas,
         tenancy_id,
@@ -522,7 +525,7 @@ def get_limits_client(config, signer):
     return limits_client
 
 
-def list_limit_value_data(limits_client, compartment_id, service_name): 
+def list_limit_value_data(limits_client, compartment_id, service_name):
     return oci.pagination.list_call_get_all_results(
         limits_client.list_limit_values,
         compartment_id,
@@ -531,7 +534,7 @@ def list_limit_value_data(limits_client, compartment_id, service_name):
     ).data
 
 
-def list_limit_definition_data(limits_client, compartment_id, service_name): 
+def list_limit_definition_data(limits_client, compartment_id, service_name):
     return oci.pagination.list_call_get_all_results(
         limits_client.list_limit_definitions,
         compartment_id=compartment_id,
@@ -578,3 +581,4 @@ def get_virtual_circuit_data(network_client, compartment_id):
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+

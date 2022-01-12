@@ -675,9 +675,9 @@ def get_database_home_patches(item):
     for db_ocids in database_objects:
         region = db_ocids.id.split('.')[3]
         if database_client[1] in region or database_client[2] in region:
-            if db_ocids.lifecycle_state == "AVAILABLE":                               
+            if db_ocids.lifecycle_state == "AVAILABLE":
                 patches_data = get_db_home_patches(database_client[0], db_ocids.id)
-                for patch in patches_data:  
+                for patch in patches_data:
                     oracle_dbsystems_applicable_patches.append(patch)
 
     return oracle_dbsystems_applicable_patches
@@ -690,14 +690,14 @@ def get_database_homes_applied_patch_history(item):
 
     for db_home_ocids in database_home_objects:
         patch_ocid = ""
-        
+
         region = db_home_ocids.id.split('.')[3]
         if database_client[1] in region or database_client[2] in region:
-            if db_home_ocids.lifecycle_state == "AVAILABLE":         
-                patches_data = get_db_home_patch_history(database_client[0], db_home_ocids.id)                               
+            if db_home_ocids.lifecycle_state == "AVAILABLE":
+                patches_data = get_db_home_patch_history(database_client[0], db_home_ocids.id)
                 if len(patches_data) > 0:
-                    patch_ocid = patches_data[0].patch_id                
-                    
+                    patch_ocid = patches_data[0].patch_id
+
                     db_home_patch_history_dict = {
                         "db_home_ocid": db_home_ocids.id,
                         'db_version': db_home_ocids.db_version,
@@ -723,14 +723,14 @@ def get_database_systems_applied_patch_history(item):
     database_system_objects = item[1:]
 
     oracle_db_system_patch_history = []
-   
+
     for db_system_ocids in database_system_objects:
         patch_ocid = ""
         region = db_system_ocids.id.split('.')[3]
         if database_client[1] in region or database_client[2] in region:
-            if db_system_ocids.lifecycle_state == "AVAILABLE":       
+            if db_system_ocids.lifecycle_state == "AVAILABLE":
                 patches_data = get_db_system_patch_history(database_client[0], db_system_ocids.id)
-                           
+
                 if len(patches_data) > 0:
                     patch_ocid = patches_data[0].patch_id
 
@@ -746,7 +746,7 @@ def get_database_systems_applied_patch_history(item):
                         "db_version": db_system_ocids.version,
                         "patch_id" : None,
                         "database_client": None
-                    }                           
+                    }
 
                 oracle_db_system_patch_history.append(db_system_patch_history_dict)
 
@@ -853,7 +853,7 @@ def get_drg_attachments(item):
                 drg_attachments.append(drg_attachment_data)
             except:
                 continue
-            
+
     return drg_attachments
 
 
