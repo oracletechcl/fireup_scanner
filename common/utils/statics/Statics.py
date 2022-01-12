@@ -300,10 +300,10 @@ __rp_2_6 = {
 __rp_2_7 = {
     'entry': '2.7',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Define Your Network and Connectivity Architecture',
+    'review_point': 'Use Redundant Connections for Your On-Premises Environments and Private Resources',    
+    'success_criteria': 'If VPN or fast connect exists, check for redundance (More than one)',
+    'fireup_items': ['Fireup Task: 33 - Do you anticipate failure and have a recovery procedure in place'],
 }
 
 __rp_2_8 = {
