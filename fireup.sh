@@ -5,6 +5,22 @@
 #
 # Purpose: Main module which starts the application
 
+# Check if Python3 is installed. If not, install it
+if ! [ -x "$(command -v python3)" ]; then
+  echo 'Error: Python3 is not installed.' >&2
+  echo 'Installing Python3...'
+  
+  #Check if this is a redhat based system. if So install python3 from yum else check if this is a debian based system. if so install python3 from apt
+    if [ -f /etc/redhat-release ]; then
+        sudo yum install python3
+    elif [ -f /etc/debian_version ]; then
+        sudo apt-get install python3
+    else
+        echo 'Error: This is not a supported system.' >&2
+        exit 1
+    fi  
+fi
+
 if [ ! -d "venv" ] 
 then
     echo "venv not present. Creating" 

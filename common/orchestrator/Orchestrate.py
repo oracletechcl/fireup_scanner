@@ -20,18 +20,22 @@ from classes.securitycompliance.DBSystemControl import DBSystemControl
 from classes.securitycompliance.DBPermissions import DBPermissions
 from classes.securitycompliance.BucketPermissions import BucketPermissions
 from classes.securitycompliance.StoragePermissions import StoragePermissions
+from classes.securitycompliance.BucketEncryption import BucketEncryption
 from classes.securitycompliance.MaxSecurityZone import MaxSecurityZone
 from classes.securitycompliance.Rbac import Rbac
 from classes.securitycompliance.SecureFileStorage import SecureFileStorage
 from classes.securitycompliance.DBKeys import DBKeys
+from classes.securitycompliance.DBSystemPatch import DBSystemPatch
 from classes.securitycompliance.ADBSystemAccess import ADBSystemAccess
 
+from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
+from classes.reliabilityresilience.RedundantConnections import RedundantConnections
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
-from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
 from classes.reliabilityresilience.LBaaSHealthChecks import LBaaSHealthChecks
 from classes.reliabilityresilience.CheckBackupPolicies import CheckBackupPolicies
+from classes.reliabilityresilience.CheckGateways import CheckGateways
 from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
@@ -52,29 +56,33 @@ def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+Statics.__version__)
     print_report_sub_header()
 
-    __call_1_1(config, signer, report_directory)
-    __call_1_2(config, signer, report_directory)
-    __call_1_3(config, signer, report_directory)
-    __call_1_4(config, signer, report_directory)
-    __call_1_5(config, signer, report_directory)
-    __call_1_6(config, signer, report_directory)
-    __call_1_7(config, signer, report_directory)
-    __call_1_8(config, signer, report_directory)
-    __call_1_9(config, signer, report_directory)
-    __call_1_10(config, signer, report_directory)
-    __call_1_11(config, signer, report_directory)
-    __call_1_12(config, signer, report_directory)
-    __call_1_13(config, signer, report_directory)
-    __call_1_14(config, signer, report_directory)
-    __call_1_16(config, signer, report_directory)
-    __call_1_17(config, signer, report_directory)
-    __call_1_18(config, signer, report_directory)
-    __call_1_19(config, signer, report_directory)
+    # __call_1_1(config, signer, report_directory)
+    # __call_1_2(config, signer, report_directory)
+    # __call_1_3(config, signer, report_directory)
+    # __call_1_4(config, signer, report_directory)
+    # __call_1_5(config, signer, report_directory)
+    # __call_1_6(config, signer, report_directory)
+    # __call_1_7(config, signer, report_directory)
+    # __call_1_8(config, signer, report_directory)
+    # __call_1_9(config, signer, report_directory)
+    # __call_1_10(config, signer, report_directory)
+    # __call_1_11(config, signer, report_directory)
+    # __call_1_12(config, signer, report_directory)
+    # __call_1_13(config, signer, report_directory)
+    # __call_1_14(config, signer, report_directory)
+    # __call_1_15(config, signer, report_directory)
+    # __call_1_16(config, signer, report_directory)
+    # __call_1_17(config, signer, report_directory)
+    # __call_1_18(config, signer, report_directory)
+    # __call_1_19(config, signer, report_directory)
+    # __call_1_20(config, signer, report_directory)
 
     __call_2_5(config, signer, report_directory)
+    __call_2_7(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
     __call_2_9(config, signer, report_directory)
     __call_2_10(config, signer, report_directory)
+    __call_2_11(config, signer, report_directory)
     __call_2_13(config, signer, report_directory)
     __call_2_14(config, signer, report_directory)
     __call_2_15(config, signer, report_directory)
@@ -232,6 +240,17 @@ def __call_1_11(config, signer, report_directory):
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_11['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_11['fireup_items'])
 
+def __call_1_12(config, signer, report_directory):
+    dbSystem = DBSystemControl(
+    Statics.__rp_1_12['entry'], 
+    Statics.__rp_1_12['area'], 
+    Statics.__rp_1_12['sub_area'], 
+    Statics.__rp_1_12['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_12['entry']+"_"+Statics.__rp_1_12['area']+"_"+Statics.__rp_1_12['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_12['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_12['fireup_items'])
 
 def __call_1_13(config, signer, report_directory):
     dbPerms = DBPermissions(
@@ -257,6 +276,18 @@ def __call_1_14(config, signer, report_directory):
     __instancePrincipal_dictionary = dbKeys.analyze_entity(Statics.__rp_1_14['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_14['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_14['fireup_items'])
+
+def __call_1_15(config, signer, report_directory):
+    dbSystemPatch = DBSystemPatch(
+    Statics.__rp_1_15['entry'], 
+    Statics.__rp_1_15['area'], 
+    Statics.__rp_1_15['sub_area'], 
+    Statics.__rp_1_15['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_15['entry']+"_"+Statics.__rp_1_15['area']+"_"+Statics.__rp_1_15['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = dbSystemPatch.analyze_entity(Statics.__rp_1_15['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_15['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_15['fireup_items'])
 
 
 def __call_1_16(config, signer, report_directory):
@@ -285,6 +316,7 @@ def __call_1_17(config, signer, report_directory):
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_17['fireup_items'])
 
 
+
 def __call_1_18(config, signer, report_directory):
     secureFileStorage = SecureFileStorage(
     Statics.__rp_1_18['entry'],
@@ -296,19 +328,6 @@ def __call_1_18(config, signer, report_directory):
     __instancePrincipal_dictionary = secureFileStorage.analyze_entity(Statics.__rp_1_18['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_18['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_18['fireup_items'])
-
-
-def __call_1_12(config, signer, report_directory):
-    dbSystem = DBSystemControl(
-    Statics.__rp_1_12['entry'], 
-    Statics.__rp_1_12['area'], 
-    Statics.__rp_1_12['sub_area'], 
-    Statics.__rp_1_12['review_point'], 
-    True, [], [], [], [], config, signer)
-    mitigation_report_name = Statics.__rp_1_12['entry']+"_"+Statics.__rp_1_12['area']+"_"+Statics.__rp_1_12['sub_area']+"_mitigations"
-    __instancePrincipal_dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
-    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_12['entry'])
-    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_12['fireup_items'])
 
 
 def __call_1_19(config, signer, report_directory):
@@ -323,6 +342,18 @@ def __call_1_19(config, signer, report_directory):
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_19['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_19['fireup_items'])
 
+def __call_1_20(config, signer, report_directory):
+    bucket = BucketEncryption(
+    Statics.__rp_1_20['entry'], 
+    Statics.__rp_1_20['area'], 
+    Statics.__rp_1_20['sub_area'], 
+    Statics.__rp_1_20['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_20['entry']+"_"+Statics.__rp_1_20['area']+"_"+Statics.__rp_1_20['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = bucket.analyze_entity(Statics.__rp_1_20['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_20['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_20['fireup_items'])
+
 
 def __call_2_5(config, signer, report_directory):    
     compQuotas = CompartmentQuotas(
@@ -335,6 +366,19 @@ def __call_2_5(config, signer, report_directory):
     __compQuotas_dictionary = compQuotas.analyze_entity(Statics.__rp_2_5['entry'])
     generate_on_screen_report(__compQuotas_dictionary, report_directory, Statics.__rp_2_5['entry'])
     generate_mitigation_report(__compQuotas_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_5['fireup_items'])
+
+
+def __call_2_7(config, signer, report_directory):    
+    redundantConnections = RedundantConnections(
+    Statics.__rp_2_7['entry'],
+    Statics.__rp_2_7['area'],
+    Statics.__rp_2_7['sub_area'],
+    Statics.__rp_2_7['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_7['entry']+"_"+Statics.__rp_2_7['area']+"_"+Statics.__rp_2_7['sub_area']+"_mitigations"
+    __redundantConnections_dictionary = redundantConnections.analyze_entity(Statics.__rp_2_7['entry'])
+    generate_on_screen_report(__redundantConnections_dictionary, report_directory, Statics.__rp_2_7['entry'])
+    generate_mitigation_report(__redundantConnections_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_7['fireup_items'])
 
 
 def __call_2_8(config, signer, report_directory):    
@@ -374,6 +418,19 @@ def __call_2_10(config, signer, report_directory):
     __lbaasBackends_dictionary = lbaasBackends.analyze_entity(Statics.__rp_2_10['entry'])
     generate_on_screen_report(__lbaasBackends_dictionary, report_directory, Statics.__rp_2_10['entry'])
     generate_mitigation_report(__lbaasBackends_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_10['fireup_items'])
+
+
+def __call_2_11(config, signer, report_directory):    
+    checkGateways = CheckGateways(
+    Statics.__rp_2_11['entry'],
+    Statics.__rp_2_11['area'],
+    Statics.__rp_2_11['sub_area'],
+    Statics.__rp_2_11['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_11['entry']+"_"+Statics.__rp_2_11['area']+"_"+Statics.__rp_2_11['sub_area']+"_mitigations"
+    __checkGateways_dictionary = checkGateways.analyze_entity(Statics.__rp_2_11['entry'])
+    generate_on_screen_report(__checkGateways_dictionary, report_directory, Statics.__rp_2_11['entry'])
+    generate_mitigation_report(__checkGateways_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_11['fireup_items'])
 
 
 def __call_2_13(config, signer, report_directory):    
