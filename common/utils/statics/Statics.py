@@ -185,7 +185,7 @@ __rp_1_20 = {
     'sub_area': 'Protect Data at Rest',
     'review_point': 'Encrypt Data in Object Storage',    
     'success_criteria': 'Ensure that Bucket uses encryption using a master encryption key assigned to each bucket. Configure a single key per each bucket',
-    'fireup_items': ['Fireup Task: None'],
+    'fireup_items': ['Fireup Task: 26 - Is there any data currently opened to the public?'],
 }
 
 __rp_1_21 = {
@@ -218,10 +218,10 @@ __rp_1_23 = {
 __rp_1_24 = {
     'entry': '1.24',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor and Audit Your Environment',
+    'review_point': 'Enable Cloud Guard for Monitoring',    
+    'success_criteria': 'Check if Cloud Guard is enabled',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_1_25 = {
