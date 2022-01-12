@@ -6,6 +6,8 @@
 from datetime import datetime
 from common.utils.statics import Statics
 from termcolor import colored
+from inspect import getframeinfo, stack
+import os.path
 
 
 def print_to_console(msg):
@@ -68,9 +70,30 @@ def debug_with_color_date(msg, color):
     else:
         print(turn_white(get_current_date()+" DEBUG: "+str(msg)), flush=True)
 
+def debug(msg, color=None):    
+    frame = getframeinfo(stack()[1][0])
+    filename = os.path.splitext(os.path.basename(frame.filename))[0]
+    lineno = str(frame.lineno)    
 
-def debug(msg):
-    print(turn_yellow("DEBUG: " + str(msg)), flush=True)
+    debug_exp = get_current_date()+" DEBUG: "+filename+".py:"+lineno+" - "+str(msg)
+
+    if (color == "red"):
+        print(turn_red(debug_exp, flush=True))
+    elif (color == "green"):
+        print(turn_green(debug_exp), flush=True)
+    elif (color == "yellow"):
+        print(turn_yellow(debug_exp), flush=True)
+    elif (color == "blue"):
+        print(turn_blue(debug_exp), flush=True)
+    elif (color == "magenta"):
+        print(turn_magenta(debug_exp), flush=True)
+    elif (color == "cyan"):
+        print(turn_cyan(debug_exp), flush=True)
+    elif (color == "grey"):
+        print(turn_grey(debug_exp), flush=True)
+    else:
+        print(turn_white(debug_exp), flush=True)
+
 
 
 def dye_return(msg):
@@ -100,3 +123,6 @@ def turn_cyan(msg):
 
 def turn_white(msg):
     return colored(msg, 'white')
+
+def turn_grey(msg):
+    return colored(msg, 'grey')

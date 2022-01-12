@@ -76,7 +76,7 @@ class Mfa(ReviewPoint):
 
                 self.__users.append(record)
 
-
+        debug("foo")
         policy_data = get_policies_data(self.__identity, self.__tenancy.id)    
         for policy in policy_data:  
             record = {
