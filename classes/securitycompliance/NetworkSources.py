@@ -17,8 +17,7 @@ class NetworkSources(ReviewPoint):
     # Class Variables
     __identity = None
     __tenancy = None
-    __network_sources = None
-    __network_sources_names = set()
+    __network_sources = []
     __policy_statements = set()
     __identity_client = None
     __authentication_policy = None
@@ -55,29 +54,32 @@ class NetworkSources(ReviewPoint):
 
     def load_entity(self):
         self.__identity_client = get_identity_client(self.config,self.signer)
-        self.__network_sources = get_network_sources(self.__identity_client,self.__tenancy.id)
+        network_sources = get_network_sources(self.__identity_client,self.__tenancy.id)
+       
+        for n_source in network_sources:
+            record = {
+                "compartment_id": n_source.compartment_id,
+                "defined_tags": n_source.defined_tags,
+                "description": n_source.description,
+                "freeform_tags": n_source.freeform_tags,
+                "id": n_source.id,
+                "name": n_source.name,
+                "public_source_list": n_source.public_source_list,
+                "services": n_source.services,
+                "time_created": n_source.time_created,
+                "virtual_source_list": n_source.virtual_source_list
+            }
+            self.__network_sources.append(record)
+
         self.__authentication_policy = get_authentication_policy(self.__identity_client, self.__tenancy.id)
-
-
-        for n_source in self.__network_sources:
-            self.__network_sources_names.add(n_source.name)
-
-        identity_clients = []
-        regions = get_regions_data(self.__identity, self.config)
 
         compartments = get_compartments_data(self.__identity, self.__tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        # get clients from each region 
-        for region in regions:
-            region_config = self.config
-            region_config['region'] = region.region_name
-            identity_clients.append(get_identity_client(region_config, self.signer))
-      
-        policy_data = ParallelExecutor.executor(identity_clients, compartments, ParallelExecutor.get_policies_per_compartment, len(compartments), ParallelExecutor.policies)
-        
-        for element in policy_data:
-            for policy in element:  
+        policy_data = ParallelExecutor.executor([self.__identity_client], compartments, ParallelExecutor.get_policies_per_compartment, len(compartments), ParallelExecutor.policies)
+
+        for record in policy_data:
+            for policy in record:
                 for statement in policy.statements:
                     self.__policy_statements.add(statement)
 
@@ -87,24 +89,22 @@ class NetworkSources(ReviewPoint):
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         if self.__network_sources:
-            # check if created network sources are in use        
-            for statement in self.__policy_statements:
+            # check if created network sources are in use                   
+            for n_source in self.__network_sources:
                 present = False
-                for name in self.__network_sources_names:
-                    if f"request.networkSource.name='{name}'" in statement:
+                for statement in self.__policy_statements:              
+                    if f"request.networkSource.name='{n_source['name']}'" in statement:
                         present = True
-                if present: self.__network_sources_names.remove(name)
-            
-            if self.__network_sources_names:
-                for index, network_source in enumerate(self.__network_sources_names):                       
+                        break
+                if not present:
                     dictionary[entry]['status'] = False
-                    dictionary[entry]['findings'].append({index:network_source})
+                    dictionary[entry]['findings'].append(n_source)
                     dictionary[entry]['failure_cause'].append(f'Network source is created but currently not in use')   
-                    dictionary[entry]['mitigations'].append(f'Network source named : "{network_source}" is available but is not currently in use. '
+                    dictionary[entry]['mitigations'].append(f'Network source named : "{n_source["name"]}" is available but is not currently in use. '
                                                             'Make sure to attach it to a policy.')   
+                
         else:
             dictionary[entry]['status'] = False
-            dictionary[entry]['findings'].append({1:'None found'})
             dictionary[entry]['failure_cause'].append('Network sources are not created')   
             dictionary[entry]['mitigations'].append('Create network sources to restrict access to resources. '
                                                     'Then specify the network source in an IAM policy to control access based on the originating IP address.')   
@@ -112,7 +112,6 @@ class NetworkSources(ReviewPoint):
         # Check network source restrictions for signing in to the OCI Console
         if not self.__authentication_policy.network_policy.network_source_ids:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append({1:'None found'})
                 dictionary[entry]['failure_cause'].append(f'Users can sign-in to the OCI Console from any IP')   
                 dictionary[entry]['mitigations'].append(f'Specify the network source in your tenancy\'s authentication settings to restrict sign in to the OCI Console.')   
 

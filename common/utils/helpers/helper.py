@@ -547,7 +547,8 @@ def get_oke_clusters(container_engine_client, compartment_id):
 def get_network_sources(identity_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_network_sources,
-        compartment_id
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
 def get_authentication_policy(identity_client, tenancy_id):
