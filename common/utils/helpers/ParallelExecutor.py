@@ -21,6 +21,9 @@ steering_policies = []
 vcns_in_multiple_regions = []
 oke_clusters = []
 
+
+local_peering_gateways = []
+local_peering_gateways_info = []
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
 vcns = []
@@ -586,6 +589,19 @@ def get_boot_volume_replicas(item):
 
     return boot_volume_replicas
 
+def get_local_peering_gateways(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    local_peering_gateways = []
+
+    for compartment in compartments:
+        local_peering_gateways_data = get_local_peering_gateway_data(network_client, compartment.id)
+        for local_peering_gateway in local_peering_gateways_data:
+            if "TERMINATED" not in local_peering_gateway.lifecycle_state:
+                local_peering_gateways.append(local_peering_gateway)
+
+    return local_peering_gateways
 
 def get_buckets(item):
     object_storage_client = item[0][0]

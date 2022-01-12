@@ -14,8 +14,11 @@ from itertools import combinations
 class OneRegionPerVCN(ReviewPoint):
     # Class Variables
     __vcn_objects = []
-    __identity = None
     __vcns = []
+    __compartments = []
+    __identity = None
+    __local_peering_gateways = []
+    __local_peering_gateway_objects = []
 
     def __init__(self,
                  entry: str,
@@ -53,28 +56,42 @@ class OneRegionPerVCN(ReviewPoint):
             region_config = self.config
             region_config['region'] = region.region_name
             # Create a network client for each region
-            network_clients.append((get_virtual_network_client(region_config, self.signer), region.region_name,region.region_key.lower()))
+            network_clients.append((get_virtual_network_client(region_config, self.signer)))
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__vcn_objects = ParallelExecutor.executor([x[0] for x in network_clients], compartments, ParallelExecutor.get_vcns_in_compartments, len(compartments), ParallelExecutor.vcns)
+        self.__vcn_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_vcns_in_compartments, len(self.__compartments), ParallelExecutor.vcns)
+        self.__local_peering_gateway_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_local_peering_gateways, len(self.__compartments), ParallelExecutor.local_peering_gateways)
 
         for vcn in self.__vcn_objects:
             record = {
                 'cidr_blocks': vcn.cidr_blocks,
                 'compartment_id': vcn.compartment_id,
-                'region': vcn.id.split('.')[3],
                 'display_name': vcn.display_name,
                 'id': vcn.id,
                 'lifecycle_state': vcn.lifecycle_state,
             }
             self.__vcns.append(record)
 
-        return self.__vcns
+        for local_gateway in self.__local_peering_gateway_objects:
+            record = {
+                'compartment_id': local_gateway.compartment_id,
+                'display_name': local_gateway.display_name,
+                'id': local_gateway.id,
+                'peering_status' : local_gateway.peering_status,
+                'peer_id': local_gateway.peer_id,
+                'vcn_id': local_gateway.vcn_id,
+                'cidr_blocks': local_gateway.peer_advertised_cidr,
+                'cidr_block_details': local_gateway.peer_advertised_cidr_details,
+                'lifecycle_state': local_gateway.lifecycle_state,
+            }
+            self.__local_peering_gateways.append(record)
+
+        return self.__local_peering_gateways, self.__vcns
 
 
     def analyze_entity(self, entry):
@@ -84,22 +101,28 @@ class OneRegionPerVCN(ReviewPoint):
 
         seen = []
         duplicates = []
-        for vcn in self.__vcns:
+        for local_gateway in self.__local_peering_gateways:
             for d in seen:
-                if d['display_name'] == vcn['display_name']:
-                    duplicates.append((vcn,d))
+                if d['peering_status'] == 'PEERED' and d['id'] == local_gateway['peer_id']:
+                    duplicates.append((local_gateway, d))
             else:
-                seen.append(vcn)
+                seen.append(local_gateway)
 
-        for vcn1,vcn2 in duplicates:
-            cidr1 = vcn1['cidr_blocks'][0]
-            cidr2 = vcn2['cidr_blocks'][0]
+        for gateway1, gateway2 in duplicates:
+            cidr1 = gateway1['cidr_blocks']
+            cidr2 = gateway2['cidr_blocks']
             if ipaddr.IPNetwork(cidr1).overlaps(ipaddr.IPNetwork(cidr2)):
+                for vcn in self.__vcns:
+                    if vcn['id'] == gateway1['vcn_id']:
+                        vcn_name1 = vcn['display_name']
+                        gateway1['vcn_display_name'] = vcn_name1
+                    if vcn['id'] == gateway2['vcn_id']:
+                        vcn_name2 = vcn['display_name']
+                        gateway2['vcn_display_name'] = vcn_name2
                 dictionary[entry]['status'] = False
-                if vcn1 not in dictionary[entry]['findings']:
-                    dictionary[entry]['findings'].append(vcn1)
-                    dictionary[entry]['failure_cause'].append('VCNs are overlapping in regions')
-                    dictionary[entry]['mitigations'].append('Make sure vcn ' + str(
-                        vcn1['display_name']) + ' in ' + str(vcn1['region']) +' and ' + str(
-                        vcn2['display_name']) + ' in ' + str(vcn2['region']) + ' are not the same.')
+                dictionary[entry]['findings'].append(gateway1)
+                dictionary[entry]['failure_cause'].append('VCN is peered to another VCN where the CIDR blocks are overlapping')
+                dictionary[entry]['mitigations'].append('Make sure peered VCN: ' + str(gateway1['vcn_display_name']) + ' in Compartment: ' + str(get_compartment_name(self.__compartments,gateway1['compartment_id']))
+                                                            + ' and peered VCN: ' + str(gateway2['vcn_display_name']) + ' in Compartment: ' + str(get_compartment_name(self.__compartments,gateway2['compartment_id'])) +' do not have overlapping CIDR blocks.')
+
         return dictionary

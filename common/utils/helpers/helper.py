@@ -437,6 +437,12 @@ def get_max_security_zone_data(identity_client, compartment_id):
         header_params=header_params,
         response_type="json").data
 
+def get_local_peering_gateway_data(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_local_peering_gateways,
+        compartment_id
+    ).data
+
 def get_limits_client(config, signer):
     try:
         limits_client = oci.limits.LimitsClient(config, signer=signer)
