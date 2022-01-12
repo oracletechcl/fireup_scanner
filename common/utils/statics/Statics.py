@@ -200,10 +200,10 @@ __rp_1_21 = {
 __rp_1_22 = {
     'entry': '1.22',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Ensure Secure Network Access',
+    'review_point': 'Restrict Access Using Network Sources',    
+    'success_criteria': 'Specify the network source in an IAM policy to restrict access to resources. Specify the network source in your tenancy\'s authentication settings to restrict sign in to the Console.',
+    'fireup_items': ['Fireup Task: 18 - Do you have a proper security list, route tables, VCN, firewalls in place?'],
 }
 
 __rp_1_23 = {
