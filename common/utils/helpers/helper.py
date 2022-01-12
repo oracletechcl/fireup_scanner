@@ -31,7 +31,7 @@ def get_audit_client(config, signer):
 
 def get_cloud_guard_client(config, signer):
     try:
-        cloud_guard_client = oci.cloudguard.CloudGuardClient(config, signer=signer)
+        cloud_guard_client = oci.cloud_guard.CloudGuardClient(config, signer=signer)
     except Exception as e:
         raise RuntimeError("Failed to create cloud guard client: {}".format(e))
     return cloud_guard_client
@@ -485,3 +485,7 @@ def get_oke_clusters(container_engine_client, compartment_id):
         compartment_id
     ).data
 
+def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
+    return cloud_guard_client.get_configuration(
+        tenancy_id
+    ).data

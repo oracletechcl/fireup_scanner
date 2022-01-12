@@ -48,11 +48,11 @@ class CloudGuardMonitor(ReviewPoint):
        self.signer = signer
        self.__identity = get_identity_client(self.config, self.signer)
        self.__tenancy = get_tenancy_data(self.__identity, self.config)
-       self.__cloud_guard_client = oci.cloud_guard.CloudGuardClient(self.config)
+       self.__cloud_guard_client = get_cloud_guard_client(self.config, self.signer)
 
 
     def load_entity(self):   
-        cloud_guard_data = self.__cloud_guard_client.get_configuration(self.__tenancy.id).data
+        cloud_guard_data = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)
         record = {
             "tenancy_id" : self.__tenancy.id,
             "tenancy_name" : self.__tenancy.name,
