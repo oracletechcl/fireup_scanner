@@ -2,6 +2,7 @@
 
 | Review Point | Concrete Class Implementation                           |
 |--------------|---------------------------------------------------------|
+| 2.3          | [ServiceLimits.py](ServiceLimits.py) 
 | 2.5          | [CompartmentQuotas.py](CompartmentQuotas.py) 
 | 2.8          | [SeparateCIDRBlocks.py](SeparateCIDRBlocks.py)
 | 2.9          | [CIDRSize.py](CIDRSize.py)
