@@ -30,6 +30,8 @@ drg_attachments = []
 service_gateways = []
 local_peering_gateways = []
 
+virtual_circuits = []
+
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
 vcns = []
@@ -681,14 +683,14 @@ def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_
     return workload_status[0]
 
 
-def get_oke_cluster(item):
+def get_oke_clusters(item):
     container_engine_client = item[0]
     compartments = item[1:]
 
     oke_clusters = []
 
     for compartment in compartments:
-        oke_cluster_data = get_oke_clusters(container_engine_client, compartment.id)
+        oke_cluster_data = get_oke_cluster_data(container_engine_client, compartment.id)
         for oke_cluster in oke_cluster_data:
             if oke_cluster.lifecycle_state != "DELETED":
                 oke_clusters.append(oke_cluster)
@@ -775,3 +777,18 @@ def get_local_peering_gateways(item):
                 local_peering_gateways.append(local_peering_gateway)
 
     return local_peering_gateways
+
+
+def get_virtual_circuits(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    virtual_circuits = []
+
+    for compartment in compartments:
+        virtual_circuits_data = get_virtual_circuit_data(network_client, compartment.id)
+        for virtual_circuit in virtual_circuits_data:
+            if "TERMINATED" not in virtual_circuit.lifecycle_state:
+                virtual_circuits.append(virtual_circuit)
+
+    return virtual_circuits

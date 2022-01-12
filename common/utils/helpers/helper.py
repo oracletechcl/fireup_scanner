@@ -537,10 +537,17 @@ def get_container_engine_client(config, signer):
     return container_engine_client
 
 
-def get_oke_clusters(container_engine_client, compartment_id):
+def get_oke_cluster_data(container_engine_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         container_engine_client.list_clusters,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
+def get_virtual_circuit_data(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_virtual_circuits,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
