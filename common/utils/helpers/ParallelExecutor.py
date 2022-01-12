@@ -94,6 +94,13 @@ adb_nsgs = []
 bucket_preauthenticated_requests = []
 
 
+### DBSystemPatch.py Global Variables
+# Lists for use with parallel_executor
+oracle_dbsystems_applicable_patches = []
+db_systems = []
+oracle_db_home_patch_history = []
+oracle_db_system_patch_history = []
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
         return []
@@ -346,16 +353,30 @@ def get_database_homes(item):
     database_client = item[0]
     compartments = item[1:]
 
-    db_homes = []
+    db_system_homes = []
 
     for compartment in compartments:
         database_home_data = get_db_system_home_data(database_client, compartment.id)
         for db_home in database_home_data:
             if "DELETED" not in db_home.lifecycle_state:
-                db_homes.append(db_home)
+                db_system_homes.append(db_home)
 
-    return db_homes
+    return db_system_homes
 
+
+def get_database_systems(item):
+    database_client = item[0]
+    compartments = item[1:]
+
+    db_systems = []
+
+    for compartment in compartments:
+        database_system_data = get_db_system_data(database_client, compartment.id)
+        for db_sys in database_system_data:
+            if "DELETED" not in db_sys.lifecycle_state:
+                db_systems.append(db_sys)
+
+    return db_systems
 
 def get_mysql_dbs(item):
     mysql_client = item[0]
@@ -641,6 +662,93 @@ def get_autonomous_databases(item):
 
     return autonomous_databases
 
+
+def get_database_home_patches(item):
+    database_client = item[0]
+    database_objects = item[1:]
+
+    oracle_dbsystems_applicable_patches = []
+
+
+    for db_ocids in database_objects:
+        region = db_ocids.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            if db_ocids.lifecycle_state == "AVAILABLE":                               
+                patches_data = get_db_home_patches(database_client[0], db_ocids.id)
+                for patch in patches_data:  
+                    oracle_dbsystems_applicable_patches.append(patch)
+
+    return oracle_dbsystems_applicable_patches
+
+def get_database_homes_applied_patch_history(item):
+    database_client = item[0]
+    database_home_objects = item[1:]
+
+    oracle_db_home_patch_history = []
+
+    for db_home_ocids in database_home_objects:
+        patch_ocid = ""
+        
+        region = db_home_ocids.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            if db_home_ocids.lifecycle_state == "AVAILABLE":         
+                patches_data = get_db_home_patch_history(database_client[0], db_home_ocids.id)                               
+                if len(patches_data) > 0:
+                    patch_ocid = patches_data[0].patch_id                
+                    
+                    db_home_patch_history_dict = {
+                        "db_home_ocid": db_home_ocids.id,
+                        'db_version': db_home_ocids.db_version,
+                        "patch_id" : patch_ocid,
+                        "database_client": database_client[0]
+                    }
+                else:
+                    db_home_patch_history_dict = {
+                        "db_home_ocid": db_home_ocids.id,
+                        'db_version': db_home_ocids.db_version,
+                        "patch_id" : None,
+                        "database_client": None
+                    }
+
+                oracle_db_home_patch_history.append(db_home_patch_history_dict)
+
+
+    return oracle_db_home_patch_history
+
+
+def get_database_systems_applied_patch_history(item):
+    database_client = item[0]
+    database_system_objects = item[1:]
+
+    oracle_db_system_patch_history = []
+   
+    for db_system_ocids in database_system_objects:
+        patch_ocid = ""
+        region = db_system_ocids.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            if db_system_ocids.lifecycle_state == "AVAILABLE":       
+                patches_data = get_db_system_patch_history(database_client[0], db_system_ocids.id)
+                           
+                if len(patches_data) > 0:
+                    patch_ocid = patches_data[0].patch_id
+
+                    db_system_patch_history_dict = {
+                        "db_system_ocid": db_system_ocids.id,
+                        "db_version": db_system_ocids.version,
+                        "patch_id" : patch_ocid,
+                        "database_client": database_client[0]
+                    }
+                else:
+                    db_system_patch_history_dict = {
+                        "db_system_ocid": db_system_ocids.id,
+                        "db_version": db_system_ocids.version,
+                        "patch_id" : None,
+                        "database_client": None
+                    }                           
+
+                oracle_db_system_patch_history.append(db_system_patch_history_dict)
+
+    return oracle_db_system_patch_history
 
 def get_steering_policies(item):
     dns_client = item[0]
