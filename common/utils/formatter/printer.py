@@ -49,27 +49,6 @@ def print_list_of_dicts(list_of_dicts):
 def print_mitigation_report_fields(finding):
     print(finding['Recommendation #'] + "\t" + finding['Area'] + "\t" + finding['Sub Area'] + "\t" + finding['Compliant'] + "\t" + finding['Findings'] + "\t\t" + finding['Review Point']+ "\t\t" + print_list_of_dicts(finding['Failure Causes']) +"\t\t"+print_list_of_dicts(finding['Mitigations']))
 
-def debug_with_date(msg):
-    print(turn_yellow(get_current_date()+" DEBUG: "+str(msg)), flush=True)
-
-def debug_with_color_date(msg, color):
-    if (color == "red"):
-        print(turn_red(get_current_date()+" DEBUG: "+str(msg)), flush=True)
-    elif (color == "green"):
-        print(turn_green(get_current_date()+" DEBUG: "+str(msg)), flush=True)
-    elif (color == "yellow"):
-        print(turn_yellow(get_current_date()+" DEBUG: "+str(msg)), flush=True)
-    elif (color == "blue"):
-        print(turn_blue(get_current_date()+" DEBUG: "+str(msg)), flush=True)
-    elif (color == "magenta"):
-        print(turn_magenta(get_current_date()+" DEBUG: "+str(msg)), flush=True)
-    elif (color == "cyan"):
-        print(turn_cyan(get_current_date()+" DEBUG: "+str(msg)), flush=True)
-    elif (color == "white"):
-        print(turn_white(get_current_date()+" DEBUG: "+str(msg)), flush=True)
-    else:
-        print(turn_white(get_current_date()+" DEBUG: "+str(msg)), flush=True)
-
 def debug(msg, color=None):    
     frame = getframeinfo(stack()[1][0])
     filename = os.path.splitext(os.path.basename(frame.filename))[0]
