@@ -121,6 +121,7 @@ class OneRegionPerVCN(ReviewPoint):
                         gateway2['vcn_display_name'] = vcn_name2
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(gateway1)
+                dictionary[entry]['findings'].append(gateway2)
                 dictionary[entry]['failure_cause'].append('VCN is peered to another VCN where the CIDR blocks are overlapping')
                 dictionary[entry]['mitigations'].append('Make sure peered VCN: ' + str(gateway1['vcn_display_name']) + ' in Compartment: ' + str(get_compartment_name(self.__compartments,gateway1['compartment_id']))
                                                             + ' and peered VCN: ' + str(gateway2['vcn_display_name']) + ' in Compartment: ' + str(get_compartment_name(self.__compartments,gateway2['compartment_id'])) +' do not have overlapping CIDR blocks.')
