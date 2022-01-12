@@ -57,6 +57,7 @@ The following design patterns are applied to this project:
 ___
 
 ## Pre-requisites
+- Python3 pre-installed
 - Pre-configured Oracle Cloud Infrastructure (OCI) account
 - Pre-configured OCI CLI. For instructions in how to configure CLI, refer to the [following link](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/climanualinst.htm)
 

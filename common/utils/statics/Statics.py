@@ -137,10 +137,10 @@ __rp_1_14 = {
 __rp_1_15 = {
     'entry': '1.15',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure your Databases',
+    'review_point': 'Apply Security Patches',    
+    'success_criteria': 'If Oracle Database is in place, make sure that its in the lastest patch set update available',
+    'fireup_items': ['Fireup Task: 20 - Do you have an update / patching schedule on OS, Applications, etc?'],
 }
 
 __rp_1_16 = {
@@ -300,10 +300,10 @@ __rp_2_6 = {
 __rp_2_7 = {
     'entry': '2.7',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Define Your Network and Connectivity Architecture',
+    'review_point': 'Use Redundant Connections for Your On-Premises Environments and Private Resources',    
+    'success_criteria': 'If VPN or fast connect exists, check for redundance (More than one)',
+    'fireup_items': ['Fireup Task: 33 - Do you anticipate failure and have a recovery procedure in place'],
 }
 
 __rp_2_8 = {
@@ -336,10 +336,10 @@ __rp_2_10 = {
 __rp_2_11 = {
     'entry': '2.11',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Define Your Network and Connectivity Architecture',
+    'review_point': 'Bypass the Internet When Connecting to Public Resources',    
+    'success_criteria': 'Depending on the subnet, check that correct Gateway is in place to access the internet properly',
+    'fireup_items': ['Fireup Task: 31 - Are you leveraging traffic management, web firewall and load balancing for public resources?'],
 }
 
 __rp_2_12 = {
@@ -399,10 +399,10 @@ __rp_2_17 = {
 __rp_3_1 = {
     'entry': '3.1',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Performance Efficiency and Cost Optimization Practices',
+    'review_point': 'Understand and Optimize Your Spending',    
+    'success_criteria': 'Introduce Quotas on Compartments',
+    'fireup_items': ['Fireup Task: 51 - How do you monitor usage and cost?'],
 }
 
 __rp_3_2 = {
@@ -426,28 +426,28 @@ __rp_3_3 = {
 __rp_3_4 = {
     'entry': '3.4',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Tune and Monitor Network',
+    'review_point': 'Choose a Region Location Based On Networking Requirements',
+    'success_criteria': 'Check if VCN is implemented in more than one region',
+    'fireup_items': ['Fireup Task: 45: Are you using the right regions and AD selections for high availability & good performance?'],
 }
 
 __rp_3_5 = {
     'entry': '3.5',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Tune and Monitor Network',
+    'review_point': 'Use Traffic Steering When Serving a Global Audience',    
+    'success_criteria': 'If workload is in more than one region, check if traffic steering policy is in place',
+    'fireup_items': ['Fireup Task: 33 - Do you anticipate failure and have a recovery procedure in place'],
 }
 
 __rp_3_6 = {
     'entry': '3.6',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Implement a Compartment Structure That Fits Your Organization',    
+    'success_criteria': 'Check if there is compartments beyond root, holstering the workload',
+    'fireup_items': ['Fireup Task: 51 - How do you monitor usage and cost?'],
 }
 
 __rp_3_7 = {
@@ -480,10 +480,10 @@ __rp_3_9 = {
 __rp_3_10 = {
     'entry': '3.10',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Enable Block Volume Performance Auto Tuning',    
+    'success_criteria': 'If block storage is in place, check that performance auto-tuning is implemented',
+    'fireup_items': ['Fireup Task: 55 - Do you have a process to regularly terminate or stop unused resources & do you encourage employees to stop unused resources?'],
 }
 
 __rp_3_11 = {
