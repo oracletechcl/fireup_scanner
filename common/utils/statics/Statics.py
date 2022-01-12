@@ -137,10 +137,10 @@ __rp_1_14 = {
 __rp_1_15 = {
     'entry': '1.15',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Secure your Databases',
+    'review_point': 'Apply Security Patches',    
+    'success_criteria': 'If Oracle Database is in place, make sure that its in the lastest patch set update available',
+    'fireup_items': ['Fireup Task: 20 - Do you have an update / patching schedule on OS, Applications, etc?'],
 }
 
 __rp_1_16 = {
@@ -300,10 +300,10 @@ __rp_2_6 = {
 __rp_2_7 = {
     'entry': '2.7',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Define Your Network and Connectivity Architecture',
+    'review_point': 'Use Redundant Connections for Your On-Premises Environments and Private Resources',    
+    'success_criteria': 'If VPN or fast connect exists, check for redundance (More than one)',
+    'fireup_items': ['Fireup Task: 33 - Do you anticipate failure and have a recovery procedure in place'],
 }
 
 __rp_2_8 = {

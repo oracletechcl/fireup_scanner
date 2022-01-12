@@ -462,6 +462,33 @@ def get_max_security_zone_data(identity_client, compartment_id):
         header_params=header_params,
         response_type="json").data
 
+def get_db_home_patches(database_client, db_home_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_home_patches,
+        db_home_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_db_home_patch_history(database_client, db_home_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_home_patch_history_entries,
+        db_home_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_db_system_patch_history(database_client, db_home_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_system_patch_history_entries,
+        db_home_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_db_system_patch_details(database_client, db_system_id, patch_id):
+    return database_client.get_db_system_patch(db_system_id, patch_id).data
+
+def get_db_home_patch_details(database_client, db_home_id, patch_id):
+    return database_client.get_db_home_patch(db_home_id,patch_id).data
 
 def get_drg_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
@@ -537,12 +564,13 @@ def get_container_engine_client(config, signer):
     return container_engine_client
 
 
-def get_oke_clusters(container_engine_client, compartment_id):
+def get_oke_cluster_data(container_engine_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         container_engine_client.list_clusters,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_network_sources(identity_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
@@ -555,9 +583,10 @@ def get_authentication_policy(identity_client, tenancy_id):
     return identity_client.get_authentication_policy(tenancy_id).data
     
 
-    
-       
-
-
-
+def get_virtual_circuit_data(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_virtual_circuits,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
 
