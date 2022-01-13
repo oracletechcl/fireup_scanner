@@ -4,7 +4,6 @@
 # Description: Implementation of class CheckBudgets based on abstract
 
 from classes.abstract.ReviewPoint import ReviewPoint
-import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
