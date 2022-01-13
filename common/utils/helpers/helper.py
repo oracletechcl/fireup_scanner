@@ -563,7 +563,7 @@ def get_container_engine_client(config, signer):
     try:
         container_engine_client = oci.container_engine.ContainerEngineClient(config, signer=signer)
     except Exception as e:
-        raise RuntimeError("Failed to create container engine client client: " + e)
+        raise RuntimeError("Failed to create container engine client: " + e)
     return container_engine_client
 
 
@@ -593,3 +593,27 @@ def get_virtual_circuit_data(network_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
+def get_budget_client(config, signer):
+    try:
+        budget_client = oci.budget.BudgetClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create budget client: " + e)
+    return budget_client
+
+
+def get_budget_data(budget_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        budget_client.list_budgets,
+        compartment_id,
+        target_type ="ALL",
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_budget_alert_rules_data(budget_client, budget_id):
+    return oci.pagination.list_call_get_all_results(
+        budget_client.list_alert_rules,
+        budget_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
