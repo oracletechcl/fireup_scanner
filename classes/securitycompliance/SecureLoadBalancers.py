@@ -79,24 +79,23 @@ class SecureLoadBalancers(ReviewPoint):
             self.__load_balancers.append(record)
 
         self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments,
-                                                          ParallelExecutor.get_policies_per_compartment,
+                                                          ParallelExecutor.get_policies,
                                                           len(self.__compartments),
                                                           ParallelExecutor.policies)
         for policy in self.__policy_objects:
-            for single_policy in policy:
-                record = {
-                    "compartment_id": single_policy.compartment_id,
-                    "defined_tags": single_policy.defined_tags,
-                    "description": single_policy.description,
-                    "freeform_tags": single_policy.freeform_tags,
-                    "id": single_policy.id,
-                    "lifecycle_state": single_policy.lifecycle_state,
-                    "name": single_policy.name,
-                    "statements": single_policy.statements,
-                    "time_created": single_policy.time_created,
-                    "version_date": single_policy.version_date
-                }
-                self.__policies.append(record)
+            record = {
+                "compartment_id": policy.compartment_id,
+                "defined_tags": policy.defined_tags,
+                "description": policy.description,
+                "freeform_tags": policy.freeform_tags,
+                "id": policy.id,
+                "lifecycle_state": policy.lifecycle_state,
+                "name": policy.name,
+                "statements": policy.statements,
+                "time_created": policy.time_created,
+                "version_date": policy.version_date
+            }
+            self.__policies.append(record)
 
         return self.__policies,self.__load_balancers
 
