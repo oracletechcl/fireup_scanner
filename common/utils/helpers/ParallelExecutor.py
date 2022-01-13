@@ -635,18 +635,18 @@ def get_buckets(item):
     return buckets
 
 def get_preauthenticated_requests_per_bucket(item):
-    object_storage_client = item[0][0]
-    namespace = item[0][1]
-    compartments = item[1:]
+    object_storage_client = item[0]
+    namespace = object_storage_client[1]
+    buckets = item[1:]
 
     bucket_preauthenticated_requests = []
 
-    for compartment in compartments:
-        bucket_data = get_bucket_data(object_storage_client, namespace, compartment.id)
-        for bucket in bucket_data:
-            preauthenticated_requests = get_preauthenticated_requests(object_storage_client,namespace,bucket.name)
+    for bucket in buckets:
+        region = bucket.id.split('.')[3]  
+        if object_storage_client[2] in region or object_storage_client[3] in region:    
+            preauthenticated_requests = get_preauthenticated_requests(object_storage_client[0],namespace,bucket.name)
             bucket_preauthenticated_requests.append({bucket.name:preauthenticated_requests})
-            
+                
     return bucket_preauthenticated_requests
 
 
