@@ -468,6 +468,18 @@ def get_policies(item):
 
     return policies
 
+def get_policies(item):
+    identity_client = item[0]
+    compartments = item[1:]
+
+    policies = []
+
+    for compartment in compartments:
+        policy_data = get_policies_data(identity_client, compartment.id)
+        for policy in policy_data:
+            policies.append(policy)
+
+    return policies
 
 def get_instances(item):
         compute_client = item[0]
