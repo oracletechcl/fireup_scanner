@@ -4,7 +4,7 @@
 # Description: Implementation of class MFA based on abstract
 
 from common.utils.helpers.helper import *
-from common.utils.formatter.printer import debug_with_date, print_with_date
+from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 from common.utils.statics import Statics
@@ -75,7 +75,6 @@ class Mfa(ReviewPoint):
                         record['groups'].append(group['name'])                                                     
 
                 self.__users.append(record)
-
 
         policy_data = get_policies_data(self.__identity, self.__tenancy.id)    
         for policy in policy_data:  
