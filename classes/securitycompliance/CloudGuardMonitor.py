@@ -4,7 +4,7 @@
 # Description: Implementation of class CloudGuardMonitor based on abstract
 
 
-from common.utils.formatter.printer import debug, print_with_date
+from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
