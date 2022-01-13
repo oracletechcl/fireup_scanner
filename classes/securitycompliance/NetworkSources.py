@@ -76,12 +76,11 @@ class NetworkSources(ReviewPoint):
         compartments = get_compartments_data(self.__identity, self.__tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        policy_data = ParallelExecutor.executor([self.__identity_client], compartments, ParallelExecutor.get_policies_per_compartment, len(compartments), ParallelExecutor.policies)
+        policy_data = ParallelExecutor.executor([self.__identity_client], compartments, ParallelExecutor.get_policies, len(compartments), ParallelExecutor.policies)
 
-        for record in policy_data:
-            for policy in record:
-                for statement in policy.statements:
-                    self.__policy_statements.add(statement)
+        for policy in policy_data:
+            for statement in policy.statements:
+                self.__policy_statements.add(statement)
 
     def analyze_entity(self, entry):
     

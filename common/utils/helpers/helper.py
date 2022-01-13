@@ -201,6 +201,10 @@ def get_compartments_data(identity_client, compartment_id):
     ).data
 
 
+def get_root_compartment_data(identity_client, tenancy_id):
+    return identity_client.get_compartment(tenancy_id).data
+
+
 def get_policies_data(identity_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
         identity_client.list_policies,
