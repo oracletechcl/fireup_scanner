@@ -5,7 +5,7 @@
 
 
 
-from common.utils.formatter.printer import debug, debug_with_date, print_with_date
+from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
@@ -20,7 +20,6 @@ class BucketPermissions(ReviewPoint):
     __identity = None
     __tenancy = None
     __policies = []
-    __buckets = []
     __bucket_objects = []
     __par_data = {}
  
@@ -60,6 +59,7 @@ class BucketPermissions(ReviewPoint):
         obj_namespace = get_objectstorage_namespace_data(obj_client)
 
         object_storage_clients = []
+        par_object_storage_clients = []
         regions = get_regions_data(self.__identity, self.config)
 
         compartments = get_compartments_data(self.__identity, self.__tenancy.id)
@@ -70,9 +70,10 @@ class BucketPermissions(ReviewPoint):
             region_config = self.config
             region_config['region'] = region.region_name
             object_storage_clients.append((get_object_storage_client(region_config, self.signer), obj_namespace))
+            par_object_storage_clients.append((get_object_storage_client(region_config, self.signer),obj_namespace, region.region_name, region.region_key.lower()))
       
         self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_buckets, len(compartments), ParallelExecutor.buckets)
-        par_data = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_preauthenticated_requests_per_bucket, len(compartments), ParallelExecutor.bucket_preauthenticated_requests)
+        par_data = ParallelExecutor.executor(par_object_storage_clients, self.__bucket_objects, ParallelExecutor.get_preauthenticated_requests_per_bucket, len(self.__bucket_objects), ParallelExecutor.bucket_preauthenticated_requests)
         
         for par in par_data:
             self.__par_data.update(par)

@@ -34,7 +34,7 @@ def get_audit_client(config, signer):
 
 def get_cloud_guard_client(config, signer):
     try:
-        cloud_guard_client = oci.cloudguard.CloudGuardClient(config, signer=signer)
+        cloud_guard_client = oci.cloud_guard.CloudGuardClient(config, signer=signer)
     except Exception as e:
         raise RuntimeError("Failed to create cloud guard client: " + e)
     return cloud_guard_client
@@ -199,6 +199,10 @@ def get_compartments_data(identity_client, compartment_id):
         lifecycle_state="ACTIVE",
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
+
+def get_root_compartment_data(identity_client, tenancy_id):
+    return identity_client.get_compartment(tenancy_id).data
 
 
 def get_policies_data(identity_client, compartment_id): 
@@ -465,6 +469,7 @@ def get_max_security_zone_data(identity_client, compartment_id):
         header_params=header_params,
         response_type="json").data
 
+
 def get_db_home_patches(database_client, db_home_id):
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_home_patches,
@@ -472,12 +477,14 @@ def get_db_home_patches(database_client, db_home_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_db_home_patch_history(database_client, db_home_id):
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_home_patch_history_entries,
         db_home_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_db_system_patch_history(database_client, db_home_id):
     return oci.pagination.list_call_get_all_results(
@@ -490,9 +497,11 @@ def get_db_system_patch_history(database_client, db_home_id):
 def get_db_system_patch_details(database_client, db_system_id, patch_id):
     return database_client.get_db_system_patch(db_system_id, patch_id).data
 
+
 def get_db_home_patch_details(database_client, db_home_id, patch_id):
     return database_client.get_db_home_patch(db_home_id,patch_id).data
 
+  
 def get_drg_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_drgs,
@@ -563,7 +572,7 @@ def get_container_engine_client(config, signer):
     try:
         container_engine_client = oci.container_engine.ContainerEngineClient(config, signer=signer)
     except Exception as e:
-        raise RuntimeError("Failed to create container engine client client: " + e)
+        raise RuntimeError("Failed to create container engine client: " + e)
     return container_engine_client
 
 
@@ -582,14 +591,46 @@ def get_network_sources(identity_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_authentication_policy(identity_client, tenancy_id):
-    return identity_client.get_authentication_policy(tenancy_id).data
-    
+    return identity_client.get_authentication_policy(tenancy_id).data    
+
 
 def get_virtual_circuit_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_virtual_circuits,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+  
+
+def get_budget_client(config, signer):
+    try:
+        budget_client = oci.budget.BudgetClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create budget client: " + e)
+    return budget_client
+
+
+def get_budget_data(budget_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        budget_client.list_budgets,
+        compartment_id,
+        target_type ="ALL",
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_budget_alert_rules_data(budget_client, budget_id):
+    return oci.pagination.list_call_get_all_results(
+        budget_client.list_alert_rules,
+        budget_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+ 
+def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
+    return cloud_guard_client.get_configuration(
+        tenancy_id
     ).data
 
