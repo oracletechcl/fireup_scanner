@@ -57,7 +57,7 @@ def debug(msg, color=None):
     debug_exp = get_current_date()+" DEBUG: "+filename+".py:"+lineno+" - "+str(msg)
 
     if (color == "red"):
-        print(turn_red(debug_exp, flush=True))
+        print(turn_red(debug_exp), flush=True)
     elif (color == "green"):
         print(turn_green(debug_exp), flush=True)
     elif (color == "yellow"):

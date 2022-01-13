@@ -15,10 +15,12 @@ class Rbac(ReviewPoint):
     # Class Variables    
     __compartments = [] 
     __policies = []
+    __root_policies = []
+    __compartment_dicts = []
     __policies_per_compartment = []
     __identity = None
     __tenancy = None
-    __policy_dictionary = defaultdict(list)
+    __policy_dictionary = {}
     __compartment_count_results = {}
     __no_policy_compartments = {}
     
@@ -56,28 +58,34 @@ class Rbac(ReviewPoint):
         identity_clients = []
         identity_clients.append(get_identity_client(self.config, self.signer))       
         
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
 
-        self.__policies_per_compartment = ParallelExecutor.executor([self.__identity], compartments, ParallelExecutor.get_policies_per_compartment, len(compartments), ParallelExecutor.policies)
+        self.__policies_per_compartment = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
 
-        for policy in self.__policies_per_compartment:
-            policy_record = []
-            if len(policy_record) > 0:
-                policy_record = [{
-                    "compartment_id": policy.compartment_id,
-                    "defined_tags": policy.defined_tags,
-                    "description": policy.description,
-                    "freeform_tags": policy.freeform_tags,
-                    "id": policy.id,
-                    "lifecycle_state": policy.lifecycle_state,
-                    "name": policy.name,
-                    "statements": policy.statements,
-                    "time_created": policy.time_created,
-                    "version_date": policy.version_date
-                }]
-            self.__policies.append(policy_record)
+        for compartment in self.__compartments:
+            if "tenancy" not in compartment.id:
+                self.__policy_dictionary[compartment.id] = []
 
-        for compartment in compartments:
+        for policy_object in self.__policies_per_compartment:
+            policy_record = {
+                "compartment_id": policy_object.compartment_id,
+                "defined_tags": policy_object.defined_tags,
+                "description": policy_object.description,
+                "freeform_tags": policy_object.freeform_tags,
+                "id": policy_object.id,
+                "lifecycle_state": policy_object.lifecycle_state,
+                "name": policy_object.name,
+                "statements": policy_object.statements,
+                "time_created": policy_object.time_created,
+                "version_date": policy_object.version_date
+            }
+            if "tenancy" in policy_record['compartment_id']:
+                self.__root_policies.append(policy_record)
+            else:
+                self.__policy_dictionary[policy_record['compartment_id']].append(policy_record)
+
+        for compartment in self.__compartments:
             compartment_record = {
                 "compartment_id": compartment.compartment_id,
                 "defined_tags": compartment.defined_tags,
@@ -86,25 +94,23 @@ class Rbac(ReviewPoint):
                 "id": compartment.id,
                 "lifecycle_state": compartment.lifecycle_state,
                 "name": compartment.name,
-                "time_created": compartment.time_created,          
+                "time_created": compartment.time_created,
             }
-            self.__compartments.append(compartment_record)
+            if "tenancy" not in compartment_record['id']:
+                self.__compartment_dicts.append(compartment_record)
 
-        for i, compartment in enumerate(compartments):
-            self.__policy_dictionary.setdefault(compartment.id, []).append(self.__policies[i])
 
     def analyze_entity(self, entry):
         entry_check = ['inspect', 'read', 'update', 'manage', 'in compartment']
         
-        self.load_entity()    
+        self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         self.__set_compartment_finding_count(entry_check)
-        policies_in_root_compartment = self.__get_policies_in_root_compartment()        
-                
+        policies_in_root_compartment = self.__root_policies
 
         for key, value in self.__compartment_count_results.items():
-            for compartment in self.__compartments:
+            for compartment in self.__compartment_dicts:
                 if key == compartment['id']:
                     if value < 5:
                         dictionary[entry]['status'] = False
@@ -114,7 +120,7 @@ class Rbac(ReviewPoint):
 
         
         for key, value in self.__no_policy_compartments.items():
-            for compartment in self.__compartments:
+            for compartment in self.__compartment_dicts:
                 if key == compartment['id']:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(compartment)
@@ -123,49 +129,25 @@ class Rbac(ReviewPoint):
         
 
         if len(policies_in_root_compartment) > 0:
-            dictionary[entry]['status']= False
+            dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('Root compartment has policies')            
             for policy in policies_in_root_compartment:
                 dictionary[entry]['mitigations'].append("Remove policy: " + policy['name']+" from root compartment and attach it to a more specific compartment")
                         
-                        
-            
         return dictionary
 
 
     def __set_compartment_finding_count(self, entry_check):
-        for compartment in self.__compartments:
+        for compartment in self.__compartment_dicts:
             policy_counter = 0
             no_policy_counter = 0
-            for comp_id, policy in self.__policy_dictionary.items():
-                if comp_id == compartment['id']:                    
-                    for pol in policy: 
-                        if len(pol) > 0:
-                            for p in pol: 
-                                for check in entry_check:
-                                    if check.lower() in str(p['statements']).lower():                                        
-                                        policy_counter += 1
-                                    self.__compartment_count_results[comp_id]=policy_counter
-                        else:                            
-                            self.__no_policy_compartments[comp_id]=no_policy_counter
-
-
-    def __get_policies_in_root_compartment(self):
-        policies = []
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)
-        for policy in policy_data:
-            policy_record = {
-                "compartment_id": policy.compartment_id,
-                "defined_tags": policy.defined_tags,
-                "description": policy.description,
-                "freeform_tags": policy.freeform_tags,
-                "id": policy.id,
-                "lifecycle_state": policy.lifecycle_state,
-                "name": policy.name,
-                "statements": policy.statements,
-                "time_created": policy.time_created,
-                "version_date": policy.version_date
-            }
-            policies.append(policy_record)
-        
-        return policies
+            for comp_id, policy_list in self.__policy_dictionary.items():
+                if comp_id == compartment['id']:
+                    if len(policy_list) > 0:
+                        for policy in policy_list:
+                            for check in entry_check:
+                                if check.lower() in str(policy['statements']).lower():
+                                    policy_counter += 1
+                                self.__compartment_count_results[comp_id]=policy_counter
+                    else:                            
+                        self.__no_policy_compartments[comp_id]=no_policy_counter

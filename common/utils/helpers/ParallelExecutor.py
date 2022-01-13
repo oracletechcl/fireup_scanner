@@ -455,20 +455,18 @@ def get_user_with_api_keys(item):
     return user_data
 
 
-def get_policies_per_compartment(item):
+def get_policies(item):
     identity_client = item[0]
     compartments = item[1:]
 
-    policies_per_compartment = []
+    policies = []
 
     for compartment in compartments:
-        policies = []
         policy_data = get_policies_data(identity_client, compartment.id)
         for policy in policy_data:
             policies.append(policy)
-        policies_per_compartment.append(policies)
 
-    return policies_per_compartment
+    return policies
 
 
 def get_instances(item):
