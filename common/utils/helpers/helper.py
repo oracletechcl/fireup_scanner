@@ -34,7 +34,7 @@ def get_audit_client(config, signer):
 
 def get_cloud_guard_client(config, signer):
     try:
-        cloud_guard_client = oci.cloudguard.CloudGuardClient(config, signer=signer)
+        cloud_guard_client = oci.cloud_guard.CloudGuardClient(config, signer=signer)
     except Exception as e:
         raise RuntimeError("Failed to create cloud guard client: " + e)
     return cloud_guard_client
@@ -465,6 +465,7 @@ def get_max_security_zone_data(identity_client, compartment_id):
         header_params=header_params,
         response_type="json").data
 
+
 def get_db_home_patches(database_client, db_home_id):
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_home_patches,
@@ -472,12 +473,14 @@ def get_db_home_patches(database_client, db_home_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_db_home_patch_history(database_client, db_home_id):
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_home_patch_history_entries,
         db_home_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_db_system_patch_history(database_client, db_home_id):
     return oci.pagination.list_call_get_all_results(
@@ -490,9 +493,11 @@ def get_db_system_patch_history(database_client, db_home_id):
 def get_db_system_patch_details(database_client, db_system_id, patch_id):
     return database_client.get_db_system_patch(db_system_id, patch_id).data
 
+
 def get_db_home_patch_details(database_client, db_home_id, patch_id):
     return database_client.get_db_home_patch(db_home_id,patch_id).data
 
+  
 def get_drg_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_drgs,
@@ -582,9 +587,10 @@ def get_network_sources(identity_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_authentication_policy(identity_client, tenancy_id):
-    return identity_client.get_authentication_policy(tenancy_id).data
-    
+    return identity_client.get_authentication_policy(tenancy_id).data    
+
 
 def get_virtual_circuit_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
@@ -592,7 +598,7 @@ def get_virtual_circuit_data(network_client, compartment_id):
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
-
+  
 
 def get_budget_client(config, signer):
     try:
@@ -617,3 +623,10 @@ def get_budget_alert_rules_data(budget_client, budget_id):
         budget_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
+ 
+def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
+    return cloud_guard_client.get_configuration(
+        tenancy_id
+    ).data
+
