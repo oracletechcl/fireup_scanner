@@ -30,8 +30,13 @@ fi
 
 source "./venv/bin/activate"
 
-rm -rf reports &>/dev/null
-mkdir reports
+if [ ! -d "reports" ] 
+then
+    mkdir reports
+else
+    rm -rf reports &>/dev/null
+    mkdir reports
+fi
 
 # save the output to a file but also show in console
 
