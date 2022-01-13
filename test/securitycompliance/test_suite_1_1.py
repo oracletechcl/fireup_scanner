@@ -6,7 +6,7 @@
 
 from os import write
 from common.utils.helpers.helper import get_config_and_signer
-from common.utils.formatter.printer import debug_with_date
+from common.utils.formatter.printer import debug
 from classes.securitycompliance.Mfa import Mfa
 from common.utils.statics import Statics
 from common.utils.tokenizer.signer import *
@@ -33,7 +33,7 @@ def test_review_point(capsys):
     dictionary = result_dictionary.analyze_entity(Statics.__rp_1_1['entry'])   
     
     for item in dictionary[Statics.__rp_1_1['entry']]['findings']:
-        debug_with_date(item)
+        debug(item)
         results_in_fault += 1
     
     assert results_in_fault == 47
