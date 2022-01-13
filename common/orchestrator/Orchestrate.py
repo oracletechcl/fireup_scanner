@@ -48,6 +48,7 @@ from classes.performancecost.ComputeLimits import ComputeLimits
 from classes.performancecost.TrafficSteering import TrafficSteering
 from classes.performancecost.CompartmentWorkload import CompartmentWorkload
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
+from classes.performancecost.CheckBudgets import CheckBudgets
 from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
 
 from common.utils.reporter.report import *
@@ -102,6 +103,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_3_4(config, signer, report_directory)
     __call_3_5(config, signer, report_directory)
     __call_3_6(config, signer, report_directory)
+    __call_3_9(config, signer, report_directory)
     __call_3_10(config, signer, report_directory)
 
 
@@ -604,6 +606,19 @@ def __call_3_6(config, signer, report_directory):
     __compartmentWorkload_dictionary = compartmentWorkload.analyze_entity(Statics.__rp_3_6['entry'])
     generate_on_screen_report(__compartmentWorkload_dictionary, report_directory, Statics.__rp_3_6['entry'])
     generate_mitigation_report(__compartmentWorkload_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_6['fireup_items'])
+
+
+def __call_3_9(config, signer, report_directory):    
+    checkBudgets = CheckBudgets(
+    Statics.__rp_3_9['entry'],
+    Statics.__rp_3_9['area'],
+    Statics.__rp_3_9['sub_area'],
+    Statics.__rp_3_9['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_9['entry']+"_"+Statics.__rp_3_9['area']+"_"+Statics.__rp_3_9['sub_area']+"_mitigations"
+    __checkBudgets_dictionary = checkBudgets.analyze_entity(Statics.__rp_3_9['entry'])
+    generate_on_screen_report(__checkBudgets_dictionary, report_directory, Statics.__rp_3_9['entry'])
+    generate_mitigation_report(__checkBudgets_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_9['fireup_items'])
 
 
 def __call_3_10(config, signer, report_directory):    

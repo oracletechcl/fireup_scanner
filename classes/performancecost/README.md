@@ -8,4 +8,5 @@
 | 3.4          | [OneRegionPerVCN.py](OneRegionPerVCN.py)                                      
 | 3.5          | [TrafficSteering.py](TrafficSteering.py)
 | 3.6          | [CompartmentWorkload.py](CompartmentWorkload.py)
+| 3.9          | [CheckBudgets.py](CheckBudgets.py)
 | 3.10         | [CheckAutoTuning.py](CheckAutoTuning.py)                                    

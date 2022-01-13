@@ -33,7 +33,11 @@ source "./venv/bin/activate"
 if [ ! -d "reports" ] 
 then
     mkdir reports
+else
+    rm -rf reports &>/dev/null
+    mkdir reports
 fi
+
 # save the output to a file but also show in console
 
 python3 fireup.py 2>&1 | tee ./reports/fireup.log 
