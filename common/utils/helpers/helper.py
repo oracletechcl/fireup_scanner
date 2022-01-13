@@ -575,6 +575,17 @@ def get_oke_cluster_data(container_engine_client, compartment_id):
     ).data
 
 
+def get_network_sources(identity_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        identity_client.list_network_sources,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_authentication_policy(identity_client, tenancy_id):
+    return identity_client.get_authentication_policy(tenancy_id).data
+    
+
 def get_virtual_circuit_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_virtual_circuits,
