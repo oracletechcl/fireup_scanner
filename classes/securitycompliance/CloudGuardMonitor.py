@@ -13,8 +13,8 @@ from common.utils.helpers.helper import *
 class CloudGuardMonitor(ReviewPoint):
 
     # Class Variables    
-    # __compartments = []
-    __record = None # This record captures both tenancy id and cloud guard enable status
+    __tenancy_data_including_cloud_guard = None 
+    # __tenancy_data_including_cloud_guard captures tenancy id, name descirption, region key, and cloud guard status
     __identity = None
     __cloud_guard_client = None
     __tenancy = None
@@ -52,15 +52,19 @@ class CloudGuardMonitor(ReviewPoint):
 
 
     def load_entity(self):   
+        
+        # Get cloud guard configuration data based on tenancy id
         cloud_guard_data = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)
-        record = {
+        
+        # Record some data of a tenancy and its cloud guard enable status
+        tenancy_data_including_cloud_guard = {
             "tenancy_id" : self.__tenancy.id,
             "tenancy_name" : self.__tenancy.name,
             "tenancy_description" : self.__tenancy.description,
             "tenancy_region_key" : self.__tenancy.home_region_key,
             "cloud_guard_enable_stautus" : cloud_guard_data.status
-            }
-        self.__record = record
+        }
+        self.__tenancy_data_including_cloud_guard = tenancy_data_including_cloud_guard
     
 
     def analyze_entity(self, entry):
@@ -68,10 +72,10 @@ class CloudGuardMonitor(ReviewPoint):
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
         # Check if Cloud Guard is enable
-        if self.__record['cloud_guard_enable_stautus'] != 'ENABLED':
+        if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
             dictionary[entry]['status'] = False
-            dictionary[entry]['findings'].append(self.__record) 
+            dictionary[entry]['findings'].append(self.__tenancy_data_including_cloud_guard) 
             dictionary[entry]['failure_cause'].append("Root level of the tenancy does not have Cloud Guard enabled")
-            dictionary[entry]['mitigations'].append('Enable Cloud Guard on tenancy: ' + self.__record['tenancy_name'])
+            dictionary[entry]['mitigations'].append('Enable Cloud Guard on tenancy: ' + self.__tenancy_data_including_cloud_guard['tenancy_name'])
                                   
         return dictionary
