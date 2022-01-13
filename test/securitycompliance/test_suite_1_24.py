@@ -7,7 +7,7 @@
 from os import write
 from classes.securitycompliance.CloudGuardMonitor import CloudGuardMonitor
 from common.utils.helpers.helper import get_config_and_signer
-from common.utils.formatter.printer import debug_with_date
+from common.utils.formatter.printer import debug
 from common.utils.statics import Statics
 from common.utils.tokenizer.signer import *
 
