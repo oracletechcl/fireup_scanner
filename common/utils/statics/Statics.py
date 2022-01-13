@@ -191,10 +191,10 @@ __rp_1_20 = {
 __rp_1_21 = {
     'entry': '1.21',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Ensure Secure Network Access',
+    'review_point': 'Secure the Load Balancers',
+    'success_criteria': 'Ensure that LBaaS if exists, have TLS Certificates associated to them if in public subnets',
+    'fireup_items': ['Fireup Task: 15 - Are there any IAM policies written at root level?'],
 }
 
 __rp_1_22 = {

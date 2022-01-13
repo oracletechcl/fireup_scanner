@@ -22,4 +22,5 @@
 | 1.18         | [SecureFileStorage.py](SecureFileStorage.py)            |
 | 1.19         | [BucketPermissions.py](BucketPermissions.py)            |
 | 1.20         | [BucketEncryption.py](BucketEncryption.py)              |
-| 1.22         | [NetworkSources.py](NetworkSources.py)              |
+| 1.21         | [SecureLoadBalancers.py](SecureLoadBalancers.py)        |
+| 1.22         | [NetworkSources.py](NetworkSources.py)                  |

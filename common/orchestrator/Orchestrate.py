@@ -28,6 +28,7 @@ from classes.securitycompliance.DBKeys import DBKeys
 from classes.securitycompliance.DBSystemPatch import DBSystemPatch
 from classes.securitycompliance.ADBSystemAccess import ADBSystemAccess
 from classes.securitycompliance.NetworkSources import NetworkSources
+from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
 
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.RedundantConnections import RedundantConnections
@@ -75,10 +76,11 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_16(config, signer, report_directory)
     __call_1_17(config, signer, report_directory)
     __call_1_18(config, signer, report_directory)
-    __call_1_19(config, signer, report_directory)   
+    __call_1_19(config, signer, report_directory)
     __call_1_20(config, signer, report_directory)
+    __call_1_21(config, signer, report_directory)
     __call_1_22(config, signer, report_directory)
-    
+
     __call_2_5(config, signer, report_directory)
     __call_2_7(config, signer, report_directory)
     __call_2_8(config, signer, report_directory)
@@ -355,6 +357,18 @@ def __call_1_20(config, signer, report_directory):
     __instancePrincipal_dictionary = bucket.analyze_entity(Statics.__rp_1_20['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_20['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_20['fireup_items'])
+
+def __call_1_21(config, signer, report_directory):
+    secureLoadBalancers = SecureLoadBalancers(
+    Statics.__rp_1_21['entry'],
+    Statics.__rp_1_21['area'],
+    Statics.__rp_1_21['sub_area'],
+    Statics.__rp_1_21['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_21['entry']+"_"+Statics.__rp_1_21['area']+"_"+Statics.__rp_1_21['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = secureLoadBalancers.analyze_entity(Statics.__rp_1_21['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_21['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_21['fireup_items'])
 
 def __call_1_22(config, signer, report_directory):
     networkSources = NetworkSources(
