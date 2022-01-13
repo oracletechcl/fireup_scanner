@@ -227,10 +227,10 @@ __rp_1_24 = {
 __rp_1_25 = {
     'entry': '1.25',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor and Audit Your Environment',
+    'review_point': 'Configure Auditing',    
+    'success_criteria': 'Enable Auditing',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_1_26 = {
