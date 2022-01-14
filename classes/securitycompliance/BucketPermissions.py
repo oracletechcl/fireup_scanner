@@ -172,7 +172,7 @@ class BucketPermissions(ReviewPoint):
         if total_public_buckets > (total_public_buckets + total_private_buckets)/2:
              dictionary[entry]['status'] = False
              dictionary[entry]['failure_cause'].append('Majority of buckets are public')
-             dictionary[entry]['mitigations'].append('Number of public buckets: "' + str(total_public_buckets) + '" total number of buckets: "' + str(total_public_buckets + total_private_buckets) + '" Consider creating private buckets and use pre-authenticated requests (PARs) to provide access to objects stored in buckets')
+             dictionary[entry]['mitigations'].append('Too many public buckets. Consider replacing public buckets with private buckets and use pre-authenticated requests (PARs) to provide access to objects stored in buckets')
             
         # Check how many users have access to update bucket access
         __problem_policies = []
@@ -192,7 +192,8 @@ class BucketPermissions(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(policy)    
                 dictionary[entry]['failure_cause'].append('This policy allows users to update private bucket to public access')                
-                dictionary[entry]['mitigations'].append('Make sure that users in the following policy statements are allowed to update bucket access: "' + statement +
-                                                        '" the number of users able to update bucket access should be none or minimal (less than 5 %)')
+                dictionary[entry]['mitigations'].append('The folowing policy statement: "' + statement + '" gives permission to update bucket access.'
+                                                        ' Check if this statement is still valid because the number of users able to update bucket access should be minimal (less than 5%)')
+        
         return dictionary
 
