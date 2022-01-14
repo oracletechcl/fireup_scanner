@@ -13,7 +13,7 @@ from common.utils.helpers.helper import *
 class AuditConfiguration(ReviewPoint):
 
     # Class Variables    
-    __tenancy_data_including_audit_rentention_days = None 
+    __tenancy_data = []
     __identity = None
     __audit_client = None
     __tenancy = None
@@ -54,14 +54,14 @@ class AuditConfiguration(ReviewPoint):
         
         audit_data=get_audit_configuration_data(self.__audit_client,self.__tenancy.id)
         # Record some data of a tenancy and its auditing configuration
-        tenancy_data_including_audit_rentention = {
+        tenancy_data = {
             "tenancy_id" : self.__tenancy.id,
             "tenancy_name" : self.__tenancy.name,
             "tenancy_description" : self.__tenancy.description,
             "tenancy_region_key" : self.__tenancy.home_region_key,
             "audit_retention_period_days": audit_data.retention_period_days
         }
-        self.__tenancy_data_including_audit_rentention_days = tenancy_data_including_audit_rentention
+        self.__tenancy_data.append(tenancy_data)
     
 
     def analyze_entity(self, entry):
@@ -69,10 +69,11 @@ class AuditConfiguration(ReviewPoint):
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
         # Check if audit retention is set to 365 Days
-        if self.__tenancy_data_including_audit_rentention_days['audit_retention_period_days'] != 365:
-            dictionary[entry]['status'] = False
-            dictionary[entry]['findings'].append(self.__tenancy_data_including_audit_rentention_days) 
-            dictionary[entry]['failure_cause'].append("Audit retention is not set to 365 Days")
-            dictionary[entry]['mitigations'].append('Set audit retention to 365 days on tenancy: ' + self.__tenancy_data_including_audit_rentention_days['tenancy_name'])
+        for tenancy in self.__tenancy_data:
+            if tenancy['audit_retention_period_days'] != 365:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(tenancy)
+                dictionary[entry]['failure_cause'].append("Audit retention is not set to 365 Days")
+                dictionary[entry]['mitigations'].append('Set audit retention to 365 days on tenancy: ' + tenancy['tenancy_name'])
                                   
         return dictionary
