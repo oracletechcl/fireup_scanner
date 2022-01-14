@@ -7,6 +7,7 @@
 
 from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
@@ -16,6 +17,8 @@ class StoragePermissions(ReviewPoint):
     # Class Variables
     __identity = None
     __tenancy = None
+    __compartments = []
+    __policy_objects = []
     __policies = []
  
     def __init__(self,
@@ -49,9 +52,12 @@ class StoragePermissions(ReviewPoint):
 
     def load_entity(self):
         
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)      
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        for policy in policy_data:  
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
+
+        for policy in self.__policy_objects:  
             record = {
                 "compartment_id": policy.compartment_id,
                 "defined_tags": policy.defined_tags,
@@ -79,8 +85,7 @@ class StoragePermissions(ReviewPoint):
                              'buckets', 'objects'
                              ]
     
-        counter = 0        
-
+        counter = 0
         for policy in self.__policies:
             for statement in policy['statements']:
                 if __criteria_1.upper() in statement.upper():
@@ -90,17 +95,12 @@ class StoragePermissions(ReviewPoint):
                             __problem_policies.append({counter:statement})
                 
         if counter > 0:
-            for idx, policy in enumerate(__problem_policies):        
-
+            for idx, policy in enumerate(__problem_policies):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(policy)    
                 dictionary[entry]['failure_cause'].append('This policy allow users to Delete Storage Resources')                
-                dictionary[entry]['mitigations'].append('Make sure that users in the following policy are allowed to Delete Storage Resources : ' + str(policy[idx+1]))
-                
-                            
+                dictionary[entry]['mitigations'].append('Make sure that users in the following policy are allowed to Delete Storage Resources : ' + str(policy[idx+1]))              
         else:
             dictionary[entry]['status'] = True
-            
 
         return dictionary
-
