@@ -6,6 +6,7 @@
 
 from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
@@ -16,11 +17,10 @@ class CompartmentsAndPolicies(ReviewPoint):
     # Class Variables    
     __users = []
     __compartments = []
+    __policy_objects = []
     __policies = []
     __identity = None
     __tenancy = None
-
-
 
 
     def __init__(self,
@@ -89,8 +89,11 @@ class CompartmentsAndPolicies(ReviewPoint):
             }
             self.__compartments.append(compartment_record)
 
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)        
-        for policy in policy_data:  
+        compartments.append(get_tenancy_data(self.__identity, self.config))
+
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], compartments, ParallelExecutor.get_policies, len(compartments), ParallelExecutor.policies)
+
+        for policy in self.__policy_objects:  
             policy_record = {
                 "compartment_id": policy.compartment_id,
                 "defined_tags": policy.defined_tags,

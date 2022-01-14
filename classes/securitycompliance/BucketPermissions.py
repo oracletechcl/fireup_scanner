@@ -19,6 +19,8 @@ class BucketPermissions(ReviewPoint):
     # Class Variables
     __identity = None
     __tenancy = None
+    __compartments = []
+    __policy_objects = []
     __policies = []
     __bucket_objects = []
     __par_data = {}
@@ -62,8 +64,8 @@ class BucketPermissions(ReviewPoint):
         par_object_storage_clients = []
         regions = get_regions_data(self.__identity, self.config)
 
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
         # get clients from each region 
         for region in regions:
@@ -72,15 +74,15 @@ class BucketPermissions(ReviewPoint):
             object_storage_clients.append((get_object_storage_client(region_config, self.signer), obj_namespace))
             par_object_storage_clients.append((get_object_storage_client(region_config, self.signer),obj_namespace, region.region_name, region.region_key.lower()))
       
-        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_buckets, len(compartments), ParallelExecutor.buckets)
+        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)
         par_data = ParallelExecutor.executor(par_object_storage_clients, self.__bucket_objects, ParallelExecutor.get_preauthenticated_requests_per_bucket, len(self.__bucket_objects), ParallelExecutor.bucket_preauthenticated_requests)
         
         for par in par_data:
             self.__par_data.update(par)
-      
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)   
 
-        for policy in policy_data:  
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
+
+        for policy in self.__policy_objects:  
             record = {
                 "compartment_id": policy.compartment_id,
                 "defined_tags": policy.defined_tags,
