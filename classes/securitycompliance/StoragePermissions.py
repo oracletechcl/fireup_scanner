@@ -78,27 +78,22 @@ class StoragePermissions(ReviewPoint):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        __problem_policies = []
-        __criteria_list = ['manage','all-resources', 'volume-family','file-family', 'object-family',
+        __verb_list = ['manage']
+        __resource_list = ['all-resources', 'volume-family','file-family', 'object-family',
                              'volumes', 'volume-attachments', 'volume-backups',
                              'file-systems', 'mount-targets','export-sets',
                              'buckets', 'objects'
                              ]
-        
         for policy in self.__policies:
-            problem_statements = []
-            for statement in policy['statements']:  
-                if __criteria_list[0].lower() in statement.lower() and any(criteria.lower() in statement.lower() for criteria in __criteria_list[1:]):
-                    problem_statements.append(statement)
-            if problem_statements:
-                policy['statements'] = problem_statements
-                __problem_policies.append(policy)
-                            
-        for policy in __problem_policies:
             for statement in policy['statements']:
-                dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(policy) 
-                dictionary[entry]['failure_cause'].append('This policy allow users to Delete Storage Resources')                
-                dictionary[entry]['mitigations'].append('Make sure that users are allowed to Delete Storage Resources in the Policy: ' + policy['name'] + ' in Statement: ' + statement)              
-                
+                if __verb_list[0] in statement:
+                    for banned_resources in __resource_list:
+                        if banned_resources in statement:
+                            dictionary[entry]['status'] = False
+                            dictionary[entry]['findings'].append(policy) 
+                            dictionary[entry]['failure_cause'].append('Found policy allowing un-authorized users to Delete Storage Resources')                                            
+                            dictionary[entry]['mitigations'].append("Evaluate to update policy: " + policy['name']+
+                                                                    " in compartment: "+get_compartment_name(self.__compartments, policy['compartment_id']) + 
+                                                                    " removing wide permissions: " +__verb_list[0] +" " + banned_resources)      
+               
         return dictionary

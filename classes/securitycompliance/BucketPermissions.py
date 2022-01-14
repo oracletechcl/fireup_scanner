@@ -148,7 +148,7 @@ class BucketPermissions(ReviewPoint):
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         total_private_buckets = 0
-        total_public_buckets = 0
+        total_public_buckets = 0        
         
         # Find expired PARs
         for bucket in self.__buckets: 
@@ -163,16 +163,17 @@ class BucketPermissions(ReviewPoint):
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(par)
                             dictionary[entry]['failure_cause'].append('The pre-authenticated request is expired')   
-                            dictionary[entry]['mitigations'].append('Following PAR: "' + par['name'] +
-                                                                    '" related to bucket: "' + bucket['name'] +
-                                                                    '" is expired with the date: ' + str(par['time_expires'].date()) + ' check if the access is still needed')      
+                            dictionary[entry]['mitigations'].append('Check if PAR: "' + par['name'] +
+                                                                    '" at bucket: "' + bucket['name'] +
+                                                                    '" expired at: ' + str(par['time_expires'].date())+ ' is still needed')      
             else:
-                total_public_buckets+=1      
+                total_public_buckets+=1     
+        
         # Check if there is too many public buckets
         if total_public_buckets > (total_public_buckets + total_private_buckets)/2:
              dictionary[entry]['status'] = False
-             dictionary[entry]['failure_cause'].append('Majority of buckets are public')
-             dictionary[entry]['mitigations'].append('Too many public buckets. Consider replacing public buckets with private buckets and use pre-authenticated requests (PARs) to provide access to objects stored in buckets')
+             dictionary[entry]['failure_cause'].append('Gross majority of buckets are public')
+             dictionary[entry]['mitigations'].append('Consider make Bucket: "'+ bucket['name'] + 'private')
             
         # Check how many users have access to update bucket access
         __problem_policies = []
