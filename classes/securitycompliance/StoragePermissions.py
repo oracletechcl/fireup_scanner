@@ -77,30 +77,28 @@ class StoragePermissions(ReviewPoint):
     
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
+
         __problem_policies = []
-        __criteria_1 = 'manage'
-        __criteria_2_list = ['all-resources', 'volume-family','file-family', 'object-family',
+        __criteria_list = ['manage','all-resources', 'volume-family','file-family', 'object-family',
                              'volumes', 'volume-attachments', 'volume-backups',
                              'file-systems', 'mount-targets','export-sets',
                              'buckets', 'objects'
                              ]
-    
-        counter = 0
+        
         for policy in self.__policies:
+            problem_statements = []
+            for statement in policy['statements']:  
+                if __criteria_list[0].lower() in statement.lower() and any(criteria.lower() in statement.lower() for criteria in __criteria_list[1:]):
+                    problem_statements.append(statement)
+            if problem_statements:
+                policy['statements'] = problem_statements
+                __problem_policies.append(policy)
+                            
+        for policy in __problem_policies:
             for statement in policy['statements']:
-                if __criteria_1.upper() in statement.upper():
-                    for criteria in __criteria_2_list:
-                        if criteria.upper() in statement.upper():
-                            counter+=1
-                            __problem_policies.append({counter:statement})
-                
-        if counter > 0:
-            for idx, policy in enumerate(__problem_policies):
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(policy)    
+                dictionary[entry]['findings'].append(policy) 
                 dictionary[entry]['failure_cause'].append('This policy allow users to Delete Storage Resources')                
-                dictionary[entry]['mitigations'].append('Make sure that users in the following policy are allowed to Delete Storage Resources : ' + str(policy[idx+1]))              
-        else:
-            dictionary[entry]['status'] = True
-
+                dictionary[entry]['mitigations'].append('Make sure that users are allowed to Delete Storage Resources in the Policy: ' + policy['name'] + ' in Statement: ' + statement)              
+                
         return dictionary
