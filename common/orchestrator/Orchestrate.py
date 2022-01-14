@@ -398,7 +398,7 @@ def __call_2_1(config, signer, report_directory):
     Statics.__rp_2_1['review_point'],
     True, [], [], [], [], config, signer)
     mitigation_report_name = Statics.__rp_2_1['entry']+"_"+Statics.__rp_2_1['area']+"_"+Statics.__rp_2_1['sub_area']+"_mitigations"
-    __compQuotas_dictionary = CheckAutoscaling.analyze_entity(Statics.__rp_2_1['entry'])
+    __compQuotas_dictionary = autoscaling.analyze_entity(Statics.__rp_2_1['entry'])
     generate_on_screen_report(__compQuotas_dictionary, report_directory, Statics.__rp_2_1['entry'])
     generate_mitigation_report(__compQuotas_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_1['fireup_items'])
 

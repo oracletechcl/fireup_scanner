@@ -15,9 +15,10 @@ compartment_id = None
 compartments = None
 
 availability_domains = []
+instance_pools = []
 
 security_lists = []
-
+autoscaling_configurations = []
 
 steering_policies = []
 vcns_in_multiple_regions = []
@@ -900,3 +901,28 @@ def get_virtual_circuits(item):
                 virtual_circuits.append(virtual_circuit)
 
     return virtual_circuits
+
+def get_autoscaling_configurations(item):
+    autoscaling_client = item[0]
+    compartments = item[1:]
+
+    autoscaling_configurations = []
+
+    for compartment in compartments:
+        autoscaling_configurations_data = get_autoscaling_configurations_per_compartment(autoscaling_client, compartment.id)
+        if autoscaling_configurations_data:
+            autoscaling_configurations.append(autoscaling_configurations_data)
+            
+    return autoscaling_configurations
+
+def get_instance_pool(item):
+    compute_management_client = item[0]
+    compartments = item[1:]
+    instance_pools = []
+
+    for compartment in compartments:
+        instance_pools_data = get_instance_pools_per_compartment(compute_management_client, compartment.id)
+        if instance_pools_data:
+            instance_pools.append(instance_pools_data)
+        
+    return instance_pools
