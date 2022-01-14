@@ -634,3 +634,7 @@ def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
         tenancy_id
     ).data
 
+def get_audit_configuration_data(audit_client, tenancy_id):
+    return audit_client.get_configuration(
+        tenancy_id
+    ).data

@@ -13,10 +13,9 @@ from common.utils.helpers.helper import *
 class AuditConfiguration(ReviewPoint):
 
     # Class Variables    
-    # __tenancy_data_including_cloud_guard = None 
-    # __tenancy_data_including_cloud_guard captures tenancy id, name descirption, region key, and cloud guard status
+    __tenancy_data_including_audit_rentention_days = None 
     __identity = None
-    # __cloud_guard_client = None
+    __audit_client = None
     __tenancy = None
 
 
@@ -48,34 +47,32 @@ class AuditConfiguration(ReviewPoint):
        self.signer = signer
        self.__identity = get_identity_client(self.config, self.signer)
        self.__tenancy = get_tenancy_data(self.__identity, self.config)
-    #    self.__cloud_guard_client = get_cloud_guard_client(self.config, self.signer)
+       self.__audit_client=get_audit_client(self.config, self.signer)
 
 
     def load_entity(self):   
         
-        # Get cloud guard configuration data based on tenancy id
-        # cloud_guard_data = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)
-        
-        # Record some data of a tenancy and its cloud guard enable status
-        tenancy_data_including_cloud_guard = {
+        audit_data=get_audit_configuration_data(self.__audit_client,self.__tenancy.id)
+        # Record some data of a tenancy and its auditing configuration
+        tenancy_data_including_audit_rentention = {
             "tenancy_id" : self.__tenancy.id,
             "tenancy_name" : self.__tenancy.name,
             "tenancy_description" : self.__tenancy.description,
             "tenancy_region_key" : self.__tenancy.home_region_key,
-            # "cloud_guard_enable_stautus" : cloud_guard_data.status
+            "audit_retention_period_days": audit_data.retention_period_days
         }
-        # self.__tenancy_data_including_cloud_guard = tenancy_data_including_cloud_guard
+        self.__tenancy_data_including_audit_rentention_days = tenancy_data_including_audit_rentention
     
 
     def analyze_entity(self, entry):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
-        # Check if Cloud Guard is enable
-        # if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
-        #     dictionary[entry]['status'] = False
-        #     dictionary[entry]['findings'].append(self.__tenancy_data_including_cloud_guard) 
-        #     dictionary[entry]['failure_cause'].append("Root level of the tenancy does not have Cloud Guard enabled")
-        #     dictionary[entry]['mitigations'].append('Enable Cloud Guard on tenancy: ' + self.__tenancy_data_including_cloud_guard['tenancy_name'])
+        # Check if audit retention is set to 365 Days
+        if self.__tenancy_data_including_audit_rentention_days['audit_retention_period_days'] != 365:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['findings'].append(self.__tenancy_data_including_audit_rentention_days) 
+            dictionary[entry]['failure_cause'].append("Audit retention is not set to 365 Days")
+            dictionary[entry]['mitigations'].append('Set audit retention to 365 days on tenancy: ' + self.__tenancy_data_including_audit_rentention_days['tenancy_name'])
                                   
         return dictionary
