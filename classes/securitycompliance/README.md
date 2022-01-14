@@ -25,3 +25,4 @@
 | 1.21         | [SecureLoadBalancers.py](SecureLoadBalancers.py)        |
 | 1.22         | [NetworkSources.py](NetworkSources.py)                  |
 | 1.24         | [CloudGuardMonitor.py](CloudGuardMonitor.py)            |
+| 1.25         | [AuditConfiguration.py](AuditConfiguration.py)            |
