@@ -471,10 +471,10 @@ __rp_3_8 = {
 __rp_3_9 = {
     'entry': '3.9',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Define Budgets',    
+    'success_criteria': 'Check if budgets are implemented on tenant',
+    'fireup_items': ['Fireup Task: 52 - Have you implemented budgets and spending thresholds ', 'Task 53 - Do you have budgets for specific resource types'],
 }
 
 __rp_3_10 = {
