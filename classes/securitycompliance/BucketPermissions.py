@@ -193,8 +193,9 @@ class BucketPermissions(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(policy)    
                 dictionary[entry]['failure_cause'].append('This policy allows users to update private bucket to public access')                
-                dictionary[entry]['mitigations'].append('The folowing policy statement: "' + statement + '" gives permission to update bucket access.'
-                                                        ' Check if this statement is still valid because the number of users able to update bucket access should be minimal (less than 5%)')
+                dictionary[entry]['mitigations'].append('Evaluate updating Policy: "' + statement + 
+                                                        " in compartment: "+get_compartment_name(self.__compartments, policy['compartment_id'])+                                                        
+                                                        ' to give less access to buckets')
         
         return dictionary
 
