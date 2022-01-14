@@ -655,7 +655,8 @@ def get_preauthenticated_requests_per_bucket(item):
         region = bucket.id.split('.')[3]  
         if object_storage_client[2] in region or object_storage_client[3] in region:    
             preauthenticated_requests = get_preauthenticated_requests(object_storage_client[0],namespace,bucket.name)
-            bucket_preauthenticated_requests.append({bucket.name:preauthenticated_requests})
+            if preauthenticated_requests:
+                bucket_preauthenticated_requests.append({bucket.name:preauthenticated_requests})
                 
     return bucket_preauthenticated_requests
 
