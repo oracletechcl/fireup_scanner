@@ -14,4 +14,4 @@ fi
 
 source "venv/bin/activate"
 echo "Unit Test Started at: $(date)"
-python3 -m pytest --durations=0 -v
+python3 -m pytest --durations=0 -v 2>&1 | tee output.out
