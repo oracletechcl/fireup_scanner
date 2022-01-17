@@ -14,6 +14,7 @@ class DataSecurity(ReviewPoint):
     # Class Variables
     __instance_objects = []
     __instances = []
+    __policy_objects = []
     __policies = []
     __compartments = []
     __identity = None
@@ -75,9 +76,9 @@ class DataSecurity(ReviewPoint):
             }
             self.__instances.append(instance_record)
 
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)      
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)     
 
-        for policy in policy_data:
+        for policy in self.__policy_objects:
             record = {
                 "compartment_id": policy.compartment_id,
                 "defined_tags": policy.defined_tags,

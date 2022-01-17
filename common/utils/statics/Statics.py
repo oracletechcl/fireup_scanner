@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v0.0.10'
+__version__ = 'v0.0.11'
 __lenght_print__ = "200"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -191,10 +191,10 @@ __rp_1_20 = {
 __rp_1_21 = {
     'entry': '1.21',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Ensure Secure Network Access',
+    'review_point': 'Secure the Load Balancers',
+    'success_criteria': 'Ensure that LBaaS if exists, have TLS Certificates associated to them if in public subnets',
+    'fireup_items': ['Fireup Task: 15 - Are there any IAM policies written at root level?'],
 }
 
 __rp_1_22 = {
@@ -227,10 +227,10 @@ __rp_1_24 = {
 __rp_1_25 = {
     'entry': '1.25',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor and Audit Your Environment',
+    'review_point': 'Configure Auditing',    
+    'success_criteria': 'Enable Auditing',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_1_26 = {
@@ -273,10 +273,10 @@ __rp_2_3 = {
 __rp_2_4 = {
     'entry': '2.4',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Service Limits',
+    'review_point': 'Monitor and Manage Your Service Limits',    
+    'success_criteria': 'Check the current limits of the services and check if they are busy by 90% or more',
+    'fireup_items': ['Fireup Task 40: - Do you have any policy/procedure in place for managing & monitoring service limits'],
 }
 
 __rp_2_5 = {
@@ -471,10 +471,10 @@ __rp_3_8 = {
 __rp_3_9 = {
     'entry': '3.9',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Define Budgets',    
+    'success_criteria': 'Check if budgets are implemented on tenant',
+    'fireup_items': ['Fireup Task: 52 - Have you implemented budgets and spending thresholds ', 'Task 53 - Do you have budgets for specific resource types'],
 }
 
 __rp_3_10 = {

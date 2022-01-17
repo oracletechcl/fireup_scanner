@@ -33,6 +33,9 @@ local_peering_gateways = []
 
 virtual_circuits = []
 
+limit_values_with_regions = []
+limit_availabilities_with_regions = []
+
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
 vcns = []
@@ -456,21 +459,31 @@ def get_user_with_api_keys(item):
     return user_data
 
 
-def get_policies_per_compartment(item):
+def get_policies(item):
     identity_client = item[0]
     compartments = item[1:]
 
-    policies_per_compartment = []
+    policies = []
 
     for compartment in compartments:
-        policies = []
         policy_data = get_policies_data(identity_client, compartment.id)
         for policy in policy_data:
             policies.append(policy)
-        policies_per_compartment.append(policies)
 
-    return policies_per_compartment
+    return policies
 
+def get_policies(item):
+    identity_client = item[0]
+    compartments = item[1:]
+
+    policies = []
+
+    for compartment in compartments:
+        policy_data = get_policies_data(identity_client, compartment.id)
+        for policy in policy_data:
+            policies.append(policy)
+
+    return policies
 
 def get_instances(item):
         compute_client = item[0]
@@ -646,7 +659,8 @@ def get_preauthenticated_requests_per_bucket(item):
         region = bucket.id.split('.')[3]  
         if object_storage_client[2] in region or object_storage_client[3] in region:    
             preauthenticated_requests = get_preauthenticated_requests(object_storage_client[0],namespace,bucket.name)
-            bucket_preauthenticated_requests.append({bucket.name:preauthenticated_requests})
+            if preauthenticated_requests:
+                bucket_preauthenticated_requests.append({bucket.name:preauthenticated_requests})
                 
     return bucket_preauthenticated_requests
 
@@ -926,3 +940,36 @@ def get_instance_pool(item):
             instance_pools.append(instance_pools_data)
         
     return instance_pools
+
+def get_limit_values(item):
+    limits_client = item[0][0]
+    tenancy_id = item[0][1]
+    region = item[0][2]
+    services = item[1:]
+
+    limit_values_with_regions = []
+
+    for service in services:
+        limit_value_data = list_limit_value_data(limits_client, tenancy_id, service.name)
+        for limit_value in limit_value_data:
+            limit_values_with_regions.append( (region, service.name, limit_value) )
+
+    return limit_values_with_regions
+
+
+def get_limit_availabilities(item):
+    limits_client = item[0][0]
+    tenancy_id = item[0][1]
+    region = item[0][2]
+    limit_values = item[1:]
+
+    limit_availabilities_with_regions = []
+
+    for limit_value in limit_values:
+        if region == limit_value[0]:
+            if "AD" in limit_value[2].scope_type:
+                limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id, limit_value[2].availability_domain)) )
+            else:
+                limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id)) )
+
+    return limit_availabilities_with_regions

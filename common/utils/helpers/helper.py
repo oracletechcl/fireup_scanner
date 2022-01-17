@@ -214,6 +214,10 @@ def get_compartments_data(identity_client, compartment_id):
     ).data
 
 
+def get_root_compartment_data(identity_client, tenancy_id):
+    return identity_client.get_compartment(tenancy_id).data
+
+
 def get_policies_data(identity_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
         identity_client.list_policies,
@@ -561,6 +565,16 @@ def list_limit_definition_data(limits_client, compartment_id, service_name):
     ).data
 
 
+def get_resource_availability_data(limits_client, service_name, limit_name, compartment_id, availability_domain=None):
+    return limits_client.get_resource_availability(
+            service_name=service_name,
+            limit_name=limit_name,
+            compartment_id=compartment_id,
+            availability_domain=availability_domain,
+            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        ).data
+
+
 def get_dns_client(config, signer):
     try:
         dns_client = oci.dns.DnsClient(config, signer=signer)
@@ -657,3 +671,7 @@ def get_instance_pools_per_compartment(compute_management_client, compartment_id
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+def get_audit_configuration_data(audit_client, tenancy_id):
+    return audit_client.get_configuration(
+        tenancy_id
+    ).data
