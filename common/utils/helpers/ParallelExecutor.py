@@ -35,6 +35,7 @@ virtual_circuits = []
 
 bucket_lifecycle_policies = []
 
+limit_values_with_regions = []
 limit_availabilities_with_regions = []
 
 ### CIDRSize.py Global Variables
