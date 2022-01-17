@@ -52,6 +52,7 @@ from classes.performancecost.CompartmentWorkload import CompartmentWorkload
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 from classes.performancecost.CheckBudgets import CheckBudgets
 from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
+from classes.performancecost.LifecycleManagement import LifecycleManagement
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -107,6 +108,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_3_6(config, signer, report_directory)
     __call_3_9(config, signer, report_directory)
     __call_3_10(config, signer, report_directory)
+    __call_3_11(config, signer, report_directory)
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -658,3 +660,17 @@ def __call_3_10(config, signer, report_directory):
     __checkAutoTuning_dictionary = checkAutoTuning.analyze_entity(Statics.__rp_3_10['entry'])
     generate_on_screen_report(__checkAutoTuning_dictionary, report_directory, Statics.__rp_3_10['entry'])
     generate_mitigation_report(__checkAutoTuning_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_10['fireup_items'])
+
+
+def __call_3_11(config, signer, report_directory):
+    lifecycleManagement = LifecycleManagement(
+    Statics.__rp_3_11['entry'],
+    Statics.__rp_3_11['area'],
+    Statics.__rp_3_11['sub_area'],
+    Statics.__rp_3_11['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_11['entry']+"_"+Statics.__rp_3_11['area']+"_"+Statics.__rp_3_11['sub_area']+"_mitigations"
+    __lifecycleManagement_dictionary = lifecycleManagement.analyze_entity(Statics.__rp_3_11['entry'])
+    generate_on_screen_report(__lifecycleManagement_dictionary, report_directory, Statics.__rp_3_11['entry'])
+    generate_mitigation_report(__lifecycleManagement_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_11['fireup_items'])
+
