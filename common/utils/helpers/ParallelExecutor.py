@@ -35,6 +35,8 @@ virtual_circuits = []
 
 bucket_lifecycle_policies = []
 
+limit_availabilities_with_regions = []
+
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
 vcns = []
@@ -934,3 +936,37 @@ def get_virtual_circuits(item):
                 virtual_circuits.append(virtual_circuit)
 
     return virtual_circuits
+
+
+def get_limit_values(item):
+    limits_client = item[0][0]
+    tenancy_id = item[0][1]
+    region = item[0][2]
+    services = item[1:]
+
+    limit_values_with_regions = []
+
+    for service in services:
+        limit_value_data = list_limit_value_data(limits_client, tenancy_id, service.name)
+        for limit_value in limit_value_data:
+            limit_values_with_regions.append( (region, service.name, limit_value) )
+
+    return limit_values_with_regions
+
+
+def get_limit_availabilities(item):
+    limits_client = item[0][0]
+    tenancy_id = item[0][1]
+    region = item[0][2]
+    limit_values = item[1:]
+
+    limit_availabilities_with_regions = []
+
+    for limit_value in limit_values:
+        if region == limit_value[0]:
+            if "AD" in limit_value[2].scope_type:
+                limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id, limit_value[2].availability_domain)) )
+            else:
+                limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id)) )
+
+    return limit_availabilities_with_regions

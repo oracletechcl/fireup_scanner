@@ -273,10 +273,10 @@ __rp_2_3 = {
 __rp_2_4 = {
     'entry': '2.4',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Service Limits',
+    'review_point': 'Monitor and Manage Your Service Limits',    
+    'success_criteria': 'Check the current limits of the services and check if they are busy by 90% or more',
+    'fireup_items': ['Fireup Task 40: - Do you have any policy/procedure in place for managing & monitoring service limits'],
 }
 
 __rp_2_5 = {
