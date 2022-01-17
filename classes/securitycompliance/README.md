@@ -24,6 +24,6 @@
 | 1.20         | [BucketEncryption.py](BucketEncryption.py)              |
 | 1.21         | [SecureLoadBalancers.py](SecureLoadBalancers.py)        |
 | 1.22         | [NetworkSources.py](NetworkSources.py)                  |
-| 1.23         | [SecureDNSandRecords.py](SecureDNSandRecords.py)        |
+| 1.23         | [SecureDNS.py](SecureDNS.py)                            |
 | 1.24         | [CloudGuardMonitor.py](CloudGuardMonitor.py)            |
 | 1.25         | [AuditConfiguration.py](AuditConfiguration.py)          |
