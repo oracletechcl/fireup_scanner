@@ -53,6 +53,7 @@ from classes.performancecost.CompartmentWorkload import CompartmentWorkload
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 from classes.performancecost.CheckBudgets import CheckBudgets
 from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
+from classes.performancecost.CompartmentQuotaPolicy import CompartmentQuotaPolicy
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -62,52 +63,53 @@ def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+Statics.__version__)
     print_report_sub_header()
 
-    __call_1_1(config, signer, report_directory)
-    __call_1_2(config, signer, report_directory)
-    __call_1_3(config, signer, report_directory)
-    __call_1_4(config, signer, report_directory)
-    __call_1_5(config, signer, report_directory)
-    __call_1_6(config, signer, report_directory)
-    __call_1_7(config, signer, report_directory)
-    __call_1_8(config, signer, report_directory)
-    __call_1_9(config, signer, report_directory)
-    __call_1_10(config, signer, report_directory)
-    __call_1_11(config, signer, report_directory)
-    __call_1_12(config, signer, report_directory)
-    __call_1_13(config, signer, report_directory)
-    __call_1_14(config, signer, report_directory)
-    __call_1_15(config, signer, report_directory)
-    __call_1_16(config, signer, report_directory)
-    __call_1_17(config, signer, report_directory)
-    __call_1_18(config, signer, report_directory)
-    __call_1_19(config, signer, report_directory)
-    __call_1_20(config, signer, report_directory)
-    __call_1_21(config, signer, report_directory)
-    __call_1_22(config, signer, report_directory)
-    __call_1_24(config, signer, report_directory)
-    __call_1_25(config, signer, report_directory)
+    # __call_1_1(config, signer, report_directory)
+    # __call_1_2(config, signer, report_directory)
+    # __call_1_3(config, signer, report_directory)
+    # __call_1_4(config, signer, report_directory)
+    # __call_1_5(config, signer, report_directory)
+    # __call_1_6(config, signer, report_directory)
+    # __call_1_7(config, signer, report_directory)
+    # __call_1_8(config, signer, report_directory)
+    # __call_1_9(config, signer, report_directory)
+    # __call_1_10(config, signer, report_directory)
+    # __call_1_11(config, signer, report_directory)
+    # __call_1_12(config, signer, report_directory)
+    # __call_1_13(config, signer, report_directory)
+    # __call_1_14(config, signer, report_directory)
+    # __call_1_15(config, signer, report_directory)
+    # __call_1_16(config, signer, report_directory)
+    # __call_1_17(config, signer, report_directory)
+    # __call_1_18(config, signer, report_directory)
+    # __call_1_19(config, signer, report_directory)
+    # __call_1_20(config, signer, report_directory)
+    # __call_1_21(config, signer, report_directory)
+    # __call_1_22(config, signer, report_directory)
+    # __call_1_24(config, signer, report_directory)
+    # __call_1_25(config, signer, report_directory)
     
-    __call_2_4(config, signer, report_directory)
-    __call_2_5(config, signer, report_directory)
-    __call_2_7(config, signer, report_directory)
-    __call_2_8(config, signer, report_directory)
-    __call_2_9(config, signer, report_directory)
-    __call_2_10(config, signer, report_directory)
-    __call_2_11(config, signer, report_directory)
-    __call_2_13(config, signer, report_directory)
-    __call_2_14(config, signer, report_directory)
-    __call_2_15(config, signer, report_directory)
-    __call_2_16(config, signer, report_directory)
-    __call_2_17(config, signer, report_directory)
+    # __call_2_4(config, signer, report_directory)
+    # __call_2_5(config, signer, report_directory)
+    # __call_2_7(config, signer, report_directory)
+    # __call_2_8(config, signer, report_directory)
+    # __call_2_9(config, signer, report_directory)
+    # __call_2_10(config, signer, report_directory)
+    # __call_2_11(config, signer, report_directory)
+    # __call_2_13(config, signer, report_directory)
+    # __call_2_14(config, signer, report_directory)
+    # __call_2_15(config, signer, report_directory)
+    # __call_2_16(config, signer, report_directory)
+    # __call_2_17(config, signer, report_directory)
 
-    __call_3_1(config, signer, report_directory)
-    __call_3_2(config, signer, report_directory)
-    __call_3_3(config, signer, report_directory)
-    __call_3_4(config, signer, report_directory)
-    __call_3_5(config, signer, report_directory)
-    __call_3_6(config, signer, report_directory)
-    __call_3_9(config, signer, report_directory)
-    __call_3_10(config, signer, report_directory)
+    # __call_3_1(config, signer, report_directory)
+    # __call_3_2(config, signer, report_directory)
+    # __call_3_3(config, signer, report_directory)
+    # __call_3_4(config, signer, report_directory)
+    # __call_3_5(config, signer, report_directory)
+    # __call_3_6(config, signer, report_directory)
+    __call_3_7(config, signer, report_directory)
+    # __call_3_9(config, signer, report_directory)
+    # __call_3_10(config, signer, report_directory)
 
 
 def __call_1_1(config, signer, report_directory):       
@@ -646,6 +648,18 @@ def __call_3_6(config, signer, report_directory):
     __compartmentWorkload_dictionary = compartmentWorkload.analyze_entity(Statics.__rp_3_6['entry'])
     generate_on_screen_report(__compartmentWorkload_dictionary, report_directory, Statics.__rp_3_6['entry'])
     generate_mitigation_report(__compartmentWorkload_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_6['fireup_items'])
+
+def __call_3_7(config, signer, report_directory):    
+    compartmentQuotaPolicy = CompartmentQuotaPolicy(
+    Statics.__rp_3_7['entry'],
+    Statics.__rp_3_7['area'],
+    Statics.__rp_3_7['sub_area'],
+    Statics.__rp_3_7['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_7['entry']+"_"+Statics.__rp_3_7['area']+"_"+Statics.__rp_3_7['sub_area']+"_mitigations"
+    __compartmentQuotaPolicy_dictionary = compartmentQuotaPolicy.analyze_entity(Statics.__rp_3_7['entry'])
+    generate_on_screen_report(__compartmentQuotaPolicy_dictionary, report_directory, Statics.__rp_3_7['entry'])
+    generate_mitigation_report(__compartmentQuotaPolicy_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_7['fireup_items'])
 
 
 def __call_3_9(config, signer, report_directory):
