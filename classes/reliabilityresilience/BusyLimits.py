@@ -61,7 +61,9 @@ class BusyLimits(ReviewPoint):
         services = limits_clients[0][0].list_services(tenancy.id).data
 
         self.__limit_value_objects = ParallelExecutor.executor(limits_clients, services, ParallelExecutor.get_limit_values, len(services), ParallelExecutor.limit_values_with_regions)
-        self.__limit_availability_objects = ParallelExecutor.executor(limits_clients, self.__limit_value_objects, ParallelExecutor.get_limit_availabilities, 500, ParallelExecutor.limit_availabilities_with_regions)
+        
+        limit_availability_threads = min(500, len(self.__limit_value_objects))
+        self.__limit_availability_objects = ParallelExecutor.executor(limits_clients, self.__limit_value_objects, ParallelExecutor.get_limit_availabilities, limit_availability_threads, ParallelExecutor.limit_availabilities_with_regions)
 
         for limit_availability in self.__limit_availability_objects:
             record = {
