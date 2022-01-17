@@ -31,6 +31,7 @@ from classes.securitycompliance.CloudGuardMonitor import CloudGuardMonitor
 from classes.securitycompliance.NetworkSources import NetworkSources
 from classes.securitycompliance.AuditConfiguration import AuditConfiguration
 from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
+from classes.securitycompliance.SecureDNSandRecords import SecureDNSandRecords
 
 from classes.reliabilityresilience.BusyLimits import BusyLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
@@ -84,6 +85,7 @@ def main_orchestrator(config,signer, report_directory):
     __call_1_20(config, signer, report_directory)
     __call_1_21(config, signer, report_directory)
     __call_1_22(config, signer, report_directory)
+    __call_1_23(config, signer, report_directory)
     __call_1_24(config, signer, report_directory)
     __call_1_25(config, signer, report_directory)
     
@@ -389,6 +391,18 @@ def __call_1_22(config, signer, report_directory):
     __instancePrincipal_dictionary = networkSources.analyze_entity(Statics.__rp_1_22['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_22['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_22['fireup_items'])
+
+def __call_1_23(config, signer, report_directory):
+    secureDNSandRecords = SecureDNSandRecords(
+    Statics.__rp_1_23['entry'],
+    Statics.__rp_1_23['area'],
+    Statics.__rp_1_23['sub_area'],
+    Statics.__rp_1_23['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_23['entry']+"_"+Statics.__rp_1_23['area']+"_"+Statics.__rp_1_23['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = secureDNSandRecords.analyze_entity(Statics.__rp_1_23['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_23['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_23['fireup_items'])
 
 def __call_1_24(config, signer, report_directory):
     cloudGuardEnable = CloudGuardMonitor(
