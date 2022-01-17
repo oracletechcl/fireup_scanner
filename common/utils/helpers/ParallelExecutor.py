@@ -4,7 +4,6 @@
 # Description: Parallel executor variables for use with helper.py
 
 from concurrent import futures
-from re import L
 from common.utils.helpers.helper import *
 
 from datetime import datetime, timedelta
