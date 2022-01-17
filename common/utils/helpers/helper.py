@@ -552,6 +552,16 @@ def list_limit_definition_data(limits_client, compartment_id, service_name):
     ).data
 
 
+def get_resource_availability_data(limits_client, service_name, limit_name, compartment_id, availability_domain=None):
+    return limits_client.get_resource_availability(
+            service_name=service_name,
+            limit_name=limit_name,
+            compartment_id=compartment_id,
+            availability_domain=availability_domain,
+            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        ).data
+
+
 def get_dns_client(config, signer):
     try:
         dns_client = oci.dns.DnsClient(config, signer=signer)
