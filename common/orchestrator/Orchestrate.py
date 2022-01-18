@@ -31,6 +31,7 @@ from classes.securitycompliance.CloudGuardMonitor import CloudGuardMonitor
 from classes.securitycompliance.NetworkSources import NetworkSources
 from classes.securitycompliance.AuditConfiguration import AuditConfiguration
 from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
+from classes.securitycompliance.SecureDNS import SecureDNS
 
 from classes.reliabilityresilience.BusyLimits import BusyLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
@@ -53,68 +54,73 @@ from classes.performancecost.CompartmentWorkload import CompartmentWorkload
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 from classes.performancecost.CheckBudgets import CheckBudgets
 from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
+from classes.performancecost.LifecycleManagement import LifecycleManagement
 
 from classes.opsefficiency.MetricAlarms import MetricAlarms
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
+from tqdm import tqdm
 
-
-def main_orchestrator(config,signer, report_directory):
-    print_header("Fireup "+Statics.__version__)
+def main_orchestrator(config, signer, report_directory):
+    print_header("FireUp Scanner "+Statics.__version__)
     print_report_sub_header()
 
-    # __call_1_1(config, signer, report_directory)
-    # __call_1_2(config, signer, report_directory)
-    # __call_1_3(config, signer, report_directory)
-    # __call_1_4(config, signer, report_directory)
-    # __call_1_5(config, signer, report_directory)
-    # __call_1_6(config, signer, report_directory)
-    # __call_1_7(config, signer, report_directory)
-    # __call_1_8(config, signer, report_directory)
-    # __call_1_9(config, signer, report_directory)
-    # __call_1_10(config, signer, report_directory)
-    # __call_1_11(config, signer, report_directory)
-    # __call_1_12(config, signer, report_directory)
-    # __call_1_13(config, signer, report_directory)
-    # __call_1_14(config, signer, report_directory)
-    # __call_1_15(config, signer, report_directory)
-    # __call_1_16(config, signer, report_directory)
-    # __call_1_17(config, signer, report_directory)
-    # __call_1_18(config, signer, report_directory)
-    # __call_1_19(config, signer, report_directory)
-    # __call_1_20(config, signer, report_directory)
-    # __call_1_21(config, signer, report_directory)
-    # __call_1_22(config, signer, report_directory)
-    # __call_1_24(config, signer, report_directory)
-    # __call_1_25(config, signer, report_directory)
-    
-    # __call_2_4(config, signer, report_directory)
-    # __call_2_5(config, signer, report_directory)
-    # __call_2_7(config, signer, report_directory)
-    # __call_2_8(config, signer, report_directory)
-    # __call_2_9(config, signer, report_directory)
-    # __call_2_10(config, signer, report_directory)
-    # __call_2_11(config, signer, report_directory)
-    # __call_2_13(config, signer, report_directory)
-    # __call_2_14(config, signer, report_directory)
-    # __call_2_15(config, signer, report_directory)
-    # __call_2_16(config, signer, report_directory)
-    # __call_2_17(config, signer, report_directory)
+    orchestrated_list = [
+                            __call_1_1,
+                            __call_1_2,
+                            __call_1_3,
+                            __call_1_4,
+                            __call_1_5,
+                            __call_1_6,
+                            __call_1_7,
+                            __call_1_8,
+                            __call_1_9,
+                            __call_1_10,
+                            __call_1_11,
+                            __call_1_12,
+                            __call_1_13,
+                            __call_1_14,
+                            __call_1_15,
+                            __call_1_16,
+                            __call_1_17,
+                            __call_1_18,
+                            __call_1_19,
+                            __call_1_20,
+                            __call_1_21,
+                            __call_1_22,
+                            __call_1_23,
+                            __call_1_24,
+                            __call_1_25,
+                            __call_2_4,
+                            __call_2_5,
+                            __call_2_7,
+                            __call_2_8,
+                            __call_2_9,
+                            __call_2_10,
+                            __call_2_11,
+                            __call_2_13,
+                            __call_2_14,
+                            __call_2_15,
+                            __call_2_16,
+                            __call_2_17,
+                            __call_3_1,
+                            __call_3_2,
+                            __call_3_3,
+                            __call_3_4,
+                            __call_3_5,
+                            __call_3_6,
+                            __call_3_9,
+                            __call_3_10,
+                            __call_3_11,
+                            __call_4_2,
+                        ]
 
-    # __call_3_1(config, signer, report_directory)
-    # __call_3_2(config, signer, report_directory)
-    # __call_3_3(config, signer, report_directory)
-    # __call_3_4(config, signer, report_directory)
-    # __call_3_5(config, signer, report_directory)
-    # __call_3_6(config, signer, report_directory)
-    # __call_3_9(config, signer, report_directory)
-    # __call_3_10(config, signer, report_directory)
-
-    __call_4_2(config, signer, report_directory)
+    for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
+        orchestrated_list[i](config,signer, report_directory)
 
 
-def __call_1_1(config, signer, report_directory):       
+def __call_1_1(config, signer, report_directory):
     mfa = Mfa(
     Statics.__rp_1_1['entry'], 
     Statics.__rp_1_1['area'], 
@@ -393,6 +399,18 @@ def __call_1_22(config, signer, report_directory):
     __instancePrincipal_dictionary = networkSources.analyze_entity(Statics.__rp_1_22['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_22['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_22['fireup_items'])
+
+def __call_1_23(config, signer, report_directory):
+    secureDNS = SecureDNS(
+    Statics.__rp_1_23['entry'],
+    Statics.__rp_1_23['area'],
+    Statics.__rp_1_23['sub_area'],
+    Statics.__rp_1_23['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_23['entry']+"_"+Statics.__rp_1_23['area']+"_"+Statics.__rp_1_23['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = secureDNS.analyze_entity(Statics.__rp_1_23['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_23['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_23['fireup_items'])
 
 def __call_1_24(config, signer, report_directory):
     cloudGuardEnable = CloudGuardMonitor(
@@ -676,6 +694,19 @@ def __call_3_10(config, signer, report_directory):
     __checkAutoTuning_dictionary = checkAutoTuning.analyze_entity(Statics.__rp_3_10['entry'])
     generate_on_screen_report(__checkAutoTuning_dictionary, report_directory, Statics.__rp_3_10['entry'])
     generate_mitigation_report(__checkAutoTuning_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_10['fireup_items'])
+
+
+def __call_3_11(config, signer, report_directory):
+    lifecycleManagement = LifecycleManagement(
+    Statics.__rp_3_11['entry'],
+    Statics.__rp_3_11['area'],
+    Statics.__rp_3_11['sub_area'],
+    Statics.__rp_3_11['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_11['entry']+"_"+Statics.__rp_3_11['area']+"_"+Statics.__rp_3_11['sub_area']+"_mitigations"
+    __lifecycleManagement_dictionary = lifecycleManagement.analyze_entity(Statics.__rp_3_11['entry'])
+    generate_on_screen_report(__lifecycleManagement_dictionary, report_directory, Statics.__rp_3_11['entry'])
+    generate_mitigation_report(__lifecycleManagement_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_11['fireup_items'])
 
 
 def __call_4_2(config, signer, report_directory):
