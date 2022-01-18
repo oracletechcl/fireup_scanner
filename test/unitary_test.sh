@@ -5,8 +5,6 @@
 #
 # Purpose: Main test suite executor
 
-export PYTEST_ADDOPTS="--color=yes"
-
 if [ ! -d "venv" ] 
 then
     echo "venv not present. Creating" 
@@ -16,7 +14,4 @@ fi
 
 source "venv/bin/activate"
 echo "Unit Test Started at: $(date)"
-python3 -m pytest --durations=0 -v 2>&1 | tee output.out
-
-# Removes all colour codes from written file
-sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" output.out
+python3 -m pytest --durations=0 -v
