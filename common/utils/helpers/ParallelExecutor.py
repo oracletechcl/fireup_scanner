@@ -37,6 +37,9 @@ bucket_lifecycle_policies = []
 limit_values_with_regions = []
 limit_availabilities_with_regions = []
 
+alarms = []
+metrics = []
+
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
 vcns = []
@@ -970,3 +973,33 @@ def get_limit_availabilities(item):
                 limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id)) )
 
     return limit_availabilities_with_regions
+
+
+def get_alarms(item):
+    monitoring_client = item[0]
+    compartments = item[1:]
+
+    alarms = []
+
+    for compartment in compartments:
+        alarm_data = get_alarm_data(monitoring_client, compartment.id)
+        for alarm in alarm_data:
+            if "DELETED" not in alarm.lifecycle_state:
+                alarms.append(alarm)
+
+    return alarms
+
+
+def get_metrics(item):
+    monitoring_client = item[0]
+    compartments = item[1:]
+
+    metrics = []
+
+    for compartment in compartments:
+        metric_data = get_metric_data(monitoring_client, compartment.id)
+        for metric in metric_data:
+            metrics.append(metric)
+
+    return metrics
+

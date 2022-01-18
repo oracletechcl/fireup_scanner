@@ -56,6 +56,8 @@ from classes.performancecost.CheckBudgets import CheckBudgets
 from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
 from classes.performancecost.LifecycleManagement import LifecycleManagement
 
+from classes.opsefficiency.MetricAlarms import MetricAlarms
+
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
 from tqdm import tqdm
@@ -63,7 +65,7 @@ from tqdm import tqdm
 def main_orchestrator(config, signer, report_directory):
     print_header("FireUp Scanner "+Statics.__version__)
     print_report_sub_header()
-    
+
     orchestrated_list = [
                             __call_1_1,
                             __call_1_2,
@@ -111,6 +113,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_3_9,
                             __call_3_10,
                             __call_3_11,
+                            __call_4_2,
                         ]
 
     for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
@@ -705,3 +708,15 @@ def __call_3_11(config, signer, report_directory):
     generate_on_screen_report(__lifecycleManagement_dictionary, report_directory, Statics.__rp_3_11['entry'])
     generate_mitigation_report(__lifecycleManagement_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_11['fireup_items'])
 
+
+def __call_4_2(config, signer, report_directory):
+    metricAlarms = MetricAlarms(
+    Statics.__rp_4_2['entry'],
+    Statics.__rp_4_2['area'],
+    Statics.__rp_4_2['sub_area'],
+    Statics.__rp_4_2['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_2['entry']+"_"+Statics.__rp_4_2['area']+"_"+Statics.__rp_4_2['sub_area']+"_mitigations"
+    __metricAlarms_dictionary = metricAlarms.analyze_entity(Statics.__rp_4_2['entry'])
+    generate_on_screen_report(__metricAlarms_dictionary, report_directory, Statics.__rp_4_2['entry'])
+    generate_mitigation_report(__metricAlarms_dictionary, report_directory, mitigation_report_name, Statics.__rp_4_2['fireup_items'])
