@@ -543,10 +543,10 @@ __rp_4_5 = {
 __rp_4_6 = {
     'entry': '4.6',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor Your Workload',
+    'review_point': 'Configure Auditing',
+    'success_criteria': 'Check that auditing is enabled on tenancy. Ensure the items are described in documentation',
+    'fireup_items': ['Fireup Task 66: Do you use any configuration or infrastructure management tools?'],
 }
 
 __rp_4_7 = {
