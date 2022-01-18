@@ -32,6 +32,8 @@ local_peering_gateways = []
 
 virtual_circuits = []
 
+bucket_lifecycle_policies = []
+
 limit_values_with_regions = []
 limit_availabilities_with_regions = []
 
@@ -646,6 +648,26 @@ def get_buckets(item):
             buckets.append(extended_bucket_data)
 
     return buckets
+
+
+def get_bucket_lifecycle_policies(item):
+    object_storage_client = item[0]
+    namespace = object_storage_client[1]
+    buckets = item[1:]
+
+    bucket_lifecycle_policies = []
+
+    for bucket in buckets:
+        region = bucket.id.split('.')[3]  
+        if object_storage_client[2] in region or object_storage_client[3] in region:
+            if bucket.object_lifecycle_policy_etag is not None:
+                lifecycle_policies = object_storage_client[0].get_object_lifecycle_policy(namespace, bucket.name).data
+                bucket_lifecycle_policies.append( (bucket, lifecycle_policies) )
+            else:
+                bucket_lifecycle_policies.append( (bucket, None) )
+                
+    return bucket_lifecycle_policies
+
 
 def get_preauthenticated_requests_per_bucket(item):
     object_storage_client = item[0]
