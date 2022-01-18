@@ -474,7 +474,7 @@ __rp_3_9 = {
     'sub_area': 'Track and Manage Usage and Cost',
     'review_point': 'Define Budgets',    
     'success_criteria': 'Check if budgets are implemented on tenant',
-    'fireup_items': ['Fireup Task: 52 - Have you implemented budgets and spending thresholds ', 'Task 53 - Do you have budgets for specific resource types'],
+    'fireup_items': ['Fireup Task: 52 - Have you implemented budgets and spending thresholds ', 'Fireup Task 53 - Do you have budgets for specific resource types'],
 }
 
 __rp_3_10 = {
@@ -489,10 +489,10 @@ __rp_3_10 = {
 __rp_3_11 = {
     'entry': '3.11',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Implement Object Storage, Object Lifecycle Management',    
+    'success_criteria': 'If object storage is in place, check that automated lifecycle policy is in place',
+    'fireup_items': ['Fireup Task: 55 - Do you have a process to regularly terminate or stop unused resources & do you encourage employees to stop unused resources?'],
 }
 
 __rp_4_1 = {
