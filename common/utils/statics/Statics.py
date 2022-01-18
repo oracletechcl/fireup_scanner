@@ -209,10 +209,10 @@ __rp_1_22 = {
 __rp_1_23 = {
     'entry': '1.23',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Ensure Secure Network Access',
+    'review_point': 'Secure DNS Zones and Records',
+    'success_criteria': 'If DNS Zone in place, define that IAM policy is in place to restrict modifications of records to a secluded group',
+    'fireup_items': ['Fireup Task: 22 - Do you have a mechanism to prevent accidental deletion or change of policies?'],
 }
 
 __rp_1_24 = {

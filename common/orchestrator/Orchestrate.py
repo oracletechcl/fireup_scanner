@@ -31,6 +31,7 @@ from classes.securitycompliance.CloudGuardMonitor import CloudGuardMonitor
 from classes.securitycompliance.NetworkSources import NetworkSources
 from classes.securitycompliance.AuditConfiguration import AuditConfiguration
 from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
+from classes.securitycompliance.SecureDNS import SecureDNS
 
 from classes.reliabilityresilience.BusyLimits import BusyLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
@@ -86,6 +87,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_1_20,
                             __call_1_21,
                             __call_1_22,
+                            __call_1_23,
                             __call_1_24,
                             __call_1_25,
                             __call_2_4,
@@ -111,11 +113,11 @@ def main_orchestrator(config, signer, report_directory):
                             __call_3_11,
                         ]
 
-    for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):            
+    for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
         orchestrated_list[i](config,signer, report_directory)
 
 
-def __call_1_1(config, signer, report_directory):       
+def __call_1_1(config, signer, report_directory):
     mfa = Mfa(
     Statics.__rp_1_1['entry'], 
     Statics.__rp_1_1['area'], 
@@ -394,6 +396,18 @@ def __call_1_22(config, signer, report_directory):
     __instancePrincipal_dictionary = networkSources.analyze_entity(Statics.__rp_1_22['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_22['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_22['fireup_items'])
+
+def __call_1_23(config, signer, report_directory):
+    secureDNS = SecureDNS(
+    Statics.__rp_1_23['entry'],
+    Statics.__rp_1_23['area'],
+    Statics.__rp_1_23['sub_area'],
+    Statics.__rp_1_23['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_23['entry']+"_"+Statics.__rp_1_23['area']+"_"+Statics.__rp_1_23['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = secureDNS.analyze_entity(Statics.__rp_1_23['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_23['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_23['fireup_items'])
 
 def __call_1_24(config, signer, report_directory):
     cloudGuardEnable = CloudGuardMonitor(
