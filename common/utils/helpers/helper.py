@@ -181,6 +181,13 @@ def get_compute_management_client(config, signer):
         raise RuntimeError("Failed to create Compute Management client: " + e)
     return compute_management_client
 
+def get_container_engine_client(config, signer):
+    try:
+        container_engine_client= oci.container_engine.ContainerEngineClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Container Engine Client: " + e)
+    return container_engine_client
+
 def get_tenancy_data(identity_client, config):
     try:
         tenancy = identity_client.get_tenancy(config["tenancy"]).data
@@ -674,4 +681,11 @@ def get_instance_pools_per_compartment(compute_management_client, compartment_id
 def get_audit_configuration_data(audit_client, tenancy_id):
     return audit_client.get_configuration(
         tenancy_id
+    ).data
+
+def get_kubernetes_cluster_per_compartment(contianer_engine_clieng, compartment_id): 
+    return oci.pagination.list_call_get_all_results(
+        contianer_engine_clieng.list_clusters,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data

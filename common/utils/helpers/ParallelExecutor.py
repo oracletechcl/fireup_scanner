@@ -23,6 +23,7 @@ autoscaling_configurations = []
 steering_policies = []
 vcns_in_multiple_regions = []
 oke_clusters = []
+kubernetes_clusters = []
 
 drgs = []
 drg_attachment_ids = []
@@ -925,7 +926,8 @@ def get_autoscaling_configurations(item):
     for compartment in compartments:
         autoscaling_configurations_data = get_autoscaling_configurations_per_compartment(autoscaling_client, compartment.id)
         if autoscaling_configurations_data:
-            autoscaling_configurations.append(autoscaling_configurations_data)
+            for configuration in autoscaling_configurations_data:
+                autoscaling_configurations.append(configuration)
             
     return autoscaling_configurations
 
@@ -937,9 +939,23 @@ def get_instance_pool(item):
     for compartment in compartments:
         instance_pools_data = get_instance_pools_per_compartment(compute_management_client, compartment.id)
         if instance_pools_data:
-            instance_pools.append(instance_pools_data)
+            for instance_pool in instance_pools_data:        
+                instance_pools.append(instance_pool)
         
     return instance_pools
+
+def get_kubernetes_clusters(item):
+    container_engine_client = item[0]
+    compartments = item[1:]
+    kubernetes_clusters = []
+
+    for compartment in compartments:
+        kubernetes_clusters_data = get_kubernetes_cluster_per_compartment(container_engine_client, compartment.id)
+        if kubernetes_clusters_data:
+            for kubernetes_cluster in kubernetes_clusters_data:
+                kubernetes_clusters.append(kubernetes_cluster)
+        
+    return kubernetes_clusters
 
 def get_limit_values(item):
     limits_client = item[0][0]
