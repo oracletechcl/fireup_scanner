@@ -142,22 +142,18 @@ class ConfigureAuditing(ReviewPoint):
                 dictionary[entry]['mitigations'].append(
                     'Set audit retention to 365 days on tenancy: ' + tenancy['tenancy_name'])
 
-        for service_connector in self.__service_connectors:
-            for compartment in self.__compartments:
-                if compartment.id != service_connector['compartment_id']:
-                    dictionary[entry]['status'] = True
-                    dictionary[entry]['failure_cause'].append('No Service Connectors were found in some compartments')
-                    dictionary[entry]['mitigations'].append(
-                        'If you have third party tools that must access OCI Audit data in compartment: ' + str(
-                            get_compartment_name(self.__compartments,
-                                                 compartment.id)) + ' configure a Service Connector to copy the OCI Audit data to Oracle Cloud Infrastructure Object Storage.')
+        if len(self.__service_connectors) < 1:
+            dictionary[entry]['status'] = True
+            dictionary[entry]['failure_cause'].append('No Service Connectors were found in this tenancy')
+            dictionary[entry]['mitigations'].append(
+                'If you have third party tools that must access OCI Audit data configure a Service Connector to copy the OCI Audit data to Oracle Cloud Infrastructure Object Storage.')
 
         if len(self.__retention_rules_list) != len(self.__bucket_objects):
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('Some buckets do not have a retention period in place')
             for bucket in self.__bucket_objects:
                 for retention_rule in self.__retention_rules_list:
-                    if bucket.name != retention_rule['bucket_name']:
+                    if bucket.id != retention_rule['bucket_id']:
                         dictionary[entry]['mitigations'].append(
                         'Consider adding retention period on the following storage bucket: ' + str(bucket.name))
 

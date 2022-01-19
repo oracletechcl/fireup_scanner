@@ -405,6 +405,7 @@ def get_bucket_retention_rules_info(item):
                 record = {
                     "display_name": bucket_retention_rule.display_name,
                     "bucket_name": bucket_object.name,
+                    "bucket_id": bucket_object.id,
                     "duration": bucket_retention_rule.duration,
                     "etag": bucket_retention_rule.etag,
                     "id": bucket_retention_rule.id,
