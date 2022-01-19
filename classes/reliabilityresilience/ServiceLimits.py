@@ -52,32 +52,16 @@ class ServiceLimits(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         limits_clients = []
-        # for region in regions:
-        #     region_config = self.config
-        #     region_config['region'] = region.region_name
-        #     limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, region.region_name) )
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, region.region_name) )
 
-        region_config = self.config
-        region_config['region'] = 'uk-london-1'
-        limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, 'uk-london-1') )
-        region_config['region'] = 'us-ashburn-1'
-        limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, 'us-ashburn-1') )
-        
         services = limits_clients[0][0].list_services(tenancy.id).data
-
-        # LBaaS - Region only
-        # Block Volumes - Both
-        # MySQL - Both
-        # Database - Both
-        # Kubernetes - Region only
-
-        # debug(services, "green")
 
         self.__limit_value_objects = ParallelExecutor.executor(limits_clients, services, ParallelExecutor.get_limit_values, len(services), ParallelExecutor.limit_values_with_regions)
 
         required_services = ['block-storage', 'container-engine', 'database', 'load-balancer', 'mysql']
-
-        # debug(self.__limit_value_objects[0], "cyan")
 
         for limit in self.__limit_value_objects:
             if limit[1] in required_services:
@@ -91,11 +75,7 @@ class ServiceLimits(ReviewPoint):
                 }
                 self.__limit_value_dicts.append(record)
 
-        # debug(self.__limit_value_dicts, "magenta")
-
-        # debug(service_limits, "yellow")
-
-        return 
+        return self.__limit_value_dicts
 
 
     def analyze_entity(self, entry):
@@ -104,24 +84,26 @@ class ServiceLimits(ReviewPoint):
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         for limit in self.__limit_value_dicts:
-            #TODO: catch key error in findings talking about new limits
-            expected_value = service_limits[limit['name']]
-            if limit['value'] != expected_value:
-                dictionary[entry]['findings'].append(limit)
-                location = limit['region']
-                if "AD" in limit['scope_type']:
-                    location = limit['availability_domain']
-                if (limit['name'], expected_value) in self.__non_compliant_limits:
-                    for i, value in enumerate(self.__non_compliant_limits[(limit['name'], expected_value)]):
-                        if location[:-1] in value:
-                            self.__non_compliant_limits[(limit['name'], expected_value)][i] = f"{value}/{location[-1]}"
-                            break
+            try:
+                expected_value = service_limits[limit['name']]
+                if limit['value'] != expected_value:
+                    dictionary[entry]['findings'].append(limit)
+                    location = limit['region']
+                    if "AD" in limit['scope_type']:
+                        location = limit['availability_domain']
+                    if (limit['name'], expected_value) in self.__non_compliant_limits:
+                        for i, value in enumerate(self.__non_compliant_limits[(limit['name'], expected_value)]):
+                            if location[:-1] in value:
+                                self.__non_compliant_limits[(limit['name'], expected_value)][i] = f"{value}/{location[-1]}"
+                                break
+                        else:
+                            self.__non_compliant_limits[(limit['name'], expected_value)].append(location)
                     else:
-                        debug('test', "red")
-                        self.__non_compliant_limits[(limit['name'], expected_value)].append(location)
-                else:
-                    debug('test', "green")
-                    self.__non_compliant_limits[(limit['name'], expected_value)] = [location]
+                        self.__non_compliant_limits[(limit['name'], expected_value)] = [location]
+            except KeyError:
+                new_limit = f"New limit found that's not in dictionary: \"{limit['name']}\""
+                if new_limit not in dictionary[entry]['mitigations']:
+                    dictionary[entry]['mitigations'].append(new_limit)
 
         for key, value in self.__non_compliant_limits.items():
             dictionary[entry]['status'] = False
