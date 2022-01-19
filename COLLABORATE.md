@@ -314,9 +314,9 @@ def __call_X_Y(config, signer, report_directory)
     Statics.__rp_X_Y['review_point'],
     True, [], [], [], [], config, signer)
     mitigation_report_name = Statics.__rp_X_Y['entry']+"_"+Statics.__rp_X_Y['area']+"_"+Statics.__rp_X_Y['sub_area']+"_mitigations"
-    __declaredObject_dictionary = declaredObject.analyze_entity(Statics.__rp_X_Y['entry'])
-    generate_on_screen_report(__declaredObject_dictionary, report_directory, Statics.__rp_X_Y['entry'])
-    generate_mitigation_report(__declaredObject_dictionary, report_directory, mitigation_report_name, Statics.__rp_X_Y['fireup_items'])
+    __dictionary = declaredObject.analyze_entity(Statics.__rp_X_Y['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_X_Y['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_X_Y['fireup_items'])
 
 ``` 
 
@@ -342,12 +342,18 @@ def __call_1_1(config, signer, report_directory):
   def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+statics.__version__)
     print_report_sub_header()
-    __call_1_1(config, signer, report_directory)
-    __call_1_2(config, signer, report_directory)
-    ...
-    ...
-    ...
-    __call_X_Y(config, signer, report_directory) 
+
+    orchestrated_list = [   __call_1_1,
+                            __call_1_2,
+                            __call_1_3,
+                            __call_1_4,
+                            __call_1_5,
+                            __call_1_6,
+                            __call_1_7,
+                            ...
+                            ...
+                            ...
+                            __call_X_Y]
     
 ```
 

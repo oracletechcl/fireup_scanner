@@ -32,8 +32,13 @@ local_peering_gateways = []
 
 virtual_circuits = []
 
+bucket_lifecycle_policies = []
+
 limit_values_with_regions = []
 limit_availabilities_with_regions = []
+
+alarms = []
+metrics = []
 
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
@@ -647,6 +652,26 @@ def get_buckets(item):
 
     return buckets
 
+
+def get_bucket_lifecycle_policies(item):
+    object_storage_client = item[0]
+    namespace = object_storage_client[1]
+    buckets = item[1:]
+
+    bucket_lifecycle_policies = []
+
+    for bucket in buckets:
+        region = bucket.id.split('.')[3]  
+        if object_storage_client[2] in region or object_storage_client[3] in region:
+            if bucket.object_lifecycle_policy_etag is not None:
+                lifecycle_policies = object_storage_client[0].get_object_lifecycle_policy(namespace, bucket.name).data
+                bucket_lifecycle_policies.append( (bucket, lifecycle_policies) )
+            else:
+                bucket_lifecycle_policies.append( (bucket, None) )
+                
+    return bucket_lifecycle_policies
+
+
 def get_preauthenticated_requests_per_bucket(item):
     object_storage_client = item[0]
     namespace = object_storage_client[1]
@@ -948,3 +973,33 @@ def get_limit_availabilities(item):
                 limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id)) )
 
     return limit_availabilities_with_regions
+
+
+def get_alarms(item):
+    monitoring_client = item[0]
+    compartments = item[1:]
+
+    alarms = []
+
+    for compartment in compartments:
+        alarm_data = get_alarm_data(monitoring_client, compartment.id)
+        for alarm in alarm_data:
+            if "DELETED" not in alarm.lifecycle_state:
+                alarms.append(alarm)
+
+    return alarms
+
+
+def get_metrics(item):
+    monitoring_client = item[0]
+    compartments = item[1:]
+
+    metrics = []
+
+    for compartment in compartments:
+        metric_data = get_metric_data(monitoring_client, compartment.id)
+        for metric in metric_data:
+            metrics.append(metric)
+
+    return metrics
+
