@@ -3,18 +3,18 @@
 # ServiceLimits.py
 # Description: Implementation of class ServiceLimits based on abstract
 
-from concurrent import futures
-from classes.abstract.ReviewPoint import ReviewPoint
-from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
+from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
+from common.utils.tokenizer import *
 
 
 class ServiceLimits(ReviewPoint):
 
     # Class Variables
-    __limit_data_objects = []
-    __compute_limits = []
-    __non_compliant_compute_limits = dict()
+    __limit_value_objects = []
+    __limit_value_dicts = []
+    __non_compliant_limits = dict()
     __identity = None
 
     def __init__(self,
@@ -52,31 +52,48 @@ class ServiceLimits(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         limits_clients = []
-        for region in regions:
-            region_config = self.config
-            region_config['region'] = region.region_name
-            limits_clients.append(get_limits_client(region_config, self.signer))
+        # for region in regions:
+        #     region_config = self.config
+        #     region_config['region'] = region.region_name
+        #     limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, region.region_name) )
 
-        services = []
+        region_config = self.config
+        region_config['region'] = 'uk-london-1'
+        limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, 'uk-london-1') )
+        region_config['region'] = 'us-ashburn-1'
+        limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, 'us-ashburn-1') )
+        
+        services = limits_clients[0][0].list_services(tenancy.id).data
+
         # LBaaS - Region only
         # Block Volumes - Both
         # MySQL - Both
         # Database - Both
         # Kubernetes - Region only
 
-        # Specialised parallel execution method for getting the limits in each region
-        with futures.ThreadPoolExecutor(len(limits_clients)) as executor:
-            processes = [
-                executor.submit(get_limits_data, limits_client, tenancy.id)
-                for limits_client in limits_clients
-            ]
+        # debug(services, "green")
 
-            futures.wait(processes)
+        self.__limit_value_objects = ParallelExecutor.executor(limits_clients, services, ParallelExecutor.get_limit_values, len(services), ParallelExecutor.limit_values_with_regions)
 
-            for p in processes:
-                self.__limit_data_objects.append(p.result())
+        required_services = ['block-storage', 'container-engine', 'database', 'load-balancer', 'mysql']
 
+        # debug(self.__limit_value_objects[0], "cyan")
 
+        for limit in self.__limit_value_objects:
+            if limit[1] in required_services:
+                record = {
+                    "region": limit[0],
+                    "availability_domain": limit[2].availability_domain,
+                    "name": limit[2].name,
+                    "service_name": limit[1],
+                    "scope_type": limit[2].scope_type,
+                    "value": limit[2].value,
+                }
+                self.__limit_value_dicts.append(record)
+
+        # debug(self.__limit_value_dicts, "magenta")
+
+        # debug(service_limits, "yellow")
 
         return 
 
@@ -86,14 +103,112 @@ class ServiceLimits(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-  
+        for limit in self.__limit_value_dicts:
+            #TODO: catch key error in findings talking about new limits
+            expected_value = service_limits[limit['name']]
+            if limit['value'] != expected_value:
+                dictionary[entry]['findings'].append(limit)
+                location = limit['region']
+                if "AD" in limit['scope_type']:
+                    location = limit['availability_domain']
+                if (limit['name'], expected_value) in self.__non_compliant_limits:
+                    for i, value in enumerate(self.__non_compliant_limits[(limit['name'], expected_value)]):
+                        if location[:-1] in value:
+                            self.__non_compliant_limits[(limit['name'], expected_value)][i] = f"{value}/{location[-1]}"
+                            break
+                    else:
+                        debug('test', "red")
+                        self.__non_compliant_limits[(limit['name'], expected_value)].append(location)
+                else:
+                    debug('test', "green")
+                    self.__non_compliant_limits[(limit['name'], expected_value)] = [location]
+
+        for key, value in self.__non_compliant_limits.items():
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append('Limits should be correctly configured to what is required for the workload.')
+            dictionary[entry]['mitigations'].append(f"Limit name: \"{key[0]}\", is different to expected default of: \"{key[1]}\" in: \"{value}\"")
+
         return dictionary
 
 
-def get_limits_data(limits_client, tenancy_id):
+service_limits = {
+    "lb-100mbps-count": 300,
+    "lb-10mbps-count": 300,
+    "lb-10mbps-micro-count": 10,
+    "lb-400mbps-count": 10,
+    "lb-8000mbps-count": 10,
+    "lb-flexible-bandwidth-sum": 5000,
+    "lb-flexible-count": 50,
 
-    limits_value_data = list_limit_value_data(limits_client, tenancy_id, "compute")
+    "backup-count": 100000,
+    "free-backup-count": 10,
+    "total-free-storage-gb-regional": 10,
 
-    limits_definition_data = list_limit_definition_data(limits_client, tenancy_id, "compute")
+    "total-free-storage-gb": 200,
+    "total-storage-gb": 400000,
+    "volume-count": 100000,
+    "volumes-per-group": 32,
 
-    return (limits_value_data, limits_definition_data)
+    "mysql-manual-backup-count": 1200,
+
+    "mysql-analytics-bm-standard-e2-64-count": 0,
+    "mysql-analytics-vm-standard-e3-count": 0,
+    "mysql-bm-standard-e2-64-count": 0,
+    "mysql-database-for-analytics-vm-standard-e3-count": 0,
+    "mysql-database-for-heatwave-bm-standard-e3-count": 2,
+    "mysql-database-for-heatwave-vm-standard-e3-count": 20,
+    "mysql-heatwave-vm-standard-e3-count": 100,
+    "mysql-total-storage-gb": 100000,
+    "mysql-vm-standard-e2-1-count": 5,
+    "mysql-vm-standard-e2-2-count": 5,
+    "mysql-vm-standard-e2-4-count": 5,
+    "mysql-vm-standard-e2-8-count": 5,
+    "mysql-vm-standard-e3-1-16gb-count": 100,
+    "mysql-vm-standard-e3-1-8gb-count": 100,
+    "mysql-vm-standard-e3-16-256gb-count": 100,
+    "mysql-vm-standard-e3-2-32gb-count": 100,
+    "mysql-vm-standard-e3-24-384gb-count": 100,
+    "mysql-vm-standard-e3-32-512gb-count": 100,
+    "mysql-vm-standard-e3-4-64gb-count": 100,
+    "mysql-vm-standard-e3-48-768gb-count": 100,
+    "mysql-vm-standard-e3-64-1024gb-count": 100,
+    "mysql-vm-standard-e3-8-128gb-count": 100,
+
+    "adb-free-count": 1,
+    "adw-ocpu-count": 160,
+    "adw-total-storage-tb": 130,
+    "ajd-ocpu-count": 8,
+    "ajd-total-storage-tb": 8,
+    "apex-ocpu-count": 128,
+    "apex-total-storage-tb": 128,
+    "atp-ocpu-count": 135,
+    "atp-total-storage-tb": 130,
+    "ex-cdb-count": 20000,
+    "ex-non-cdb-count": 20000,
+    "ex-pdb-count": 20000,
+
+    "adw-dedicated-ocpu-count": 0,
+    "adw-dedicated-total-storage-tb": 0,
+    "atp-dedicated-ocpu-count": 0,
+    "atp-dedicated-total-storage-tb": 0,
+    "bm-dense-io1-36-count": 0,
+    "bm-dense-io2-52-count": 50,
+    "exadata-base-48-count": 0,
+    "exadata-database-server-x8m-count": 0,
+    "exadata-full1-336-x6-count": 0,
+    "exadata-full2-368-x7-count": 0,
+    "exadata-full3-400-x8-count": 0,
+    "exadata-half1-168-x6-count": 0,
+    "exadata-half2-184-x7-count": 0,
+    "exadata-half3-200-x8-count": 0,
+    "exadata-quarter1-84-x6-count": 0,
+    "exadata-quarter2-92-x7-count": 0,
+    "exadata-quarter3-100-x8-count": 0,
+    "exadata-storage-server-x8m-count": 0,
+    "vm-block-storage-gb": 150000,
+    "vm-standard1-ocpu-count": 0,
+    "vm-standard2-ocpu-count": 300,
+
+    "cluster-count": 15,
+    "node-count": 1000,
+}
