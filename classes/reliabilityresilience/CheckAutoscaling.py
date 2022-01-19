@@ -162,15 +162,16 @@ class CheckAutoscaling(ReviewPoint):
                 dictionary[entry]['mitigations'].append('Make sure to create and attach autoscaling configuraiton for instance pool named: ' + instance_pool['display_name'])          
         
         # Check if Autoscaler for Kubernetes is enabled in policy statements
-
-        __required_part_of_policy_statement = 'manage cluster-node-pools in compartment '
+        __subject = 'dynamic-group'
+        __verb_and_resource_type = 'manage cluster-node-pools in compartment '
 
         for kubernetes_cluster_with_compartment in self.__kubernetes_clusters:
             have_autoscaling_policy = False
             for policy in self.__policies:
-                if (__required_part_of_policy_statement + kubernetes_cluster_with_compartment[1].name) in policy:
-                    have_autoscaling_policy = True
-                    break
+                if __subject in policy:
+                    if (__verb_and_resource_type + kubernetes_cluster_with_compartment[1].name) in policy:
+                        have_autoscaling_policy = True
+                        break
             if not have_autoscaling_policy:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(kubernetes_cluster_with_compartment[0])    
