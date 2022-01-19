@@ -664,7 +664,33 @@ def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
         tenancy_id
     ).data
 
+
 def get_audit_configuration_data(audit_client, tenancy_id):
     return audit_client.get_configuration(
         tenancy_id
+    ).data
+
+
+def get_monitoring_client(config, signer):
+    try:
+        monitoring_client = oci.monitoring.MonitoringClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Monitoring client: " + e)
+    return monitoring_client
+
+
+def get_alarm_data(monitoring_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        monitoring_client.list_alarms,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_metric_data(monitoring_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        monitoring_client.list_metrics,
+        compartment_id,
+        oci.monitoring.models.ListMetricsDetails(),
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data

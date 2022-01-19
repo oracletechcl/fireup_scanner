@@ -60,7 +60,7 @@ def print_list_of_dicts(list_of_dicts):
 def print_mitigation_report_fields(finding):
     print(finding['Recommendation #'] + "\t" + finding['Area'] + "\t" + finding['Sub Area'] + "\t" + finding['Compliant'] + "\t" + finding['Findings'] + "\t\t" + finding['Review Point']+ "\t\t" + print_list_of_dicts(finding['Failure Causes']) +"\t\t"+print_list_of_dicts(finding['Mitigations']))
 
-def debug(msg, color=None):    
+def debug(msg, color=None):
     frame = getframeinfo(stack()[1][0])
     filename = os.path.splitext(os.path.basename(frame.filename))[0]
     lineno = str(frame.lineno)    

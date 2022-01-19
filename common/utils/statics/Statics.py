@@ -507,10 +507,10 @@ __rp_4_1 = {
 __rp_4_2 = {
     'entry': '4.2',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor Your Workload',
+    'review_point': 'Create a Set of Alarms for Each Metric',    
+    'success_criteria': 'Check that OS Management is enabled to do monitoring',
+    'fireup_items': ['Fireup Task: 59 - Do you have insight into the state & health of your workload'],
 }
 
 __rp_4_3 = {
