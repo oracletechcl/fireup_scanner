@@ -543,15 +543,6 @@ def list_limit_value_data(limits_client, compartment_id, service_name):
     ).data
 
 
-def list_limit_definition_data(limits_client, compartment_id, service_name):
-    return oci.pagination.list_call_get_all_results(
-        limits_client.list_limit_definitions,
-        compartment_id=compartment_id,
-        service_name=service_name,
-        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-    ).data
-
-
 def get_resource_availability_data(limits_client, service_name, limit_name, compartment_id, availability_domain=None):
     return limits_client.get_resource_availability(
             service_name=service_name,
