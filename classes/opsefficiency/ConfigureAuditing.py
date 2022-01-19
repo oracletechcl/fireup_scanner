@@ -168,6 +168,6 @@ class ConfigureAuditing(ReviewPoint):
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('OCI Log Analytics were not enabled on this tenancy')
             dictionary[entry]['mitigations'].append(
-                'Consider Enabling OCI Log Analytics for better insight and detailed analysis of patterns and trends.')
+                'Consider Enabling OCI Log Analytics for better insight and detailed analysis of patterns and trends. ')
 
         return dictionary
