@@ -679,9 +679,9 @@ def __call_3_7(config, signer, report_directory):
     Statics.__rp_3_7['review_point'],
     True, [], [], [], [], config, signer)
     mitigation_report_name = Statics.__rp_3_7['entry']+"_"+Statics.__rp_3_7['area']+"_"+Statics.__rp_3_7['sub_area']+"_mitigations"
-    __compartmentQuotaPolicy_dictionary = compartmentQuotaPolicy.analyze_entity(Statics.__rp_3_7['entry'])
-    generate_on_screen_report(__compartmentQuotaPolicy_dictionary, report_directory, Statics.__rp_3_7['entry'])
-    generate_mitigation_report(__compartmentQuotaPolicy_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_7['fireup_items'])
+    _dictionary = compartmentQuotaPolicy.analyze_entity(Statics.__rp_3_7['entry'])
+    generate_on_screen_report(_dictionary, report_directory, Statics.__rp_3_7['entry'])
+    generate_mitigation_report(_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_7['fireup_items'])
 
 
 def __call_3_9(config, signer, report_directory):
