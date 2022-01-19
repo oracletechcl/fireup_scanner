@@ -4,10 +4,10 @@
 # Description: Implementation of class MFA based on abstract
 
 
-from common.utils.formatter.printer import debug, debug_with_date, print_with_date
+from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
-import oci
 from common.utils.helpers.helper import *
 
 
@@ -15,6 +15,7 @@ class PolicyAdmins(ReviewPoint):
 
     # Class Variables    
     __compartments = []
+    __policy_objects = []
     __policies = []
     __identity = None
     __tenancy = None
@@ -51,11 +52,12 @@ class PolicyAdmins(ReviewPoint):
 
 
     def load_entity(self):   
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        for policy in policy_data:  
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
+
+        for policy in self.__policy_objects:  
             record = {
                 "compartment_id": policy.compartment_id,
                 "defined_tags": policy.defined_tags,

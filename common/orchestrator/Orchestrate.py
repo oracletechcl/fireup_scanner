@@ -25,10 +25,18 @@ from classes.securitycompliance.MaxSecurityZone import MaxSecurityZone
 from classes.securitycompliance.Rbac import Rbac
 from classes.securitycompliance.SecureFileStorage import SecureFileStorage
 from classes.securitycompliance.DBKeys import DBKeys
+from classes.securitycompliance.DBSystemPatch import DBSystemPatch
 from classes.securitycompliance.ADBSystemAccess import ADBSystemAccess
+from classes.securitycompliance.CloudGuardMonitor import CloudGuardMonitor
+from classes.securitycompliance.NetworkSources import NetworkSources
+from classes.securitycompliance.AuditConfiguration import AuditConfiguration
+from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
+from classes.securitycompliance.SecureDNS import SecureDNS
 
 from classes.reliabilityresilience.ServiceLimits import ServiceLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
+from classes.reliabilityresilience.BusyLimits import BusyLimits
+from classes.reliabilityresilience.RedundantConnections import RedundantConnections
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
 from classes.reliabilityresilience.LBaaSBackends import LBaaSBackends
@@ -45,56 +53,76 @@ from classes.performancecost.ComputeLimits import ComputeLimits
 from classes.performancecost.TrafficSteering import TrafficSteering
 from classes.performancecost.CompartmentWorkload import CompartmentWorkload
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
+from classes.performancecost.CheckBudgets import CheckBudgets
+from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
+from classes.performancecost.LifecycleManagement import LifecycleManagement
+
+from classes.opsefficiency.MetricAlarms import MetricAlarms
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
+from tqdm import tqdm
 
-
-def main_orchestrator(config,signer, report_directory):
-    print_header("Fireup "+Statics.__version__)
+def main_orchestrator(config, signer, report_directory):
+    print_header("FireUp Scanner "+Statics.__version__)
     print_report_sub_header()
 
-    # __call_1_1(config, signer, report_directory)
-    # __call_1_2(config, signer, report_directory)
-    # __call_1_3(config, signer, report_directory)
-    # __call_1_4(config, signer, report_directory)
-    # __call_1_5(config, signer, report_directory)
-    # __call_1_6(config, signer, report_directory)
-    # __call_1_7(config, signer, report_directory)
-    # __call_1_8(config, signer, report_directory)
-    # __call_1_9(config, signer, report_directory)
-    # __call_1_10(config, signer, report_directory)
-    # __call_1_11(config, signer, report_directory)
-    # __call_1_12(config, signer, report_directory)
-    # __call_1_13(config, signer, report_directory)
-    # __call_1_14(config, signer, report_directory)
-    # __call_1_16(config, signer, report_directory)
-    # __call_1_17(config, signer, report_directory)
-    # __call_1_18(config, signer, report_directory)
-    # __call_1_19(config, signer, report_directory)
-    # __call_1_20(config, signer, report_directory)    
+    orchestrated_list = [
+                            __call_1_1,
+                            __call_1_2,
+                            __call_1_3,
+                            __call_1_4,
+                            __call_1_5,
+                            __call_1_6,
+                            __call_1_7,
+                            __call_1_8,
+                            __call_1_9,
+                            __call_1_10,
+                            __call_1_11,
+                            __call_1_12,
+                            __call_1_13,
+                            __call_1_14,
+                            __call_1_15,
+                            __call_1_16,
+                            __call_1_17,
+                            __call_1_18,
+                            __call_1_19,
+                            __call_1_20,
+                            __call_1_21,
+                            __call_1_22,
+                            __call_1_23,
+                            __call_1_24,
+                            __call_1_25,
+                            __call_2_3,
+                            __call_2_4,
+                            __call_2_5,
+                            __call_2_7,
+                            __call_2_8,
+                            __call_2_9,
+                            __call_2_10,
+                            __call_2_11,
+                            __call_2_13,
+                            __call_2_14,
+                            __call_2_15,
+                            __call_2_16,
+                            __call_2_17,
+                            __call_3_1,
+                            __call_3_2,
+                            __call_3_3,
+                            __call_3_4,
+                            __call_3_5,
+                            __call_3_6,
+                            __call_3_9,
+                            __call_3_10,
+                            __call_3_11,
+                            __call_4_2,
+                        ]
 
-    __call_2_3(config, signer, report_directory)
-    # __call_2_5(config, signer, report_directory)
-    # __call_2_8(config, signer, report_directory)
-    # __call_2_9(config, signer, report_directory)
-    # __call_2_10(config, signer, report_directory)
-    # __call_2_11(config, signer, report_directory)
-    # __call_2_13(config, signer, report_directory)
-    # __call_2_14(config, signer, report_directory)
-    # __call_2_15(config, signer, report_directory)
-    # __call_2_16(config, signer, report_directory)
-    # __call_2_17(config, signer, report_directory)
-
-    # __call_3_1(config, signer, report_directory)
-    # __call_3_2(config, signer, report_directory)
-    # __call_3_3(config, signer, report_directory)
-    # __call_3_5(config, signer, report_directory)
-    # __call_3_6(config, signer, report_directory)
-    # __call_3_10(config, signer, report_directory)
+    for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
+        orchestrated_list[i](config,signer, report_directory)
 
 
-def __call_1_1(config, signer, report_directory):       
+def __call_1_1(config, signer, report_directory):
     mfa = Mfa(
     Statics.__rp_1_1['entry'], 
     Statics.__rp_1_1['area'], 
@@ -236,6 +264,17 @@ def __call_1_11(config, signer, report_directory):
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_11['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_11['fireup_items'])
 
+def __call_1_12(config, signer, report_directory):
+    dbSystem = DBSystemControl(
+    Statics.__rp_1_12['entry'], 
+    Statics.__rp_1_12['area'], 
+    Statics.__rp_1_12['sub_area'], 
+    Statics.__rp_1_12['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_12['entry']+"_"+Statics.__rp_1_12['area']+"_"+Statics.__rp_1_12['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_12['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_12['fireup_items'])
 
 def __call_1_12(config, signer, report_directory):
     dbSystem = DBSystemControl(
@@ -275,6 +314,18 @@ def __call_1_14(config, signer, report_directory):
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_14['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_14['fireup_items'])
 
+def __call_1_15(config, signer, report_directory):
+    dbSystemPatch = DBSystemPatch(
+    Statics.__rp_1_15['entry'], 
+    Statics.__rp_1_15['area'], 
+    Statics.__rp_1_15['sub_area'], 
+    Statics.__rp_1_15['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_15['entry']+"_"+Statics.__rp_1_15['area']+"_"+Statics.__rp_1_15['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = dbSystemPatch.analyze_entity(Statics.__rp_1_15['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_15['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_15['fireup_items'])
+
 
 def __call_1_16(config, signer, report_directory):
     adbPermission = ADBSystemAccess(
@@ -300,6 +351,7 @@ def __call_1_17(config, signer, report_directory):
     __instancePrincipal_dictionary = storagePerms.analyze_entity(Statics.__rp_1_17['entry'])
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_17['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_17['fireup_items'])
+
 
 
 def __call_1_18(config, signer, report_directory):
@@ -340,6 +392,79 @@ def __call_1_20(config, signer, report_directory):
     generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_20['entry'])
     generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_20['fireup_items'])
 
+def __call_1_21(config, signer, report_directory):
+    secureLoadBalancers = SecureLoadBalancers(
+    Statics.__rp_1_21['entry'],
+    Statics.__rp_1_21['area'],
+    Statics.__rp_1_21['sub_area'],
+    Statics.__rp_1_21['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_21['entry']+"_"+Statics.__rp_1_21['area']+"_"+Statics.__rp_1_21['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = secureLoadBalancers.analyze_entity(Statics.__rp_1_21['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_21['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_21['fireup_items'])
+
+def __call_1_22(config, signer, report_directory):
+    networkSources = NetworkSources(
+    Statics.__rp_1_22['entry'], 
+    Statics.__rp_1_22['area'], 
+    Statics.__rp_1_22['sub_area'], 
+    Statics.__rp_1_22['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_22['entry']+"_"+Statics.__rp_1_22['area']+"_"+Statics.__rp_1_22['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = networkSources.analyze_entity(Statics.__rp_1_22['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_22['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_22['fireup_items'])
+
+def __call_1_23(config, signer, report_directory):
+    secureDNS = SecureDNS(
+    Statics.__rp_1_23['entry'],
+    Statics.__rp_1_23['area'],
+    Statics.__rp_1_23['sub_area'],
+    Statics.__rp_1_23['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_23['entry']+"_"+Statics.__rp_1_23['area']+"_"+Statics.__rp_1_23['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = secureDNS.analyze_entity(Statics.__rp_1_23['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_23['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_23['fireup_items'])
+
+def __call_1_24(config, signer, report_directory):
+    cloudGuardEnable = CloudGuardMonitor(
+    Statics.__rp_1_24['entry'],
+    Statics.__rp_1_24['area'],
+    Statics.__rp_1_24['sub_area'],
+    Statics.__rp_1_24['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_24['entry']+"_"+Statics.__rp_1_24['area']+"_"+Statics.__rp_1_24['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = cloudGuardEnable.analyze_entity(Statics.__rp_1_24['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_24['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_24['fireup_items'])
+
+def __call_1_25(config, signer, report_directory):
+    AuditEnable = AuditConfiguration(
+    Statics.__rp_1_25['entry'], 
+    Statics.__rp_1_25['area'], 
+    Statics.__rp_1_25['sub_area'], 
+    Statics.__rp_1_25['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_25['entry']+"_"+Statics.__rp_1_25['area']+"_"+Statics.__rp_1_25['sub_area']+"_mitigations"
+    __instancePrincipal_dictionary = AuditEnable.analyze_entity(Statics.__rp_1_25['entry'])
+    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_25['entry'])
+    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_25['fireup_items'])
+
+
+def __call_2_4(config, signer, report_directory):    
+    busyLimits = BusyLimits(
+    Statics.__rp_2_4['entry'],
+    Statics.__rp_2_4['area'],
+    Statics.__rp_2_4['sub_area'],
+    Statics.__rp_2_4['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_4['entry']+"_"+Statics.__rp_2_4['area']+"_"+Statics.__rp_2_4['sub_area']+"_mitigations"
+    __busyLimits_dictionary = busyLimits.analyze_entity(Statics.__rp_2_4['entry'])
+    generate_on_screen_report(__busyLimits_dictionary, report_directory, Statics.__rp_2_4['entry'])
+    generate_mitigation_report(__busyLimits_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_4['fireup_items'])
+
 
 def __call_2_3(config, signer, report_directory):    
     serviceLimits = ServiceLimits(
@@ -365,6 +490,19 @@ def __call_2_5(config, signer, report_directory):
     __compQuotas_dictionary = compQuotas.analyze_entity(Statics.__rp_2_5['entry'])
     generate_on_screen_report(__compQuotas_dictionary, report_directory, Statics.__rp_2_5['entry'])
     generate_mitigation_report(__compQuotas_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_5['fireup_items'])
+
+
+def __call_2_7(config, signer, report_directory):    
+    redundantConnections = RedundantConnections(
+    Statics.__rp_2_7['entry'],
+    Statics.__rp_2_7['area'],
+    Statics.__rp_2_7['sub_area'],
+    Statics.__rp_2_7['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_7['entry']+"_"+Statics.__rp_2_7['area']+"_"+Statics.__rp_2_7['sub_area']+"_mitigations"
+    __redundantConnections_dictionary = redundantConnections.analyze_entity(Statics.__rp_2_7['entry'])
+    generate_on_screen_report(__redundantConnections_dictionary, report_directory, Statics.__rp_2_7['entry'])
+    generate_mitigation_report(__redundantConnections_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_7['fireup_items'])
 
 
 def __call_2_8(config, signer, report_directory):    
@@ -522,6 +660,18 @@ def __call_3_3(config, signer, report_directory):
     generate_on_screen_report(__lbaasEncryption_dictionary, report_directory, Statics.__rp_3_3['entry'])
     generate_mitigation_report(__lbaasEncryption_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_3['fireup_items'])
 
+def __call_3_4(config, signer, report_directory):
+    oneRegionPerVCN = OneRegionPerVCN(
+    Statics.__rp_3_4['entry'],
+    Statics.__rp_3_4['area'],
+    Statics.__rp_3_4['sub_area'],
+    Statics.__rp_3_4['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_4['entry']+"_"+Statics.__rp_3_4['area']+"_"+Statics.__rp_3_4['sub_area']+"_mitigations"
+    __lbaasEncryption_dictionary = oneRegionPerVCN.analyze_entity(Statics.__rp_3_4['entry'])
+    generate_on_screen_report(__lbaasEncryption_dictionary, report_directory, Statics.__rp_3_4['entry'])
+    generate_mitigation_report(__lbaasEncryption_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_4['fireup_items'])
+
 
 def __call_3_5(config, signer, report_directory):    
     trafficSteering = TrafficSteering(
@@ -549,7 +699,20 @@ def __call_3_6(config, signer, report_directory):
     generate_mitigation_report(__compartmentWorkload_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_6['fireup_items'])
 
 
-def __call_3_10(config, signer, report_directory):    
+def __call_3_9(config, signer, report_directory):
+    checkBudgets = CheckBudgets(
+    Statics.__rp_3_9['entry'],
+    Statics.__rp_3_9['area'],
+    Statics.__rp_3_9['sub_area'],
+    Statics.__rp_3_9['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_9['entry']+"_"+Statics.__rp_3_9['area']+"_"+Statics.__rp_3_9['sub_area']+"_mitigations"
+    __checkBudgets_dictionary = checkBudgets.analyze_entity(Statics.__rp_3_9['entry'])
+    generate_on_screen_report(__checkBudgets_dictionary, report_directory, Statics.__rp_3_9['entry'])
+    generate_mitigation_report(__checkBudgets_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_9['fireup_items'])
+
+
+def __call_3_10(config, signer, report_directory):
     checkAutoTuning = CheckAutoTuning(
     Statics.__rp_3_10['entry'],
     Statics.__rp_3_10['area'],
@@ -560,3 +723,29 @@ def __call_3_10(config, signer, report_directory):
     __checkAutoTuning_dictionary = checkAutoTuning.analyze_entity(Statics.__rp_3_10['entry'])
     generate_on_screen_report(__checkAutoTuning_dictionary, report_directory, Statics.__rp_3_10['entry'])
     generate_mitigation_report(__checkAutoTuning_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_10['fireup_items'])
+
+
+def __call_3_11(config, signer, report_directory):
+    lifecycleManagement = LifecycleManagement(
+    Statics.__rp_3_11['entry'],
+    Statics.__rp_3_11['area'],
+    Statics.__rp_3_11['sub_area'],
+    Statics.__rp_3_11['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_11['entry']+"_"+Statics.__rp_3_11['area']+"_"+Statics.__rp_3_11['sub_area']+"_mitigations"
+    __lifecycleManagement_dictionary = lifecycleManagement.analyze_entity(Statics.__rp_3_11['entry'])
+    generate_on_screen_report(__lifecycleManagement_dictionary, report_directory, Statics.__rp_3_11['entry'])
+    generate_mitigation_report(__lifecycleManagement_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_11['fireup_items'])
+
+
+def __call_4_2(config, signer, report_directory):
+    metricAlarms = MetricAlarms(
+    Statics.__rp_4_2['entry'],
+    Statics.__rp_4_2['area'],
+    Statics.__rp_4_2['sub_area'],
+    Statics.__rp_4_2['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_2['entry']+"_"+Statics.__rp_4_2['area']+"_"+Statics.__rp_4_2['sub_area']+"_mitigations"
+    __metricAlarms_dictionary = metricAlarms.analyze_entity(Statics.__rp_4_2['entry'])
+    generate_on_screen_report(__metricAlarms_dictionary, report_directory, Statics.__rp_4_2['entry'])
+    generate_mitigation_report(__metricAlarms_dictionary, report_directory, mitigation_report_name, Statics.__rp_4_2['fireup_items'])

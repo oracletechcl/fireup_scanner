@@ -4,12 +4,10 @@
 # Description: Implementation of class MFA based on abstract
 
 from common.utils.helpers.helper import *
-from common.utils.formatter.printer import debug_with_date, print_with_date
+from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
-from common.utils.statics import Statics
-
-
 
 
 class Mfa(ReviewPoint):
@@ -17,11 +15,11 @@ class Mfa(ReviewPoint):
     # Class Variables
     __users = []
     __groups_to_users = []
+    __compartments = []
     __identity = None
     __tenancy = None
+    __policy_objects = []
     __policies = []
-
-
 
 
     def __init__(self,
@@ -76,9 +74,12 @@ class Mfa(ReviewPoint):
 
                 self.__users.append(record)
 
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)    
-        for policy in policy_data:  
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
+
+        for policy in self.__policy_objects:  
             record = {
                 "compartment_id": policy.compartment_id,
                 "defined_tags": policy.defined_tags,

@@ -5,8 +5,9 @@
 
 
 
-from common.utils.formatter.printer import debug, debug_with_date, print_with_date
+from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
@@ -16,6 +17,8 @@ class StoragePermissions(ReviewPoint):
     # Class Variables
     __identity = None
     __tenancy = None
+    __compartments = []
+    __policy_objects = []
     __policies = []
  
     def __init__(self,
@@ -49,9 +52,12 @@ class StoragePermissions(ReviewPoint):
 
     def load_entity(self):
         
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)      
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        for policy in policy_data:  
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
+
+        for policy in self.__policy_objects:  
             record = {
                 "compartment_id": policy.compartment_id,
                 "defined_tags": policy.defined_tags,
@@ -71,36 +77,23 @@ class StoragePermissions(ReviewPoint):
     
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        __problem_policies = []
-        __criteria_1 = 'manage'
-        __criteria_2_list = ['all-resources', 'volume-family','file-family', 'object-family',
+
+        __verb_list = ['manage']
+        __resource_list = ['all-resources', 'volume-family','file-family', 'object-family',
                              'volumes', 'volume-attachments', 'volume-backups',
                              'file-systems', 'mount-targets','export-sets',
                              'buckets', 'objects'
                              ]
-    
-        counter = 0        
-
         for policy in self.__policies:
             for statement in policy['statements']:
-                if __criteria_1.upper() in statement.upper():
-                    for criteria in __criteria_2_list:
-                        if criteria.upper() in statement.upper():
-                            counter+=1
-                            __problem_policies.append({counter:statement})
-                
-        if counter > 0:
-            for idx, policy in enumerate(__problem_policies):        
-
-                dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(policy)    
-                dictionary[entry]['failure_cause'].append('This policy allow users to Delete Storage Resources')                
-                dictionary[entry]['mitigations'].append('Make sure that users in the following policy are allowed to Delete Storage Resources : ' + str(policy[idx+1]))
-                
-                            
-        else:
-            dictionary[entry]['status'] = True
-            
-
+                if __verb_list[0] in statement:
+                    for banned_resources in __resource_list:
+                        if banned_resources in statement:
+                            dictionary[entry]['status'] = False
+                            dictionary[entry]['findings'].append(policy) 
+                            dictionary[entry]['failure_cause'].append('Found policy allowing un-authorized users to Delete Storage Resources')                                            
+                            dictionary[entry]['mitigations'].append("Evaluate to update policy: " + policy['name']+
+                                                                    " in compartment: "+get_compartment_name(self.__compartments, policy['compartment_id']) + 
+                                                                    " removing wide permissions: " +__verb_list[0] +" " + banned_resources)      
+               
         return dictionary
-

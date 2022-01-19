@@ -4,19 +4,21 @@
 # Description: Implementation of class MFA based on abstract
 
 
-from common.utils.formatter.printer import debug, debug_with_date, print_with_date
+from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
+import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
 
 class DBPermissions(ReviewPoint):
 
-    # Class Variables    
+    # Class Variables
+    __compartments = []
+    __policy_objects = []
     __policies = []
     __identity = None
     __tenancy = None
-
 
 
     def __init__(self,
@@ -50,9 +52,12 @@ class DBPermissions(ReviewPoint):
 
     def load_entity(self):   
                
-        policy_data = get_policies_data(self.__identity, self.__tenancy.id)      
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        for policy in policy_data:  
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
+
+        for policy in self.__policy_objects:  
             record = {
                 "compartment_id": policy.compartment_id,
                 "defined_tags": policy.defined_tags,
@@ -67,9 +72,6 @@ class DBPermissions(ReviewPoint):
             }
             self.__policies.append(record)
 
-    
-       
-        
 
     def analyze_entity(self, entry):
         self.load_entity()        
@@ -81,6 +83,7 @@ class DBPermissions(ReviewPoint):
         __criteria_1 = "tenancy where request.permission!='DB_SYSTEM_DELETE'"
         __criteria_2 = "tenancy where request.permission!='DATABASE_DELETE'"
         __criteria_3 = "tenancy where request.permission!='DB_HOME_DELETE'"
+
         counter = 0        
         for policy in self.__policies:
             for statement in policy['statements']:
@@ -88,10 +91,11 @@ class DBPermissions(ReviewPoint):
                     counter+=1
         
         if counter < 1: 
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append('No Policies for Restricting Database deletion have been detected')                
-                    dictionary[entry]['mitigations'].append('Add the following policies into the tenancy to enforce database protection: '+ __db_policy_1 + ' and ' + __db_policy_2 + ' and ' + __db_policy_3)                
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append('No Policies for Restricting Database deletion have been detected')                
+            dictionary[entry]['mitigations'].append('Add the following policies into the tenancy to enforce database protection: '+ __db_policy_1 + ' and ' + __db_policy_2 + ' and ' + __db_policy_3)                
         else:
-                    dictionary[entry]['status'] = True
-                    dictionary[entry]['findings'].append(policy)                    
+            dictionary[entry]['status'] = True
+            dictionary[entry]['findings'].append(policy)     
+               
         return dictionary

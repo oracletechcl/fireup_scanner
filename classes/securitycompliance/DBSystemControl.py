@@ -1,11 +1,11 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# SecurityList.py
-# Description: Implementation of class SecurityList based on abstract
+# DBSystemControl.py
+# Description: Implementation of class DBSystemControl based on abstract
 
 
 
-from common.utils.formatter.printer import debug, debug_with_color_date, debug_with_date, print_with_date
+from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *

@@ -30,6 +30,16 @@ drg_attachments = []
 service_gateways = []
 local_peering_gateways = []
 
+virtual_circuits = []
+
+bucket_lifecycle_policies = []
+
+limit_values_with_regions = []
+limit_availabilities_with_regions = []
+
+alarms = []
+metrics = []
+
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
 vcns = []
@@ -93,6 +103,13 @@ autonomous_databases = []
 adb_nsgs = []
 bucket_preauthenticated_requests = []
 
+
+### DBSystemPatch.py Global Variables
+# Lists for use with parallel_executor
+oracle_dbsystems_applicable_patches = []
+db_systems = []
+oracle_db_home_patch_history = []
+oracle_db_system_patch_history = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -346,16 +363,30 @@ def get_database_homes(item):
     database_client = item[0]
     compartments = item[1:]
 
-    db_homes = []
+    db_system_homes = []
 
     for compartment in compartments:
         database_home_data = get_db_system_home_data(database_client, compartment.id)
         for db_home in database_home_data:
             if "DELETED" not in db_home.lifecycle_state:
-                db_homes.append(db_home)
+                db_system_homes.append(db_home)
 
-    return db_homes
+    return db_system_homes
 
+
+def get_database_systems(item):
+    database_client = item[0]
+    compartments = item[1:]
+
+    db_systems = []
+
+    for compartment in compartments:
+        database_system_data = get_db_system_data(database_client, compartment.id)
+        for db_sys in database_system_data:
+            if "DELETED" not in db_sys.lifecycle_state:
+                db_systems.append(db_sys)
+
+    return db_systems
 
 def get_mysql_dbs(item):
     mysql_client = item[0]
@@ -432,21 +463,31 @@ def get_user_with_api_keys(item):
     return user_data
 
 
-def get_policies_per_compartment(item):
+def get_policies(item):
     identity_client = item[0]
     compartments = item[1:]
 
-    policies_per_compartment = []
+    policies = []
 
     for compartment in compartments:
-        policies = []
         policy_data = get_policies_data(identity_client, compartment.id)
         for policy in policy_data:
             policies.append(policy)
-        policies_per_compartment.append(policies)
 
-    return policies_per_compartment
+    return policies
 
+def get_policies(item):
+    identity_client = item[0]
+    compartments = item[1:]
+
+    policies = []
+
+    for compartment in compartments:
+        policy_data = get_policies_data(identity_client, compartment.id)
+        for policy in policy_data:
+            policies.append(policy)
+
+    return policies
 
 def get_instances(item):
         compute_client = item[0]
@@ -611,19 +652,40 @@ def get_buckets(item):
 
     return buckets
 
+
+def get_bucket_lifecycle_policies(item):
+    object_storage_client = item[0]
+    namespace = object_storage_client[1]
+    buckets = item[1:]
+
+    bucket_lifecycle_policies = []
+
+    for bucket in buckets:
+        region = bucket.id.split('.')[3]  
+        if object_storage_client[2] in region or object_storage_client[3] in region:
+            if bucket.object_lifecycle_policy_etag is not None:
+                lifecycle_policies = object_storage_client[0].get_object_lifecycle_policy(namespace, bucket.name).data
+                bucket_lifecycle_policies.append( (bucket, lifecycle_policies) )
+            else:
+                bucket_lifecycle_policies.append( (bucket, None) )
+                
+    return bucket_lifecycle_policies
+
+
 def get_preauthenticated_requests_per_bucket(item):
-    object_storage_client = item[0][0]
-    namespace = item[0][1]
-    compartments = item[1:]
+    object_storage_client = item[0]
+    namespace = object_storage_client[1]
+    buckets = item[1:]
 
     bucket_preauthenticated_requests = []
 
-    for compartment in compartments:
-        bucket_data = get_bucket_data(object_storage_client, namespace, compartment.id)
-        for bucket in bucket_data:
-            preauthenticated_requests = get_preauthenticated_requests(object_storage_client,namespace,bucket.name)
-            bucket_preauthenticated_requests.append({bucket.name:preauthenticated_requests})
-            
+    for bucket in buckets:
+        region = bucket.id.split('.')[3]  
+        if object_storage_client[2] in region or object_storage_client[3] in region:    
+            preauthenticated_requests = get_preauthenticated_requests(object_storage_client[0],namespace,bucket.name)
+            if preauthenticated_requests:
+                bucket_preauthenticated_requests.append({bucket.name:preauthenticated_requests})
+                
     return bucket_preauthenticated_requests
 
 
@@ -641,6 +703,93 @@ def get_autonomous_databases(item):
 
     return autonomous_databases
 
+
+def get_database_home_patches(item):
+    database_client = item[0]
+    database_objects = item[1:]
+
+    oracle_dbsystems_applicable_patches = []
+
+
+    for db_ocids in database_objects:
+        region = db_ocids.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            if db_ocids.lifecycle_state == "AVAILABLE":
+                patches_data = get_db_home_patches(database_client[0], db_ocids.id)
+                for patch in patches_data:
+                    oracle_dbsystems_applicable_patches.append(patch)
+
+    return oracle_dbsystems_applicable_patches
+
+def get_database_homes_applied_patch_history(item):
+    database_client = item[0]
+    database_home_objects = item[1:]
+
+    oracle_db_home_patch_history = []
+
+    for db_home_ocids in database_home_objects:
+        patch_ocid = ""
+
+        region = db_home_ocids.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            if db_home_ocids.lifecycle_state == "AVAILABLE":
+                patches_data = get_db_home_patch_history(database_client[0], db_home_ocids.id)
+                if len(patches_data) > 0:
+                    patch_ocid = patches_data[0].patch_id
+
+                    db_home_patch_history_dict = {
+                        "db_home_ocid": db_home_ocids.id,
+                        'db_version': db_home_ocids.db_version,
+                        "patch_id" : patch_ocid,
+                        "database_client": database_client[0]
+                    }
+                else:
+                    db_home_patch_history_dict = {
+                        "db_home_ocid": db_home_ocids.id,
+                        'db_version': db_home_ocids.db_version,
+                        "patch_id" : None,
+                        "database_client": None
+                    }
+
+                oracle_db_home_patch_history.append(db_home_patch_history_dict)
+
+
+    return oracle_db_home_patch_history
+
+
+def get_database_systems_applied_patch_history(item):
+    database_client = item[0]
+    database_system_objects = item[1:]
+
+    oracle_db_system_patch_history = []
+
+    for db_system_ocids in database_system_objects:
+        patch_ocid = ""
+        region = db_system_ocids.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            if db_system_ocids.lifecycle_state == "AVAILABLE":
+                patches_data = get_db_system_patch_history(database_client[0], db_system_ocids.id)
+
+                if len(patches_data) > 0:
+                    patch_ocid = patches_data[0].patch_id
+
+                    db_system_patch_history_dict = {
+                        "db_system_ocid": db_system_ocids.id,
+                        "db_version": db_system_ocids.version,
+                        "patch_id" : patch_ocid,
+                        "database_client": database_client[0]
+                    }
+                else:
+                    db_system_patch_history_dict = {
+                        "db_system_ocid": db_system_ocids.id,
+                        "db_version": db_system_ocids.version,
+                        "patch_id" : None,
+                        "database_client": None
+                    }
+
+                oracle_db_system_patch_history.append(db_system_patch_history_dict)
+
+    return oracle_db_system_patch_history
 
 def get_steering_policies(item):
     dns_client = item[0]
@@ -681,14 +830,14 @@ def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_
     return workload_status[0]
 
 
-def get_oke_cluster(item):
+def get_oke_clusters(item):
     container_engine_client = item[0]
     compartments = item[1:]
 
     oke_clusters = []
 
     for compartment in compartments:
-        oke_cluster_data = get_oke_clusters(container_engine_client, compartment.id)
+        oke_cluster_data = get_oke_cluster_data(container_engine_client, compartment.id)
         for oke_cluster in oke_cluster_data:
             if oke_cluster.lifecycle_state != "DELETED":
                 oke_clusters.append(oke_cluster)
@@ -743,7 +892,7 @@ def get_drg_attachments(item):
                 drg_attachments.append(drg_attachment_data)
             except:
                 continue
-            
+
     return drg_attachments
 
 
@@ -775,3 +924,82 @@ def get_local_peering_gateways(item):
                 local_peering_gateways.append(local_peering_gateway)
 
     return local_peering_gateways
+
+
+def get_virtual_circuits(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    virtual_circuits = []
+
+    for compartment in compartments:
+        virtual_circuits_data = get_virtual_circuit_data(network_client, compartment.id)
+        for virtual_circuit in virtual_circuits_data:
+            if "TERMINATED" not in virtual_circuit.lifecycle_state:
+                virtual_circuits.append(virtual_circuit)
+
+    return virtual_circuits
+
+
+def get_limit_values(item):
+    limits_client = item[0][0]
+    tenancy_id = item[0][1]
+    region = item[0][2]
+    services = item[1:]
+
+    limit_values_with_regions = []
+
+    for service in services:
+        limit_value_data = list_limit_value_data(limits_client, tenancy_id, service.name)
+        for limit_value in limit_value_data:
+            limit_values_with_regions.append( (region, service.name, limit_value) )
+
+    return limit_values_with_regions
+
+
+def get_limit_availabilities(item):
+    limits_client = item[0][0]
+    tenancy_id = item[0][1]
+    region = item[0][2]
+    limit_values = item[1:]
+
+    limit_availabilities_with_regions = []
+
+    for limit_value in limit_values:
+        if region == limit_value[0]:
+            if "AD" in limit_value[2].scope_type:
+                limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id, limit_value[2].availability_domain)) )
+            else:
+                limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id)) )
+
+    return limit_availabilities_with_regions
+
+
+def get_alarms(item):
+    monitoring_client = item[0]
+    compartments = item[1:]
+
+    alarms = []
+
+    for compartment in compartments:
+        alarm_data = get_alarm_data(monitoring_client, compartment.id)
+        for alarm in alarm_data:
+            if "DELETED" not in alarm.lifecycle_state:
+                alarms.append(alarm)
+
+    return alarms
+
+
+def get_metrics(item):
+    monitoring_client = item[0]
+    compartments = item[1:]
+
+    metrics = []
+
+    for compartment in compartments:
+        metric_data = get_metric_data(monitoring_client, compartment.id)
+        for metric in metric_data:
+            metrics.append(metric)
+
+    return metrics
+

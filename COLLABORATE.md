@@ -5,6 +5,8 @@
   - [Get Started](#get-started)
   - [Branch and Collaboration](#branch-and-collaboration)
   - [How Create new review point](#how-create-new-review-point)
+  - [How to add debug entries in your code](#how-to-add-debug-entries-in-your-code)
+    - [Examples](#examples)
   - [How to add a dependency that I use in my Review Point to the venv being used?](#how-to-add-a-dependency-that-i-use-in-my-review-point-to-the-venv-being-used)
   - [Using Parallel Executor](#using-parallel-executor)
     - [What Is It For?](#what-is-it-for)
@@ -340,12 +342,18 @@ def __call_1_1(config, signer, report_directory):
   def main_orchestrator(config,signer, report_directory):
     print_header("Fireup "+statics.__version__)
     print_report_sub_header()
-    __call_1_1(config, signer, report_directory)
-    __call_1_2(config, signer, report_directory)
-    ...
-    ...
-    ...
-    __call_X_Y(config, signer, report_directory) 
+
+    orchestrated_list = [   __call_1_1,
+                            __call_1_2,
+                            __call_1_3,
+                            __call_1_4,
+                            __call_1_5,
+                            __call_1_6,
+                            __call_1_7,
+                            ...
+                            ...
+                            ...
+                            __call_X_Y]
     
 ```
 
@@ -355,6 +363,38 @@ def __call_1_1(config, signer, report_directory):
 from classes.reviewarea.ConcreteClass import ConcreteObject 
 
 ```
+<div id="AddDebugInYourCode"></div>
+
+## How to add debug entries in your code
+
+Ever so often you want to debug stuff in your code so it shows you the details on the console right out of the console. In order to do so, use the function `debug()` as follows:
+
+- Call debug with just a string or object: 
+  - `debug("This is a debug string")`
+  - `debug(my_object)`
+    - **NOTE**: Default color is `white`
+- Call debug with a string or an object, but adding a color to the output
+  - `debug("This is a debug string", "green")`
+  - `debug(my_object, "green")`
+    - **NOTE**: The following colors are currently supported: 
+      - red
+      - green
+      - yellow
+      - blue
+      - magenta
+      - cyan
+      - grey
+
+### Examples
+
+- The following is the `debug` output that will come by default, exposing the contents of a dataframe coming straight from the API:
+
+![Debug_No_Color](./images/debug_no_color.png)
+
+
+- The following is the debug output that will appear when using the `debug` function with a color, in this case `green`, exposing the contents of a dataframe coming straight from the API:
+
+![Debug_No_Color](./images/debug_with_color.png)
 
 <div id="AddCodeLibDependency"></div>
 
@@ -647,7 +687,7 @@ File: `test_suite_X_Y.py`
 
 from os import write
 from common.utils.helpers.helper import get_config_and_signer
-from common.utils.formatter.printer import debug_with_date
+from common.utils.formatter.printer import debug
 from classes.AREA.CONCRETECLASS import ConcreteClass
 from common.utils import statics
 from common.utils.tokenizer.signer import *
@@ -673,7 +713,7 @@ def test_review_point(capsys):
     dictionary = result_dictionary.analyze_entity(statics.__rp_X_Y['entry'])   
     
     for item in dictionary[statics.__rp_X_Y['entry']]['findings']:
-        debug_with_date(item)
+        debug(item)
         results_in_fault += 1
     
     assert results_in_fault == ASSERTION_VALUE_FOR_CORRECT_RESULTS

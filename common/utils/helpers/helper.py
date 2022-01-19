@@ -34,7 +34,7 @@ def get_audit_client(config, signer):
 
 def get_cloud_guard_client(config, signer):
     try:
-        cloud_guard_client = oci.cloudguard.CloudGuardClient(config, signer=signer)
+        cloud_guard_client = oci.cloud_guard.CloudGuardClient(config, signer=signer)
     except Exception as e:
         raise RuntimeError("Failed to create cloud guard client: " + e)
     return cloud_guard_client
@@ -191,7 +191,7 @@ def get_home_region(identity_client, config):
             return region
 
 
-def get_compartments_data(identity_client, compartment_id): 
+def get_compartments_data(identity_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_compartments,
         compartment_id,
@@ -199,6 +199,10 @@ def get_compartments_data(identity_client, compartment_id):
         lifecycle_state="ACTIVE",
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
+
+def get_root_compartment_data(identity_client, tenancy_id):
+    return identity_client.get_compartment(tenancy_id).data
 
 
 def get_policies_data(identity_client, compartment_id): 
@@ -217,7 +221,7 @@ def get_user_data(identity_client, compartment_id):
     ).data
 
 
-def get_user_api_key_data(identity_client, user_id): 
+def get_user_api_key_data(identity_client, user_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_api_keys,
         user_id,
@@ -225,7 +229,7 @@ def get_user_api_key_data(identity_client, user_id):
     ).data
 
 
-def get_auth_token_data(identity_client, user_id): 
+def get_auth_token_data(identity_client, user_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_auth_tokens,
         user_id,
@@ -274,7 +278,7 @@ def get_load_balancer_data(load_balancer_client, compartment_id):
     ).data
 
 
-def get_network_load_balancer_data(network_load_balancer_client, compartment_id): 
+def get_network_load_balancer_data(network_load_balancer_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_load_balancer_client.list_network_load_balancers,
         compartment_id,
@@ -282,7 +286,7 @@ def get_network_load_balancer_data(network_load_balancer_client, compartment_id)
     ).data
 
 
-def get_dynamic_group_data(identity_client, compartment_id): 
+def get_dynamic_group_data(identity_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_dynamic_groups,
         compartment_id,
@@ -314,7 +318,7 @@ def get_block_volume_data(block_storage_client, compartment_id):
     ).data
 
 
-def get_block_volume_replica_data(block_storage_client, availability_domain, compartment_id): 
+def get_block_volume_replica_data(block_storage_client, availability_domain, compartment_id):
     return oci.pagination.list_call_get_all_results(
         block_storage_client.list_block_volume_replicas,
         availability_domain,
@@ -323,7 +327,7 @@ def get_block_volume_replica_data(block_storage_client, availability_domain, com
     ).data
 
 
-def get_boot_volume_data(block_storage_client, availability_domain, compartment_id): 
+def get_boot_volume_data(block_storage_client, availability_domain, compartment_id):
     return oci.pagination.list_call_get_all_results(
         block_storage_client.list_boot_volumes,
         availability_domain,
@@ -332,7 +336,7 @@ def get_boot_volume_data(block_storage_client, availability_domain, compartment_
     ).data
 
 
-def get_boot_volume_replica_data(block_storage_client, availability_domain, compartment_id): 
+def get_boot_volume_replica_data(block_storage_client, availability_domain, compartment_id):
     return oci.pagination.list_call_get_all_results(
         block_storage_client.list_boot_volume_replicas,
         availability_domain,
@@ -351,6 +355,7 @@ def get_bucket_data(object_storage_client, namespace, compartment_id):
 
 
 def get_file_system_data(file_storage_client, compartment_id, availability_domain):
+    
     return oci.pagination.list_call_get_all_results(
         file_storage_client.list_file_systems,
         compartment_id,
@@ -369,6 +374,7 @@ def get_mount_target_data(file_storage_client, compartment_id, availability_doma
 
 
 def get_db_system_data(database_client, compartment_id):
+    
     return oci.pagination.list_call_get_all_results(
         database_client.list_db_systems,
         compartment_id,
@@ -385,6 +391,7 @@ def get_db_system_home_data(database_client, compartment_id):
 
 
 def get_auto_db_data(database_client, compartment_id):
+    
     return oci.pagination.list_call_get_all_results(
         database_client.list_autonomous_databases,
         compartment_id,
@@ -416,7 +423,7 @@ def get_quotas_client(config, signer):
     return quotas_client
 
 
-def list_quota_data(quotas_client, tenancy_id): 
+def list_quota_data(quotas_client, tenancy_id):
         return oci.pagination.list_call_get_all_results(
         quotas_client.list_quotas,
         tenancy_id,
@@ -463,6 +470,38 @@ def get_max_security_zone_data(identity_client, compartment_id):
         response_type="json").data
 
 
+def get_db_home_patches(database_client, db_home_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_home_patches,
+        db_home_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_db_home_patch_history(database_client, db_home_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_home_patch_history_entries,
+        db_home_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_db_system_patch_history(database_client, db_home_id):
+    return oci.pagination.list_call_get_all_results(
+        database_client.list_db_system_patch_history_entries,
+        db_home_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_db_system_patch_details(database_client, db_system_id, patch_id):
+    return database_client.get_db_system_patch(db_system_id, patch_id).data
+
+
+def get_db_home_patch_details(database_client, db_home_id, patch_id):
+    return database_client.get_db_home_patch(db_home_id,patch_id).data
+
+  
 def get_drg_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_drgs,
@@ -495,7 +534,7 @@ def get_limits_client(config, signer):
     return limits_client
 
 
-def list_limit_value_data(limits_client, compartment_id, service_name): 
+def list_limit_value_data(limits_client, compartment_id, service_name):
     return oci.pagination.list_call_get_all_results(
         limits_client.list_limit_values,
         compartment_id,
@@ -504,13 +543,23 @@ def list_limit_value_data(limits_client, compartment_id, service_name):
     ).data
 
 
-def list_limit_definition_data(limits_client, compartment_id, service_name): 
+def list_limit_definition_data(limits_client, compartment_id, service_name):
     return oci.pagination.list_call_get_all_results(
         limits_client.list_limit_definitions,
         compartment_id=compartment_id,
         service_name=service_name,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
+
+def get_resource_availability_data(limits_client, service_name, limit_name, compartment_id, availability_domain=None):
+    return limits_client.get_resource_availability(
+            service_name=service_name,
+            limit_name=limit_name,
+            compartment_id=compartment_id,
+            availability_domain=availability_domain,
+            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        ).data
 
 
 def get_dns_client(config, signer):
@@ -533,14 +582,95 @@ def get_container_engine_client(config, signer):
     try:
         container_engine_client = oci.container_engine.ContainerEngineClient(config, signer=signer)
     except Exception as e:
-        raise RuntimeError("Failed to create container engine client client: " + e)
+        raise RuntimeError("Failed to create container engine client: " + e)
     return container_engine_client
 
 
-def get_oke_clusters(container_engine_client, compartment_id):
+def get_oke_cluster_data(container_engine_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         container_engine_client.list_clusters,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
+def get_network_sources(identity_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        identity_client.list_network_sources,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_authentication_policy(identity_client, tenancy_id):
+    return identity_client.get_authentication_policy(tenancy_id).data    
+
+
+def get_virtual_circuit_data(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_virtual_circuits,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+  
+
+def get_budget_client(config, signer):
+    try:
+        budget_client = oci.budget.BudgetClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create budget client: " + e)
+    return budget_client
+
+
+def get_budget_data(budget_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        budget_client.list_budgets,
+        compartment_id,
+        target_type ="ALL",
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_budget_alert_rules_data(budget_client, budget_id):
+    return oci.pagination.list_call_get_all_results(
+        budget_client.list_alert_rules,
+        budget_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+ 
+def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
+    return cloud_guard_client.get_configuration(
+        tenancy_id
+    ).data
+
+
+def get_audit_configuration_data(audit_client, tenancy_id):
+    return audit_client.get_configuration(
+        tenancy_id
+    ).data
+
+
+def get_monitoring_client(config, signer):
+    try:
+        monitoring_client = oci.monitoring.MonitoringClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Monitoring client: " + e)
+    return monitoring_client
+
+
+def get_alarm_data(monitoring_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        monitoring_client.list_alarms,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_metric_data(monitoring_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        monitoring_client.list_metrics,
+        compartment_id,
+        oci.monitoring.models.ListMetricsDetails(),
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
