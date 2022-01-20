@@ -203,6 +203,10 @@ def get_regions_data(identity_client, config):
         raise RuntimeError("Failed to get regions: " + e)
     return regions
 
+def get_cost_tracking_tags(identity_client, root_compartment_id):
+    cost_tracking_tags_response = identity_client.list_cost_tracking_tags(
+        root_compartment_id).data
+    return cost_tracking_tags_response
 
 def get_home_region(identity_client, config):
     regions = get_regions_data(identity_client, config)
@@ -674,9 +678,12 @@ def get_budget_alert_rules_data(budget_client, budget_id):
 
  
 def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
-    return cloud_guard_client.get_configuration(
-        tenancy_id
-    ).data
+    try:
+        return cloud_guard_client.get_configuration(
+            tenancy_id
+        ).data
+    except oci.exceptions.ServiceError as e:
+        return e
 
 def get_autoscaling_configurations_per_compartment(autoscaling_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(

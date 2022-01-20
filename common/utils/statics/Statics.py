@@ -264,10 +264,10 @@ __rp_2_2 = {
 __rp_2_3 = {
     'entry': '2.3',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Service Limits',
+    'review_point': 'Understand the Default Service Limits of Your Tenancy',    
+    'success_criteria': 'Check common limits and if those are in default values',
+    'fireup_items': ['Fireup Task: 38 - Are you aware of default service limits to avoid any future loss of service'],
 }
 
 __rp_2_4 = {
@@ -462,10 +462,10 @@ __rp_3_7 = {
 __rp_3_8 = {
     'entry': '3.8',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Implement Cost Tracking Tags for Flexible Cost Tracking',
+    'success_criteria': 'Check if Cost Tracking tags are in place',
+    'fireup_items': ['Fireup Task: 66 - Do you use any configuration or infrastructure management tools?'],
 }
 
 __rp_3_9 = {

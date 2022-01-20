@@ -33,8 +33,9 @@ from classes.securitycompliance.AuditConfiguration import AuditConfiguration
 from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
 from classes.securitycompliance.SecureDNS import SecureDNS
 
-from classes.reliabilityresilience.BusyLimits import BusyLimits
+from classes.reliabilityresilience.ServiceLimits import ServiceLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
+from classes.reliabilityresilience.BusyLimits import BusyLimits
 from classes.reliabilityresilience.RedundantConnections import RedundantConnections
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
@@ -56,6 +57,7 @@ from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 from classes.performancecost.CheckBudgets import CheckBudgets
 from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
 from classes.performancecost.LifecycleManagement import LifecycleManagement
+from classes.performancecost.ImplementCostTrackingTags import ImplementCostTrackingTags
 
 from classes.opsefficiency.MetricAlarms import MetricAlarms
 from classes.opsefficiency.ConfigureAuditing import ConfigureAuditing
@@ -95,6 +97,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_1_24,
                             __call_1_25,
                             __call_2_1,
+                            __call_2_3,
                             __call_2_4,
                             __call_2_5,
                             __call_2_7,
@@ -113,6 +116,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_3_4,
                             __call_3_5,
                             __call_3_6,
+                            __call_3_8,
                             __call_3_9,
                             __call_3_10,
                             __call_3_11,
@@ -266,6 +270,7 @@ def __call_1_11(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_11['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_11['fireup_items'])
 
+
 def __call_1_12(config, signer, report_directory):
     dbSystem = DBSystemControl(
     Statics.__rp_1_12['entry'], 
@@ -277,6 +282,7 @@ def __call_1_12(config, signer, report_directory):
     __dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_12['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_12['fireup_items'])
+
 
 def __call_1_13(config, signer, report_directory):
     dbPerms = DBPermissions(
@@ -302,6 +308,7 @@ def __call_1_14(config, signer, report_directory):
     __dictionary = dbKeys.analyze_entity(Statics.__rp_1_14['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_14['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_14['fireup_items'])
+
 
 def __call_1_15(config, signer, report_directory):
     dbSystemPatch = DBSystemPatch(
@@ -367,6 +374,7 @@ def __call_1_19(config, signer, report_directory):
     __dictionary = bucket.analyze_entity(Statics.__rp_1_19['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_19['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_19['fireup_items'])
+
 
 def __call_1_20(config, signer, report_directory):
     bucket = BucketEncryption(
@@ -452,6 +460,18 @@ def __call_2_1(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_1['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_1['fireup_items'])
 
+def __call_2_3(config, signer, report_directory):    
+    serviceLimits = ServiceLimits(
+    Statics.__rp_2_3['entry'],
+    Statics.__rp_2_3['area'],
+    Statics.__rp_2_3['sub_area'],
+    Statics.__rp_2_3['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_3['entry']+"_"+Statics.__rp_2_3['area']+"_"+Statics.__rp_2_3['sub_area']+"_mitigations"
+    __dictionary = serviceLimits.analyze_entity(Statics.__rp_2_3['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_3['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_3['fireup_items'])
+
 def __call_2_4(config, signer, report_directory):    
     busyLimits = BusyLimits(
     Statics.__rp_2_4['entry'],
@@ -463,7 +483,6 @@ def __call_2_4(config, signer, report_directory):
     __dictionary = busyLimits.analyze_entity(Statics.__rp_2_4['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_4['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_4['fireup_items'])
-
 
 
 def __call_2_5(config, signer, report_directory):    
@@ -685,6 +704,17 @@ def __call_3_6(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_3_6['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_3_6['fireup_items'])
 
+def __call_3_8(config, signer, report_directory):
+    implementCostTrackingTags = ImplementCostTrackingTags(
+    Statics.__rp_3_8['entry'],
+    Statics.__rp_3_8['area'],
+    Statics.__rp_3_8['sub_area'],
+    Statics.__rp_3_8['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_8['entry']+"_"+Statics.__rp_3_8['area']+"_"+Statics.__rp_3_8['sub_area']+"_mitigations"
+    __dictionary = implementCostTrackingTags.analyze_entity(Statics.__rp_3_8['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_3_8['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_3_8['fireup_items'])
 
 def __call_3_9(config, signer, report_directory):
     checkBudgets = CheckBudgets(

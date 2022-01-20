@@ -17,6 +17,7 @@ class CloudGuardMonitor(ReviewPoint):
     # __tenancy_data_including_cloud_guard captures tenancy id, name descirption, region key, and cloud guard status
     __identity = None
     __cloud_guard_client = None
+    __cloud_guard_data = []
     __tenancy = None
 
 
@@ -54,15 +55,18 @@ class CloudGuardMonitor(ReviewPoint):
     def load_entity(self):   
         
         # Get cloud guard configuration data based on tenancy id
-        cloud_guard_data = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)
-        
+        self.__cloud_guard_data = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)
+
+        if type(self.__cloud_guard_data) == oci.exceptions.ServiceError:
+            return
+
         # Record some data of a tenancy and its cloud guard enable status
         tenancy_data_including_cloud_guard = {
             "tenancy_id" : self.__tenancy.id,
             "tenancy_name" : self.__tenancy.name,
             "tenancy_description" : self.__tenancy.description,
             "tenancy_region_key" : self.__tenancy.home_region_key,
-            "cloud_guard_enable_stautus" : cloud_guard_data.status
+            "cloud_guard_enable_stautus" : self.__cloud_guard_data.status
         }
         self.__tenancy_data_including_cloud_guard = tenancy_data_including_cloud_guard
     
@@ -70,6 +74,13 @@ class CloudGuardMonitor(ReviewPoint):
     def analyze_entity(self, entry):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
+
+        if type(self.__cloud_guard_data) == oci.exceptions.ServiceError:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append("Cloud guard is not available in an always free tenancy")
+            dictionary[entry]['mitigations'].append(str(self.__cloud_guard_data.message))
+
+            return dictionary
         
         # Check if Cloud Guard is enable
         if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
