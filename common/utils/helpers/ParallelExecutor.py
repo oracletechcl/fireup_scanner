@@ -113,6 +113,10 @@ db_systems = []
 oracle_db_home_patch_history = []
 oracle_db_system_patch_history = []
 
+### ConfigureAuditing.py Global Variables
+service_connectors = []
+bucket_retention_rules = []
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
         return []
@@ -375,6 +379,45 @@ def get_database_homes(item):
 
     return db_system_homes
 
+def get_service_connectors_info(item):
+    service_client = item[0]
+    compartments = item[1:]
+
+    service_connectors = []
+
+    for compartment in compartments:
+        service_connectors_data = get_service_connectors(service_client, compartment.id)
+        for service_connector in service_connectors_data:
+            service_connectors.append(service_connector)
+
+    return service_connectors
+
+def get_bucket_retention_rules_info(item):
+    object_storage_client = item[0]
+    bucket_objects = item[1:]
+
+    bucket_retention_rules = []
+
+    for bucket_object in bucket_objects:
+        region = bucket_object.id.split('.')[3]
+        if object_storage_client[2] in region or object_storage_client[3] in region:
+            bucket_retention_rule_data = get_bucket_retention_rules(object_storage_client[0], bucket_object.namespace,bucket_object.name)
+
+            for bucket_retention_rule in bucket_retention_rule_data:
+                record = {
+                    "display_name": bucket_retention_rule.display_name,
+                    "bucket_name": bucket_object.name,
+                    "bucket_id": bucket_object.id,
+                    "duration": bucket_retention_rule.duration,
+                    "etag": bucket_retention_rule.etag,
+                    "id": bucket_retention_rule.id,
+                    "time_created": bucket_retention_rule.time_created,
+                    "time_modified": bucket_retention_rule.time_modified,
+                    "time_rule_locked": bucket_retention_rule.time_rule_locked,
+                }
+                bucket_retention_rules.append(record)
+
+    return bucket_retention_rules
 
 def get_database_systems(item):
     database_client = item[0]

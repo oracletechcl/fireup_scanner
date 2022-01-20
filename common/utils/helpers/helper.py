@@ -187,6 +187,12 @@ def get_container_engine_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create Container Engine Client: " + e)
     return container_engine_client
+def get_service_client(config, signer):
+    try:
+        service_client = oci.sch.ServiceConnectorClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create MySQL Backup client: " + e)
+    return service_client
 
 def get_tenancy_data(identity_client, config):
     try:
@@ -232,6 +238,20 @@ def get_policies_data(identity_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+def get_service_connectors(service_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        service_client.list_service_connectors,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_bucket_retention_rules(object_storage_client, namespace_name,bucket_name):
+    return oci.pagination.list_call_get_all_results(
+        object_storage_client.list_retention_rules,
+        namespace_name,
+        bucket_name,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
 
 def get_user_data(identity_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
