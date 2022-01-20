@@ -46,6 +46,7 @@ from classes.reliabilityresilience.CheckGateways import CheckGateways
 from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
+from classes.reliabilityresilience.CheckAutoscaling import CheckAutoscaling
 
 from classes.performancecost.TenancyQuotas import TenancyQuotas
 from classes.performancecost.CheckAutoTuning import CheckAutoTuning
@@ -95,6 +96,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_1_23,
                             __call_1_24,
                             __call_1_25,
+                            __call_2_1,
                             __call_2_3,
                             __call_2_4,
                             __call_2_5,
@@ -446,19 +448,17 @@ def __call_1_25(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_25['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_25['fireup_items'])
 
-
-def __call_2_4(config, signer, report_directory):    
-    busyLimits = BusyLimits(
-    Statics.__rp_2_4['entry'],
-    Statics.__rp_2_4['area'],
-    Statics.__rp_2_4['sub_area'],
-    Statics.__rp_2_4['review_point'],
+def __call_2_1(config, signer, report_directory):    
+    autoscaling = CheckAutoscaling(
+    Statics.__rp_2_1['entry'],
+    Statics.__rp_2_1['area'],
+    Statics.__rp_2_1['sub_area'],
+    Statics.__rp_2_1['review_point'],
     True, [], [], [], [], config, signer)
-    mitigation_report_name = Statics.__rp_2_4['entry']+"_"+Statics.__rp_2_4['area']+"_"+Statics.__rp_2_4['sub_area']+"_mitigations"
-    __dictionary = busyLimits.analyze_entity(Statics.__rp_2_4['entry'])
-    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_4['entry'])
-    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_4['fireup_items'])
-
+    mitigation_report_name = Statics.__rp_2_1['entry']+"_"+Statics.__rp_2_1['area']+"_"+Statics.__rp_2_1['sub_area']+"_mitigations"
+    __dictionary = autoscaling.analyze_entity(Statics.__rp_2_1['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_1['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_1['fireup_items'])
 
 def __call_2_3(config, signer, report_directory):    
     serviceLimits = ServiceLimits(
@@ -471,6 +471,18 @@ def __call_2_3(config, signer, report_directory):
     __dictionary = serviceLimits.analyze_entity(Statics.__rp_2_3['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_3['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_3['fireup_items'])
+
+def __call_2_4(config, signer, report_directory):    
+    busyLimits = BusyLimits(
+    Statics.__rp_2_4['entry'],
+    Statics.__rp_2_4['area'],
+    Statics.__rp_2_4['sub_area'],
+    Statics.__rp_2_4['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_4['entry']+"_"+Statics.__rp_2_4['area']+"_"+Statics.__rp_2_4['sub_area']+"_mitigations"
+    __dictionary = busyLimits.analyze_entity(Statics.__rp_2_4['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_4['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_4['fireup_items'])
 
 
 def __call_2_5(config, signer, report_directory):    

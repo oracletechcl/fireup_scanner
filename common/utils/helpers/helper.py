@@ -167,6 +167,20 @@ def get_mysql_backup_client(config, signer):
         raise RuntimeError("Failed to create MySQL Backup client: " + e)
     return mysql_backup_client
 
+def get_autoscaling_client(config, signer):
+    try:
+        autoscaling_client = oci.autoscaling.AutoScalingClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Autoscaling client: " + e)
+    return autoscaling_client
+
+def get_compute_management_client(config, signer):
+    try:
+        compute_management_client= oci.core.ComputeManagementClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Compute Management client: " + e)
+    return compute_management_client
+
 def get_service_client(config, signer):
     try:
         service_client = oci.sch.ServiceConnectorClient(config, signer=signer)
@@ -671,12 +685,24 @@ def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
     except oci.exceptions.ServiceError as e:
         return e
 
+def get_autoscaling_configurations_per_compartment(autoscaling_client, compartment_id): 
+    return oci.pagination.list_call_get_all_results(
+        autoscaling_client.list_auto_scaling_configurations,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_instance_pools_per_compartment(compute_management_client, compartment_id): 
+    return oci.pagination.list_call_get_all_results(
+        compute_management_client.list_instance_pools,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
 
 def get_audit_configuration_data(audit_client, tenancy_id):
     return audit_client.get_configuration(
         tenancy_id
     ).data
-
 
 def get_monitoring_client(config, signer):
     try:

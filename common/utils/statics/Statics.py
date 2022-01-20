@@ -246,10 +246,10 @@ __rp_1_26 = {
 __rp_2_1 = {
     'entry': '2.1',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Design for Scalability',
+    'review_point': 'Scale Cloud Resources to Meet Your Workload Requirements',    
+    'success_criteria': 'Check if any autoscaling pool or kubernetes autoscaling is implemented',
+    'fireup_items': ['Fireup task: 37 - Do you have procedures or designs in place to handle changes in demand? (Autoscaling)'],
 }
 
 __rp_2_2 = {
