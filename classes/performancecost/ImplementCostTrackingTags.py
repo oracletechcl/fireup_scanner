@@ -60,7 +60,7 @@ class ImplementCostTrackingTags(ReviewPoint):
             region_config['region'] = region.region_name
             identity_clients.append(get_identity_client(region_config, self.signer))
 
-        self.__cost_tracking_tags_objects = get_cost_tracking_tags(identity_clients,
+        self.__cost_tracking_tags_objects = get_cost_tracking_tags(identity_clients[0],
                                                                    root_compartment_id=get_tenancy_data(self.__identity,
                                                                                                         self.config).id)
 
@@ -105,7 +105,7 @@ class ImplementCostTrackingTags(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        if len(self.__cost_tracking_tags) < 1:
+        if len(self.__cost_tracking_tags) == 0:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('No Cost Tracking Tags were found in this tenancy')
             dictionary[entry]['mitigations'].append(
