@@ -15,15 +15,12 @@ compartment_id = None
 compartments = None
 
 availability_domains = []
-instance_pools = []
-
 security_lists = []
-autoscaling_configurations = []
 
 steering_policies = []
 vcns_in_multiple_regions = []
 oke_clusters = []
-kubernetes_clusters = []
+
 
 drgs = []
 drg_attachment_ids = []
@@ -116,6 +113,11 @@ oracle_db_system_patch_history = []
 ### ConfigureAuditing.py Global Variables
 service_connectors = []
 bucket_retention_rules = []
+
+### CheckAutoscaling.py Global Variables
+autoscaling_configurations = []
+instance_pools = []
+
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1000,18 +1002,6 @@ def get_instance_pool(item):
         
     return instance_pools
 
-def get_kubernetes_clusters_with_compartment(item):
-    container_engine_client = item[0]
-    compartments = item[1:]
-    kubernetes_clusters = []
-
-    for compartment in compartments:
-        kubernetes_clusters_data = get_kubernetes_cluster_per_compartment(container_engine_client, compartment.id)
-        if kubernetes_clusters_data:
-            for kubernetes_cluster in kubernetes_clusters_data:
-                kubernetes_clusters.append( (kubernetes_cluster, compartment) )
-        
-    return kubernetes_clusters
 
 def get_limit_values(item):
     limits_client = item[0][0]

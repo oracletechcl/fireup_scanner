@@ -181,12 +181,6 @@ def get_compute_management_client(config, signer):
         raise RuntimeError("Failed to create Compute Management client: " + e)
     return compute_management_client
 
-def get_container_engine_client(config, signer):
-    try:
-        container_engine_client= oci.container_engine.ContainerEngineClient(config, signer=signer)
-    except Exception as e:
-        raise RuntimeError("Failed to create Container Engine Client: " + e)
-    return container_engine_client
 def get_service_client(config, signer):
     try:
         service_client = oci.sch.ServiceConnectorClient(config, signer=signer)

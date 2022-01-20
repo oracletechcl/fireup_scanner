@@ -14,14 +14,13 @@ class CheckAutoscaling(ReviewPoint):
     # Class Variables
     __identity = None
     __tenancy = None
+    __compartments = []
     __autoscaling_configurations_objects = None
-    __autoscaling_configurations = []
     __instance_pools_objects = None
     __instance_pools = []
-    __kubernetes_clusters_objects_with_compartment = None
-    __kubernetes_clusters = []
+    __oke_clusters = []
+    __oke_clusters_objects = None
     __policy_objects = None
-    __policies = []
     
 
 
@@ -60,8 +59,8 @@ class CheckAutoscaling(ReviewPoint):
         autoscaling_clients = []
         container_engine_clients = []
 
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
         regions = get_regions_data(self.__identity, self.config)
 
         for region in regions:
@@ -71,31 +70,16 @@ class CheckAutoscaling(ReviewPoint):
             autoscaling_clients.append(get_autoscaling_client(region_config, self.signer))
             container_engine_clients.append(get_container_engine_client(region_config, self.signer))
       
-        self.__autoscaling_configurations_objects = ParallelExecutor.executor(autoscaling_clients, compartments, ParallelExecutor.get_autoscaling_configurations, len(compartments), ParallelExecutor.autoscaling_configurations)
-        
-        for configuration in self.__autoscaling_configurations_objects:        
-            record = {
-                "compartment_id": configuration.compartment_id, 
-                "cool_down_in_seconds": configuration.cool_down_in_seconds,
-                "defined_tags": configuration.defined_tags, 
-                "display_name": configuration.display_name,
-                "freeform_tags": configuration.freeform_tags,
-                "id": configuration.id, 
-                "is_enabled": configuration.is_enabled,
-                "resource": configuration.resource,
-                "time_created": configuration.time_created                
-            }
-            self.__autoscaling_configurations.append(record)
-            
-        self.__instance_pools_objects = ParallelExecutor.executor(compute_management_clients, compartments, ParallelExecutor.get_instance_pool, len(compartments), ParallelExecutor.instance_pools)
+        self.__autoscaling_configurations_objects = ParallelExecutor.executor(autoscaling_clients, self.__compartments, ParallelExecutor.get_autoscaling_configurations, len(self.__compartments), ParallelExecutor.autoscaling_configurations)
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
+        self.__instance_pools_objects = ParallelExecutor.executor(compute_management_clients, self.__compartments, ParallelExecutor.get_instance_pool, len(self.__compartments), ParallelExecutor.instance_pools)
+        self.__oke_clusters_objects = ParallelExecutor.executor(container_engine_clients, self.__compartments, ParallelExecutor.get_oke_clusters, len(self.__compartments), ParallelExecutor.oke_clusters)     
 
         for instance_pool in self.__instance_pools_objects:  
             record = {
                 "availability_domains": instance_pool.availability_domains,
                 "compartment_id": instance_pool.compartment_id, 
-                "defined_tags": instance_pool.defined_tags, 
                 "display_name": instance_pool.display_name, 
-                "freeform_tags": instance_pool.freeform_tags, 
                 "id": instance_pool.id, 
                 "instance_configuration_id": instance_pool.instance_configuration_id, 
                 "lifecycle_state": instance_pool.lifecycle_state, 
@@ -104,43 +88,18 @@ class CheckAutoscaling(ReviewPoint):
             }
             self.__instance_pools.append(record)
 
-        self.__kubernetes_clusters_objects_with_compartment = ParallelExecutor.executor(container_engine_clients, compartments, ParallelExecutor.get_kubernetes_clusters_with_compartment, len(compartments), ParallelExecutor.kubernetes_clusters)     
+        for oke_cluster in self.__oke_clusters_objects:  
+            record = {
+                "compartment_id": oke_cluster.compartment_id, 
+                "id": oke_cluster.id, 
+                "kubernetes_version": oke_cluster.kubernetes_version, 
+                "lifecycle_state": oke_cluster.lifecycle_state, 
+                "name": oke_cluster.name,
+                "vcn_id": oke_cluster.vcn_id
+            }
+            self.__oke_clusters.append(record)
+
         
-        for kubernetes_cluster_with_compartment in self.__kubernetes_clusters_objects_with_compartment:  
-            record = {
-                "available_kubernetes_upgrades": kubernetes_cluster_with_compartment[0].available_kubernetes_upgrades,
-                "compartment_id": kubernetes_cluster_with_compartment[0].compartment_id, 
-                "endpoint_config": kubernetes_cluster_with_compartment[0].endpoint_config,   
-                "endpoints": kubernetes_cluster_with_compartment[0].endpoints, 
-                "id": kubernetes_cluster_with_compartment[0].id, 
-                "image_policy_config": kubernetes_cluster_with_compartment[0].image_policy_config, 
-                "kubernetes_version": kubernetes_cluster_with_compartment[0].kubernetes_version, 
-                "lifecycle_details": kubernetes_cluster_with_compartment[0].lifecycle_details, 
-                "lifecycle_state": kubernetes_cluster_with_compartment[0].lifecycle_state, 
-                "metadata": kubernetes_cluster_with_compartment[0].metadata,
-                "name": kubernetes_cluster_with_compartment[0].name,
-                "options": kubernetes_cluster_with_compartment[0].options, 
-                "vcn_id": kubernetes_cluster_with_compartment[0].vcn_id
-            }
-            self.__kubernetes_clusters.append( (record, kubernetes_cluster_with_compartment[1]) )
-
-        self.__policy_objects = ParallelExecutor.executor([self.__identity], compartments, ParallelExecutor.get_policies, len(compartments), ParallelExecutor.policies)
-            
-        for policy in self.__policy_objects:  
-            record = {
-                "compartment_id": policy.compartment_id,
-                "defined_tags": policy.defined_tags,
-                "description": policy.description,
-                "freeform_tags": policy.freeform_tags,
-                "id": policy.id,
-                "lifecycle_state": policy.lifecycle_state,
-                "name": policy.name,
-                "statements": policy.statements,
-                "time_created": policy.time_created,
-                "version_date": policy.version_date
-            }
-            self.__policies.append(record)
-
     def analyze_entity(self, entry):
 
         self.load_entity()
@@ -149,8 +108,8 @@ class CheckAutoscaling(ReviewPoint):
         # Check for autoscaling configuration for instance pools
         for instance_pool in self.__instance_pools:
             configuration_present = False
-            for configuration in self.__autoscaling_configurations:
-                if instance_pool['id'] == configuration['resource'].id:
+            for configuration in self.__autoscaling_configurations_objects:
+                if instance_pool['id'] == configuration.resource.id:
                     configuration_present = True
                     break
             if not configuration_present:
@@ -163,17 +122,18 @@ class CheckAutoscaling(ReviewPoint):
         __subject = 'dynamic-group'
         __verb_and_resource_type = 'manage cluster-node-pools in compartment '
 
-        for kubernetes_cluster_with_compartment in self.__kubernetes_clusters:
+        for oke_cluster in self.__oke_clusters:
             have_autoscaling_policy = False
-            for policy in self.__policies:
-                if __subject in policy:
-                    if (__verb_and_resource_type + kubernetes_cluster_with_compartment[1].name) in policy:
-                        have_autoscaling_policy = True
-                        break
+            for policy in self.__policy_objects:
+                for statement in policy.statements:
+                    if __subject in statement:
+                        if (__verb_and_resource_type + get_compartment_name(self.__compartments, oke_cluster['compartment_id'] )) in statement:
+                            have_autoscaling_policy = True
+                            break
             if not have_autoscaling_policy:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(kubernetes_cluster_with_compartment[0])    
+                dictionary[entry]['findings'].append(oke_cluster)    
                 dictionary[entry]['failure_cause'].append('Kubernetes cluster does not have any autoscaling enabled')                
-                dictionary[entry]['mitigations'].append('Make sure that the right policies are in place to enable Kubernetes autoscaler in a cluster named: ' + kubernetes_cluster_with_compartment[0]['name'])
+                dictionary[entry]['mitigations'].append('Make sure that the right policies are in place to enable Kubernetes autoscaler in a cluster named: ' + oke_cluster['name'])
                 
         return dictionary
