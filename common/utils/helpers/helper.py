@@ -697,13 +697,6 @@ def get_audit_configuration_data(audit_client, tenancy_id):
         tenancy_id
     ).data
 
-def get_kubernetes_cluster_per_compartment(contianer_engine_clieng, compartment_id): 
-    return oci.pagination.list_call_get_all_results(
-        contianer_engine_clieng.list_clusters,
-        compartment_id,
-        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-    ).data
-
 def get_monitoring_client(config, signer):
     try:
         monitoring_client = oci.monitoring.MonitoringClient(config, signer=signer)
