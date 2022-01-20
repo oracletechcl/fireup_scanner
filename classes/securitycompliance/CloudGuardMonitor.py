@@ -78,7 +78,7 @@ class CloudGuardMonitor(ReviewPoint):
         if type(self.__cloud_guard_data) == oci.exceptions.ServiceError:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Cloud guard is not available in an always free tenancy")
-            dictionary[entry]['mitigations'].append(str(self.__cloud_guard_data))
+            dictionary[entry]['mitigations'].append(str(self.__cloud_guard_data.message))
 
             return dictionary
         
