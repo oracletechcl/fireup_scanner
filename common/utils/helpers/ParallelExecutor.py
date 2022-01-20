@@ -15,13 +15,12 @@ compartment_id = None
 compartments = None
 
 availability_domains = []
-
 security_lists = []
-
 
 steering_policies = []
 vcns_in_multiple_regions = []
 oke_clusters = []
+
 
 drgs = []
 drg_attachment_ids = []
@@ -110,6 +109,15 @@ oracle_dbsystems_applicable_patches = []
 db_systems = []
 oracle_db_home_patch_history = []
 oracle_db_system_patch_history = []
+
+### ConfigureAuditing.py Global Variables
+service_connectors = []
+bucket_retention_rules = []
+
+### CheckAutoscaling.py Global Variables
+autoscaling_configurations = []
+instance_pools = []
+
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -373,6 +381,45 @@ def get_database_homes(item):
 
     return db_system_homes
 
+def get_service_connectors_info(item):
+    service_client = item[0]
+    compartments = item[1:]
+
+    service_connectors = []
+
+    for compartment in compartments:
+        service_connectors_data = get_service_connectors(service_client, compartment.id)
+        for service_connector in service_connectors_data:
+            service_connectors.append(service_connector)
+
+    return service_connectors
+
+def get_bucket_retention_rules_info(item):
+    object_storage_client = item[0]
+    bucket_objects = item[1:]
+
+    bucket_retention_rules = []
+
+    for bucket_object in bucket_objects:
+        region = bucket_object.id.split('.')[3]
+        if object_storage_client[2] in region or object_storage_client[3] in region:
+            bucket_retention_rule_data = get_bucket_retention_rules(object_storage_client[0], bucket_object.namespace,bucket_object.name)
+
+            for bucket_retention_rule in bucket_retention_rule_data:
+                record = {
+                    "display_name": bucket_retention_rule.display_name,
+                    "bucket_name": bucket_object.name,
+                    "bucket_id": bucket_object.id,
+                    "duration": bucket_retention_rule.duration,
+                    "etag": bucket_retention_rule.etag,
+                    "id": bucket_retention_rule.id,
+                    "time_created": bucket_retention_rule.time_created,
+                    "time_modified": bucket_retention_rule.time_modified,
+                    "time_rule_locked": bucket_retention_rule.time_rule_locked,
+                }
+                bucket_retention_rules.append(record)
+
+    return bucket_retention_rules
 
 def get_database_systems(item):
     database_client = item[0]
@@ -476,18 +523,6 @@ def get_policies(item):
 
     return policies
 
-def get_policies(item):
-    identity_client = item[0]
-    compartments = item[1:]
-
-    policies = []
-
-    for compartment in compartments:
-        policy_data = get_policies_data(identity_client, compartment.id)
-        for policy in policy_data:
-            policies.append(policy)
-
-    return policies
 
 def get_instances(item):
         compute_client = item[0]
@@ -939,6 +974,33 @@ def get_virtual_circuits(item):
                 virtual_circuits.append(virtual_circuit)
 
     return virtual_circuits
+
+def get_autoscaling_configurations(item):
+    autoscaling_client = item[0]
+    compartments = item[1:]
+
+    autoscaling_configurations = []
+
+    for compartment in compartments:
+        autoscaling_configurations_data = get_autoscaling_configurations_per_compartment(autoscaling_client, compartment.id)
+        if autoscaling_configurations_data:
+            for configuration in autoscaling_configurations_data:
+                autoscaling_configurations.append(configuration)
+            
+    return autoscaling_configurations
+
+def get_instance_pool(item):
+    compute_management_client = item[0]
+    compartments = item[1:]
+    instance_pools = []
+
+    for compartment in compartments:
+        instance_pools_data = get_instance_pools_per_compartment(compute_management_client, compartment.id)
+        if instance_pools_data:
+            for instance_pool in instance_pools_data:        
+                instance_pools.append(instance_pool)
+        
+    return instance_pools
 
 
 def get_limit_values(item):

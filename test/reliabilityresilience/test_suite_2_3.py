@@ -4,37 +4,41 @@
 # Description: Main test suite for fireup review tool
 # Dependencies: pytest
 
-from classes.performancecost.CheckAutoTuning import CheckAutoTuning
+from os import write
+from classes.reliabilityresilience.ServiceLimits import ServiceLimits
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug
 from common.utils.statics import Statics
 from common.utils.tokenizer.signer import *
 
   
+
 def __test_suite_log(capsys):
     out, err = capsys.readouterr()
     open("stderr.out", "w").write(err)
     open("stdout.out", "w").write(out)
 
-
 def test_review_point(capsys):     
     
-    result_dictionary = CheckAutoTuning(Statics.__rp_3_10['entry'], 
-    Statics.__rp_3_10['area'], 
-    Statics.__rp_3_10['sub_area'], 
-    Statics.__rp_3_10['review_point'], 
+    result_dictionary = ServiceLimits(Statics.__rp_2_3['entry'], 
+    Statics.__rp_2_3['area'], 
+    Statics.__rp_2_3['sub_area'], 
+    Statics.__rp_2_3['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_3_10['entry'])   
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_3['entry'])   
 
-    for item in dictionary[Statics.__rp_3_10['entry']]['findings']:
+    for item in dictionary[Statics.__rp_2_3['entry']]['findings']:
         debug(item)
         results_in_fault += 1
 
-    assert results_in_fault == 205
+
+    assert results_in_fault == 283
+
+
 
     __test_suite_log(capsys)
