@@ -462,10 +462,10 @@ __rp_3_7 = {
 __rp_3_8 = {
     'entry': '3.8',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Implement Cost Tracking Tags for Flexible Cost Tracking',
+    'success_criteria': 'Check if Cost Tracking tags are in place',
+    'fireup_items': ['Fireup Task: 66 - Do you use any configuration or infrastructure management tools?'],
 }
 
 __rp_3_9 = {
