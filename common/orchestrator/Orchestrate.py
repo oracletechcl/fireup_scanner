@@ -55,6 +55,7 @@ from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 from classes.performancecost.CheckBudgets import CheckBudgets
 from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
 from classes.performancecost.LifecycleManagement import LifecycleManagement
+from classes.performancecost.ImplementCostTrackingTags import ImplementCostTrackingTags
 
 from classes.opsefficiency.MetricAlarms import MetricAlarms
 from classes.opsefficiency.ConfigureAuditing import ConfigureAuditing
@@ -111,6 +112,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_3_4,
                             __call_3_5,
                             __call_3_6,
+                            __call_3_8,
                             __call_3_9,
                             __call_3_10,
                             __call_3_11,
@@ -671,6 +673,17 @@ def __call_3_6(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_3_6['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_3_6['fireup_items'])
 
+def __call_3_8(config, signer, report_directory):
+    implementCostTrackingTags = ImplementCostTrackingTags(
+    Statics.__rp_3_8['entry'],
+    Statics.__rp_3_8['area'],
+    Statics.__rp_3_8['sub_area'],
+    Statics.__rp_3_8['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_8['entry']+"_"+Statics.__rp_3_8['area']+"_"+Statics.__rp_3_8['sub_area']+"_mitigations"
+    __dictionary = implementCostTrackingTags.analyze_entity(Statics.__rp_3_8['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_3_8['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_3_8['fireup_items'])
 
 def __call_3_9(config, signer, report_directory):
     checkBudgets = CheckBudgets(

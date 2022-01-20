@@ -189,6 +189,10 @@ def get_regions_data(identity_client, config):
         raise RuntimeError("Failed to get regions: " + e)
     return regions
 
+def get_cost_tracking_tags(identity_clients, root_compartment_id):
+    cost_tracking_tags_response = identity_clients[0].list_cost_tracking_tags(
+        root_compartment_id).data
+    return cost_tracking_tags_response
 
 def get_home_region(identity_client, config):
     regions = get_regions_data(identity_client, config)
