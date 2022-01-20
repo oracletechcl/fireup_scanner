@@ -466,9 +466,9 @@ def __call_2_3(config, signer, report_directory):
     Statics.__rp_2_3['review_point'],
     True, [], [], [], [], config, signer)
     mitigation_report_name = Statics.__rp_2_3['entry']+"_"+Statics.__rp_2_3['area']+"_"+Statics.__rp_2_3['sub_area']+"_mitigations"
-    __serviceLimits_dictionary = serviceLimits.analyze_entity(Statics.__rp_2_3['entry'])
-    generate_on_screen_report(__serviceLimits_dictionary, report_directory, Statics.__rp_2_3['entry'])
-    generate_mitigation_report(__serviceLimits_dictionary, report_directory, mitigation_report_name, Statics.__rp_2_3['fireup_items'])
+    __dictionary = serviceLimits.analyze_entity(Statics.__rp_2_3['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_3['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_3['fireup_items'])
 
 
 def __call_2_5(config, signer, report_directory):    
