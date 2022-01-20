@@ -88,6 +88,6 @@ class CompartmentQuotaPolicy(ReviewPoint):
             for no_quota_compartment in compartments_without_quotas:
                 dictionary[entry]['findings'].append(no_quota_compartment)
                 dictionary[entry]['failure_cause'].append("Compartments with no configured quota have been detected")
-                dictionary[entry]['mitigations'].append("Enable quotas for " + no_quota_compartment['name'] + " with compartment id: " + no_quota_compartment['compartment_id'])  
+                dictionary[entry]['mitigations'].append("Enable quotas for " + no_quota_compartment['name'])  
 
         return dictionary 
