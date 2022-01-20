@@ -660,9 +660,12 @@ def get_budget_alert_rules_data(budget_client, budget_id):
 
  
 def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
-    return cloud_guard_client.get_configuration(
-        tenancy_id
-    ).data
+    try:
+        return cloud_guard_client.get_configuration(
+            tenancy_id
+        ).data
+    except oci.exceptions.ServiceError as e:
+        return e.message
 
 
 def get_audit_configuration_data(audit_client, tenancy_id):
