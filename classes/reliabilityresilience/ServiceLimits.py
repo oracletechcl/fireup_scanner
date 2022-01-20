@@ -90,7 +90,7 @@ class ServiceLimits(ReviewPoint):
                     dictionary[entry]['findings'].append(limit)
                     location = limit['region']
                     if "AD" in limit['scope_type']:
-                        location = limit['availability_domain']
+                        location = limit['availability_domain'][5:]
                     if (limit['name'], expected_value) in self.__non_compliant_limits:
                         for i, value in enumerate(self.__non_compliant_limits[(limit['name'], expected_value)]):
                             if location[:-1] in value:
