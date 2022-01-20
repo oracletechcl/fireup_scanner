@@ -57,7 +57,7 @@ class CloudGuardMonitor(ReviewPoint):
         # Get cloud guard configuration data based on tenancy id
         self.__cloud_guard_data = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)
 
-        if type(self.__cloud_guard_data) == str:
+        if type(self.__cloud_guard_data) == oci.exceptions.ServiceError:
             return
 
         # Record some data of a tenancy and its cloud guard enable status
@@ -75,10 +75,10 @@ class CloudGuardMonitor(ReviewPoint):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        if type(self.__cloud_guard_data) == str:
+        if type(self.__cloud_guard_data) == oci.exceptions.ServiceError:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Cloud guard is not available in an always free tenancy")
-            dictionary[entry]['mitigations'].append(self.__cloud_guard_data)
+            dictionary[entry]['mitigations'].append(str(self.__cloud_guard_data))
 
             return dictionary
         
