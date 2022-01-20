@@ -266,6 +266,7 @@ def __call_1_11(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_11['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_11['fireup_items'])
 
+
 def __call_1_12(config, signer, report_directory):
     dbSystem = DBSystemControl(
     Statics.__rp_1_12['entry'], 
@@ -277,18 +278,6 @@ def __call_1_12(config, signer, report_directory):
     __dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_12['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_12['fireup_items'])
-
-def __call_1_12(config, signer, report_directory):
-    dbSystem = DBSystemControl(
-    Statics.__rp_1_12['entry'], 
-    Statics.__rp_1_12['area'], 
-    Statics.__rp_1_12['sub_area'], 
-    Statics.__rp_1_12['review_point'], 
-    True, [], [], [], [], config, signer)
-    mitigation_report_name = Statics.__rp_1_12['entry']+"_"+Statics.__rp_1_12['area']+"_"+Statics.__rp_1_12['sub_area']+"_mitigations"
-    __instancePrincipal_dictionary = dbSystem.analyze_entity(Statics.__rp_1_12['entry'])
-    generate_on_screen_report(__instancePrincipal_dictionary, report_directory, Statics.__rp_1_12['entry'])
-    generate_mitigation_report(__instancePrincipal_dictionary, report_directory, mitigation_report_name, Statics.__rp_1_12['fireup_items'])
 
 
 def __call_1_13(config, signer, report_directory):
@@ -315,6 +304,7 @@ def __call_1_14(config, signer, report_directory):
     __dictionary = dbKeys.analyze_entity(Statics.__rp_1_14['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_14['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_14['fireup_items'])
+
 
 def __call_1_15(config, signer, report_directory):
     dbSystemPatch = DBSystemPatch(
