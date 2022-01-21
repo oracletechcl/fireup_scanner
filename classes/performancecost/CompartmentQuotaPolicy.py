@@ -66,7 +66,7 @@ class CompartmentQuotaPolicy(ReviewPoint):
 
         # Get quota objects using parallel executor
         self.__quota_objects = ParallelExecutor.executor(quota_clients, self.__compartments, ParallelExecutor.get_quotas_in_compartments, len(self.__compartments), ParallelExecutor.quotas)
-        # debug(self.__quota_objects, "yellow")
+        debug(self.__quota_objects, "yellow")
         # Store compartments with quotas enabled
         for quota in self.__quota_objects:
             self.__compartments_with_quotas.append(quota.compartment_id)
