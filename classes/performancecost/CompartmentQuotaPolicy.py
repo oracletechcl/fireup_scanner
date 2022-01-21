@@ -66,7 +66,7 @@ class CompartmentQuotaPolicy(ReviewPoint):
 
         # Get quota objects using parallel executor
         self.__quota_objects = ParallelExecutor.executor(quota_clients, self.__compartments, ParallelExecutor.get_quotas_in_compartments, len(self.__compartments), ParallelExecutor.quotas)
-        debug(self.__quota_objects, "yellow")
+
         # Store compartments with quotas enabled
         for quota in self.__quota_objects:
             self.__compartments_with_quotas.append(quota.compartment_id)
@@ -74,17 +74,25 @@ class CompartmentQuotaPolicy(ReviewPoint):
         # compartment_without_quotas = compartments - compartments_with_quotas
         for compartment in self.__compartments:
             if compartment.compartment_id not in self.__compartments_with_quotas:
-                self.__compartments_without_quotas.append(compartment)
-
+                compartment_record = {
+                    "name": compartment.name,
+                    "id": compartment.id,
+                    "compartment_id": compartment.compartment_id,
+                    "description": compartment.description,
+                    "lifecycle_state": compartment.lifecycle_state,
+                }
+                self.__compartments_without_quotas.append(compartment_record)
+        debug(self.__compartments_without_quotas)
+        
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
-        # if len(self.__compartments_without_quotas)!= 0:
-        #     dictionary[entry]['status'] = False
-        #     for compartment in self.__compartments_without_quotas:
-        #         dictionary[entry]['findings'].append(compartment)
-        #         dictionary[entry]['failure_cause'].append("Compartments with no configured quota have been detected")
-        #         dictionary[entry]['mitigations'].append("Enable quotas for " + compartment.name)  
+        if len(self.__compartments_without_quotas)!= 0:
+            dictionary[entry]['status'] = False
+            for compartment in self.__compartments_without_quotas:
+                dictionary[entry]['findings'].append(compartment)
+                dictionary[entry]['failure_cause'].append("Compartments with no configured quota have been detected")
+                dictionary[entry]['mitigations'].append("Enable quotas for " + compartment['name'])  
 
         return dictionary 
