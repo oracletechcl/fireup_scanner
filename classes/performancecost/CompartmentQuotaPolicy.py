@@ -15,6 +15,7 @@ class CompartmentQuotaPolicy(ReviewPoint):
     # Class Variables
     __compartments = []
     __compartments_with_quotas = []
+    __compartments_without_quotas = []
     __identity = None
     __tenancy = None
     __quota_objects = []
@@ -61,43 +62,29 @@ class CompartmentQuotaPolicy(ReviewPoint):
         
         # Get all compartments
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
 
         # Get quota objects using parallel executor
         self.__quota_objects = ParallelExecutor.executor(quota_clients, self.__compartments, ParallelExecutor.get_quotas_in_compartments, len(self.__compartments), ParallelExecutor.quotas)
-
+        # debug(self.__quota_objects, "yellow")
         # Store compartments with quotas enabled
         for quota in self.__quota_objects:
             self.__compartments_with_quotas.append(quota.compartment_id)
 
-    def analyze_entity(self, entry):
-        self.load_entity()
-        dictionary = ReviewPoint.get_benchmark_dictionary(self)
-
-        compartments_without_quotas = []
-        
         # compartment_without_quotas = compartments - compartments_with_quotas
         for compartment in self.__compartments:
             if compartment.compartment_id not in self.__compartments_with_quotas:
-                compartment_record = {
-                    'compartment_id': compartment.id,
-                    'defined_tags': compartment.defined_tags,
-                    'description': compartment.description,
-                    'freeform_tags': compartment.freeform_tags,
-                    'id': compartment.id,
-                    'inactive_status': compartment.inactive_status,
-                    'is_accessible': compartment.is_accessible,
-                    'lifecycle_state': compartment.lifecycle_state,
-                    'name': compartment.name,
-                    'time_created': compartment.time_created,  
-                    'statements': ""      
-                }
-                compartments_without_quotas.append(compartment_record)
+                self.__compartments_without_quotas.append(compartment)
+
+    def analyze_entity(self, entry):
+        self.load_entity()
+        dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
-        if len(compartments_without_quotas)!= 0:
-            dictionary[entry]['status'] = False
-            for no_quota_compartment in compartments_without_quotas:
-                dictionary[entry]['findings'].append(no_quota_compartment)
-                dictionary[entry]['failure_cause'].append("Compartments with no configured quota have been detected")
-                dictionary[entry]['mitigations'].append("Enable quotas for " + no_quota_compartment['name'])  
+        # if len(self.__compartments_without_quotas)!= 0:
+        #     dictionary[entry]['status'] = False
+        #     for compartment in self.__compartments_without_quotas:
+        #         dictionary[entry]['findings'].append(compartment)
+        #         dictionary[entry]['failure_cause'].append("Compartments with no configured quota have been detected")
+        #         dictionary[entry]['mitigations'].append("Enable quotas for " + compartment.name)  
 
         return dictionary 
