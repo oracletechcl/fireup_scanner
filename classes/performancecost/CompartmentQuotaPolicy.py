@@ -82,7 +82,6 @@ class CompartmentQuotaPolicy(ReviewPoint):
                     "lifecycle_state": compartment.lifecycle_state,
                 }
                 self.__compartments_without_quotas.append(compartment_record)
-        debug(self.__compartments_without_quotas)
         
     def analyze_entity(self, entry):
         self.load_entity()
