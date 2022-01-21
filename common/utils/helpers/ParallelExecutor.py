@@ -118,6 +118,8 @@ bucket_retention_rules = []
 autoscaling_configurations = []
 instance_pools = []
 
+### CompartmentQuotaPolicy.py Global Variables
+quotas = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1065,3 +1067,16 @@ def get_metrics(item):
 
     return metrics
 
+def get_quotas_in_compartments(item):
+    # Pull out the client that you need as well as the list of compartments from the passed item
+    quota_client = item[0]
+    compartments = item[1:]
+
+    quotas = []
+    for compartment in compartments:
+        quota_data = list_quota_data(quota_client, compartment.id)
+        for quota in quota_data:
+            if "TERMINATED" not in quota.lifecycle_state:
+                quotas.append(quota)
+
+    return quotas
