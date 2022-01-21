@@ -461,10 +461,10 @@ def get_quotas_client(config, signer):
     return quotas_client
 
 
-def list_quota_data(quotas_client, tenancy_id):
+def list_quota_data(quotas_client, compartment_id):
         return oci.pagination.list_call_get_all_results(
         quotas_client.list_quotas,
-        tenancy_id,
+        compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
@@ -725,5 +725,11 @@ def get_metric_data(monitoring_client, compartment_id):
         monitoring_client.list_metrics,
         compartment_id,
         oci.monitoring.models.ListMetricsDetails(),
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+    
+def get_quota_policy_data(quota_client, quota_id):
+    return quota_client.get_quota(
+        quota_id = quota_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
