@@ -453,10 +453,10 @@ __rp_3_6 = {
 __rp_3_7 = {
     'entry': '3.7',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Set Up Compartment Quota Policies to Control Resource Usage',    
+    'success_criteria': 'Check if quotas are enabled for compartments',
+    'fireup_items': ['Fireup Task: 14- Do you want to set a limit on number of resrouces on each compartment?'],
 }
 
 __rp_3_8 = {

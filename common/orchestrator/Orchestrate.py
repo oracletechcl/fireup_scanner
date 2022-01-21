@@ -56,6 +56,7 @@ from classes.performancecost.CompartmentWorkload import CompartmentWorkload
 from classes.performancecost.LBaaSEncryption import LBaaSEncryption
 from classes.performancecost.CheckBudgets import CheckBudgets
 from classes.performancecost.OneRegionPerVCN import OneRegionPerVCN
+from classes.performancecost.CompartmentQuotaPolicy import CompartmentQuotaPolicy
 from classes.performancecost.LifecycleManagement import LifecycleManagement
 from classes.performancecost.ImplementCostTrackingTags import ImplementCostTrackingTags
 
@@ -116,6 +117,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_3_4,
                             __call_3_5,
                             __call_3_6,
+                            __call_3_7,
                             __call_3_8,
                             __call_3_9,
                             __call_3_10,
@@ -703,6 +705,18 @@ def __call_3_6(config, signer, report_directory):
     __dictionary = compartmentWorkload.analyze_entity(Statics.__rp_3_6['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_3_6['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_3_6['fireup_items'])
+
+def __call_3_7(config, signer, report_directory):    
+    compartmentQuotaPolicy = CompartmentQuotaPolicy(
+    Statics.__rp_3_7['entry'],
+    Statics.__rp_3_7['area'],
+    Statics.__rp_3_7['sub_area'],
+    Statics.__rp_3_7['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_3_7['entry']+"_"+Statics.__rp_3_7['area']+"_"+Statics.__rp_3_7['sub_area']+"_mitigations"
+    _dictionary = compartmentQuotaPolicy.analyze_entity(Statics.__rp_3_7['entry'])
+    generate_on_screen_report(_dictionary, report_directory, Statics.__rp_3_7['entry'])
+    generate_mitigation_report(_dictionary, report_directory, mitigation_report_name, Statics.__rp_3_7['fireup_items'])
 
 def __call_3_8(config, signer, report_directory):
     implementCostTrackingTags = ImplementCostTrackingTags(
