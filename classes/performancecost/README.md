@@ -11,4 +11,5 @@
 | 3.7          | [CompartmentQuotaPolicy.py](CompartmentQuotaPolicy.py)
 | 3.9          | [CheckBudgets.py](CheckBudgets.py)
 | 3.10         | [CheckAutoTuning.py](CheckAutoTuning.py)    
-| 3.11         | [LifecycleManagement.py](LifecycleManagement.py)                                    
+| 3.8          | [ImplementCostTrackingTags.py](ImplementCostTrackingTags.py)          
+| 3.11         | [LifecycleManagement.py](LifecycleManagement.py)                            
