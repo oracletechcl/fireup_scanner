@@ -221,7 +221,7 @@ __rp_1_24 = {
     'sub_area': 'Monitor and Audit Your Environment',
     'review_point': 'Enable Cloud Guard for Monitoring',    
     'success_criteria': 'Check if Cloud Guard is enabled',
-    'fireup_items': ['Fireup Task: 26 - Is there any data currently opened to the public?'],
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
 __rp_1_25 = {
@@ -534,10 +534,10 @@ __rp_4_4 = {
 __rp_4_5 = {
     'entry': '4.5',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor Your Workload',
+    'review_point': 'Enable Cloud Guard',    
+    'success_criteria': 'Check if Cloud Guard is enabled at root level of the tenancy',
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
 __rp_4_6 = {

@@ -40,7 +40,10 @@ fi
 
 # save the output to a file but also show in console
 
-python3 fireup.py 2>&1 | tee ./reports/fireup.log 
+python3 fireup.py 2>&1 | tee ./reports/fireup_color.log 
+sed 's/\x1b\[[0-9;]*[mGKH]//g' ./reports/fireup_color.log > ./reports/fireup.log
+sed -i '$d' ./reports/fireup.log
+rm ./reports/fireup_color.log
 
 tar -cvf reports.tar.gz ./reports &>/dev/null
 rm -rf reports
