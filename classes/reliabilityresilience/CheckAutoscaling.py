@@ -72,7 +72,7 @@ class CheckAutoscaling(ReviewPoint):
       
         self.__autoscaling_configurations_objects = ParallelExecutor.executor(autoscaling_clients, self.__compartments, ParallelExecutor.get_autoscaling_configurations, len(self.__compartments), ParallelExecutor.autoscaling_configurations)
         self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
-        self.__instance_pools_objects = ParallelExecutor.executor(compute_management_clients, self.__compartments, ParallelExecutor.get_instance_pool, len(self.__compartments), ParallelExecutor.instance_pools)
+        self.__instance_pools_objects = ParallelExecutor.executor(compute_management_clients, self.__compartments, ParallelExecutor.get_instance_pools, len(self.__compartments), ParallelExecutor.instance_pools)
         self.__oke_clusters_objects = ParallelExecutor.executor(container_engine_clients, self.__compartments, ParallelExecutor.get_oke_clusters, len(self.__compartments), ParallelExecutor.oke_clusters)     
 
         for instance_pool in self.__instance_pools_objects:  

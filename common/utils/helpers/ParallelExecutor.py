@@ -5,14 +5,7 @@
 
 from concurrent import futures
 from common.utils.helpers.helper import *
-
 from datetime import datetime, timedelta
-
-identity_client = None
-network_client = None
-
-compartment_id = None
-compartments = None
 
 availability_domains = []
 security_lists = []
@@ -44,9 +37,6 @@ metrics = []
 vcns = []
 
 ### LBaasBackends.py + LBaaSHealthChecks.py Global Variables
-# LBaas Clients
-load_balancer_client = None
-network_load_balancer_client = None
 # LBaas lists for use with parallel_executor
 load_balancers = []
 network_load_balancers = []
@@ -60,10 +50,6 @@ policies = []
 # Api Key list for use with parallel_executor
 users_with_api_keys = []
 
-### InstancePrincipal.py
-instancePrincipal_dictionary = []
-dyn_groups_per_compartment = []
-
 ### CheckBackupPolicies.py Global Variables
 # Block storage lists for use with parallel_executor
 block_volumes = []
@@ -72,8 +58,7 @@ storages_with_no_policy = []
 file_systems = []
 file_systems_with_no_snapshots = []
 mount_targets = []
-security_lists_from_files = []
-exports = []
+export_options = []
 
 
 ### BackupDatabases.py Global Variables
@@ -106,7 +91,6 @@ bucket_preauthenticated_requests = []
 ### DBSystemPatch.py Global Variables
 # Lists for use with parallel_executor
 oracle_dbsystems_applicable_patches = []
-db_systems = []
 oracle_db_home_patch_history = []
 oracle_db_system_patch_history = []
 
@@ -334,11 +318,9 @@ def get_mounts(item):
 
 
     mount_targets = []
-    exports = []
 
     for compartment in compartments:
-        mount_target_data = get_mount_target_data(file_storage_client, compartment_id=compartment.id,
-                                                    availability_domain=availability_domain)
+        mount_target_data = get_mount_target_data(file_storage_client, compartment_id=compartment.id, availability_domain=availability_domain)
         for mount_target in mount_target_data:
             if "TERMINATED" not in mount_target.lifecycle_state:
                 mount_targets.append(mount_target)
@@ -427,29 +409,29 @@ def get_database_systems(item):
     database_client = item[0]
     compartments = item[1:]
 
-    db_systems = []
+    oracle_dbsystems = []
 
     for compartment in compartments:
         database_system_data = get_db_system_data(database_client, compartment.id)
         for db_sys in database_system_data:
             if "DELETED" not in db_sys.lifecycle_state:
-                db_systems.append(db_sys)
+                oracle_dbsystems.append(db_sys)
 
-    return db_systems
+    return oracle_dbsystems
 
 def get_mysql_dbs(item):
     mysql_client = item[0]
     compartments = item[1:]
 
-    databases = []
+    mysql_dbsystems = []
 
     for compartment in compartments:
         mysql_data = get_db_system_data(mysql_client, compartment.id)
         for mysql_db in mysql_data:
             if "DELETED" not in mysql_db.lifecycle_state:
-                databases.append(mysql_db)
+                mysql_dbsystems.append(mysql_db)
 
-    return databases
+    return mysql_dbsystems
 
 
 def get_mysql_dbs_with_no_backups(item):
@@ -499,7 +481,7 @@ def get_user_with_api_keys(item):
     indentity_client = item[0]
     users = item[1:]
 
-    user_data = []
+    users_with_api_keys = []
 
     for user in users:
         api_key_data = get_api_key_data(indentity_client, user.id)
@@ -507,9 +489,9 @@ def get_user_with_api_keys(item):
         for api_key in api_key_data:
             user_api_keys.append(api_key) 
         
-        user_data.append( (user, user_api_keys) )
+        users_with_api_keys.append( (user, user_api_keys) )
 
-    return user_data
+    return users_with_api_keys
 
 
 def get_policies(item):
@@ -632,6 +614,7 @@ def get_export_options(item):
     mounts = item[1:]
 
     export_options = []
+
     for mount in mounts:
         region = mount.subnet_id.split('.')[3]
         if file_storage_client[1] in region or file_storage_client[2] in region:
@@ -843,10 +826,10 @@ def get_steering_policies(item):
 
 def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_variable):
 
-    workload_status = data_variable
+    check_vcns_in_multiple_regions = data_variable
 
-    if len(workload_status) > 0:
-        return workload_status[0]
+    if len(check_vcns_in_multiple_regions) > 0:
+        return check_vcns_in_multiple_regions[0]
 
     vcn_objects = executor(network_clients, compartments, get_vcns_in_compartments, len(compartments), vcns)
 
@@ -860,11 +843,11 @@ def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_
                     vcn_regions.append(region)
 
     if len(vcn_regions) > 1:
-        workload_status.append(True)
+        check_vcns_in_multiple_regions.append(True)
     else:
-        workload_status.append(False)
+        check_vcns_in_multiple_regions.append(False)
 
-    return workload_status[0]
+    return check_vcns_in_multiple_regions[0]
 
 
 def get_oke_clusters(item):
@@ -991,7 +974,7 @@ def get_autoscaling_configurations(item):
             
     return autoscaling_configurations
 
-def get_instance_pool(item):
+def get_instance_pools(item):
     compute_management_client = item[0]
     compartments = item[1:]
     instance_pools = []
