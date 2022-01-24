@@ -59,6 +59,7 @@ file_systems = []
 file_systems_with_no_snapshots = []
 mount_targets = []
 export_options = []
+security_lists_from_mount_targets = []
 
 
 ### BackupDatabases.py Global Variables
@@ -600,6 +601,7 @@ def get_security_lists_from_mounts(item):
     mounts = item[1:]
 
     security_lists_from_mount_targets = []
+
     for mount in mounts:
         region = mount.subnet_id.split('.')[3]
         if network_client[1] in region or network_client[2] in region:
