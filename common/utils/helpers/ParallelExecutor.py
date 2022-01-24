@@ -828,10 +828,8 @@ def get_steering_policies(item):
 
 def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_variable):
 
-    check_vcns_in_multiple_regions = data_variable
-
-    if len(check_vcns_in_multiple_regions) > 0:
-        return check_vcns_in_multiple_regions[0]
+    if len(vcns_in_multiple_regions) > 0:
+        return vcns_in_multiple_regions[0]
 
     vcn_objects = executor(network_clients, compartments, get_vcns_in_compartments, len(compartments), vcns)
 
@@ -845,11 +843,11 @@ def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_
                     vcn_regions.append(region)
 
     if len(vcn_regions) > 1:
-        check_vcns_in_multiple_regions.append(True)
+        vcns_in_multiple_regions.append(True)
     else:
-        check_vcns_in_multiple_regions.append(False)
+        vcns_in_multiple_regions.append(False)
 
-    return check_vcns_in_multiple_regions[0]
+    return vcns_in_multiple_regions[0]
 
 
 def get_oke_clusters(item):
