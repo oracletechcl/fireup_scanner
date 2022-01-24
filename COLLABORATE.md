@@ -21,7 +21,9 @@ ____
 
 # Collaboration Guidelines
 
-<div id="GetStarted"></div>
+
+
+
 
 ## Get Started
 - Create a staging environment to hold your work. To do so, work in creating a remote machine in your tenant that has a public IP address. 
