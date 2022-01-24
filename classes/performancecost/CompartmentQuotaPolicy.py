@@ -91,7 +91,6 @@ class CompartmentQuotaPolicy(ReviewPoint):
             statement = str(quotadata['statements'])           
             self.__compartments_with_quotas.append(self.__get_compartment_from_statement(statement))
             
-     
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
@@ -107,5 +106,10 @@ class CompartmentQuotaPolicy(ReviewPoint):
 
 
     def __get_compartment_from_statement(self, statement):  
-        return statement.split("compartment", 1)[1][:-2]
+        compartment = statement.split("compartment", 1)[1][:-2]
+        if "]" in compartment:             
+            return compartment[:-2]
+        elif "where" in compartment:
+            return compartment.split(" ", 1)[1].split(" ", 1)[0]
+            
         
