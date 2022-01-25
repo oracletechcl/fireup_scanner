@@ -572,7 +572,7 @@ def get_limits_client(config, signer):
     return limits_client
 
 
-def list_limit_value_data(limits_client, compartment_id, service_name):
+def get_limit_value_data(limits_client, compartment_id, service_name):
     return oci.pagination.list_call_get_all_results(
         limits_client.list_limit_values,
         compartment_id,
@@ -581,7 +581,7 @@ def list_limit_value_data(limits_client, compartment_id, service_name):
     ).data
 
 
-def list_limit_definition_data(limits_client, compartment_id, service_name):
+def get_limit_definition_data(limits_client, compartment_id, service_name):
     return oci.pagination.list_call_get_all_results(
         limits_client.list_limit_definitions,
         compartment_id=compartment_id,

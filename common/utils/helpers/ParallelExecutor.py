@@ -28,6 +28,7 @@ bucket_lifecycle_policies = []
 
 limit_values_with_regions = []
 limit_availabilities_with_regions = []
+limit_definitions = []
 
 alarms = []
 metrics = []
@@ -997,7 +998,7 @@ def get_limit_values(item):
     limit_values_with_regions = []
 
     for service in services:
-        limit_value_data = list_limit_value_data(limits_client, tenancy_id, service.name)
+        limit_value_data = get_limit_value_data(limits_client, tenancy_id, service.name)
         for limit_value in limit_value_data:
             limit_values_with_regions.append( (region, service.name, limit_value) )
 
@@ -1020,6 +1021,21 @@ def get_limit_availabilities(item):
                 limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id)) )
 
     return limit_availabilities_with_regions
+
+
+def get_limit_definitions(item):
+    limits_client = item[0][0]
+    tenancy_id = item[0][1]
+    services = item[1:]
+
+    limit_definitions = []
+
+    for service in services:
+        limit_definition_data = get_limit_definition_data(limits_client, tenancy_id, service.name)
+        for limit_definition in limit_definition_data:
+            limit_definitions.append(limit_definition)
+
+    return limit_definitions
 
 
 def get_alarms(item):
