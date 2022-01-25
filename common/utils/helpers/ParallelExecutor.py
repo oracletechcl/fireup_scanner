@@ -18,7 +18,7 @@ availability_domains = []
 
 security_lists = []
 
-
+gateways = []
 steering_policies = []
 vcns_in_multiple_regions = []
 oke_clusters = []
@@ -114,6 +114,13 @@ oracle_db_system_patch_history = []
 ### ConfigureAuditing.py Global Variables
 service_connectors = []
 bucket_retention_rules = []
+
+### ServiceLogs.py Global Variables
+log_groups = []
+applicaitons = []
+functions = []
+ip_sec_connections_tunnels = []
+events_rules = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1046,3 +1053,85 @@ def get_metrics(item):
 
     return metrics
 
+def get_metrics(item):
+    monitoring_client = item[0]
+    compartments = item[1:]
+
+    metrics = []
+
+    for compartment in compartments:
+        metric_data = get_metric_data(monitoring_client, compartment.id)
+        for metric in metric_data:
+            metrics.append(metric)
+
+    return metrics
+
+def get_log_groups(item):
+    logging_management_client = item[0]
+    compartments = item[1:]
+
+    log_groups = []
+
+    for compartment in compartments:
+        log_groups_data = get_log_group_data_per_compartment(logging_management_client, compartment.id)
+        for log_group in log_groups_data:
+            logs_list = get_log_data(logging_management_client,log_group.id)
+            for log in logs_list:
+                if log.configuration:
+                    log_groups.append(log)
+    return log_groups
+
+
+def get_applicaitons(item):
+    functions_management_client = item[0]
+    compartments = item[1:]
+
+    applications = []
+
+    for compartment in compartments:
+        application_data = get_applications_per_compartment(functions_management_client, compartment.id)
+        for application in application_data:
+            applicaitons.append(application)
+    return applications
+
+
+def get_functions(item):
+    functions_management_client = item[0]
+    compartments = item[1:]
+
+    functions = []
+
+    for compartment in compartments:
+        application_data = get_applications_per_compartment(functions_management_client, compartment.id)
+        for application in application_data:
+            functions_data = get_functions_per_application(functions_management_client, application.id)
+            for function in functions_data:
+                functions.append(function)
+    return functions
+
+def get_ip_sec_connections_tunnels(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    ip_sec_connections_tunnels = []
+
+    for compartment in compartments:
+        ip_sec_data = get_ip_sec_connections_per_compartment(network_client, compartment.id)
+        for connection in ip_sec_data:
+            connection_data = get_ip_sec_connections_tunnels_per_connection(network_client, connection.id)
+            for tunnel in connection_data:
+                ip_sec_connections_tunnels.append(tunnel)
+
+    return ip_sec_connections_tunnels
+
+def get_events_rules(item):
+    events_client = item[0]
+    compartments = item[1:]
+
+    events_rules = []
+
+    for compartment in compartments:
+        rule_data = get_event_rules_per_compartment(events_client, compartment.id)
+        for rule in rule_data:
+            events_rules.append(rule)
+    return events_rules

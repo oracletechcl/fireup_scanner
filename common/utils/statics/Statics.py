@@ -516,10 +516,10 @@ __rp_4_2 = {
 __rp_4_3 = {
     'entry': '4.3',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor Your Workload Enable Service Logging',
+    'review_point': 'Enable Service Logging',    
+    'success_criteria': 'Check that pertaining components (if created) have the service logging enabled. API Gateways, Events, Functions, LBaaS, Object Storage, VCN Flow Logs among others',
+    'fireup_items': ['Fireup Task:  59 - Do you have insight into the state & health of your workload'],
 }
 
 __rp_4_4 = {
