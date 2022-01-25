@@ -167,12 +167,14 @@ def get_mysql_backup_client(config, signer):
         raise RuntimeError("Failed to create MySQL Backup client: " + e)
     return mysql_backup_client
 
+
 def get_autoscaling_client(config, signer):
     try:
         autoscaling_client = oci.autoscaling.AutoScalingClient(config, signer=signer)
     except Exception as e:
         raise RuntimeError("Failed to create Autoscaling client: " + e)
     return autoscaling_client
+
 
 def get_compute_management_client(config, signer):
     try:
@@ -187,6 +189,15 @@ def get_service_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create MySQL Backup client: " + e)
     return service_client
+
+
+def get_operations_insights_client(config, signer):
+    try:
+        operations_insights_client = oci.opsi.OperationsInsightsClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create operations insights client: " + e)
+    return operations_insights_client
+
 
 def get_tenancy_data(identity_client, config):
     try:
@@ -203,10 +214,12 @@ def get_regions_data(identity_client, config):
         raise RuntimeError("Failed to get regions: " + e)
     return regions
 
+
 def get_cost_tracking_tags(identity_client, root_compartment_id):
     cost_tracking_tags_response = identity_client.list_cost_tracking_tags(
         root_compartment_id).data
     return cost_tracking_tags_response
+
 
 def get_home_region(identity_client, config):
     regions = get_regions_data(identity_client, config)
@@ -236,12 +249,14 @@ def get_policies_data(identity_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_service_connectors(service_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         service_client.list_service_connectors,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_bucket_retention_rules(object_storage_client, namespace_name,bucket_name):
     return oci.pagination.list_call_get_all_results(
@@ -250,6 +265,7 @@ def get_bucket_retention_rules(object_storage_client, namespace_name,bucket_name
         bucket_name,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_user_data(identity_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
@@ -685,12 +701,14 @@ def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
     except oci.exceptions.ServiceError as e:
         return e
 
+
 def get_autoscaling_configurations_per_compartment(autoscaling_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
         autoscaling_client.list_auto_scaling_configurations,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_instance_pools_per_compartment(compute_management_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
@@ -699,10 +717,12 @@ def get_instance_pools_per_compartment(compute_management_client, compartment_id
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_audit_configuration_data(audit_client, tenancy_id):
     return audit_client.get_configuration(
         tenancy_id
     ).data
+
 
 def get_monitoring_client(config, signer):
     try:
@@ -727,7 +747,8 @@ def get_metric_data(monitoring_client, compartment_id):
         oci.monitoring.models.ListMetricsDetails(),
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
-    
+
+
 def get_quota_policy_data(quota_client, quota_id):
     return quota_client.get_quota(
         quota_id = quota_id,
