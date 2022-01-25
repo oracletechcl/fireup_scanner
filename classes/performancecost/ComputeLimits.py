@@ -62,25 +62,39 @@ class ComputeLimits(ReviewPoint):
 
         self.__limit_definition_objects = ParallelExecutor.executor([limits_clients[0]], services, ParallelExecutor.get_limit_definitions, len(services), ParallelExecutor.limit_definitions)
         self.__limit_value_objects = ParallelExecutor.executor(limits_clients, services, ParallelExecutor.get_limit_values, len(services), ParallelExecutor.limit_values_with_regions)
+       
+        compute_limit_definitions = []
+        compute_limit_values = []
+
+        # Pick out just the compute limit definitions
+        for limit_definition in self.__limit_definition_objects:
+            if limit_definition.service_name == "compute":
+                compute_limit_definitions.append(limit_definition)
+
+        # Pick out just the compute limit values
+        for limit_value in self.__limit_value_objects:
+            if limit_value[1] == "compute":
+                compute_limit_values.append(limit_value)
 
         # List of compute keywords checked against
         compute_types = ['dense', 'gpu', 'hpc', 'bm']
 
-        for limit_value in self.__limit_value_objects:
-            for limit_definition in self.__limit_definition_objects:
-                if limit_definition.is_deprecated and limit_definition.service_name == "compute":
-                    if limit_definition.name == limit_value[2].name:
+        debug(self.__limit_value_objects, "green")
+
+        for limit_value in compute_limit_values:
+            # Only if limit is set in AD 1
+            if limit_value[2].scope_type == "AD" and limit_value[2].availability_domain[-1] == "1":
+                for limit_definition in compute_limit_definitions:
+                    if limit_definition.is_deprecated and limit_definition.name == limit_value[2].name:
                         # Checks if limit name matches any of the compute types
                         if any(compute in limit_value[2].name for compute in compute_types):
-                            # Only appends if the limit is set in AD 1
-                            if limit_value[2].availability_domain[-1] == "1":
-                                record = {
-                                    "availability_domain": limit_value[2].availability_domain,
-                                    "name": limit_value[2].name,
-                                    "scope_type": limit_value[2].scope_type,
-                                    "value": limit_value[2].value,
-                                }
-                                self.__compute_limits.append(record)
+                            record = {
+                                "availability_domain": limit_value[2].availability_domain,
+                                "name": limit_value[2].name,
+                                "scope_type": limit_value[2].scope_type,
+                                "value": limit_value[2].value,
+                            }
+                            self.__compute_limits.append(record)
 
         return self.__compute_limits
 
@@ -95,6 +109,8 @@ class ComputeLimits(ReviewPoint):
                 dictionary[entry]['findings'].append(limit)
                 # Coverts AD to look like a region
                 ad = "-".join(limit['availability_domain'].split(':')[1].split('-')[:3])
+                if ad.split('-')[-1] == "AD":
+                    ad = "-".join(ad.split('-')[:2])
                 if limit['name'] in self.__non_compliant_compute_limits:
                     self.__non_compliant_compute_limits[limit['name']].append(ad)
                 else:
