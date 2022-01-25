@@ -13,6 +13,7 @@ class ComputeLimits(ReviewPoint):
 
     # Class Variables
     __limit_value_objects = []
+    __limit_definition_objects = []
     __compute_limits = []
     __non_compliant_compute_limits = dict()
     __identity = None
@@ -59,15 +60,14 @@ class ComputeLimits(ReviewPoint):
 
         services = limits_clients[0][0].list_services(tenancy.id).data
 
-        limit_definitions = limits_clients[0][0].list_limit_definitions(tenancy.id).data
-
+        self.__limit_definition_objects = ParallelExecutor.executor([limits_clients[0]], services, ParallelExecutor.get_limit_definitions, len(services), ParallelExecutor.limit_definitions)
         self.__limit_value_objects = ParallelExecutor.executor(limits_clients, services, ParallelExecutor.get_limit_values, len(services), ParallelExecutor.limit_values_with_regions)
 
         # List of compute keywords checked against
         compute_types = ['dense', 'gpu', 'hpc', 'bm']
 
         for limit_value in self.__limit_value_objects:
-            for limit_definition in limit_definitions:
+            for limit_definition in self.__limit_definition_objects:
                 if limit_definition.is_deprecated and limit_definition.service_name == "compute":
                     if limit_definition.name == limit_value[2].name:
                         # Checks if limit name matches any of the compute types
