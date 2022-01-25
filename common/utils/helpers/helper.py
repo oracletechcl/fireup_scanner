@@ -167,6 +167,20 @@ def get_mysql_backup_client(config, signer):
         raise RuntimeError("Failed to create MySQL Backup client: " + e)
     return mysql_backup_client
 
+def get_autoscaling_client(config, signer):
+    try:
+        autoscaling_client = oci.autoscaling.AutoScalingClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Autoscaling client: " + e)
+    return autoscaling_client
+
+def get_compute_management_client(config, signer):
+    try:
+        compute_management_client= oci.core.ComputeManagementClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Compute Management client: " + e)
+    return compute_management_client
+
 def get_service_client(config, signer):
     try:
         service_client = oci.sch.ServiceConnectorClient(config, signer=signer)
@@ -189,6 +203,10 @@ def get_regions_data(identity_client, config):
         raise RuntimeError("Failed to get regions: " + e)
     return regions
 
+def get_cost_tracking_tags(identity_client, root_compartment_id):
+    cost_tracking_tags_response = identity_client.list_cost_tracking_tags(
+        root_compartment_id).data
+    return cost_tracking_tags_response
 
 def get_home_region(identity_client, config):
     regions = get_regions_data(identity_client, config)
@@ -443,10 +461,10 @@ def get_quotas_client(config, signer):
     return quotas_client
 
 
-def list_quota_data(quotas_client, tenancy_id):
+def list_quota_data(quotas_client, compartment_id):
         return oci.pagination.list_call_get_all_results(
         quotas_client.list_quotas,
-        tenancy_id,
+        compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
@@ -660,16 +678,31 @@ def get_budget_alert_rules_data(budget_client, budget_id):
 
  
 def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
-    return cloud_guard_client.get_configuration(
-        tenancy_id
+    try:
+        return cloud_guard_client.get_configuration(
+            tenancy_id
+        ).data
+    except oci.exceptions.ServiceError as e:
+        return e
+
+def get_autoscaling_configurations_per_compartment(autoscaling_client, compartment_id): 
+    return oci.pagination.list_call_get_all_results(
+        autoscaling_client.list_auto_scaling_configurations,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+def get_instance_pools_per_compartment(compute_management_client, compartment_id): 
+    return oci.pagination.list_call_get_all_results(
+        compute_management_client.list_instance_pools,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
 
 def get_audit_configuration_data(audit_client, tenancy_id):
     return audit_client.get_configuration(
         tenancy_id
     ).data
-
 
 def get_monitoring_client(config, signer):
     try:
@@ -692,5 +725,11 @@ def get_metric_data(monitoring_client, compartment_id):
         monitoring_client.list_metrics,
         compartment_id,
         oci.monitoring.models.ListMetricsDetails(),
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+    
+def get_quota_policy_data(quota_client, quota_id):
+    return quota_client.get_quota(
+        quota_id = quota_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data

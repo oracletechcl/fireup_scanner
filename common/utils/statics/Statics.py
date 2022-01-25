@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v0.0.11'
+__version__ = 'v0.0.12'
 __lenght_print__ = "230"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -221,7 +221,7 @@ __rp_1_24 = {
     'sub_area': 'Monitor and Audit Your Environment',
     'review_point': 'Enable Cloud Guard for Monitoring',    
     'success_criteria': 'Check if Cloud Guard is enabled',
-    'fireup_items': ['Fireup Task: 26 - Is there any data currently opened to the public?'],
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
 __rp_1_25 = {
@@ -246,10 +246,10 @@ __rp_1_26 = {
 __rp_2_1 = {
     'entry': '2.1',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Design for Scalability',
+    'review_point': 'Scale Cloud Resources to Meet Your Workload Requirements',    
+    'success_criteria': 'Check if any autoscaling pool or kubernetes autoscaling is implemented',
+    'fireup_items': ['Fireup task: 37 - Do you have procedures or designs in place to handle changes in demand? (Autoscaling)'],
 }
 
 __rp_2_2 = {
@@ -264,10 +264,10 @@ __rp_2_2 = {
 __rp_2_3 = {
     'entry': '2.3',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Service Limits',
+    'review_point': 'Understand the Default Service Limits of Your Tenancy',    
+    'success_criteria': 'Check common limits and if those are in default values',
+    'fireup_items': ['Fireup Task: 38 - Are you aware of default service limits to avoid any future loss of service'],
 }
 
 __rp_2_4 = {
@@ -453,19 +453,19 @@ __rp_3_6 = {
 __rp_3_7 = {
     'entry': '3.7',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Set Up Compartment Quota Policies to Control Resource Usage',    
+    'success_criteria': 'Check if quotas are enabled for compartments',
+    'fireup_items': ['Fireup Task: 14- Do you want to set a limit on number of resrouces on each compartment?'],
 }
 
 __rp_3_8 = {
     'entry': '3.8',
     'area': 'Performance and Cost Optimization',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Track and Manage Usage and Cost',
+    'review_point': 'Implement Cost Tracking Tags for Flexible Cost Tracking',
+    'success_criteria': 'Check if Cost Tracking tags are in place',
+    'fireup_items': ['Fireup Task: 66 - Do you use any configuration or infrastructure management tools?'],
 }
 
 __rp_3_9 = {
@@ -534,10 +534,10 @@ __rp_4_4 = {
 __rp_4_5 = {
     'entry': '4.5',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor Your Workload',
+    'review_point': 'Enable Cloud Guard',    
+    'success_criteria': 'Check if Cloud Guard is enabled at root level of the tenancy',
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
 __rp_4_6 = {

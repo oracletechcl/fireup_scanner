@@ -91,7 +91,7 @@ class DBSystemPatch(ReviewPoint):
         self.__compartments.append(tenancy)
         
         self.__oracle_database_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_homes, len(self.__compartments), ParallelExecutor.db_system_homes)      
-        self.__oracle_database_systems_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_systems, len(self.__compartments), ParallelExecutor.db_systems)      
+        self.__oracle_database_systems_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_systems, len(self.__compartments), ParallelExecutor.oracle_dbsystems)      
 
         self.__oracle_databases_home_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_home_objects, ParallelExecutor.get_database_homes_applied_patch_history, len(self.__oracle_database_home_objects), ParallelExecutor.oracle_db_home_patch_history)      
         self.__oracle_database_system_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_systems_objects, ParallelExecutor.get_database_systems_applied_patch_history, len(self.__oracle_database_systems_objects), ParallelExecutor.oracle_db_system_patch_history)

@@ -78,8 +78,8 @@ class SecureFileStorage(ReviewPoint):
                     file_system_clients_with_ADs.append((file_storage_client[0], availability_domain))
 
         self.__mount_targets_info_objects = ParallelExecutor.executor(file_system_clients_with_ADs, self.__compartments,ParallelExecutor.get_mounts, len(self.__compartments),ParallelExecutor.mount_targets)
-        self.__security_lists_from_mount_targets = ParallelExecutor.executor(network_clients, self.__mount_targets_info_objects, ParallelExecutor.get_security_lists_from_mounts, len(self.__mount_targets_info_objects), ParallelExecutor.security_lists_from_files)
-        self.__export_options = ParallelExecutor.executor(file_storage_clients, self.__mount_targets_info_objects, ParallelExecutor.get_export_options, len(self.__mount_targets_info_objects), ParallelExecutor.exports)
+        self.__security_lists_from_mount_targets = ParallelExecutor.executor(network_clients, self.__mount_targets_info_objects, ParallelExecutor.get_security_lists_from_mounts, len(self.__mount_targets_info_objects), ParallelExecutor.security_lists_from_mount_targets)
+        self.__export_options = ParallelExecutor.executor(file_storage_clients, self.__mount_targets_info_objects, ParallelExecutor.get_export_options, len(self.__mount_targets_info_objects), ParallelExecutor.export_options)
 
         tcp_ports_list = [111, 2048, 2049, 2050]
         upd_ports_list = [111, 2048]
