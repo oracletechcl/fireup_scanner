@@ -3,7 +3,6 @@
 # Helper.py
 # Description: Helper functions for OCI Python SDK
 
-from email.mime import application
 import oci
 from common.utils.tokenizer.signer import *
 from common.utils.formatter.printer import *
