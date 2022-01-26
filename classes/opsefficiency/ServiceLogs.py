@@ -15,20 +15,23 @@ class ServiceLogs(ReviewPoint):
 
     __identity = None
     __logs = None
+    __log_groups = None
     __bucket_objects = None
     __compartments = None
     __load_balancers_objects = None
-    __load_balancers = []
     __network_load_balancers_objects = None
-    __network_load_balancers = []
     __subnets_objects = None
-    __subnets = []
     __functions_objects = None
+    __ip_sec_connections_objects = None
+    __ip_sec_tunnels_objects = None
+    __events_rules_objects = None
+    __applications_objects = None
+    __ip_sec_tunnels = []
+    __load_balancers = []
+    __network_load_balancers = []
+    __subnets = []
     __functions = []
     __buckets = []
-    __ip_sec_connections_objects = None
-    __ip_sec_connections = []
-    __events_rules_objects = None
     __events_rules = []
     
 
@@ -68,124 +71,57 @@ class ServiceLogs(ReviewPoint):
         obj_client = get_object_storage_client(self.config,self.signer)
         obj_namespace = get_objectstorage_namespace_data(obj_client)
 
-        logging_management_clients = []
+        logging_management_logs_clients = []
         object_storage_clients = []
         load_balancer_clients = []
         network_load_balancer_clients = []
-        network_clients = []
-        functions_management_clients = []
+        network_clients_for_tunnels = []
+        functions_management_clients_for_functions = []
         events_clients = []
+
         regions = get_regions_data(self.__identity, self.config)
 
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
         self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        # get clients from each region 
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
 
-            logging_management_clients.append((get_logging_management_client(region_config, self.signer)))
+            logging_management_logs_clients.append((get_logging_management_client(region_config, self.signer),region.region_name, region.region_key.lower()))
             object_storage_clients.append((get_object_storage_client(region_config, self.signer), obj_namespace))
             load_balancer_clients.append(get_load_balancer_client(region_config, self.signer))
             network_load_balancer_clients.append(get_network_load_balancer_client(region_config, self.signer))
-            network_clients.append(get_virtual_network_client(region_config, self.signer))            
-            functions_management_clients.append(get_functions_management_client(region_config, self.signer))            
-            events_clients.append(get_events_client(region_config, self.signer))            
+            network_clients_for_tunnels.append((get_virtual_network_client(region_config, self.signer),region.region_name, region.region_key.lower()))
+            functions_management_clients_for_functions.append((get_functions_management_client(region_config, self.signer), region.region_name, region.region_key.lower()))            
+            events_clients.append(get_events_client(region_config, self.signer))      
             
- 
-        self.__logs = ParallelExecutor.executor(logging_management_clients, self.__compartments, ParallelExecutor.get_log_groups, len(self.__compartments), ParallelExecutor.log_groups)   
+        logging_management_groups_clients = [x[0] for x in logging_management_logs_clients]
+        network_clients_for_connections = [x[0] for x in network_clients_for_tunnels]
+        functions_management_clients_for_applications = [x[0] for x in functions_management_clients_for_functions]          
+
+
+        self.__log_groups = ParallelExecutor.executor(logging_management_groups_clients, self.__compartments, ParallelExecutor.get_log_groups, len(self.__compartments), ParallelExecutor.log_groups)   
+        self.__logs = ParallelExecutor.executor(logging_management_logs_clients, self.__log_groups, ParallelExecutor.get_logs, len(self.__log_groups), ParallelExecutor.logs)   
         self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)
         self.__load_balancers_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
         self.__network_load_balancers_objects = ParallelExecutor.executor(network_load_balancer_clients, self.__compartments, ParallelExecutor.get_network_load_balancers, len(self.__compartments), ParallelExecutor.network_load_balancers)
-        self.__subnets_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_subnets_in_compartments, len(self.__compartments), ParallelExecutor.subnets)
-        self.__functions_objects = ParallelExecutor.executor(functions_management_clients, self.__compartments, ParallelExecutor.get_functions, len(self.__compartments), ParallelExecutor.functions)
-        self.__ip_sec_connections_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_ip_sec_connections_tunnels, len(self.__compartments), ParallelExecutor.ip_sec_connections_tunnels)
+        self.__subnets_objects = ParallelExecutor.executor(network_clients_for_connections, self.__compartments, ParallelExecutor.get_subnets_in_compartments, len(self.__compartments), ParallelExecutor.subnets)
+        self.__applications_objects = ParallelExecutor.executor(functions_management_clients_for_applications, self.__compartments, ParallelExecutor.get_applications, len(self.__compartments), ParallelExecutor.applications)
+        self.__functions_objects = ParallelExecutor.executor(functions_management_clients_for_functions, self.__applications_objects, ParallelExecutor.get_functions, len(self.__applications_objects), ParallelExecutor.functions)
+        self.__ip_sec_connections_objects = ParallelExecutor.executor(network_clients_for_connections, self.__compartments, ParallelExecutor.get_ip_sec_connections, len(self.__compartments), ParallelExecutor.ip_sec_connections)
+        self.__ip_sec_tunnels_objects = ParallelExecutor.executor(network_clients_for_tunnels, self.__ip_sec_connections_objects, ParallelExecutor.get_ip_sec_connections_tunnels, len(self.__ip_sec_connections_objects), ParallelExecutor.ip_sec_connections_tunnels)
         self.__events_rules_objects = ParallelExecutor.executor(events_clients, self.__compartments, ParallelExecutor.get_events_rules, len(self.__compartments), ParallelExecutor.events_rules)
 
-        for bucket in self.__bucket_objects:
-            record = {
-                    "compartment_id": bucket.compartment_id,
-                    "created_by": bucket.created_by,
-                    "id": bucket.id,
-                    "name": bucket.name,
-                    "namespace": bucket.namespace,
-                    "public_access_type": bucket.public_access_type,
-                    "storage_tier": bucket.storage_tier,
-                    "time_created": bucket.time_created,
-            }
-            self.__buckets.append(record)
-
-        for load_balancer in self.__load_balancers_objects:
-            record = {
-                    "compartment_id": load_balancer.compartment_id,
-                    "id": load_balancer.id,
-                    "shape_details": load_balancer.shape_details,
-                    "shape_name": load_balancer.shape_name, 
-                    "time_created": load_balancer.time_created,
-                    "display_name": load_balancer.display_name,
-                    "lifecycle_state": load_balancer.lifecycle_state,
-            }
-            self.__load_balancers.append(record)
-
-        for network_load_balancer in self.__network_load_balancers_objects:
-            record = {
-                    "compartment_id": network_load_balancer.compartment_id, 
-                    "id": network_load_balancer.id, 
-                    "time_created": network_load_balancer.time_created, 
-                    "display_name": network_load_balancer.display_name, 
-                    "lifecycle_state": network_load_balancer.lifecycle_state,
-            }
-            self.__network_load_balancers.append(record)
-
-        for subnet in self.__subnets_objects:
-            record = {
-                    "compartment_id": subnet.compartment_id,  
-                    "id": subnet.id,  
-                    "time_created": subnet.time_created,  
-                    "display_name": subnet.display_name,  
-                    "lifecycle_state": subnet.lifecycle_state,
-                    "cidr_block": subnet.cidr_block,
-                    "dns_label": subnet.dns_label,
-                    "subnet_domain_name": subnet.subnet_domain_name
-            }
-            self.__subnets.append(record)
-
-        for function in self.__functions_objects:
-            record = {
-                    "compartment_id": function.compartment_id,   
-                    "id": function.id,   
-                    "time_created": function.time_created,  
-                    "display_name": function.display_name,   
-                    "lifecycle_state": function.lifecycle_state,
-                    "application_id": function.application_id,              
-            }
-            self.__functions.append(record)
-
-        for tunnel in self.__ip_sec_connections_objects:
-            record = {
-                    "compartment_id": tunnel.compartment_id, 
-                    "id": tunnel.id,   
-                    "time_created": tunnel.time_created,  
-                    "display_name": tunnel.display_name,  
-                    "lifecycle_state": tunnel.lifecycle_state, 
-                    "status": tunnel.status, 
-                    "vpn_ip": tunnel.vpn_ip       
-            }
-            self.__ip_sec_connections.append(record)
-
-        for rule in self.__events_rules_objects:
-            record = {
-                    "compartment_id": rule.compartment_id, 
-                    "id": rule.id,   
-                    "time_created": rule.time_created,  
-                    "display_name": rule.display_name,
-                    "description": rule.description,
-                    "lifecycle_state": rule.lifecycle_state, 
-                    "is_enabled": rule.is_enabled
-            }
-            self.__events_rules.append(record)
-
+        # JSON data to Python dictionary
+        self.extract_dict(self.__buckets, self.__bucket_objects,["created_by","name","namespace"])
+        self.extract_dict(self.__load_balancers, self.__load_balancers_objects,["display_name","lifecycle_state","shape_name"])
+        self.extract_dict(self.__network_load_balancers, self.__network_load_balancers_objects,["display_name","lifecycle_state",])
+        self.extract_dict(self.__subnets, self.__subnets_objects,["display_name","lifecycle_state","cidr_block","subnet_domain_name","dns_label"])
+        self.extract_dict(self.__functions, self.__functions_objects,["display_name","lifecycle_state","application_id"])
+        self.extract_dict(self.__ip_sec_tunnels, self.__ip_sec_tunnels_objects,["display_name","lifecycle_state","status","vpn_ip"])
+        self.extract_dict(self.__events_rules, self.__events_rules_objects,["display_name","lifecycle_state","description","is_enabled"])
+        
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
@@ -195,7 +131,7 @@ class ServiceLogs(ReviewPoint):
         self.find_logs(self.__network_load_balancers,'Network Load Balancer ',dictionary,entry)
         self.find_logs(self.__subnets,'Subnet ',dictionary,entry)
         self.find_logs(self.__functions,'Function ',dictionary,entry)
-        self.find_logs(self.__ip_sec_connections,'IPSec Tunnel ',dictionary,entry)
+        self.find_logs(self.__ip_sec_tunnels,'IPSec Tunnel ',dictionary,entry)
         self.find_logs(self.__events_rules,'Event Rule ',dictionary,entry)
 
         return dictionary
@@ -213,17 +149,17 @@ class ServiceLogs(ReviewPoint):
                 dictionary[entry]['failure_cause'].append('The ' + service_name + 'does not have Log Service enabled') 
                 dictionary[entry]['mitigations'].append('Consider enabling Log Service for ' + service_name + 'identified by OCID: ' + resource['id'])
     
-    # def extract_dict(objects):
-    #      for element in self.__functions_objects:
-    #         record = {
-    #                 "compartment_id": function.compartment_id,   
-    #                 "id": function.id,   
-    #                 "time_created": function.time_created,  
-    #                 "display_name": function.display_name,   
-    #                 "lifecycle_state": function.lifecycle_state,
-    #                 "application_id": function.application_id,              
-    #         }
-    #         self.__functions.append(record)
+    def extract_dict(self, destination_list, resource_objects, custom_fields ):
+         for element in resource_objects:
+            record = {
+                    "compartment_id": element.compartment_id,   
+                    "id": element.id,   
+                    "time_created": element.time_created,              
+            }
+            for field in custom_fields:
+                record[field] = getattr(element,field)
+
+            destination_list.append(record)
 
 
 
