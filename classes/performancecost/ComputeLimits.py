@@ -79,8 +79,6 @@ class ComputeLimits(ReviewPoint):
         # List of compute keywords checked against
         compute_types = ['dense', 'gpu', 'hpc', 'bm']
 
-        debug(self.__limit_value_objects, "green")
-
         for limit_value in compute_limit_values:
             # Only if limit is set in AD 1
             if limit_value[2].scope_type == "AD" and limit_value[2].availability_domain[-1] == "1":
