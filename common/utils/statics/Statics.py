@@ -255,10 +255,10 @@ __rp_2_1 = {
 __rp_2_2 = {
     'entry': '2.2',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Design for Scalability',
+    'review_point': 'Distribute Your Traffic Across Availability Domains and Regions',
+    'success_criteria': 'Check if solution is spread across more than one region',
+    'fireup_items': ['Fireup task: 31 - Are you leveraging traffic management, web firewall and load balancing for public resources?'],
 }
 
 __rp_2_3 = {
