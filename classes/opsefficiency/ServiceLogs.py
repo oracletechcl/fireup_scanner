@@ -114,30 +114,30 @@ class ServiceLogs(ReviewPoint):
         self.__events_rules_objects = ParallelExecutor.executor(events_clients, self.__compartments, ParallelExecutor.get_events_rules, len(self.__compartments), ParallelExecutor.events_rules)
 
         # JSON data to Python dictionary
-        self.extract_dict(self.__buckets, self.__bucket_objects,["created_by","name","namespace"])
-        self.extract_dict(self.__load_balancers, self.__load_balancers_objects,["display_name","lifecycle_state","shape_name"])
-        self.extract_dict(self.__network_load_balancers, self.__network_load_balancers_objects,["display_name","lifecycle_state",])
-        self.extract_dict(self.__subnets, self.__subnets_objects,["display_name","lifecycle_state","cidr_block","subnet_domain_name","dns_label"])
-        self.extract_dict(self.__functions, self.__functions_objects,["display_name","lifecycle_state","application_id"])
-        self.extract_dict(self.__ip_sec_tunnels, self.__ip_sec_tunnels_objects,["display_name","lifecycle_state","status","vpn_ip"])
-        self.extract_dict(self.__events_rules, self.__events_rules_objects,["display_name","lifecycle_state","description","is_enabled"])
+        self.__extract_dict(self.__buckets, self.__bucket_objects,["created_by","name","namespace"])
+        self.__extract_dict(self.__load_balancers, self.__load_balancers_objects,["display_name","lifecycle_state","shape_name"])
+        self.__extract_dict(self.__network_load_balancers, self.__network_load_balancers_objects,["display_name","lifecycle_state",])
+        self.__extract_dict(self.__subnets, self.__subnets_objects,["display_name","lifecycle_state","cidr_block","subnet_domain_name","dns_label"])
+        self.__extract_dict(self.__functions, self.__functions_objects,["display_name","lifecycle_state","application_id"])
+        self.__extract_dict(self.__ip_sec_tunnels, self.__ip_sec_tunnels_objects,["display_name","lifecycle_state","status","vpn_ip"])
+        self.__extract_dict(self.__events_rules, self.__events_rules_objects,["display_name","lifecycle_state","description","is_enabled"])
         
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        self.find_logs(self.__buckets,'Bucket ',dictionary,entry)
-        self.find_logs(self.__load_balancers,'Load Balancer ',dictionary,entry)
-        self.find_logs(self.__network_load_balancers,'Network Load Balancer ',dictionary,entry)
-        self.find_logs(self.__subnets,'Subnet ',dictionary,entry)
-        self.find_logs(self.__functions,'Function ',dictionary,entry)
-        self.find_logs(self.__ip_sec_tunnels,'IPSec Tunnel ',dictionary,entry)
-        self.find_logs(self.__events_rules,'Event Rule ',dictionary,entry)
+        self.__check_logs(self.__buckets,'Bucket ',dictionary,entry)
+        self.__check_logs(self.__load_balancers,'Load Balancer ',dictionary,entry)
+        self.__check_logs(self.__network_load_balancers,'Network Load Balancer ',dictionary,entry)
+        self.__check_logs(self.__subnets,'Subnet ',dictionary,entry)
+        self.__check_logs(self.__functions,'Function ',dictionary,entry)
+        self.__check_logs(self.__ip_sec_tunnels,'IPSec Tunnel ',dictionary,entry)
+        self.__check_logs(self.__events_rules,'Event Rule ',dictionary,entry)
 
         return dictionary
 
-    def find_logs(self,infrastructure_service_resources, service_name, dictionary,entry):
-        for resource in infrastructure_service_resources:
+    def __check_logs(self,resources, service_name, dictionary,entry):
+        for resource in resources:
             log_enabled = False
             for log in self.__logs:
                 if log.configuration.source.resource == resource['id']:
@@ -149,7 +149,7 @@ class ServiceLogs(ReviewPoint):
                 dictionary[entry]['failure_cause'].append('The ' + service_name + 'does not have Log Service enabled') 
                 dictionary[entry]['mitigations'].append('Consider enabling Log Service for ' + service_name + 'identified by OCID: ' + resource['id'])
     
-    def extract_dict(self, destination_list, resource_objects, custom_fields ):
+    def __extract_dict(self, destination_list, resource_objects, custom_fields ):
          for element in resource_objects:
             record = {
                     "compartment_id": element.compartment_id,   
