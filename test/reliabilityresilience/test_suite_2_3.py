@@ -5,7 +5,7 @@
 # Dependencies: pytest
 
 from os import write
-from classes.securitycompliance.CompartmentsAndPolicies import CompartmentsAndPolicies
+from classes.reliabilityresilience.ServiceLimits import ServiceLimits
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug
 from common.utils.statics import Statics
@@ -20,24 +20,25 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = CompartmentsAndPolicies(Statics.__rp_1_7['entry'], 
-    Statics.__rp_1_7['area'], 
-    Statics.__rp_1_7['sub_area'], 
-    Statics.__rp_1_7['review_point'], 
+    result_dictionary = ServiceLimits(Statics.__rp_2_3['entry'], 
+    Statics.__rp_2_3['area'], 
+    Statics.__rp_2_3['sub_area'], 
+    Statics.__rp_2_3['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_7['entry'])   
-    
-    for item in dictionary[Statics.__rp_1_7['entry']]['findings']:
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_3['entry'])   
+
+    for item in dictionary[Statics.__rp_2_3['entry']]['findings']:
         debug(item)
-        results_in_fault += 1    
+        results_in_fault += 1
 
 
-    assert results_in_fault == 222
+    assert results_in_fault == 283
+
 
 
     __test_suite_log(capsys)

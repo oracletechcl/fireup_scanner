@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# CloudGuardMonitor.py
-# Description: Implementation of class CloudGuardMonitor based on abstract
+# CloudGuardEnabled.py
+# Description: Implementation of class CloudGuardEnabled based on abstract
 
 
 from common.utils.formatter.printer import debug
@@ -10,7 +10,7 @@ from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
 
-class CloudGuardMonitor(ReviewPoint):
+class CloudGuardEnabled(ReviewPoint):
 
     # Class Variables    
     __tenancy_data_including_cloud_guard = None 

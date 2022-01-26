@@ -33,7 +33,7 @@ def test_review_point(capsys):
     dictionary = result_dictionary.analyze_entity(Statics.__rp_1_24['entry'])   
     
     for item in dictionary[Statics.__rp_1_24['entry']]['findings']:
-        debug_with_date(item)
+        debug(item)
         results_in_fault += 1    
 
     assert results_in_fault == 0

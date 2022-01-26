@@ -12,16 +12,18 @@
     - [What Is It For?](#what-is-it-for)
     - [How Do I Use It?](#how-do-i-use-it)
     - [Common Issues](#common-issues)
+    - [Resource Registry](#resource-registry)
   - [Unitary Testing](#unitary-testing)
   - [Github Best Practices](#github-best-practices)
 
 
 ____
 
-
 # Collaboration Guidelines
 
-<div id="GetStarted"></div>
+
+
+<div id="Get-Started"></div>
 
 ## Get Started
 - Create a staging environment to hold your work. To do so, work in creating a remote machine in your tenant that has a public IP address. 
@@ -658,6 +660,64 @@ def get_mysql_dbsystem_full_info(item):
 
   return mysql_full_data
 ```
+
+### Resource Registry
+
+This section details all the resources currently being pulled within [ParallelExecutor.py](https://github.com/oraclecloudbricks/fireup/blob/main/common/utils/helpers/ParallelExecutor.py). 
+
+| Variable Name                       | Method Name                                | Notes                                                                                                                                                                   |
+|-------------------------------------|--------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| availability_domains                | get_availability_domains                   
+| security_lists                      | get_security_lists                         
+| steering_policies                   | get_steering_policies                      
+| vcns_in_multiple_regions            | check_vcns_in_multiple_regions             | Contains a boolean of whether there are VCNs in multiple regions of the tenancy. See RP 3.5 for example.
+| oke_clusters                        | get_oke_clusters                           
+| drgs                                | get_drgs                                   
+| drg_attachment_ids                  | get_drg_attachment_ids                     
+| drg_attachments                     | get_drg_attachments                        
+| service_gateways                    | get_service_gateways                       
+| local_peering_gateways              | get_local_peering_gateways                 
+| virtual_circuits                    | get_virtual_circuits                       
+| bucket_lifecycle_policies           | get_bucket_lifecycle_policies              
+| limit_values_with_regions           | get_limit_values                           | This method returns a tuple with (region, service name and limit value object)
+| limit_availabilities_with_regions   | get_limit_availabilities                   | This method returns a tuple with (region, service name and limit value object, resource availability object). This was necessary to keep context of the availabilities.
+| alarms                              | get_alarms                                 
+| metrics                             | get_metrics                                
+| vcns                                | get_vcns_in_compartments                   
+| load_balancers                      | get_load_balancers                         
+| network_load_balancers              | get_network_load_balancers                 
+| load_balancer_healths               | get_load_balancer_healths                  
+| network_load_balancer_healths       | get_load_balancer_healths                  | Uses the same as above, but filters by id to get network over regular load balancers.
+| policies                            | get_policies                               
+| users_with_api_keys                 | get_user_with_api_keys                     
+| block_volumes                       | get_block_volumes                          
+| boot_volumes                        | get_boot_volumes                           
+| storages_with_no_policy             | get_block_storages_with_no_policy          
+| file_systems                        | get_file_systems                           
+| file_systems_with_no_snapshots      | get_file_systems_with_no_snapshots         
+| mount_targets                       | get_mounts                                 
+| export_options                      | get_export_options                         
+| db_system_homes                     | get_database_homes                         
+| mysql_dbsystems                     | get_mysql_dbs                              
+| db_systems_with_no_backups          | get_db_systems_with_no_backups             
+| mysql_dbs_with_no_backups           | get_mysql_dbs_with_no_backups              
+| instances                           | get_instances                              
+| subnets                             | get_subnets_in_compartments                
+| oracle_dbsystems                    | get_database_systems                       
+| mysql_full_data                     | get_mysql_dbsystem_full_info               
+| block_volume_replicas               | get_block_volume_replicas                  
+| boot_volume_replicas                | get_boot_volume_replicas                   
+| buckets                             | get_buckets                                
+| autonomous_databases                | get_autonomous_databases                   
+| adb_nsgs                            | get_adb_nsgs                               
+| bucket_preauthenticated_requests    | get_preauthenticated_requests_per_bucket   
+| oracle_dbsystems_applicable_patches | get_database_home_patches                  
+| oracle_db_home_patch_history        | get_database_homes_applied_patch_history   
+| oracle_db_system_patch_history      | get_database_systems_applied_patch_history 
+| service_connectors                  | get_service_connectors_info                
+| bucket_retention_rules              | get_bucket_retention_rules_info            
+| autoscaling_configurations          | get_autoscaling_configurations             
+| instance_pools                      | get_instance_pool                          
 
 
 <div id="UnitTesting"></div>

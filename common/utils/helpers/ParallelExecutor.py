@@ -5,23 +5,15 @@
 
 from concurrent import futures
 from common.utils.helpers.helper import *
-
 from datetime import datetime, timedelta
 
-identity_client = None
-network_client = None
-
-compartment_id = None
-compartments = None
-
 availability_domains = []
-
 security_lists = []
 
-gateways = []
 steering_policies = []
 vcns_in_multiple_regions = []
 oke_clusters = []
+
 
 drgs = []
 drg_attachment_ids = []
@@ -36,6 +28,7 @@ bucket_lifecycle_policies = []
 
 limit_values_with_regions = []
 limit_availabilities_with_regions = []
+limit_definitions = []
 
 alarms = []
 metrics = []
@@ -45,9 +38,6 @@ metrics = []
 vcns = []
 
 ### LBaasBackends.py + LBaaSHealthChecks.py Global Variables
-# LBaas Clients
-load_balancer_client = None
-network_load_balancer_client = None
 # LBaas lists for use with parallel_executor
 load_balancers = []
 network_load_balancers = []
@@ -61,10 +51,6 @@ policies = []
 # Api Key list for use with parallel_executor
 users_with_api_keys = []
 
-### InstancePrincipal.py
-instancePrincipal_dictionary = []
-dyn_groups_per_compartment = []
-
 ### CheckBackupPolicies.py Global Variables
 # Block storage lists for use with parallel_executor
 block_volumes = []
@@ -73,8 +59,8 @@ storages_with_no_policy = []
 file_systems = []
 file_systems_with_no_snapshots = []
 mount_targets = []
-security_lists_from_files = []
-exports = []
+export_options = []
+security_lists_from_mount_targets = []
 
 
 ### BackupDatabases.py Global Variables
@@ -107,7 +93,6 @@ bucket_preauthenticated_requests = []
 ### DBSystemPatch.py Global Variables
 # Lists for use with parallel_executor
 oracle_dbsystems_applicable_patches = []
-db_systems = []
 oracle_db_home_patch_history = []
 oracle_db_system_patch_history = []
 
@@ -123,6 +108,15 @@ functions = []
 ip_sec_connections = []
 ip_sec_connections_tunnels = []
 events_rules = []
+### CheckAutoscaling.py Global Variables
+autoscaling_configurations = []
+instance_pools = []
+
+### CompartmentQuotaPolicy.py Global Variables
+quotas = []
+
+### DistributeTraffic.py Global Variables
+dns_zones = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -231,6 +225,21 @@ def get_load_balancers(item):
     return load_balancers
 
 
+def get_dns_zones(item):
+    dns_client = item[0]
+    compartments = item[1:]
+
+    dns_zones = []
+
+    for compartment in compartments:
+        dns_zones_data = get_dns_zone_data(dns_client, compartment.id)
+        for dns_zone in dns_zones_data:
+            if "TERMINATED" not in dns_zone.lifecycle_state:
+                dns_zones.append(dns_zone)
+
+    return dns_zones
+
+
 def get_network_load_balancers(item):
     network_load_balancer_client = item[0]
     compartments = item[1:]
@@ -337,11 +346,9 @@ def get_mounts(item):
 
 
     mount_targets = []
-    exports = []
 
     for compartment in compartments:
-        mount_target_data = get_mount_target_data(file_storage_client, compartment_id=compartment.id,
-                                                    availability_domain=availability_domain)
+        mount_target_data = get_mount_target_data(file_storage_client, compartment_id=compartment.id, availability_domain=availability_domain)
         for mount_target in mount_target_data:
             if "TERMINATED" not in mount_target.lifecycle_state:
                 mount_targets.append(mount_target)
@@ -430,29 +437,29 @@ def get_database_systems(item):
     database_client = item[0]
     compartments = item[1:]
 
-    db_systems = []
+    oracle_dbsystems = []
 
     for compartment in compartments:
         database_system_data = get_db_system_data(database_client, compartment.id)
         for db_sys in database_system_data:
             if "DELETED" not in db_sys.lifecycle_state:
-                db_systems.append(db_sys)
+                oracle_dbsystems.append(db_sys)
 
-    return db_systems
+    return oracle_dbsystems
 
 def get_mysql_dbs(item):
     mysql_client = item[0]
     compartments = item[1:]
 
-    databases = []
+    mysql_dbsystems = []
 
     for compartment in compartments:
         mysql_data = get_db_system_data(mysql_client, compartment.id)
         for mysql_db in mysql_data:
             if "DELETED" not in mysql_db.lifecycle_state:
-                databases.append(mysql_db)
+                mysql_dbsystems.append(mysql_db)
 
-    return databases
+    return mysql_dbsystems
 
 
 def get_mysql_dbs_with_no_backups(item):
@@ -502,7 +509,7 @@ def get_user_with_api_keys(item):
     indentity_client = item[0]
     users = item[1:]
 
-    user_data = []
+    users_with_api_keys = []
 
     for user in users:
         api_key_data = get_api_key_data(indentity_client, user.id)
@@ -510,23 +517,10 @@ def get_user_with_api_keys(item):
         for api_key in api_key_data:
             user_api_keys.append(api_key) 
         
-        user_data.append( (user, user_api_keys) )
+        users_with_api_keys.append( (user, user_api_keys) )
 
-    return user_data
+    return users_with_api_keys
 
-
-def get_policies(item):
-    identity_client = item[0]
-    compartments = item[1:]
-
-    policies = []
-
-    for compartment in compartments:
-        policy_data = get_policies_data(identity_client, compartment.id)
-        for policy in policy_data:
-            policies.append(policy)
-
-    return policies
 
 def get_policies(item):
     identity_client = item[0]
@@ -540,6 +534,7 @@ def get_policies(item):
             policies.append(policy)
 
     return policies
+
 
 def get_instances(item):
         compute_client = item[0]
@@ -633,6 +628,7 @@ def get_security_lists_from_mounts(item):
     mounts = item[1:]
 
     security_lists_from_mount_targets = []
+
     for mount in mounts:
         region = mount.subnet_id.split('.')[3]
         if network_client[1] in region or network_client[2] in region:
@@ -647,6 +643,7 @@ def get_export_options(item):
     mounts = item[1:]
 
     export_options = []
+
     for mount in mounts:
         region = mount.subnet_id.split('.')[3]
         if file_storage_client[1] in region or file_storage_client[2] in region:
@@ -858,10 +855,8 @@ def get_steering_policies(item):
 
 def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_variable):
 
-    workload_status = data_variable
-
-    if len(workload_status) > 0:
-        return workload_status[0]
+    if len(vcns_in_multiple_regions) > 0:
+        return vcns_in_multiple_regions[0]
 
     vcn_objects = executor(network_clients, compartments, get_vcns_in_compartments, len(compartments), vcns)
 
@@ -875,11 +870,11 @@ def check_vcns_in_multiple_regions(network_clients, regions, compartments, data_
                     vcn_regions.append(region)
 
     if len(vcn_regions) > 1:
-        workload_status.append(True)
+        vcns_in_multiple_regions.append(True)
     else:
-        workload_status.append(False)
+        vcns_in_multiple_regions.append(False)
 
-    return workload_status[0]
+    return vcns_in_multiple_regions[0]
 
 
 def get_oke_clusters(item):
@@ -992,6 +987,33 @@ def get_virtual_circuits(item):
 
     return virtual_circuits
 
+def get_autoscaling_configurations(item):
+    autoscaling_client = item[0]
+    compartments = item[1:]
+
+    autoscaling_configurations = []
+
+    for compartment in compartments:
+        autoscaling_configurations_data = get_autoscaling_configurations_per_compartment(autoscaling_client, compartment.id)
+        if autoscaling_configurations_data:
+            for configuration in autoscaling_configurations_data:
+                autoscaling_configurations.append(configuration)
+            
+    return autoscaling_configurations
+
+def get_instance_pools(item):
+    compute_management_client = item[0]
+    compartments = item[1:]
+    instance_pools = []
+
+    for compartment in compartments:
+        instance_pools_data = get_instance_pools_per_compartment(compute_management_client, compartment.id)
+        if instance_pools_data:
+            for instance_pool in instance_pools_data:        
+                instance_pools.append(instance_pool)
+        
+    return instance_pools
+
 
 def get_limit_values(item):
     limits_client = item[0][0]
@@ -1002,7 +1024,7 @@ def get_limit_values(item):
     limit_values_with_regions = []
 
     for service in services:
-        limit_value_data = list_limit_value_data(limits_client, tenancy_id, service.name)
+        limit_value_data = get_limit_value_data(limits_client, tenancy_id, service.name)
         for limit_value in limit_value_data:
             limit_values_with_regions.append( (region, service.name, limit_value) )
 
@@ -1027,6 +1049,21 @@ def get_limit_availabilities(item):
     return limit_availabilities_with_regions
 
 
+def get_limit_definitions(item):
+    limits_client = item[0][0]
+    tenancy_id = item[0][1]
+    services = item[1:]
+
+    limit_definitions = []
+
+    for service in services:
+        limit_definition_data = get_limit_definition_data(limits_client, tenancy_id, service.name)
+        for limit_definition in limit_definition_data:
+            limit_definitions.append(limit_definition)
+
+    return limit_definitions
+
+
 def get_alarms(item):
     monitoring_client = item[0]
     compartments = item[1:]
@@ -1041,19 +1078,6 @@ def get_alarms(item):
 
     return alarms
 
-
-def get_metrics(item):
-    monitoring_client = item[0]
-    compartments = item[1:]
-
-    metrics = []
-
-    for compartment in compartments:
-        metric_data = get_metric_data(monitoring_client, compartment.id)
-        for metric in metric_data:
-            metrics.append(metric)
-
-    return metrics
 
 def get_metrics(item):
     monitoring_client = item[0]
@@ -1162,3 +1186,16 @@ def get_events_rules(item):
         for rule in rule_data:
             events_rules.append(rule)
     return events_rules
+def get_quotas_in_compartments(item):
+    # Pull out the client that you need as well as the list of compartments from the passed item
+    quota_client = item[0]
+    compartments = item[1:]
+
+    quotas = []
+    for compartment in compartments:
+        quota_data = list_quota_data(quota_client, compartment.id)
+        for quota in quota_data:
+            if "TERMINATED" not in quota.lifecycle_state:
+                quotas.append(quota)
+
+    return quotas
