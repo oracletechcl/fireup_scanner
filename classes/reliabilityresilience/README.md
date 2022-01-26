@@ -16,3 +16,4 @@
 | 2.15         | [BackupDatabases.py](BackupDatabases.py)                |
 | 2.16         | [DataSecurity.py](DataSecurity.py)                      |
 | 2.17         | [ReplicateData.py](ReplicateData.py)                    |
+| 2.2          | [DistributeTraffic.py](DistributeTraffic.py)            |

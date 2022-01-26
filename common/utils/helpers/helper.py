@@ -236,6 +236,13 @@ def get_policies_data(identity_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+def get_dns_zone_data(dns_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        dns_client.list_zones,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
 def get_service_connectors(service_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         service_client.list_service_connectors,

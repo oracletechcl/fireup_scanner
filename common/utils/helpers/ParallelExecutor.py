@@ -107,6 +107,9 @@ instance_pools = []
 ### CompartmentQuotaPolicy.py Global Variables
 quotas = []
 
+### DistributeTraffic.py Global Variables
+dns_zones = []
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
         return []
@@ -212,6 +215,21 @@ def get_load_balancers(item):
                 load_balancers.append(load_balancer)
 
     return load_balancers
+
+
+def get_dns_zones(item):
+    dns_client = item[0]
+    compartments = item[1:]
+
+    dns_zones = []
+
+    for compartment in compartments:
+        dns_zones_data = get_dns_zone_data(dns_client, compartment.id)
+        for dns_zone in dns_zones_data:
+            if "TERMINATED" not in dns_zone.lifecycle_state:
+                dns_zones.append(dns_zone)
+
+    return dns_zones
 
 
 def get_network_load_balancers(item):
