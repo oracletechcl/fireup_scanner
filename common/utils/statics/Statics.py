@@ -345,10 +345,10 @@ __rp_2_11 = {
 __rp_2_12 = {
     'entry': '2.12',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Define Your Network and Connectivity Architecture',
+    'review_point': 'Transit Routing',    
+    'success_criteria': 'Check if HUB-and-Spoke pattern is in place',
+    'fireup_items': ['Fireup Task: None'],
 }
 
 __rp_2_13 = {
