@@ -63,6 +63,7 @@ from classes.performancecost.ImplementCostTrackingTags import ImplementCostTrack
 
 from classes.opsefficiency.MetricAlarms import MetricAlarms
 from classes.opsefficiency.ConfigureAuditing import ConfigureAuditing
+from classes.opsefficiency.ServiceLogs import ServiceLogs
 from classes.opsefficiency.CloudGuardEnabled import CloudGuardEnabled
 
 from common.utils.reporter.report import *
@@ -126,6 +127,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_3_10,
                             __call_3_11,
                             __call_4_2,
+                            __call_4_3,
                             __call_4_5,
                             __call_4_6,
                         ]
@@ -797,6 +799,18 @@ def __call_4_2(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_2['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_2['fireup_items'])
 
+
+def __call_4_3(config, signer, report_directory):
+    serviceLogs = ServiceLogs(
+    Statics.__rp_4_3['entry'],
+    Statics.__rp_4_3['area'],
+    Statics.__rp_4_3['sub_area'],
+    Statics.__rp_4_3['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_3['entry']+"_"+Statics.__rp_4_3['area']+"_"+Statics.__rp_4_3['sub_area']+"_mitigations"
+    __dictionary = serviceLogs.analyze_entity(Statics.__rp_4_3['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_3['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_3['fireup_items'])
 def __call_4_5(config, signer, report_directory):
     cloudGuardEnabled = CloudGuardEnabled(
     Statics.__rp_4_5['entry'],

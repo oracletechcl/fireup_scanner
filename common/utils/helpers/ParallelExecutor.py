@@ -100,6 +100,14 @@ oracle_db_system_patch_history = []
 service_connectors = []
 bucket_retention_rules = []
 
+### ServiceLogs.py Global Variables
+log_groups = []
+logs = []
+applications = []
+functions = []
+ip_sec_connections = []
+ip_sec_connections_tunnels = []
+events_rules = []
 ### CheckAutoscaling.py Global Variables
 autoscaling_configurations = []
 instance_pools = []
@@ -1084,6 +1092,100 @@ def get_metrics(item):
 
     return metrics
 
+def get_log_groups(item):
+    logging_management_client = item[0]
+    compartments = item[1:]
+
+    log_groups = []
+
+    for compartment in compartments:
+        log_groups_data = get_log_group_data_per_compartment(logging_management_client, compartment.id)
+        for log_group in log_groups_data:
+            log_groups.append(log_group)
+    
+    return log_groups
+
+def get_logs(item):
+    logging_management_client = item[0]
+    log_groups = item[1:]
+
+    logs = []
+
+    for log_group in log_groups:
+        region = log_group.id.split('.')[3]
+        if logging_management_client[1] in region or logging_management_client[2] in region:    
+            logs_data = get_log_data(logging_management_client[0], log_group.id)
+            for log in logs_data:
+                if log.configuration:
+                    logs.append(log)
+    return logs
+
+def get_applications(item):
+    functions_management_client = item[0]
+    compartments = item[1:]
+
+    applications = []
+
+    for compartment in compartments:
+        application_data = get_applications_per_compartment(functions_management_client, compartment.id)
+        for application in application_data:
+            applications.append(application)
+    return applications
+
+def get_functions(item):
+    functions_management_client = item[0]
+    applications = item[1:]
+
+    functions = []
+
+    for application in applications:
+        region = application.id.split('.')[3]
+        if functions_management_client[1] in region or functions_management_client[2] in region:    
+            functions_data = get_functions_per_application(functions_management_client[0], application.id)
+            for function in functions_data:
+                functions.append(function)
+    return functions
+
+def get_ip_sec_connections(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    ip_sec_connections = []
+
+    for compartment in compartments:
+        ip_sec_data = get_ip_sec_connections_per_compartment(network_client, compartment.id)
+        for ip_sec_connection in ip_sec_data:
+            ip_sec_connections.append(ip_sec_connection)
+
+    return ip_sec_connections
+
+
+def get_ip_sec_connections_tunnels(item):
+    network_client = item[0]
+    ip_sec_connections = item[1:]
+    
+    ip_sec_connections_tunnels= []
+
+    for connection in ip_sec_connections:
+        region = connection.id.split('.')[3]
+        if network_client[1] in region or network_client[2] in region:    
+            connection_data = get_ip_sec_connections_tunnels_per_connection(network_client[0], connection.id)
+            for tunnel in connection_data:
+                ip_sec_connections_tunnels.append(tunnel)
+
+    return ip_sec_connections_tunnels
+
+def get_events_rules(item):
+    events_client = item[0]
+    compartments = item[1:]
+
+    events_rules = []
+
+    for compartment in compartments:
+        rule_data = get_event_rules_per_compartment(events_client, compartment.id)
+        for rule in rule_data:
+            events_rules.append(rule)
+    return events_rules
 def get_quotas_in_compartments(item):
     # Pull out the client that you need as well as the list of compartments from the passed item
     quota_client = item[0]
