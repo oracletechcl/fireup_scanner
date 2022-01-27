@@ -58,13 +58,22 @@ class OperationsInsights(ReviewPoint):
         region_config = self.config
         region_config['region'] = 'us-ashburn-1'
         operations_insights_clients.append(get_operations_insights_client(region_config, self.signer))
+        region_config['region'] = 'uk-london-1'
+        operations_insights_clients.append(get_operations_insights_client(region_config, self.signer))
 
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
         self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        debug(operations_insights_clients[0].list_operations_insights_warehouses(compartment_id=self.__tenancy.id).data, "yellow")
+        warehouse = operations_insights_clients[0].list_operations_insights_warehouses(compartment_id=self.__tenancy.id).data
+
+        debug(warehouse, "yellow")
+
+        if len(warehouse.items) > 0:
+            debug(warehouse.items[0].id, "red")
+            hub = operations_insights_clients[0].list_awr_hubs(operations_insights_warehouse_id=warehouse.items[0].id, compartment_id=self.__tenancy.id).data
+            debug(hub, "cyan")
 
         return 
 
