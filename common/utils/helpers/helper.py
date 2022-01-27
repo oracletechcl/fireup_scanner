@@ -798,3 +798,34 @@ def get_quota_policy_data(quota_client, quota_id):
         quota_id = quota_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
+def get_detector_recipes_by_compartments(cloud_guard_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        cloud_guard_client.list_detector_recipes,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_responder_recipes_by_compartments(cloud_guard_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        cloud_guard_client.list_responder_recipes,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_detector_rules_by_compartment(cloud_guard_client, detector_id, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        cloud_guard_client.list_detector_recipe_detector_rules,
+        detector_id,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_responder_rules_by_compartment(cloud_guard_client, responder_id, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        cloud_guard_client.list_responder_recipe_responder_rules,
+        responder_id,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
