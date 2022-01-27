@@ -8,6 +8,7 @@
   - [How to add debug entries in your code](#how-to-add-debug-entries-in-your-code)
     - [Examples](#examples)
   - [How to add a dependency that I use in my Review Point to the venv being used?](#how-to-add-a-dependency-that-i-use-in-my-review-point-to-the-venv-being-used)
+  - [Reading Reports](#reading-reports)
   - [Using Parallel Executor](#using-parallel-executor)
     - [What Is It For?](#what-is-it-for)
     - [How Do I Use It?](#how-do-i-use-it)
@@ -409,6 +410,27 @@ In order to add a dependency to your venv, follow these steps:
 - Go to file [`common/bash/dependencies.sh`](./common/bash/dependencies.sh)
 - Go to part `Installing app dependencies` and add `pip3 install YOUR_DEPENDENCY_NAME`
 
+
+<div id="ReadingReports"></div>
+
+## Reading reports
+
+When you are creating the reports using something like this: (example from review point 2.9 [CIDRSize.py](https://github.com/oraclecloudbricks/fireup/blob/main/classes/reliabilityresilience/CIDRSize.py))
+```python
+dictionary[entry]['status'] = False
+dictionary[entry]['findings'].append(vcn)
+dictionary[entry]['failure_cause'].append('VCNs CIDR Blocks are too small, making it harder to expand.')
+dictionary[entry]['mitigations'].append('Make sure vcn '+str(vcn['display_name'])+' CIDR block(s) are at least /24 or bigger.')
+```
+
+You will want to be able to look at the outputted data to check that its in a readable format.
+
+To do this, run the command:
+```shell
+tar -xvf reports.tar.gz
+```
+
+This will unpack the reports into the `./reports` directory. You should be able to see the outputted csv and log file that your review point has generated. For a reference of what these should look like, you can look at previous review points outputs.
 
 <div id="UsingParallelExecutor"></div>
 
