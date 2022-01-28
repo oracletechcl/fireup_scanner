@@ -142,13 +142,15 @@ class OptimizationMonitor(ReviewPoint):
             
                 for rule in self.__non_compliant_detector_rules:                    
                     dictionary[entry]['status'] = False
-                    dictionary[entry]['findings'].append(rule[0]) 
+                    if rule[0] not in dictionary[entry]['findings']:
+                        dictionary[entry]['findings'].append(rule[0])                    
                     dictionary[entry]['failure_cause'].append("Cloud Guard detector rule not correctly configured")
                     dictionary[entry]['mitigations'].append("Enable Detector rule: "+rule[1]['display_name']+" associated to recipe: "+rule[0]['display_name'])
 
                 for rule in self.__non_compliant_responder_rules:                   
                     dictionary[entry]['status'] = False
-                    dictionary[entry]['findings'].append(rule[0]) 
+                    if rule[0] not in dictionary[entry]['findings']:
+                        dictionary[entry]['findings'].append(rule[0])                    
                     dictionary[entry]['failure_cause'].append("Cloud Guard responder rule not correctly configured")
                     dictionary[entry]['mitigations'].append("Enable Response rule: "+rule[1]['display_name']+" associated to recipe: "+rule[0]['display_name'])  
         else:
