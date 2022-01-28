@@ -236,10 +236,10 @@ __rp_1_25 = {
 __rp_1_26 = {
     'entry': '1.26',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Optimize the Security Posture of Your Environment',
+    'review_point': 'Enable Oracle Cloud Guard for Optimization',    
+    'success_criteria': 'Check if Cloud Guard is enabled',
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
 
