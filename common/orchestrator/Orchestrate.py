@@ -36,6 +36,7 @@ from classes.securitycompliance.SecureDNS import SecureDNS
 from classes.reliabilityresilience.ServiceLimits import ServiceLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.BusyLimits import BusyLimits
+from classes.reliabilityresilience.LowLimits import LowLimits
 from classes.reliabilityresilience.RedundantConnections import RedundantConnections
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
@@ -64,6 +65,7 @@ from classes.performancecost.ImplementCostTrackingTags import ImplementCostTrack
 
 from classes.opsefficiency.MetricAlarms import MetricAlarms
 from classes.opsefficiency.ConfigureAuditing import ConfigureAuditing
+from classes.opsefficiency.ServiceLogs import ServiceLogs
 from classes.opsefficiency.CloudGuardEnabled import CloudGuardEnabled
 
 from common.utils.reporter.report import *
@@ -75,62 +77,64 @@ def main_orchestrator(config, signer, report_directory):
     print_report_sub_header()
 
     orchestrated_list = [
-    #                         __call_1_1,
-    #                         __call_1_2,
-    #                         __call_1_3,
-    #                         __call_1_4,
-    #                         __call_1_5,
-    #                         __call_1_6,
-    #                         __call_1_7,
-    #                         __call_1_8,
-    #                         __call_1_9,
-    #                         __call_1_10,
-    #                         __call_1_11,
-    #                         __call_1_12,
-    #                         __call_1_13,
-    #                         __call_1_14,
-    #                         __call_1_15,
-    #                         __call_1_16,
-    #                         __call_1_17,
-    #                         __call_1_18,
-    #                         __call_1_19,
-    #                         __call_1_20,
-    #                         __call_1_21,
-    #                         __call_1_22,
-    #                         __call_1_23,
-    #                         __call_1_24,
-    #                         __call_1_25,
-    #                         __call_2_1,
-    #                         __call_2_2,
-    #                         __call_2_3,
-    #                         __call_2_4,
-    #                         __call_2_5,
-    #                         __call_2_7,
-    #                         __call_2_8,
-    #                         __call_2_9,
-    #                         __call_2_10,
-    #                         __call_2_11,
-                              __call_2_12,
-    #                         __call_2_13,
-    #                         __call_2_14,
-    #                         __call_2_15,
-    #                         __call_2_16,
-    #                         __call_2_17,
-    #                         __call_3_1,
-    #                         __call_3_2,
-    #                         __call_3_3,
-    #                         __call_3_4,
-    #                         __call_3_5,
-    #                         __call_3_6,
-    #                         __call_3_7,
-    #                         __call_3_8,
-    #                         __call_3_9,
-    #                         __call_3_10,
-    #                         __call_3_11,
-    #                         __call_4_2,
-    #                         __call_4_5,
-    #                         __call_4_6,
-                         ]
+                            # __call_1_1,
+                            # __call_1_2,
+                            # __call_1_3,
+                            # __call_1_4,
+                            # __call_1_5,
+                            # __call_1_6,
+                            # __call_1_7,
+                            # __call_1_8,
+                            # __call_1_9,
+                            # __call_1_10,
+                            # __call_1_11,
+                            # __call_1_12,
+                            # __call_1_13,
+                            # __call_1_14,
+                            # __call_1_15,
+                            # __call_1_16,
+                            # __call_1_17,
+                            # __call_1_18,
+                            # __call_1_19,
+                            # __call_1_20,
+                            # __call_1_21,
+                            # __call_1_22,
+                            # __call_1_23,
+                            # __call_1_24,
+                            # __call_1_25,
+                            # __call_2_1,
+                            # __call_2_2,
+                            # __call_2_3,
+                            # __call_2_4,
+                            # __call_2_5,
+                            # __call_2_6,
+                            # __call_2_7,
+                            # __call_2_8,
+                            # __call_2_9,
+                            # __call_2_10,
+                            # __call_2_11,
+                            __call_2_12,
+                            # __call_2_13,
+                            # __call_2_14,
+                            # __call_2_15,
+                            # __call_2_16,
+                            # __call_2_17,
+                            # __call_3_1,
+                            # __call_3_2,
+                            # __call_3_3,
+                            # __call_3_4,
+                            # __call_3_5,
+                            # __call_3_6,
+                            # __call_3_7,
+                            # __call_3_8,
+                            # __call_3_9,
+                            # __call_3_10,
+                            # __call_3_11,
+                            # __call_4_2,
+                            # __call_4_3,
+                            # __call_4_5,
+                            # __call_4_6,
+                        ]
 
     for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
         orchestrated_list[i](config,signer, report_directory)
@@ -518,6 +522,19 @@ def __call_2_5(config, signer, report_directory):
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_5['fireup_items'])
 
 
+def __call_2_6(config, signer, report_directory):    
+    lowLimits = LowLimits(
+    Statics.__rp_2_6['entry'],
+    Statics.__rp_2_6['area'],
+    Statics.__rp_2_6['sub_area'],
+    Statics.__rp_2_6['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_6['entry']+"_"+Statics.__rp_2_6['area']+"_"+Statics.__rp_2_6['sub_area']+"_mitigations"
+    __dictionary = lowLimits.analyze_entity(Statics.__rp_2_6['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_6['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_6['fireup_items'])
+
+
 def __call_2_7(config, signer, report_directory):    
     redundantConnections = RedundantConnections(
     Statics.__rp_2_7['entry'],
@@ -811,6 +828,18 @@ def __call_4_2(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_2['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_2['fireup_items'])
 
+
+def __call_4_3(config, signer, report_directory):
+    serviceLogs = ServiceLogs(
+    Statics.__rp_4_3['entry'],
+    Statics.__rp_4_3['area'],
+    Statics.__rp_4_3['sub_area'],
+    Statics.__rp_4_3['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_3['entry']+"_"+Statics.__rp_4_3['area']+"_"+Statics.__rp_4_3['sub_area']+"_mitigations"
+    __dictionary = serviceLogs.analyze_entity(Statics.__rp_4_3['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_3['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_3['fireup_items'])
 def __call_4_5(config, signer, report_directory):
     cloudGuardEnabled = CloudGuardEnabled(
     Statics.__rp_4_5['entry'],

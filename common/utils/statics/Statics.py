@@ -291,10 +291,10 @@ __rp_2_5 = {
 __rp_2_6 = {
     'entry': '2.6',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Service Limits',
+    'review_point': 'Factor Failover Usage in Your Service Limits',    
+    'success_criteria': 'Check limits for most used artifacts and see if they are low (still on default or if usage vs available gap is 90% above, then fail)',
+    'fireup_items': ['Fireup Task 40: - Do you have any policy/procedure in place for managing & monitoring service limits'],
 }
 
 __rp_2_7 = {
@@ -516,10 +516,10 @@ __rp_4_2 = {
 __rp_4_3 = {
     'entry': '4.3',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor Your Workload Enable Service Logging',
+    'review_point': 'Enable Service Logging',    
+    'success_criteria': 'Check that pertaining components (if created) have the service logging enabled. API Gateways, Events, Functions, LBaaS, Object Storage, VCN Flow Logs among others',
+    'fireup_items': ['Fireup Task:  59 - Do you have insight into the state & health of your workload'],
 }
 
 __rp_4_4 = {
