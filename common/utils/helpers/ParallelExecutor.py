@@ -28,6 +28,7 @@ bucket_lifecycle_policies = []
 
 limit_values_with_regions = []
 limit_availabilities_with_regions = []
+limit_definitions = []
 
 alarms = []
 metrics = []
@@ -99,12 +100,23 @@ oracle_db_system_patch_history = []
 service_connectors = []
 bucket_retention_rules = []
 
+### ServiceLogs.py Global Variables
+log_groups = []
+logs = []
+applications = []
+functions = []
+ip_sec_connections = []
+ip_sec_connections_tunnels = []
+events_rules = []
 ### CheckAutoscaling.py Global Variables
 autoscaling_configurations = []
 instance_pools = []
 
 ### CompartmentQuotaPolicy.py Global Variables
 quotas = []
+
+### DistributeTraffic.py Global Variables
+dns_zones = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -211,6 +223,21 @@ def get_load_balancers(item):
                 load_balancers.append(load_balancer)
 
     return load_balancers
+
+
+def get_dns_zones(item):
+    dns_client = item[0]
+    compartments = item[1:]
+
+    dns_zones = []
+
+    for compartment in compartments:
+        dns_zones_data = get_dns_zone_data(dns_client, compartment.id)
+        for dns_zone in dns_zones_data:
+            if "TERMINATED" not in dns_zone.lifecycle_state:
+                dns_zones.append(dns_zone)
+
+    return dns_zones
 
 
 def get_network_load_balancers(item):
@@ -997,7 +1024,7 @@ def get_limit_values(item):
     limit_values_with_regions = []
 
     for service in services:
-        limit_value_data = list_limit_value_data(limits_client, tenancy_id, service.name)
+        limit_value_data = get_limit_value_data(limits_client, tenancy_id, service.name)
         for limit_value in limit_value_data:
             limit_values_with_regions.append( (region, service.name, limit_value) )
 
@@ -1020,6 +1047,21 @@ def get_limit_availabilities(item):
                 limit_availabilities_with_regions.append( (region, limit_value[1], limit_value[2], get_resource_availability_data(limits_client, limit_value[1], limit_value[2].name, tenancy_id)) )
 
     return limit_availabilities_with_regions
+
+
+def get_limit_definitions(item):
+    limits_client = item[0][0]
+    tenancy_id = item[0][1]
+    services = item[1:]
+
+    limit_definitions = []
+
+    for service in services:
+        limit_definition_data = get_limit_definition_data(limits_client, tenancy_id, service.name)
+        for limit_definition in limit_definition_data:
+            limit_definitions.append(limit_definition)
+
+    return limit_definitions
 
 
 def get_alarms(item):
@@ -1050,6 +1092,100 @@ def get_metrics(item):
 
     return metrics
 
+def get_log_groups(item):
+    logging_management_client = item[0]
+    compartments = item[1:]
+
+    log_groups = []
+
+    for compartment in compartments:
+        log_groups_data = get_log_group_data_per_compartment(logging_management_client, compartment.id)
+        for log_group in log_groups_data:
+            log_groups.append(log_group)
+    
+    return log_groups
+
+def get_logs(item):
+    logging_management_client = item[0]
+    log_groups = item[1:]
+
+    logs = []
+
+    for log_group in log_groups:
+        region = log_group.id.split('.')[3]
+        if logging_management_client[1] in region or logging_management_client[2] in region:    
+            logs_data = get_log_data(logging_management_client[0], log_group.id)
+            for log in logs_data:
+                if log.configuration:
+                    logs.append(log)
+    return logs
+
+def get_applications(item):
+    functions_management_client = item[0]
+    compartments = item[1:]
+
+    applications = []
+
+    for compartment in compartments:
+        application_data = get_applications_per_compartment(functions_management_client, compartment.id)
+        for application in application_data:
+            applications.append(application)
+    return applications
+
+def get_functions(item):
+    functions_management_client = item[0]
+    applications = item[1:]
+
+    functions = []
+
+    for application in applications:
+        region = application.id.split('.')[3]
+        if functions_management_client[1] in region or functions_management_client[2] in region:    
+            functions_data = get_functions_per_application(functions_management_client[0], application.id)
+            for function in functions_data:
+                functions.append(function)
+    return functions
+
+def get_ip_sec_connections(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    ip_sec_connections = []
+
+    for compartment in compartments:
+        ip_sec_data = get_ip_sec_connections_per_compartment(network_client, compartment.id)
+        for ip_sec_connection in ip_sec_data:
+            ip_sec_connections.append(ip_sec_connection)
+
+    return ip_sec_connections
+
+
+def get_ip_sec_connections_tunnels(item):
+    network_client = item[0]
+    ip_sec_connections = item[1:]
+    
+    ip_sec_connections_tunnels= []
+
+    for connection in ip_sec_connections:
+        region = connection.id.split('.')[3]
+        if network_client[1] in region or network_client[2] in region:    
+            connection_data = get_ip_sec_connections_tunnels_per_connection(network_client[0], connection.id)
+            for tunnel in connection_data:
+                ip_sec_connections_tunnels.append(tunnel)
+
+    return ip_sec_connections_tunnels
+
+def get_events_rules(item):
+    events_client = item[0]
+    compartments = item[1:]
+
+    events_rules = []
+
+    for compartment in compartments:
+        rule_data = get_event_rules_per_compartment(events_client, compartment.id)
+        for rule in rule_data:
+            events_rules.append(rule)
+    return events_rules
 def get_quotas_in_compartments(item):
     # Pull out the client that you need as well as the list of compartments from the passed item
     quota_client = item[0]

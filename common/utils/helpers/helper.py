@@ -183,6 +183,7 @@ def get_compute_management_client(config, signer):
         raise RuntimeError("Failed to create Compute Management client: " + e)
     return compute_management_client
 
+
 def get_service_client(config, signer):
     try:
         service_client = oci.sch.ServiceConnectorClient(config, signer=signer)
@@ -197,6 +198,14 @@ def get_operations_insights_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create operations insights client: " + e)
     return operations_insights_client
+
+
+def get_functions_management_client(config, signer):
+    try:
+        functions_management_client = oci.functions.FunctionsManagementClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create functions management client: " + e)
+    return functions_management_client
 
 
 def get_tenancy_data(identity_client, config):
@@ -245,6 +254,14 @@ def get_root_compartment_data(identity_client, tenancy_id):
 def get_policies_data(identity_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
         identity_client.list_policies,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_dns_zone_data(dns_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        dns_client.list_zones,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
@@ -588,7 +605,7 @@ def get_limits_client(config, signer):
     return limits_client
 
 
-def list_limit_value_data(limits_client, compartment_id, service_name):
+def get_limit_value_data(limits_client, compartment_id, service_name):
     return oci.pagination.list_call_get_all_results(
         limits_client.list_limit_values,
         compartment_id,
@@ -597,7 +614,7 @@ def list_limit_value_data(limits_client, compartment_id, service_name):
     ).data
 
 
-def list_limit_definition_data(limits_client, compartment_id, service_name):
+def get_limit_definition_data(limits_client, compartment_id, service_name):
     return oci.pagination.list_call_get_all_results(
         limits_client.list_limit_definitions,
         compartment_id=compartment_id,
@@ -749,6 +766,62 @@ def get_metric_data(monitoring_client, compartment_id):
     ).data
 
 
+def get_log_group_data_per_compartment(logging_management_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        logging_management_client.list_log_groups,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_log_data(logging_management_client, log_group_id):
+    return oci.pagination.list_call_get_all_results(
+        logging_management_client.list_logs,
+        log_group_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_applications_per_compartment(functions_management_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        functions_management_client.list_applications,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_functions_per_application(functions_management_client, application_id):
+    return oci.pagination.list_call_get_all_results(
+        functions_management_client.list_functions,
+        application_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_ip_sec_connections_per_compartment(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_ip_sec_connections,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_ip_sec_connections_tunnels_per_connection(network_client, ipsec_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_ip_sec_connection_tunnels,
+        ipsec_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_event_rules_per_compartment(events_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        events_client.list_rules,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+    
 def get_quota_policy_data(quota_client, quota_id):
     return quota_client.get_quota(
         quota_id = quota_id,

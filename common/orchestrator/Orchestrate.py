@@ -47,6 +47,7 @@ from classes.reliabilityresilience.BackupDatabases import BackupDatabases
 from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
 from classes.reliabilityresilience.CheckAutoscaling import CheckAutoscaling
+from classes.reliabilityresilience.DistributeTraffic import DistributeTraffic
 
 from classes.performancecost.TenancyQuotas import TenancyQuotas
 from classes.performancecost.CheckAutoTuning import CheckAutoTuning
@@ -63,6 +64,7 @@ from classes.performancecost.ImplementCostTrackingTags import ImplementCostTrack
 from classes.opsefficiency.MetricAlarms import MetricAlarms
 from classes.opsefficiency.OperationsInsights import OperationsInsights
 from classes.opsefficiency.ConfigureAuditing import ConfigureAuditing
+from classes.opsefficiency.ServiceLogs import ServiceLogs
 from classes.opsefficiency.CloudGuardEnabled import CloudGuardEnabled
 
 from common.utils.reporter.report import *
@@ -100,6 +102,7 @@ def main_orchestrator(config, signer, report_directory):
                             # __call_1_24,
                             # __call_1_25,
                             # __call_2_1,
+                            # __call_2_2,
                             # __call_2_3,
                             # __call_2_4,
                             # __call_2_5,
@@ -125,6 +128,7 @@ def main_orchestrator(config, signer, report_directory):
                             # __call_3_10,
                             # __call_3_11,
                             # __call_4_2,
+                            # __call_4_3,
                             __call_4_4,
                             # __call_4_5,
                             # __call_4_6,
@@ -466,6 +470,18 @@ def __call_2_1(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_1['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_1['fireup_items'])
 
+def __call_2_2(config, signer, report_directory):
+    distributeTraffic = DistributeTraffic(
+    Statics.__rp_2_2['entry'],
+    Statics.__rp_2_2['area'],
+    Statics.__rp_2_2['sub_area'],
+    Statics.__rp_2_2['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_2['entry']+"_"+Statics.__rp_2_2['area']+"_"+Statics.__rp_2_2['sub_area']+"_mitigations"
+    __dictionary = distributeTraffic.analyze_entity(Statics.__rp_2_2['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_2['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_2['fireup_items'])
+
 def __call_2_3(config, signer, report_directory):    
     serviceLimits = ServiceLimits(
     Statics.__rp_2_3['entry'],
@@ -784,6 +800,19 @@ def __call_4_2(config, signer, report_directory):
     __dictionary = metricAlarms.analyze_entity(Statics.__rp_4_2['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_2['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_2['fireup_items'])
+
+
+def __call_4_3(config, signer, report_directory):
+    serviceLogs = ServiceLogs(
+    Statics.__rp_4_3['entry'],
+    Statics.__rp_4_3['area'],
+    Statics.__rp_4_3['sub_area'],
+    Statics.__rp_4_3['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_3['entry']+"_"+Statics.__rp_4_3['area']+"_"+Statics.__rp_4_3['sub_area']+"_mitigations"
+    __dictionary = serviceLogs.analyze_entity(Statics.__rp_4_3['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_3['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_3['fireup_items'])
 
 
 def __call_4_4(config, signer, report_directory):

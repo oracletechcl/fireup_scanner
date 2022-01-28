@@ -255,10 +255,10 @@ __rp_2_1 = {
 __rp_2_2 = {
     'entry': '2.2',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Design for Scalability',
+    'review_point': 'Distribute Your Traffic Across Availability Domains and Regions',
+    'success_criteria': 'Check if solution is spread across more than one region',
+    'fireup_items': ['Fireup task: 31 - Are you leveraging traffic management, web firewall and load balancing for public resources?'],
 }
 
 __rp_2_3 = {
@@ -516,10 +516,10 @@ __rp_4_2 = {
 __rp_4_3 = {
     'entry': '4.3',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor Your Workload Enable Service Logging',
+    'review_point': 'Enable Service Logging',    
+    'success_criteria': 'Check that pertaining components (if created) have the service logging enabled. API Gateways, Events, Functions, LBaaS, Object Storage, VCN Flow Logs among others',
+    'fireup_items': ['Fireup Task:  59 - Do you have insight into the state & health of your workload'],
 }
 
 __rp_4_4 = {
