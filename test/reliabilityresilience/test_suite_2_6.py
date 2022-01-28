@@ -4,7 +4,8 @@
 # Description: Main test suite for fireup review tool
 # Dependencies: pytest
 
-from classes.reliabilityresilience.BackupDatabases import BackupDatabases
+from os import write
+from classes.reliabilityresilience.LowLimits import LowLimits
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug
 from common.utils.statics import Statics
@@ -19,22 +20,25 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = BackupDatabases(Statics.__rp_2_15['entry'], 
-    Statics.__rp_2_15['area'], 
-    Statics.__rp_2_15['sub_area'], 
-    Statics.__rp_2_15['review_point'], 
+    result_dictionary = LowLimits(Statics.__rp_2_6['entry'], 
+    Statics.__rp_2_6['area'], 
+    Statics.__rp_2_6['sub_area'], 
+    Statics.__rp_2_6['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_15['entry'])   
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_6['entry'])   
 
-    for item in dictionary[Statics.__rp_2_15['entry']]['findings']:
+    for item in dictionary[Statics.__rp_2_6['entry']]['findings']:
         debug(item)
         results_in_fault += 1
 
-assert results_in_fault == 8
+
+    assert results_in_fault == 4950
+
+
 
     __test_suite_log(capsys)
