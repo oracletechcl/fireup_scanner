@@ -37,6 +37,7 @@ from classes.securitycompliance.OptimizationMonitor import OptimizationMonitor
 from classes.reliabilityresilience.ServiceLimits import ServiceLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.BusyLimits import BusyLimits
+from classes.reliabilityresilience.LowLimits import LowLimits
 from classes.reliabilityresilience.RedundantConnections import RedundantConnections
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
@@ -107,6 +108,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_2_3,
                             __call_2_4,
                             __call_2_5,
+                            __call_2_6,
                             __call_2_7,
                             __call_2_8,
                             __call_2_9,
@@ -531,6 +533,19 @@ def __call_2_5(config, signer, report_directory):
     __dictionary = compQuotas.analyze_entity(Statics.__rp_2_5['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_5['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_5['fireup_items'])
+
+
+def __call_2_6(config, signer, report_directory):    
+    lowLimits = LowLimits(
+    Statics.__rp_2_6['entry'],
+    Statics.__rp_2_6['area'],
+    Statics.__rp_2_6['sub_area'],
+    Statics.__rp_2_6['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_6['entry']+"_"+Statics.__rp_2_6['area']+"_"+Statics.__rp_2_6['sub_area']+"_mitigations"
+    __dictionary = lowLimits.analyze_entity(Statics.__rp_2_6['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_6['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_6['fireup_items'])
 
 
 def __call_2_7(config, signer, report_directory):    
