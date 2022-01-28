@@ -61,14 +61,6 @@ class OperationsInsights(ReviewPoint):
             db_system_clients.append( (get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
             operations_insights_clients.append( (get_operations_insights_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
 
-        # region_config = self.config
-        # region_config['region'] = 'us-ashburn-1'
-        # db_system_clients.append( (get_database_client(region_config, self.signer), 'us-ashburn-1', 'iad') )
-        # operations_insights_clients.append( (get_operations_insights_client(region_config, self.signer), 'us-ashburn-1', 'iad') )
-        # region_config['region'] = 'uk-london-1'
-        # db_system_clients.append( (get_database_client(region_config, self.signer), 'uk-london-1', 'lhr') )
-        # operations_insights_clients.append( (get_operations_insights_client(region_config, self.signer), 'uk-london-1', 'lhr') )
-
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
         self.__compartments.append(get_tenancy_data(self.__identity, self.config))
@@ -103,30 +95,11 @@ class OperationsInsights(ReviewPoint):
 
         return
 
-        # debug(self.__db_system_home_objects[0], "green")
-
-        # debug(db_system_clients[0].list_databases(db_home_id=self.__db_system_home_objects[0].id, system_id=self.__db_system_home_objects[0].db_system_id, compartment_id=self.__db_system_home_objects[0].compartment_id).data)
-
-        debug(self.__dbs_from_db_homes, "magenta")
-
-        warehouse = operations_insights_clients[0].list_operations_insights_warehouses(compartment_id=self.__tenancy.id).data
-
-        debug(warehouse, "yellow")
-
-        if len(warehouse.items) > 0:
-            debug(warehouse.items[0].id, "red")
-            hub = operations_insights_clients[0].list_awr_hubs(operations_insights_warehouse_id=warehouse.items[0].id, compartment_id=self.__tenancy.id).data
-            debug(hub, "cyan")
-
-        return 
-
 
     def analyze_entity(self, entry):
         self.load_entity()
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-
-        # self.__regions
 
         db_regions = []
 
@@ -152,7 +125,7 @@ class OperationsInsights(ReviewPoint):
         for region in non_compliant_regions:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Region with databases should have an operations insight warehouse and hub")
-            dictionary[entry]['mitigations'].append(f"Make sure region \"{region}\" has as operations insight warehouse and hub.")
+            dictionary[entry]['mitigations'].append(f"Make sure region \"{region}\", has as operations insight warehouse and hub.")
 
         debug(non_compliant_regions, "yellow")
 
