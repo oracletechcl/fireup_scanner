@@ -110,6 +110,9 @@ quotas = []
 ### DistributeTraffic.py Global Variables
 dns_zones = []
 
+### TransitRouting.py Global Variables
+networking_topology = []
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
         return []
@@ -1097,3 +1100,14 @@ def get_quotas_in_compartments(item):
                 quotas.append(quota)
 
     return quotas
+
+def get_networking_topology_1(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    networking_topology = []
+
+    for compartment in compartments:
+        networking_topology.append(get_networking_topology_per_compartment(network_client, compartment.id))
+                    
+    return networking_topology
