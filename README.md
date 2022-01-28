@@ -1,4 +1,4 @@
-# FireUp Automated check tool
+# FireUp Scanner
 Fireup automated gathering and check tool
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) 
@@ -7,7 +7,7 @@ Fireup automated gathering and check tool
 
 # Table of Contents
 
-- [FireUp Automated check tool](#fireup-automated-check-tool)
+- [FireUp Scanner](#fireup-scanner)
 - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Class Structure](#class-structure)
