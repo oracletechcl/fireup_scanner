@@ -827,3 +827,18 @@ def get_quota_policy_data(quota_client, quota_id):
         quota_id = quota_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
+
+def list_operations_insights_warehouses(operations_insights_client, compartment_id):
+    return operations_insights_client.list_operations_insights_warehouses(
+        compartment_id=compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def list_awr_hubs(operations_insights_client, operations_insights_warehouse_id, compartment_id):
+    return operations_insights_client.list_awr_hubs(
+        operations_insights_warehouse_id=operations_insights_warehouse_id,
+        compartment_id=compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data

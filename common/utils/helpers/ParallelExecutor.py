@@ -33,6 +33,11 @@ limit_definitions = []
 alarms = []
 metrics = []
 
+dbs_from_db_homes = []
+
+operations_insights_warehouses = []
+awr_hubs = []
+
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
 vcns = []
@@ -503,6 +508,23 @@ def get_db_systems_with_no_backups(item):
                         disabled_backups.append( (db, db_home) )
 
     return disabled_backups
+
+
+def get_dbs_from_db_homes(item):
+    database_client = item[0]
+    db_system_homes = item[1:]
+
+    dbs_from_db_homes = []
+
+    for db_home in db_system_homes:
+        region = db_home.id.split('.')[3]
+        if database_client[1] in region or database_client[2] in region:
+            databases = database_client[0].list_databases(db_home_id=db_home.id, system_id=db_home.db_system_id, compartment_id=db_home.compartment_id).data
+            for db in databases:
+                if "TERMINATED" not in db.lifecycle_state:
+                    dbs_from_db_homes.append(db)
+
+    return dbs_from_db_homes
 
 
 def get_user_with_api_keys(item):
@@ -1092,6 +1114,7 @@ def get_metrics(item):
 
     return metrics
 
+
 def get_log_groups(item):
     logging_management_client = item[0]
     compartments = item[1:]
@@ -1104,6 +1127,7 @@ def get_log_groups(item):
             log_groups.append(log_group)
     
     return log_groups
+
 
 def get_logs(item):
     logging_management_client = item[0]
@@ -1120,6 +1144,7 @@ def get_logs(item):
                     logs.append(log)
     return logs
 
+
 def get_applications(item):
     functions_management_client = item[0]
     compartments = item[1:]
@@ -1131,6 +1156,7 @@ def get_applications(item):
         for application in application_data:
             applications.append(application)
     return applications
+
 
 def get_functions(item):
     functions_management_client = item[0]
@@ -1145,6 +1171,7 @@ def get_functions(item):
             for function in functions_data:
                 functions.append(function)
     return functions
+
 
 def get_ip_sec_connections(item):
     network_client = item[0]
@@ -1175,6 +1202,7 @@ def get_ip_sec_connections_tunnels(item):
 
     return ip_sec_connections_tunnels
 
+
 def get_events_rules(item):
     events_client = item[0]
     compartments = item[1:]
@@ -1186,6 +1214,8 @@ def get_events_rules(item):
         for rule in rule_data:
             events_rules.append(rule)
     return events_rules
+
+
 def get_quotas_in_compartments(item):
     # Pull out the client that you need as well as the list of compartments from the passed item
     quota_client = item[0]
@@ -1199,3 +1229,32 @@ def get_quotas_in_compartments(item):
                 quotas.append(quota)
 
     return quotas
+
+
+def get_operations_insights_warehouses(item):
+    operations_insights_client = item[0]
+    tenancy_id = item[1]
+
+    operations_insights_warehouses = []
+
+    warehouse_data = list_operations_insights_warehouses(operations_insights_client, tenancy_id)
+    for warehouse in warehouse_data.items:
+        operations_insights_warehouses.append(warehouse)
+
+    return operations_insights_warehouses
+
+
+def get_awr_hubs(item):
+    operations_insights_client = item[0]
+    operations_insights_warehouses = item[1:]
+
+    awr_hubs = []
+
+    for warehouse in operations_insights_warehouses:
+        region = warehouse.id.split('.')[3]
+        if operations_insights_client[1] in region or operations_insights_client[2] in region:    
+            awr_hubs_data = list_awr_hubs(operations_insights_client[0], warehouse.id, warehouse.compartment_id)
+            for awr_hub in awr_hubs_data.items:
+                awr_hubs.append(awr_hub)
+
+    return awr_hubs
