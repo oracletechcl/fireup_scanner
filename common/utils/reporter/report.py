@@ -95,6 +95,7 @@ def __print_mitigation_report(report_directory, report_name,  mitigation_list, f
         for x in range(len(fireup_mapping)):
             file.write(fireup_mapping[x] + "\n")
         file.write("\n")
+        file.write("For a full list of FireUp Tasks, refer to FIREUP_TASKS.md\n")
         file.write("Failure Cause: " + failure_causes + "\n\n")
         file.write("The following are the mitigations to be applied: \n")
         file.write("----------------------------------------------------------------------------------------------------------------------\n")
