@@ -146,7 +146,7 @@ class CompartmentsAndPolicies(ReviewPoint):
                     continue
 
         for item in non_compliant_compartments_names:
-            dictionary[entry]['failure_cause'].append("Compartment name does not match the environment name convention")
+            dictionary[entry]['failure_cause'].append("Compartment name does not match environment name convention containing these keywords: " + str(env_list))
             dictionary[entry]['mitigations'].append("Rename compartment: " + item + " to match the environment name convention")
 
          
