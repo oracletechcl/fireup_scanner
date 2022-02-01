@@ -483,7 +483,7 @@ __rp_3_10 = {
     'sub_area': 'Track and Manage Usage and Cost',
     'review_point': 'Enable Block Volume Performance Auto Tuning',    
     'success_criteria': 'If block storage is in place, check that performance auto-tuning is implemented',
-    'fireup_items': ['Fireup Task: 55 - Do you have a process to regularly terminate or stop unused resources & do you encourage employees to stop unused resources?'],
+    'fireup_items': ['Fireup Task: 56 - How do you optimize workload performance & requirement vs cost?'],
 }
 
 __rp_3_11 = {
