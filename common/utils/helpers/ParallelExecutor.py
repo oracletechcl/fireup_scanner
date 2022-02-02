@@ -120,6 +120,8 @@ dns_zones = []
 
 ### TransitRouting.py Global Variables
 networking_topology = []
+virtual_circuits = []
+cross_connects = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1157,8 +1159,9 @@ def get_ip_sec_connections(item):
 
     for compartment in compartments:
         ip_sec_data = get_ip_sec_connections_per_compartment(network_client, compartment.id)
-        for ip_sec_connection in ip_sec_data:
-            ip_sec_connections.append(ip_sec_connection)
+       # for ip_sec_connection in ip_sec_data:
+        if ip_sec_data:
+            ip_sec_connections.append(ip_sec_data)
 
     return ip_sec_connections
 
@@ -1210,6 +1213,37 @@ def get_networking_topology_1(item):
     networking_topology = []
 
     for compartment in compartments:
-        networking_topology.append(get_networking_topology_per_compartment(network_client, compartment.id))
+        topology = get_networking_topology_per_compartment(network_client, compartment.id)
+        if topology.entities:
+            networking_topology.append(topology)
                     
     return networking_topology
+
+
+def get_virtual_circuits(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    virtual_circuits = []
+
+    for compartment in compartments:
+        virtual_circuits_data = get_virtual_circuts_per_compartment(network_client, compartment.id)
+       # for ip_sec_connection in ip_sec_data:
+        if virtual_circuits_data:
+            virtual_circuits.append(virtual_circuits_data)
+
+    return virtual_circuits
+
+def get_cross_connects(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    cross_connects = []
+
+    for compartment in compartments:
+        cross_connects_data = get_cross_connects_per_compartment(network_client, compartment.id)
+       # for ip_sec_connection in ip_sec_data:
+        if cross_connects_data:
+            cross_connects.append(cross_connects_data)
+
+    return cross_connects

@@ -804,3 +804,37 @@ def get_networking_topology_per_compartment(network_client, compartment_id):
         compartment_id,query_compartment_subtree = True,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
+def get_virtual_circuts_per_compartment(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_virtual_circuits,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_cross_connects_per_compartment(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_cross_connects,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_vcn_topology_per_compartment(network_client, compartment_id,vcn_id):
+    return network_client.get_vcn_topology(
+        compartment_id,
+        vcn_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_drg(network_client, drg_id):
+    return network_client.get_drg(
+        drg_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_drg_attachments(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_drg_attachments,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
