@@ -39,11 +39,18 @@ class PatchesAndUpdates(ReviewPoint):
     __oracle_database_systems = []
     __compartments = []
 
+   # Compute Objects
+    __compute_objects = []
+    __computes = []
+    __os_image_objects = []
+    __os_images = []
+
 
 
     # Scrapper variables
-    __patches_website = "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/patchingDB.htm"
-    __patches_website_id = "patchingDB_topic-Currently_Available_Patches"
+    __db_patches_website = "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/patchingDB.htm"
+    __db_patches_website_id = "patchingDB_topic-Currently_Available_Patches"
+
     __last_patch_level = None
 
     def __init__(self,
@@ -77,12 +84,14 @@ class PatchesAndUpdates(ReviewPoint):
     def load_entity(self):
         regions = get_regions_data(self.__identity, self.config)
         db_system_clients = []
+        compute_clients = []
 
 
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
             db_system_clients.append( (get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
+            compute_clients.append( get_compute_client(region_config, self.signer))
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
@@ -96,7 +105,32 @@ class PatchesAndUpdates(ReviewPoint):
         self.__oracle_databases_home_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_home_objects, ParallelExecutor.get_database_homes_applied_patch_history, len(self.__oracle_database_home_objects), ParallelExecutor.oracle_db_home_patch_history)      
         self.__oracle_database_system_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_systems_objects, ParallelExecutor.get_database_systems_applied_patch_history, len(self.__oracle_database_systems_objects), ParallelExecutor.oracle_db_system_patch_history)
 
-        self.__last_patch_level = get_db_patches(self.__patches_website, self.__patches_website_id)
+        self.__compute_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_compute_instances, len(self.__compartments), ParallelExecutor.compute_instances)      
+        self.__os_image_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_compute_images, len(self.__compartments), ParallelExecutor.compute_images)      
+        
+        self.__last_patch_level = get_db_patches(self.__db_patches_website, self.__db_patches_website_id)
+      
+     
+
+        for compute in self.__compute_objects: 
+            compute_record = {
+                'display_name': compute.display_name,
+                'id': compute.id,
+                'lifecycle_state': compute.lifecycle_state,
+                'image_id': compute.image_id,
+                'compartment_name': get_compartment_name(self.__compartments, compute.compartment_id),
+            }
+            self.__computes.append(compute_record)
+
+        for image in self.__os_image_objects:
+            os_img_record = {
+                'display_name': image.display_name,
+                'id': image.id,
+                'compartment_name': get_compartment_name(self.__compartments, image.compartment_id),
+                'operating_system': image.operating_system,
+                'operating_system_version': image.operating_system_version,
+            }
+            self.__os_images.append(os_img_record)
               
         # Filling local array object for Oracle Database 
         for dbobject in self.__oracle_database_home_objects:            
@@ -168,7 +202,18 @@ class PatchesAndUpdates(ReviewPoint):
                                 dictionary[entry]['failure_cause'].append("Oracle DB System does not have any patches applied")                                   
                                 dictionary[entry]['mitigations'].append("Apply Patchset: "+get_month_and_year(latest_patches_available['db_system_patch']) +" to dbsystem: "+ dbname)
                                 break              
-                
+
+        for image in self.__os_images:
+            for compute in self.__computes:
+                if compute['image_id'] not in image['id']:
+                    if compute['lifecycle_state'] != 'TERMINATED':                        
+                        if compute not in dictionary[entry]['findings']:
+                            dictionary[entry]['status'] = False
+                            dictionary[entry]['findings'].append(compute)
+                            dictionary[entry]['failure_cause'].append("Compute may not be on latest patchset update")
+                            dictionary[entry]['mitigations'].append("Check that compute instance: "+compute['display_name']+" located at compartment: "+compute['compartment_name']+" is on latest patchset update")
+                            break
+
                                                      
         return dictionary
 
