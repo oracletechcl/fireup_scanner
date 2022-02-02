@@ -552,8 +552,8 @@ __rp_4_6 = {
 __rp_4_7 = {
     'entry': '4.7',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Operating Systems',
+    'review_point': 'Stay Up-to-Date with Security Patches, Bug Fixes, and Enhancement Updates',    
+    'success_criteria': 'Check infrastructure created and if it applies see if it has the latest and greatest patching set',
+    'fireup_items': ['Fireup Task 20: Do you have an update / patching schedule on OS, Applications, etc?'],
 }
