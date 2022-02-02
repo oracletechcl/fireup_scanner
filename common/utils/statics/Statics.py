@@ -429,7 +429,7 @@ __rp_3_4 = {
     'sub_area': 'Tune and Monitor Network',
     'review_point': 'Choose a Region Location Based On Networking Requirements',
     'success_criteria': 'Check if VCN is implemented in more than one region',
-    'fireup_items': ['Fireup Task: 29: Can you ensure that are no overlapping private IP spaces?'],
+    'fireup_items': ['Fireup Task: 29: Can you ensure that there are no overlapping private IP spaces?'],
 }
 
 __rp_3_5 = {
