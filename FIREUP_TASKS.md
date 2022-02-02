@@ -28,7 +28,7 @@
 | 26   | Security and Compliance    | Data                       | Is there any data currently opened to the public?                                                                                        |
 | 27   | Security and Compliance    | DMZ                        | Are network design best practices being followed? (Just making sure public / private subnetting is in place, not CIDR Sizing)            |
 | 28   | Security and Compliance    | DMZ                        | Are IAM / NSG policies in place to limit DMZ Access?                                                                                     |
-| 29   | Reliability and Resilience | Network and Connectivity   | Can you ensure that are no overlapping private IP spaces?                                                                                |
+| 29   | Reliability and Resilience | Network and Connectivity   | Can you ensure that there are no overlapping private IP spaces?                                                                                |
 | 30   | Reliability and Resilience | Network and Connectivity   | Do you have enough CIDR range for future expansions? (Make sure CIDRs are greater than /24)                                              |
 | 31   | Reliability and Resilience | Network and Connectivity   | Are you leveraging traffic management, web firewall and load balancing for public resources?                                             |
 | 32   | Reliability and Resilience | Failure Management         | How do you monitor current resources                                                                                                     |
