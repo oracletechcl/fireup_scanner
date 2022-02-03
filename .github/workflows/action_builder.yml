@@ -28,7 +28,7 @@ jobs:
           echo "${{ github.event.pull_request.head.ref }}"
       - name: Run Action Builder
         if: ${{ always() }}
-        uses: oraclecloudbricks/action_fireup@e00436fc4b0cbfaac8c17db8952f23cfcf424a99
+        uses: oraclecloudbricks/action_fireup@1a74fbfe41dd6b9554b319110ef4451420f14862
         with:
           files_added: ${{ steps.abc.outputs.added }}
           files_modified: ${{ steps.abc.outputs.modified }}
