@@ -50,7 +50,6 @@ class TransitRouting(ReviewPoint):
         self.__tenancy = get_tenancy_data(self.__identity, self.config)
 
 
-
     def load_entity(self):
 
         network_cleints = []
