@@ -71,12 +71,12 @@ class TransitRouting(ReviewPoint):
         
         # find compartment and region with VPN or FastConnect
         for vpn_connections in self.__ip_sec_connections_objects:
-            region = vpn_connections[0].id.split('.')[3]
-            vpn_fc_connections_per_compartment.add((vpn_connections[0].compartment_id, region))
+            region = vpn_connections.id.split('.')[3]
+            vpn_fc_connections_per_compartment.add((vpn_connections.compartment_id, region))
 
         for fc_connections in self.__cross_connections_objects:
             region = fc_connections.id.split('.')[3]
-            vpn_fc_connections_per_compartment.add((fc_connections[0].compartment_id, region))
+            vpn_fc_connections_per_compartment.add((fc_connections.compartment_id, region))
 
         # gather network topology, use workaround from github to get it from compartments which have CPE connectiity
         for com_region in vpn_fc_connections_per_compartment:
@@ -140,20 +140,20 @@ class TransitRouting(ReviewPoint):
                         if len(lpgs) != 2*(len(vcns)-1):
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(network)
-                            dictionary[entry]['failure_cause'].append('HUB-and-Spoke pattern is not implemented')   
-                            dictionary[entry]['mitigations'].append('Network pattern is not optimal in Compartment: '  + get_compartment_name(self.__compartments, network['entities'][0]['compartmentId']) + ' Consider implementing HUB-and-Spoke network topology') 
+                            dictionary[entry]['failure_cause'].append('Insufficient or redundant amount of LPGs.')   
+                            dictionary[entry]['mitigations'].append('Make sure that each Spoke-VCN has only one LPG attached to it and connected with HUB-VCN in Compartment: '  + get_compartment_name(self.__compartments, network['entities'][0]['compartmentId'])) 
                 else:
                     # This can be a new system with one DRG 
                     # Check if number of attachments equals number of vcns + 2 attachments per vpn + 1 attachment for virtual circut
                     if len(drg_attachments) != len(vcns) + 2*len(vpn_connections) + len(virtual_circuts):
                         dictionary[entry]['status'] = False
                         dictionary[entry]['findings'].append(network)
-                        dictionary[entry]['failure_cause'].append('HUB-and-Spoke pattern is not implemented')   
-                        dictionary[entry]['mitigations'].append('Network pattern is not optimal in Compartment: '  + get_compartment_name(self.__compartments, network['entities'][0]['compartmentId']) + ' Consider implementing HUB-and-Spoke netowrk topology')
+                        dictionary[entry]['failure_cause'].append('The DRG is not properly attached to the network resources.')   
+                        dictionary[entry]['mitigations'].append('Make sure that the DRG have an appropriate amount of attachments: 2 per VPN connection, 1 per FastConnect port and 1 for each VCN in Compartment: '  + get_compartment_name(self.__compartments, network['entities'][0]['compartmentId']))
             else:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(network)
-                dictionary[entry]['failure_cause'].append('HUB-and-Spoke pattern is not implemented')   
-                dictionary[entry]['mitigations'].append('Network pattern is not optimal in Compartment: '  + get_compartment_name(self.__compartments, network['entities'][0]['compartmentId']) + ' Consider implementing HUB-and-Spoke network topology')
+                dictionary[entry]['failure_cause'].append('The network contains an inefficient number of DRGs.')   
+                dictionary[entry]['mitigations'].append('There are redundant DRGs created in the Compartment: '  + get_compartment_name(self.__compartments, network['entities'][0]['compartmentId']) + ' Make sure you utilise only one DRG with a HUB-and-Spoke pattern for optimal performance.')
 
         return dictionary

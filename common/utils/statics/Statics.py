@@ -348,7 +348,7 @@ __rp_2_12 = {
     'sub_area': 'Define Your Network and Connectivity Architecture',
     'review_point': 'Transit Routing',    
     'success_criteria': 'Check if HUB-and-Spoke pattern is in place',
-    'fireup_items': ['Fireup Task: None'],
+    'fireup_items': ['Fireup Task: 33 -  Do you anticipate failure and have a recovery procedure in place'],
 }
 
 __rp_2_13 = {

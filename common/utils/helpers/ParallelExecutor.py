@@ -1155,10 +1155,9 @@ def get_ip_sec_connections(item):
 
     for compartment in compartments:
         ip_sec_data = get_ip_sec_connections_per_compartment(network_client, compartment.id)
-       # for ip_sec_connection in ip_sec_data:
-        if ip_sec_data:
-            ip_sec_connections.append(ip_sec_data)
-
+        for ip_sec_connection in ip_sec_data:
+            if ip_sec_connection:
+                ip_sec_connections.append(ip_sec_connection)
     return ip_sec_connections
 
 
