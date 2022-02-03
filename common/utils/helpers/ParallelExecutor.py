@@ -125,6 +125,12 @@ responder_recipes = []
 detector_recipes_with_rules = []
 responder_recipes_with_rules = []
 
+
+## PatchesAndUpdates.py
+# List for use with the parallel_executor
+compute_instances = []
+compute_images = []
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
         return []
@@ -1257,3 +1263,29 @@ def get_notifications(item):
             notifications.append(notification)
 
     return notifications
+
+def get_compute_instances(item):
+    compute_client = item[0]
+    compartments = item[1:]
+
+    compute_instances = []
+
+    for compartment in compartments:
+        compute_data = get_compute_data(compute_client, compartment.id)        
+        for compute in compute_data:
+            compute_instances.append(compute)
+
+    return compute_instances
+
+def get_compute_images(item):
+    compute_client = item[0]
+    compartments = item[1:]
+
+    compute_images = []
+
+    for compartment in compartments:
+        compute_data = get_compute_image_data(compute_client, compartment.id)        
+        for compute in compute_data:
+            compute_images.append(compute)
+
+    return compute_images

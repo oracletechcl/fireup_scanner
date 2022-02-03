@@ -15,6 +15,12 @@ def get_config_and_signer():
         raise RuntimeError("Failed to load configuration: " + e)
     return config, signer
 
+def get_compute_client(config, signer):
+    try:
+        compute_client = oci.core.ComputeClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create compute client: " + e)
+    return compute_client
 
 def get_identity_client(config, signer):
     try:
@@ -836,7 +842,20 @@ def get_responder_rules_by_compartment(cloud_guard_client, responder_id, compart
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
-#notification control plane client
+def get_compute_data(compute_client, compartment_id): 
+    return oci.pagination.list_call_get_all_results(
+        compute_client.list_instances,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_compute_image_data(comput_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        comput_client.list_images,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
 def get_notification_control_plane_client(config, signer):
     try:
         notification_control_plane_client = oci.ons.NotificationControlPlaneClient(config, signer=signer)
@@ -850,4 +869,4 @@ def get_notification_data(notification_control_plane_client, compartment_id):
         notification_control_plane_client.list_topics,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-    ).data
+    ).data 

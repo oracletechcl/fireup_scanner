@@ -7,4 +7,5 @@
 | 4.3          | [ServiceLogs.py](ServiceLogs.py)
 | 4.5          | [CloudGuardEnabled.py](CloudGuardEnabled.py)
 | 4.6          | [ConfigureAuditing.py](ConfigureAuditing.py)   
+| 4.7          | [PatchesAndUpdates.py](PatchesAndUpdates.py)
                                   

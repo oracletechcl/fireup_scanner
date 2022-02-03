@@ -76,9 +76,14 @@ ___
 <div id="PreReqs"></div>
 
 ## Pre-requisites
+- Pre-created Oracle Linux 7.9+ operative system to run the tool
 - Python3 pre-installed
 - Pre-configured Oracle Cloud Infrastructure (OCI) account
-- Pre-configured OCI CLI. For instructions in how to configure CLI, refer to the [following link](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/climanualinst.htm)
+- CLI will be automatically installed if not present on the jump system. Make sure to complete the configuration of the CLI by filling the contents of the file `~/.oci/config` accordingly 
+  - For more details, refer to the following links:  
+    - [Manual and Offline Installations](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/climanualinst.htm)
+    - [Config File Location](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Name_and_Location)
+    - [Config File Contents](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Entries)
 
 
 <div id="HowToUse"></div>
