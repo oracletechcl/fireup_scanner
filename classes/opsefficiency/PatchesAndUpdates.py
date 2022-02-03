@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# DBSystemPatch.py
-# Description: Implementation of class DBsystemPatch based on abstract
+# PatchesAndUpdates.py
+# Description: Implementation of class PatchesAndUpdates based on abstract
 
 
 
