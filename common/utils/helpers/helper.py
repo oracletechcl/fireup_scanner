@@ -791,8 +791,7 @@ def get_event_rules_per_compartment(events_client, compartment_id):
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
-
-    
+   
 def get_quota_policy_data(quota_client, quota_id):
     return quota_client.get_quota(
         quota_id = quota_id,
@@ -805,13 +804,6 @@ def get_networking_topology_per_compartment(network_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
-def get_virtual_circuts_per_compartment(network_client, compartment_id):
-    return oci.pagination.list_call_get_all_results(
-        network_client.list_virtual_circuits,
-        compartment_id,
-        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-    ).data
-
 def get_cross_connects_per_compartment(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_cross_connects,
@@ -819,22 +811,4 @@ def get_cross_connects_per_compartment(network_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
-def get_vcn_topology_per_compartment(network_client, compartment_id,vcn_id):
-    return network_client.get_vcn_topology(
-        compartment_id,
-        vcn_id,
-        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-    ).data
 
-def get_drg(network_client, drg_id):
-    return network_client.get_drg(
-        drg_id,
-        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-    ).data
-
-def get_drg_attachments(network_client, compartment_id):
-    return oci.pagination.list_call_get_all_results(
-        network_client.list_drg_attachments,
-        compartment_id,
-        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-    ).data
