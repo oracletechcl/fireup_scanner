@@ -28,7 +28,6 @@ bucket_lifecycle_policies = []
 
 limit_values_with_regions = []
 limit_availabilities_with_regions = []
-limit_definitions = []
 
 alarms = []
 metrics = []
@@ -121,6 +120,19 @@ dns_zones = []
 ### TransitRouting.py Global Variables
 networking_topology = []
 cross_connects = []
+
+## OptimizationMonitor.py
+# List for use with parallel_executor
+detector_recipes = []
+responder_recipes = []
+detector_recipes_with_rules = []
+responder_recipes_with_rules = []
+
+
+## PatchesAndUpdates.py
+# List for use with the parallel_executor
+compute_instances = []
+compute_images = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1053,21 +1065,6 @@ def get_limit_availabilities(item):
     return limit_availabilities_with_regions
 
 
-def get_limit_definitions(item):
-    limits_client = item[0][0]
-    tenancy_id = item[0][1]
-    services = item[1:]
-
-    limit_definitions = []
-
-    for service in services:
-        limit_definition_data = get_limit_definition_data(limits_client, tenancy_id, service.name)
-        for limit_definition in limit_definition_data:
-            limit_definitions.append(limit_definition)
-
-    return limit_definitions
-
-
 def get_alarms(item):
     monitoring_client = item[0]
     compartments = item[1:]
@@ -1218,3 +1215,81 @@ def get_cross_connects(item):
             cross_connects.append(cross_connects_data)
 
     return cross_connects
+def get_detector_recipes(item):
+    cloud_guard_client = item[0]
+    compartments = item[1:]
+
+    detector_recipes = []
+
+    for compartment in compartments:
+        detector_recipes_data = get_detector_recipes_by_compartments(cloud_guard_client, compartment.id)
+        for detector_recipe in detector_recipes_data:
+            detector_recipes.append(detector_recipe)
+
+    return detector_recipes
+
+
+def get_responder_recipes(item):
+    cloud_guard_client = item[0]
+    compartments = item[1:]
+
+    responder_recipes = []
+
+    for compartment in compartments:
+        responder_recipes_data = get_responder_recipes_by_compartments(cloud_guard_client, compartment.id)
+        for responder_recipe in responder_recipes_data:
+            responder_recipes.append(responder_recipe)
+
+    return responder_recipes
+
+def get_detector_rules(item):
+    cloud_guard_client = item[0]
+    detector_recipes = item[1:]
+
+    detector_recipes_with_rules = []
+
+    for detector_recipe in detector_recipes:
+        rules = get_detector_rules_by_compartment(cloud_guard_client, detector_recipe.id, detector_recipe.compartment_id)
+        detector_recipes_with_rules.append( (detector_recipe, rules) )
+
+    return detector_recipes_with_rules
+
+
+def get_responder_rules(item):
+    cloud_guard_client = item[0]
+    responder_recipes = item[1:]
+
+    responder_recipes_with_rules = []
+
+    for responder_recipe in responder_recipes:
+        rules = get_responder_rules_by_compartment(cloud_guard_client, responder_recipe.id, responder_recipe.compartment_id)
+        responder_recipes_with_rules.append( (responder_recipe, rules) )
+
+    return responder_recipes_with_rules
+
+
+def get_compute_instances(item):
+    compute_client = item[0]
+    compartments = item[1:]
+
+    compute_instances = []
+
+    for compartment in compartments:
+        compute_data = get_compute_data(compute_client, compartment.id)        
+        for compute in compute_data:
+            compute_instances.append(compute)
+
+    return compute_instances
+
+def get_compute_images(item):
+    compute_client = item[0]
+    compartments = item[1:]
+
+    compute_images = []
+
+    for compartment in compartments:
+        compute_data = get_compute_image_data(compute_client, compartment.id)        
+        for compute in compute_data:
+            compute_images.append(compute)
+
+    return compute_images

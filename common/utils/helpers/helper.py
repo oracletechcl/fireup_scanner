@@ -15,6 +15,12 @@ def get_config_and_signer():
         raise RuntimeError("Failed to load configuration: " + e)
     return config, signer
 
+def get_compute_client(config, signer):
+    try:
+        compute_client = oci.core.ComputeClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create compute client: " + e)
+    return compute_client
 
 def get_identity_client(config, signer):
     try:
@@ -595,23 +601,29 @@ def get_limit_value_data(limits_client, compartment_id, service_name):
     ).data
 
 
-def get_limit_definition_data(limits_client, compartment_id, service_name):
+def get_limit_definition_data(limits_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         limits_client.list_limit_definitions,
         compartment_id=compartment_id,
-        service_name=service_name,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
 
 def get_resource_availability_data(limits_client, service_name, limit_name, compartment_id, availability_domain=None):
     return limits_client.get_resource_availability(
-            service_name=service_name,
-            limit_name=limit_name,
-            compartment_id=compartment_id,
-            availability_domain=availability_domain,
-            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-        ).data
+        service_name=service_name,
+        limit_name=limit_name,
+        compartment_id=compartment_id,
+        availability_domain=availability_domain,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_services(limits_client, compartment_id):
+    return limits_client.list_services(
+        compartment_id=compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
 
 
 def get_dns_client(config, signer):
@@ -810,5 +822,48 @@ def get_cross_connects_per_compartment(network_client, compartment_id):
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+        
 
+def get_detector_recipes_by_compartments(cloud_guard_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        cloud_guard_client.list_detector_recipes,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
 
+def get_responder_recipes_by_compartments(cloud_guard_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        cloud_guard_client.list_responder_recipes,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_detector_rules_by_compartment(cloud_guard_client, detector_id, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        cloud_guard_client.list_detector_recipe_detector_rules,
+        detector_id,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_responder_rules_by_compartment(cloud_guard_client, responder_id, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        cloud_guard_client.list_responder_recipe_responder_rules,
+        responder_id,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_compute_data(compute_client, compartment_id): 
+    return oci.pagination.list_call_get_all_results(
+        compute_client.list_instances,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_compute_image_data(comput_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        comput_client.list_images,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data

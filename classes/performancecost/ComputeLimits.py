@@ -58,9 +58,10 @@ class ComputeLimits(ReviewPoint):
             region_config['region'] = region.region_name
             limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, region.region_name) )
 
-        services = limits_clients[0][0].list_services(tenancy.id).data
+        services = get_services(limits_clients[0][0], tenancy.id)
 
-        self.__limit_definition_objects = ParallelExecutor.executor([limits_clients[0]], services, ParallelExecutor.get_limit_definitions, len(services), ParallelExecutor.limit_definitions)
+        self.__limit_definition_objects = get_limit_definition_data(limits_clients[0][0], tenancy.id)
+
         self.__limit_value_objects = ParallelExecutor.executor(limits_clients, services, ParallelExecutor.get_limit_values, len(services), ParallelExecutor.limit_values_with_regions)
        
         compute_limit_definitions = []

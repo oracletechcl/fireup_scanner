@@ -8,7 +8,7 @@
   - [How to add debug entries in your code](#how-to-add-debug-entries-in-your-code)
     - [Examples](#examples)
   - [How to add a dependency that I use in my Review Point to the venv being used?](#how-to-add-a-dependency-that-i-use-in-my-review-point-to-the-venv-being-used)
-  - [Reading Reports](#reading-reports)
+  - [Reading reports](#reading-reports)
   - [Using Parallel Executor](#using-parallel-executor)
     - [What Is It For?](#what-is-it-for)
     - [How Do I Use It?](#how-do-i-use-it)
@@ -740,8 +740,9 @@ This section details all the resources currently being pulled within [ParallelEx
 | service_connectors                  | get_service_connectors_info                
 | bucket_retention_rules              | get_bucket_retention_rules_info            
 | autoscaling_configurations          | get_autoscaling_configurations             
-| instance_pools                      | get_instance_pool                          
-
+| instance_pools                      | get_instance_pool   
+| compute_instances                   | get_compute_instances                       
+| compute_images                      | get_compute_images
 
 <div id="UnitTesting"></div>
 
