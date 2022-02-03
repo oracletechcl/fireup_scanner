@@ -65,22 +65,15 @@ class OperationsInsights(ReviewPoint):
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
         self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        debug('start1')
         self.__db_system_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_homes, len(self.__compartments), ParallelExecutor.db_system_homes)
-        debug('start2')
+        
         if len(self.__db_system_home_objects) > 0:
             self.__dbs_from_db_homes = ParallelExecutor.executor(db_system_clients, self.__db_system_home_objects, ParallelExecutor.get_dbs_from_db_homes, len(self.__db_system_home_objects), ParallelExecutor.dbs_from_db_homes)
-        debug('start3')
-        self.__operations_insights_warehouses = ParallelExecutor.executor([x[0] for x in operations_insights_clients], [self.__tenancy.id], ParallelExecutor.get_operations_insights_warehouses, len(self.__regions), ParallelExecutor.operations_insights_warehouses)
         
-        # debug(self.__operations_insights_warehouses, "red")
-        debug('start4')
+        self.__operations_insights_warehouses = ParallelExecutor.executor([x[0] for x in operations_insights_clients], [self.__tenancy.id], ParallelExecutor.get_operations_insights_warehouses, len(self.__regions), ParallelExecutor.operations_insights_warehouses)         
+        
         if len(self.__operations_insights_warehouses) > 0:
             self.__awr_hubs = ParallelExecutor.executor(operations_insights_clients, self.__operations_insights_warehouses, ParallelExecutor.get_awr_hubs, len(self.__operations_insights_warehouses), ParallelExecutor.awr_hubs)
-
-        debug(self.__awr_hubs, "green")
-
-        debug(self.__dbs_from_db_homes[4], "magenta")
 
         for db in self.__dbs_from_db_homes:
             record = {
@@ -115,8 +108,6 @@ class OperationsInsights(ReviewPoint):
 
         non_compliant_regions = db_regions[:]
 
-        debug(non_compliant_regions, "yellow")
-
         for region in db_regions:
             for hub in self.__awr_hubs:
                 if region == hub.id.split('.')[3] and hub.lifecycle_state == "ACTIVE":
@@ -126,7 +117,5 @@ class OperationsInsights(ReviewPoint):
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Region with databases should have an operations insight warehouse and hub")
             dictionary[entry]['mitigations'].append(f"Make sure region \"{region}\", has as operations insight warehouse and hub.")
-
-        debug(non_compliant_regions, "yellow")
 
         return dictionary
