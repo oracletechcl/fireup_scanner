@@ -74,7 +74,8 @@ class ResourceMonitoring(ReviewPoint):
         self.__alarm_objects = ParallelExecutor.executor(monitoring_clients, self.__compartments, ParallelExecutor.get_alarms, len(self.__compartments), ParallelExecutor.alarms)
         self.__notification_objects = ParallelExecutor.executor(notification_clients, self.__compartments, ParallelExecutor.get_notifications, len(self.__compartments), ParallelExecutor.notifications)
 
-        #sorting through json for metric
+   
+        # OK
         for metric in self.__metric_objects:
             record = {
                 'name': metric.name,
@@ -84,7 +85,7 @@ class ResourceMonitoring(ReviewPoint):
             }
             self.__metrics.append(record)
 
-        #sorting through json for alarm
+        # OK. Filter should be is_enabled = true and lifecycle_state = ACTIVE. destinations is the ocid for the topic. This shuold be accounted as a missconfig if not set to a valid one
         for alarm in self.__alarm_objects:
             record = {
                 'compartment_id': alarm.compartment_id,
@@ -94,125 +95,181 @@ class ResourceMonitoring(ReviewPoint):
                 'lifecycle_state': alarm.lifecycle_state,
                 'metric_compartment_id': alarm.metric_compartment_id,
                 'query' : alarm.query,
-                'destinations': alarm.destinations
+                'destinations': alarm.destinations,
+                'severity': alarm.severity,
             }
             self.__alarms.append(record)
         
-        #sorting through json for notification
+        # OK
         for notification in self.__notification_objects:
             record = {
                 'compartment_id': notification.compartment_id,
+                'description': notification.description,
+                'short_topic_id': notification.short_topic_id,
                 'lifecycle_state': notification.lifecycle_state,
                 'name': notification.name,
                 'topic_id': notification.topic_id
             }
             self.__notifications.append(record)
-        
 
-
+            
     def analyze_entity(self, entry):
         self.load_entity()
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        #namespaces of metrics for compute instances, bare metal instances, functions, and databases
-        names_compute = ['oci_computeagent','oci_blockstore', 'oci_vcn','oci_instancepools', 'oci_compute']
-        names_bare_metal = ['oci_compute_infrastructure_health'] 
-        names_functions = ['oci_faas']
-        names_database = ['oci_autonomous_database', 'oracle_external_database','oracle_oci_database']
-    
-        counted_metrics = []
-        counted_alarms = []
+
+        compute_components = ['oci_computeagent','oci_blockstore', 'oci_vcn','oci_instancepools', 'oci_compute']
+        bare_metal_components = ['oci_compute_infrastructure_health'] 
+        functions_components = ['oci_faas']
+        database_components = ['oci_autonomous_database', 'oracle_external_database','oracle_oci_database']
         alarm_namespaces = []
+    
+
+        for metric in self.__metrics:
+            for alarm in self.__alarms:
+                for notifications in self.__notifications:
+                    if metric['namespace'] == alarm['namespace']:
+                        if notifications['topic_id'] not in alarm['destinations']:
+                            # Metric configured but with no destination                            
+                            MITIGATION_STRING = f"Consider configuring a topic for the metric: \"{metric['name']}\" associated to alarm: \"{alarm['display_name']}\" in compartment: "+get_compartment_name(self.__compartments, alarm['compartment_id'])
+                            
+                            if metric not in dictionary[entry]['findings'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                                dictionary[entry]['status'] = False
+                                dictionary[entry]['findings'].append(metric)
+                                dictionary[entry]['failure_cause'].append('Metric configured but with no destination')
+                                dictionary[entry]['mitigations'].append(MITIGATION_STRING)
+                            break
+                        else:
+                            
+                            MITIGATION_STRING = f"Consider configuring an alarm for metric: \"{metric['name']}\" in compartment: "+ get_compartment_name(self.__compartments, metric['compartment_id'])
+                            if metric not in dictionary[entry]['findings'] and MITIGATION_STRING not in dictionary[entry]['mitigations']: 
+                                dictionary[entry]['status'] = False
+                                dictionary[entry]['findings'].append(metric)
+                                dictionary[entry]['failure_cause'].append('Metric configured but with no alarm')
+                                dictionary[entry]['mitigations'].append(MITIGATION_STRING)
+                            break                   
+ 
+            
+
 
         for alarm in self.__alarms:
             if alarm['namespace'] not in alarm_namespaces:
                 alarm_namespaces.append(alarm['namespace'])
 
+        
+
         for metric in self.__metrics:
             #compute instances
-            if metric['namespace'] in names_compute and metric['name'] not in counted_metrics:
+            if metric['namespace'] in compute_components:
                 if metric['namespace'] not in alarm_namespaces:
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append('No alarms enabled for compute instance metric.')
-                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for compute instance metric\"{metric['name']}\" in namespace \"{metric['namespace']}\".")
-                    counted_metrics.append(metric['name'])
+                    MITIGATION_STRING = f"Consider creating alarms for compute instance metric: \"{metric['name']}\" in namespace \"{metric['namespace']}\"."
+                    if (metric['name'] not in dictionary[entry]['mitigations']) and (MITIGATION_STRING not in dictionary[entry]['mitigations']):
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['findings'].append(metric)
+                        dictionary[entry]['failure_cause'].append('No alarms enabled for compute instance metric.')
+                        dictionary[entry]['mitigations'].append(MITIGATION_STRING)                    
                 else:  
                     for alarm in self.__alarms:
-                        if metric['namespace'] == alarm['namespace'] and alarm not in counted_alarms:
+                        if metric['namespace'] == alarm['namespace']:
                             if alarm['is_enabled'] == False:
-                                dictionary[entry]['status'] = False
-                                dictionary[entry]['failure_cause'].append('Alarm for compute instance not enabled.')
-                                dictionary[entry]['mitigations'].append(f"Suggest re-enabling alarm: \"{alarm['display_name']}\" in\"{alarm['namespace']}\".")  
+                                MITIGATION_STRING = f"Consider re-enabling alarm: \"{alarm['display_name']}\" in\"{alarm['namespace']}\"."
+                                if metric['name'] not in dictionary[entry]['mitigations'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                                    dictionary[entry]['status'] = False
+                                    dictionary[entry]['failure_cause'].append('Alarm for compute instance not enabled.')
+                                    dictionary[entry]['findings'].append(alarm)
+                                    dictionary[entry]['mitigations'].append(f"Consider re-enabling alarm: \"{alarm['display_name']}\" in\"{alarm['namespace']}\".")  
                             if not alarm['destinations']:
-                                dictionary[entry]['status'] = False
-                                dictionary[entry]['failure_cause'].append('Alarm for compute instance not connected to notification topic.')
-                                dictionary[entry]['mitigations'].append(f"Suggest adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". ")  
-                        counted_metrics.append(metric['name'])
-                        counted_alarms.append(alarm)
+                                MITIGATION_STRING = f"Consider adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". "
+                                if metric['name'] not in dictionary[entry]['mitigations'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                                    dictionary[entry]['status'] = False
+                                    dictionary[entry]['findings'].append(alarm)
+                                    dictionary[entry]['failure_cause'].append('Alarm for compute instance not connected to notification topic.')
+                                    dictionary[entry]['mitigations'].append(MITIGATION_STRING)  
             #bare metal
-            elif metric['namespace'] in names_bare_metal and metric['name'] not in counted_metrics:
+            elif metric['namespace'] in bare_metal_components:
                 if metric['namespace'] not in alarm_namespaces:
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append('No alarms enabled for bare metal metric.')
-                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for bare metal metric\"{metric['name']}\" in namespace \"{metric['namespace']}\".")
-                    counted_metrics.append(metric['name'])
+                    MITIGATION_STRING = f"Consider creating alarms for bare metal metric: \"{metric['name']}\" in namespace \"{metric['namespace']}\"."
+                    if (metric['name'] not in dictionary[entry]['mitigations']) and (MITIGATION_STRING not in dictionary[entry]['mitigations']):
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['failure_cause'].append('No alarms enabled for bare metal metric.')
+                        dictionary[entry]['findings'].append(metric)
+                        dictionary[entry]['mitigations'].append(MITIGATION_STRING)                    
                 else:  
                     for alarm in self.__alarms:
-                        if metric['namespace'] == alarm['namespace'] and alarm not in counted_alarms:
+                        if metric['namespace'] == alarm['namespace']:
                             if alarm['is_enabled'] == False:
-                                dictionary[entry]['status'] = False
-                                dictionary[entry]['failure_cause'].append('Alarm for bare metal instance not enabled.')
-                                dictionary[entry]['mitigations'].append(f"Suggest re-enabling alarm: \"{alarm['display_name']}\" in\"{alarm['namespace']}\".")  
+                                MITIGATION_STRING = f"Consider re-enabling alarm: \"{alarm['display_name']}\" in\"{alarm['namespace']}\"."
+                                if metric['name'] not in dictionary[entry]['mitigations'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                                    dictionary[entry]['status'] = False
+                                    dictionary[entry]['failure_cause'].append('Alarm for bare metal instance not enabled.')
+                                    dictionary[entry]['findings'].append(alarm)
+                                    dictionary[entry]['mitigations'].append(MITIGATION_STRING)  
                             if not alarm['destinations']:
-                                dictionary[entry]['status'] = False
-                                dictionary[entry]['failure_cause'].append('Alarm for bare metal instance not connected to notification topic.')
-                                dictionary[entry]['mitigations'].append(f"Suggest adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". ")  
-                        counted_metrics.append(metric['name'])
-                        counted_alarms.append(alarm)
+                                MITIGATION_STRING = f"Consider adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". "
+                                if metric['name'] not in dictionary[entry]['mitigations'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                                    dictionary[entry]['status'] = False
+                                    dictionary[entry]['failure_cause'].append('Alarm for bare metal instance not connected to notification topic.')
+                                    dictionary[entry]['findings'].append(alarm)
+                                    dictionary[entry]['mitigations'].append(MITIGATION_STRING)  
+                        
             #functions
-            elif metric['namespace'] in names_functions and metric['name'] not in counted_metrics:
+            elif metric['namespace'] in functions_components:
                 if metric['namespace'] not in alarm_namespaces:
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append('No alarms enabled for function metric.')
-                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for function metric\"{metric['name']}\" in namespace \"{metric['namespace']}\".")
-                    counted_metrics.append(metric['name'])
+                    MITIGATION_STRING = f"Consider creating alarms for function metric: \"{metric['name']}\" in namespace \"{metric['namespace']}\"."
+                    if metric['name'] not in dictionary[entry]['mitigations'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['failure_cause'].append('No alarms enabled for function metric.')
+                        dictionary[entry]['findings'].append(metric)
+                        dictionary[entry]['mitigations'].append(MITIGATION_STRING)
+                    
                 else:  
                     for alarm in self.__alarms:
-                        if metric['namespace'] == alarm['namespace'] and alarm not in counted_alarms:
+                        if metric['namespace'] == alarm['namespace']:
                             if alarm['is_enabled'] == False:
-                                dictionary[entry]['status'] = False
-                                dictionary[entry]['failure_cause'].append('Alarm for function metric not enabled.')
-                                dictionary[entry]['mitigations'].append(f"Suggest re-enabling alarm: \"{alarm['display_name']}\" in\"{alarm['namespace']}\".")  
+                                MITIGATION_STRING = f"Consider re-enabling alarm: \"{alarm['display_name']}\" in\"{alarm['namespace']}\"."
+                                if metric['name'] not in dictionary[entry]['mitigations'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                                    dictionary[entry]['status'] = False
+                                    dictionary[entry]['failure_cause'].append('Alarm for function metric not enabled.')
+                                    dictionary[entry]['findings'].append(alarm)
+                                    dictionary[entry]['mitigations'].append(MITIGATION_STRING)  
                             if not alarm['destinations']:
-                                dictionary[entry]['status'] = False
-                                dictionary[entry]['failure_cause'].append('Alarm for function not connected to notification topic.')
-                                dictionary[entry]['mitigations'].append(f"Suggest adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". ")  
-                        counted_metrics.append(metric['name'])
-                        counted_alarms.append(alarm)
+                                MITIGATION_STRING = f"Consider adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". "
+                                if metric['name'] not in dictionary[entry]['mitigations'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                                    dictionary[entry]['status'] = False
+                                    dictionary[entry]['failure_cause'].append('Alarm for function not connected to notification topic.')
+                                    dictionary[entry]['findings'].append(alarm)
+                                    dictionary[entry]['mitigations'].append(MITIGATION_STRING)  
+                        
             #databases
-            elif metric['namespace'] in names_database and metric['name'] not in counted_metrics:
+            elif metric['namespace'] in database_components:
                 if metric['namespace'] not in alarm_namespaces:
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append('No alarms enabled for database metric.')
-                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for database metric\"{metric['name']}\" in namespace \"{metric['namespace']}\".")
-                    counted_metrics.append(metric['name'])
+                    MITIGATION_STRING = f"Consider creating alarms for database metric: \"{metric['name']}\" in namespace \"{metric['namespace']}\"."
+                    if metric['name'] not in dictionary[entry]['mitigations'] and  MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['failure_cause'].append('No alarms enabled for database metric.')
+                        dictionary[entry]['findings'].append(metric)
+                        dictionary[entry]['mitigations'].append(MITIGATION_STRING)
+                    
                 else:  
                     for alarm in self.__alarms:
-                        if metric['namespace'] == alarm['namespace'] and alarm not in counted_alarms:
+                        if metric['namespace'] == alarm['namespace']: 
                             if alarm['is_enabled'] == False:
-                                dictionary[entry]['status'] = False
-                                dictionary[entry]['failure_cause'].append('Alarm for database not enabled.')
-                                dictionary[entry]['mitigations'].append(f"Suggest re-enabling alarm: \"{alarm['display_name']}\" in\"{alarm['namespace']}\".")  
+                                MITIGATION_STRING = f"Consider re-enabling alarm: \"{alarm['display_name']}\" in\"{alarm['namespace']}\"."
+                                if metric['name'] not in dictionary[entry]['mitigations'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                                    dictionary[entry]['status'] = False
+                                    dictionary[entry]['failure_cause'].append('Alarm for database not enabled.')
+                                    dictionary[entry]['findings'].append(alarm)
+                                    dictionary[entry]['mitigations'].append(MITIGATION_STRING)  
                             if not alarm['destinations']:
-                                dictionary[entry]['status'] = False
-                                dictionary[entry]['failure_cause'].append('Alarm for database not connected to notification topic.')
-                                dictionary[entry]['mitigations'].append(f"Suggest adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". ")  
-                        counted_metrics.append(metric['name'])
-                        counted_alarms.append(alarm)
+                                MITIGATION_STRING = f"Consider adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". "
+                                if metric['name'] not in dictionary[entry]['mitigations'] and MITIGATION_STRING not in dictionary[entry]['mitigations']:
+                                    dictionary[entry]['status'] = False
+                                    dictionary[entry]['failure_cause'].append('Alarm for database not connected to notification topic.')
+                                    dictionary[entry]['findings'].append(alarm)
+                                    dictionary[entry]['mitigations'].append(MITIGATION_STRING)  
             else:
                 pass
-
-        debug(dictionary, "cyan")
+        
         return dictionary
 
