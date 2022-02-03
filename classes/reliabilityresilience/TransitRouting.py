@@ -69,7 +69,7 @@ class TransitRouting(ReviewPoint):
         self.__ip_sec_connections_objects = ParallelExecutor.executor(network_cleints, self.__compartments, ParallelExecutor.get_ip_sec_connections, len(self.__compartments), ParallelExecutor.ip_sec_connections)
         self.__cross_connections_objects = ParallelExecutor.executor(network_cleints, self.__compartments, ParallelExecutor.get_cross_connects, len(self.__compartments), ParallelExecutor.cross_connects)
         
-        # find compartment and region with VPN or FastConnect vpn_connections
+        # find compartment and region with VPN or FastConnect
         for vpn_connections in self.__ip_sec_connections_objects:
             region = vpn_connections[0].id.split('.')[3]
             vpn_fc_connections_per_compartment.add((vpn_connections[0].compartment_id, region))
@@ -78,7 +78,7 @@ class TransitRouting(ReviewPoint):
             region = fc_connections.id.split('.')[3]
             vpn_fc_connections_per_compartment.add((fc_connections[0].compartment_id, region))
 
-        # gather network data with workaround and only from compartments which have CPE connectiity
+        # gather network topology, use workaround from github to get it from compartments which have CPE connectiity
         for com_region in vpn_fc_connections_per_compartment:
             region_needed = None
             for region in self.__regions:
