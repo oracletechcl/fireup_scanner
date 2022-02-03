@@ -7,6 +7,7 @@
 #              - Via constructor, initialize the dictionary entry as it applies to the excel spreadsheet
 #              - Per each class, implemented in the corresponding abstract class, call the object and then call analyze_entity()
 
+from unittest.mock import patch
 from classes.securitycompliance.InstancePrincipal import InstancePrincipal
 from classes.securitycompliance.SecurityList import SecurityList
 from classes.securitycompliance.ApiKeys import ApiKeys
@@ -67,6 +68,7 @@ from classes.opsefficiency.MetricAlarms import MetricAlarms
 from classes.opsefficiency.ConfigureAuditing import ConfigureAuditing
 from classes.opsefficiency.ServiceLogs import ServiceLogs
 from classes.opsefficiency.CloudGuardEnabled import CloudGuardEnabled
+from classes.opsefficiency.PatchesAndUpdates import PatchesAndUpdates
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -134,6 +136,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_4_3,
                             __call_4_5,
                             __call_4_6,
+                            __call_4_7,
                         ]
 
     for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
@@ -864,3 +867,15 @@ def __call_4_6(config, signer, report_directory):
     __dictionary = configureAuditing.analyze_entity(Statics.__rp_4_6['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_6['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_6['fireup_items'])
+
+def __call_4_7(config, signer, report_directory):
+    patchesUpdates = PatchesAndUpdates(
+    Statics.__rp_4_7['entry'],
+    Statics.__rp_4_7['area'],
+    Statics.__rp_4_7['sub_area'],
+    Statics.__rp_4_7['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_7['entry']+"_"+Statics.__rp_4_7['area']+"_"+Statics.__rp_4_7['sub_area']+"_mitigations"
+    __dictionary = patchesUpdates.analyze_entity(Statics.__rp_4_7['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_7['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_7['fireup_items'])
