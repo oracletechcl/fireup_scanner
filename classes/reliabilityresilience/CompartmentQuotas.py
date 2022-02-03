@@ -123,8 +123,8 @@ class CompartmentQuotas(ReviewPoint):
                 dictionary[entry]['status'] = False
                 if compartments['name'] == compart:
                     dictionary[entry]['findings'].append(compartments)
-                    dictionary[entry]['failure_cause'].append("Compartment name does not have the quota set: " + compart)
-                    dictionary[entry]['mitigations'].append("Please set the quota for : " + compart + " to make it complaint")  
+                    dictionary[entry]['failure_cause'].append("Some compartments do not have a quota set")
+                    dictionary[entry]['mitigations'].append("Please set the quota for : " + compart + " to make it compliant")  
                     break
                 else:
                     continue

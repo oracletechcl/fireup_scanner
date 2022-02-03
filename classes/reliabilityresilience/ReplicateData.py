@@ -22,6 +22,8 @@ class ReplicateData(ReviewPoint):
     __autonomous_database_objects = []
     __autonomous_database_dicts = []
     __identity = None
+    __compartments = []
+
 
     def __init__(self,
                 entry:str, 
@@ -82,18 +84,18 @@ class ReplicateData(ReviewPoint):
                     block_storage_clients_with_ADs.append( (block_storage_client[0], availability_domain) )
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__block_volumes_objects = ParallelExecutor.executor([x[0] for x in block_storage_clients], compartments, ParallelExecutor.get_block_volumes, len(compartments), ParallelExecutor.block_volumes)
+        self.__block_volumes_objects = ParallelExecutor.executor([x[0] for x in block_storage_clients], self.__compartments, ParallelExecutor.get_block_volumes, len(self.__compartments), ParallelExecutor.block_volumes)
 
-        self.__boot_volumes_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, compartments, ParallelExecutor.get_boot_volumes, len(compartments), ParallelExecutor.boot_volumes)
+        self.__boot_volumes_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, self.__compartments, ParallelExecutor.get_boot_volumes, len(self.__compartments), ParallelExecutor.boot_volumes)
 
         if len(self.__block_volumes_objects) > 0:
-            self.__block_volume_replicas_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, compartments, ParallelExecutor.get_block_volume_replicas, len(compartments), ParallelExecutor.block_volume_replicas)
+            self.__block_volume_replicas_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, self.__compartments, ParallelExecutor.get_block_volume_replicas, len(self.__compartments), ParallelExecutor.block_volume_replicas)
 
         if len(self.__boot_volumes_objects) > 0:
-            self.__boot_volume_replicas_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, compartments, ParallelExecutor.get_boot_volume_replicas, len(compartments), ParallelExecutor.boot_volume_replicas)
+            self.__boot_volume_replicas_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, self.__compartments, ParallelExecutor.get_boot_volume_replicas, len(self.__compartments), ParallelExecutor.boot_volume_replicas)
 
         for block_storage in self.__block_volumes_objects + self.__boot_volumes_objects:
             record = {
@@ -106,10 +108,11 @@ class ReplicateData(ReviewPoint):
                 'volume_group_id': block_storage.volume_group_id,
                 'vpus_per_gb': block_storage.vpus_per_gb,
                 'time_created': block_storage.time_created,
+                'region': block_storage.id.split('.')[3]
             }
             self.__block_storage_dicts.append(record)
-
-        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_buckets, len(compartments), ParallelExecutor.buckets)
+        
+        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)
 
         for extended_bucket_data in self.__bucket_objects:
             record = {
@@ -123,10 +126,11 @@ class ReplicateData(ReviewPoint):
                 'is_read_only': extended_bucket_data.is_read_only,
                 'approximate_size': extended_bucket_data.approximate_size,
                 'replication_enabled': extended_bucket_data.replication_enabled,
+                'region': extended_bucket_data.id.split('.')[3]
             }
             self.__bucket_dicts.append(record)
 
-        self.__autonomous_database_objects = ParallelExecutor.executor(database_clients, compartments, ParallelExecutor.get_autonomous_databases, len(compartments), ParallelExecutor.autonomous_databases)
+        self.__autonomous_database_objects = ParallelExecutor.executor(database_clients, self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
 
         for adb in self.__autonomous_database_objects:
             record = {
@@ -135,6 +139,7 @@ class ReplicateData(ReviewPoint):
                 'compartment_id': adb.compartment_id,
                 'id': adb.id,
                 'time_created': adb.time_created,
+                'region': adb.id.split('.')[3]
             }
             self.__autonomous_database_dicts.append(record)
 
@@ -158,7 +163,7 @@ class ReplicateData(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(block_storage)
                 dictionary[entry]['failure_cause'].append('Each block storages should be replicated to a disaster recovery region.')
-                dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_storage['display_name'])+' is replicated to a disaster recovery region.')
+                dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_storage['display_name'])+' located in compartment: '+str(get_compartment_name(self.__compartments, block_storage['compartment_id'])+' and region: '+str(block_storage['region'])+' is replicated to a disaster recovery region.'))
 
         
         for bucket in self.__bucket_dicts:
@@ -166,7 +171,7 @@ class ReplicateData(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(bucket)
                 dictionary[entry]['failure_cause'].append('Each bucket should be replicated to a disaster recovery region.')
-                dictionary[entry]['mitigations'].append('Make sure bucket '+str(bucket['display_name'])+' is replicated to a disaster recovery region.')
+                dictionary[entry]['mitigations'].append('Make sure bucket '+str(bucket['display_name'])+' located in compartment: '+str(get_compartment_name(self.__compartments, bucket['compartment_id'])+' and region: '+str(bucket['region'])+' is replicated to a disaster recovery region.'))
 
 
         for adb in self.__autonomous_database_dicts:
@@ -174,6 +179,6 @@ class ReplicateData(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(adb)
                 dictionary[entry]['failure_cause'].append('Each autonomous database should have datagaurd enabled.')
-                dictionary[entry]['mitigations'].append('Make sure autonomous database '+str(adb['display_name'])+' has dataguard enabled.')
+                dictionary[entry]['mitigations'].append('Make sure autonomous database '+str(adb['display_name'])+' located in compartment: '+str(get_compartment_name(self.__compartments, adb['compartment_id'])+' and region: '+str(adb['region'])+' has dataguard enabled.'))
 
         return dictionary

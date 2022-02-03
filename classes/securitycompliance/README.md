@@ -27,3 +27,4 @@
 | 1.23         | [SecureDNS.py](SecureDNS.py)                            |
 | 1.24         | [CloudGuardMonitor.py](CloudGuardMonitor.py)            |
 | 1.25         | [AuditConfiguration.py](AuditConfiguration.py)          |
+| 1.26         | [OptimizationMonitor.py](OptimizationMonitor.py)        |

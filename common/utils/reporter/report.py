@@ -44,7 +44,7 @@ def generate_mitigation_report(dictionary, report_directory, report_name, fireup
         if failure_cause not in failure_causes:
             failure_causes.append(failure_cause)
 
-    failure_causes = ' | '.join(failure_causes)
+    failure_causes = '\n'.join(failure_causes)
 
     # for finding in summary_report:
     __print_mitigation_report(
@@ -95,7 +95,11 @@ def __print_mitigation_report(report_directory, report_name,  mitigation_list, f
         for x in range(len(fireup_mapping)):
             file.write(fireup_mapping[x] + "\n")
         file.write("\n")
-        file.write("Failure Cause: " + failure_causes + "\n\n")
+        file.write("For a full list of FireUp Tasks, refer to FIREUP_TASKS.md\n")
+        file.write("\n\n")
+        file.write("Detected Failure Causes \n")
+        file.write("----------------------------------------------------------------------------------------------------------------------\n")
+        file.write(failure_causes + "\n\n")
         file.write("The following are the mitigations to be applied: \n")
         file.write("----------------------------------------------------------------------------------------------------------------------\n")
         for row in mitigation_list:

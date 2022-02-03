@@ -7,6 +7,7 @@
 #              - Via constructor, initialize the dictionary entry as it applies to the excel spreadsheet
 #              - Per each class, implemented in the corresponding abstract class, call the object and then call analyze_entity()
 
+from unittest.mock import patch
 from classes.securitycompliance.InstancePrincipal import InstancePrincipal
 from classes.securitycompliance.SecurityList import SecurityList
 from classes.securitycompliance.ApiKeys import ApiKeys
@@ -32,10 +33,12 @@ from classes.securitycompliance.NetworkSources import NetworkSources
 from classes.securitycompliance.AuditConfiguration import AuditConfiguration
 from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
 from classes.securitycompliance.SecureDNS import SecureDNS
+from classes.securitycompliance.OptimizationMonitor import OptimizationMonitor
 
 from classes.reliabilityresilience.ServiceLimits import ServiceLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
 from classes.reliabilityresilience.BusyLimits import BusyLimits
+from classes.reliabilityresilience.LowLimits import LowLimits
 from classes.reliabilityresilience.RedundantConnections import RedundantConnections
 from classes.reliabilityresilience.SeparateCIDRBlocks import SeparateCIDRBlocks
 from classes.reliabilityresilience.CIDRSize import CIDRSize
@@ -66,6 +69,8 @@ from classes.opsefficiency.OperationsInsights import OperationsInsights
 from classes.opsefficiency.ConfigureAuditing import ConfigureAuditing
 from classes.opsefficiency.ServiceLogs import ServiceLogs
 from classes.opsefficiency.CloudGuardEnabled import CloudGuardEnabled
+from classes.opsefficiency.ResourceMonitoring import ResourceMonitoring
+from classes.opsefficiency.PatchesAndUpdates import PatchesAndUpdates
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -76,62 +81,66 @@ def main_orchestrator(config, signer, report_directory):
     print_report_sub_header()
 
     orchestrated_list = [
-                            # __call_1_1,
-                            # __call_1_2,
-                            # __call_1_3,
-                            # __call_1_4,
-                            # __call_1_5,
-                            # __call_1_6,
-                            # __call_1_7,
-                            # __call_1_8,
-                            # __call_1_9,
-                            # __call_1_10,
-                            # __call_1_11,
-                            # __call_1_12,
-                            # __call_1_13,
-                            # __call_1_14,
-                            # __call_1_15,
-                            # __call_1_16,
-                            # __call_1_17,
-                            # __call_1_18,
-                            # __call_1_19,
-                            # __call_1_20,
-                            # __call_1_21,
-                            # __call_1_22,
-                            # __call_1_23,
-                            # __call_1_24,
-                            # __call_1_25,
-                            # __call_2_1,
-                            # __call_2_2,
-                            # __call_2_3,
-                            # __call_2_4,
-                            # __call_2_5,
-                            # __call_2_7,
-                            # __call_2_8,
-                            # __call_2_9,
-                            # __call_2_10,
-                            # __call_2_11,
-                            # __call_2_13,
-                            # __call_2_14,
-                            # __call_2_15,
-                            # __call_2_16,
-                            # __call_2_17,
-                            # __call_3_1,
-                            # __call_3_2,
-                            # __call_3_3,
-                            # __call_3_4,
-                            # __call_3_5,
-                            # __call_3_6,
-                            # __call_3_7,
-                            # __call_3_8,
-                            # __call_3_9,
-                            # __call_3_10,
-                            # __call_3_11,
-                            # __call_4_2,
-                            # __call_4_3,
+                            __call_1_1,
+                            __call_1_2,
+                            __call_1_3,
+                            __call_1_4,
+                            __call_1_5,
+                            __call_1_6,
+                            __call_1_7,
+                            __call_1_8,
+                            __call_1_9,
+                            __call_1_10,
+                            __call_1_11,
+                            __call_1_12,
+                            __call_1_13,
+                            __call_1_14,
+                            __call_1_15,
+                            __call_1_16,
+                            __call_1_17,
+                            __call_1_18,
+                            __call_1_19,
+                            __call_1_20,
+                            __call_1_21,
+                            __call_1_22,
+                            __call_1_23,
+                            __call_1_24,
+                            __call_1_25,
+                            __call_1_26,
+                            __call_2_1,
+                            __call_2_2,
+                            __call_2_3,
+                            __call_2_4,
+                            __call_2_5,
+                            __call_2_6,
+                            __call_2_7,
+                            __call_2_8,
+                            __call_2_9,
+                            __call_2_10,
+                            __call_2_11,
+                            __call_2_13,
+                            __call_2_14,
+                            __call_2_15,
+                            __call_2_16,
+                            __call_2_17,
+                            __call_3_1,
+                            __call_3_2,
+                            __call_3_3,
+                            __call_3_4,
+                            __call_3_5,
+                            __call_3_6,
+                            __call_3_7,
+                            __call_3_8,
+                            __call_3_9,
+                            __call_3_10,
+                            __call_3_11,
+                            __call_4_1,
+                            __call_4_2,
+                            __call_4_3,
                             __call_4_4,
-                            # __call_4_5,
-                            # __call_4_6,
+                            __call_4_5,
+                            __call_4_6,
+                            __call_4_7,
                         ]
 
     for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
@@ -458,6 +467,19 @@ def __call_1_25(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_25['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_25['fireup_items'])
 
+
+def __call_1_26(config, signer, report_directory):
+    optimizationMonitor = OptimizationMonitor(
+    Statics.__rp_1_26['entry'], 
+    Statics.__rp_1_26['area'], 
+    Statics.__rp_1_26['sub_area'], 
+    Statics.__rp_1_26['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_26['entry']+"_"+Statics.__rp_1_26['area']+"_"+Statics.__rp_1_26['sub_area']+"_mitigations"
+    __dictionary = optimizationMonitor.analyze_entity(Statics.__rp_1_26['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_26['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_26['fireup_items'])
+
 def __call_2_1(config, signer, report_directory):    
     autoscaling = CheckAutoscaling(
     Statics.__rp_2_1['entry'],
@@ -518,6 +540,19 @@ def __call_2_5(config, signer, report_directory):
     __dictionary = compQuotas.analyze_entity(Statics.__rp_2_5['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_5['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_5['fireup_items'])
+
+
+def __call_2_6(config, signer, report_directory):    
+    lowLimits = LowLimits(
+    Statics.__rp_2_6['entry'],
+    Statics.__rp_2_6['area'],
+    Statics.__rp_2_6['sub_area'],
+    Statics.__rp_2_6['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_6['entry']+"_"+Statics.__rp_2_6['area']+"_"+Statics.__rp_2_6['sub_area']+"_mitigations"
+    __dictionary = lowLimits.analyze_entity(Statics.__rp_2_6['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_6['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_6['fireup_items'])
 
 
 def __call_2_7(config, signer, report_directory):    
@@ -788,6 +823,17 @@ def __call_3_11(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_3_11['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_3_11['fireup_items'])
 
+def __call_4_1(config, signer, report_directory):    
+    resourceMonitoring = ResourceMonitoring(
+    Statics.__rp_4_1['entry'],
+    Statics.__rp_4_1['area'],
+    Statics.__rp_4_1['sub_area'],
+    Statics.__rp_4_1['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_1['entry']+"_"+Statics.__rp_4_1['area']+"_"+Statics.__rp_4_1['sub_area']+"_mitigations"
+    __dictionary = resourceMonitoring.analyze_entity(Statics.__rp_4_1['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_1['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_1['fireup_items'])
 
 def __call_4_2(config, signer, report_directory):
     metricAlarms = MetricAlarms(
@@ -852,3 +898,15 @@ def __call_4_6(config, signer, report_directory):
     __dictionary = configureAuditing.analyze_entity(Statics.__rp_4_6['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_6['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_6['fireup_items'])
+
+def __call_4_7(config, signer, report_directory):
+    patchesUpdates = PatchesAndUpdates(
+    Statics.__rp_4_7['entry'],
+    Statics.__rp_4_7['area'],
+    Statics.__rp_4_7['sub_area'],
+    Statics.__rp_4_7['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_7['entry']+"_"+Statics.__rp_4_7['area']+"_"+Statics.__rp_4_7['sub_area']+"_mitigations"
+    __dictionary = patchesUpdates.analyze_entity(Statics.__rp_4_7['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_7['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_7['fireup_items'])

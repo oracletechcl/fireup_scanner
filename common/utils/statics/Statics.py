@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v0.0.12'
+__version__ = 'v0.0.13'
 __lenght_print__ = "230"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -236,10 +236,10 @@ __rp_1_25 = {
 __rp_1_26 = {
     'entry': '1.26',
     'area': 'Security and Compliance',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Optimize the Security Posture of Your Environment',
+    'review_point': 'Enable Oracle Cloud Guard for Optimization',    
+    'success_criteria': 'Check if Cloud Guard is enabled',
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
 
@@ -291,10 +291,10 @@ __rp_2_5 = {
 __rp_2_6 = {
     'entry': '2.6',
     'area': 'Reliability and Resilience',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Service Limits',
+    'review_point': 'Factor Failover Usage in Your Service Limits',    
+    'success_criteria': 'Check limits for most used artifacts and see if they are low (still on default or if usage vs available gap is 90% above, then fail)',
+    'fireup_items': ['Fireup Task 40: - Do you have any policy/procedure in place for managing & monitoring service limits'],
 }
 
 __rp_2_7 = {
@@ -429,7 +429,7 @@ __rp_3_4 = {
     'sub_area': 'Tune and Monitor Network',
     'review_point': 'Choose a Region Location Based On Networking Requirements',
     'success_criteria': 'Check if VCN is implemented in more than one region',
-    'fireup_items': ['Fireup Task: 45: Are you using the right regions and AD selections for high availability & good performance?'],
+    'fireup_items': ['Fireup Task: 29: Can you ensure that there are no overlapping private IP spaces?'],
 }
 
 __rp_3_5 = {
@@ -483,7 +483,7 @@ __rp_3_10 = {
     'sub_area': 'Track and Manage Usage and Cost',
     'review_point': 'Enable Block Volume Performance Auto Tuning',    
     'success_criteria': 'If block storage is in place, check that performance auto-tuning is implemented',
-    'fireup_items': ['Fireup Task: 55 - Do you have a process to regularly terminate or stop unused resources & do you encourage employees to stop unused resources?'],
+    'fireup_items': ['Fireup Task: 56 - How do you optimize workload performance & requirement vs cost?'],
 }
 
 __rp_3_11 = {
@@ -498,10 +498,10 @@ __rp_3_11 = {
 __rp_4_1 = {
     'entry': '4.1',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor Your Workload',
+    'review_point': 'Monitor Compute Services',    
+    'success_criteria': 'Ensure that monitoring plugins are enabled for all resources in tenancy',
+    'fireup_items': ['Fireup Task: 59 - Do you have insight into the state & health of your workload'],
 }
 
 __rp_4_2 = {
@@ -552,8 +552,8 @@ __rp_4_6 = {
 __rp_4_7 = {
     'entry': '4.7',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Manage Your Operating Systems',
+    'review_point': 'Stay Up-to-Date with Security Patches, Bug Fixes, and Enhancement Updates',    
+    'success_criteria': 'Check infrastructure created and if it applies see if it has the latest and greatest patching set',
+    'fireup_items': ['Fireup Task 20: Do you have an update / patching schedule on OS, Applications, etc?'],
 }

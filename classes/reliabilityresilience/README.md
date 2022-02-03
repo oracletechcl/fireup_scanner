@@ -3,10 +3,11 @@
 | Review Point | Concrete Class Implementation                           |
 |--------------|---------------------------------------------------------|
 | 2.1          | [CheckAutoscaling.py](CheckAutoscaling.py)              |
-| 2.2          | [DistributeTraffic.py](DistributeTraffic.py)            | 
+| 2.2          | [DistributeTraffic.py](DistributeTraffic.py)            |
 | 2.3          | [ServiceLimits.py](ServiceLimits.py)                    |
 | 2.4          | [BusyLimits.py](BusyLimits.py)                          |
 | 2.5          | [CompartmentQuotas.py](CompartmentQuotas.py)            |
+| 2.6          | [LowLimits.py](LowLimits.py)                            |
 | 2.7          | [RedundantConnections.py](RedundantConnections.py)      |
 | 2.8          | [SeparateCIDRBlocks.py](SeparateCIDRBlocks.py)          |
 | 2.9          | [CIDRSize.py](CIDRSize.py)                              |

@@ -107,5 +107,10 @@ class ApiKeys(ReviewPoint):
                         dictionary[entry]['status'] = False
                         dictionary[entry]['failure_cause'].append('Users have an API key that is older than 90 days')
                         dictionary[entry]['mitigations'].append('Update API Key: '+str(api_key['fingerprint'])+' of user'+user['name'])
-
+        if total_user_count <= 5:
+            for user in self.__users:
+                dictionary[entry]['findings'].append(user)
+                dictionary[entry]['status'] = False
+                dictionary[entry]['failure_cause'].append('Less than 5 users in tenancy have been detected')
+            dictionary[entry]['mitigations'].append('Consider creating more users to avoid using a single shared Administrator user for all tasks')
         return dictionary
