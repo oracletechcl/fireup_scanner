@@ -131,12 +131,12 @@ class ResourceMonitoring(ReviewPoint):
 
         for metric in self.__metrics:
             #compute instances
-            if metric['namespace'] in names_compute and metric not in counted_metrics:
+            if metric['namespace'] in names_compute and metric['name'] not in counted_metrics:
                 if metric['namespace'] not in alarm_namespaces:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['failure_cause'].append('No alarms enabled for compute instance metric.')
-                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for compute instances metric\"{metric['namespace']}\".")
-                    counted_metrics.append(metric)
+                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for compute instance metric\"{metric['name']}\" in namespace \"{metric['namespace']}\".")
+                    counted_metrics.append(metric['name'])
                 else:  
                     for alarm in self.__alarms:
                         if metric['namespace'] == alarm['namespace'] and alarm not in counted_alarms:
@@ -148,15 +148,15 @@ class ResourceMonitoring(ReviewPoint):
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['failure_cause'].append('Alarm for compute instance not connected to notification topic.')
                                 dictionary[entry]['mitigations'].append(f"Suggest adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". ")  
-                        counted_metrics.append(metric)
+                        counted_metrics.append(metric['name'])
                         counted_alarms.append(alarm)
             #bare metal
-            elif metric['namespace'] in names_bare_metal and metric not in counted_metrics:
+            elif metric['namespace'] in names_bare_metal and metric['name'] not in counted_metrics:
                 if metric['namespace'] not in alarm_namespaces:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['failure_cause'].append('No alarms enabled for bare metal metric.')
-                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for bare metal metric\"{metric['namespace']}\".")
-                    counted_metrics.append(metric)
+                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for bare metal metric\"{metric['name']}\" in namespace \"{metric['namespace']}\".")
+                    counted_metrics.append(metric['name'])
                 else:  
                     for alarm in self.__alarms:
                         if metric['namespace'] == alarm['namespace'] and alarm not in counted_alarms:
@@ -168,15 +168,15 @@ class ResourceMonitoring(ReviewPoint):
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['failure_cause'].append('Alarm for bare metal instance not connected to notification topic.')
                                 dictionary[entry]['mitigations'].append(f"Suggest adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". ")  
-                        counted_metrics.append(metric)
+                        counted_metrics.append(metric['name'])
                         counted_alarms.append(alarm)
             #functions
-            elif metric['namespace'] in names_functions and metric not in counted_metrics:
+            elif metric['namespace'] in names_functions and metric['name'] not in counted_metrics:
                 if metric['namespace'] not in alarm_namespaces:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['failure_cause'].append('No alarms enabled for function metric.')
-                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for function metric\"{metric['namespace']}\".")
-                    counted_metrics.append(metric)
+                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for function metric\"{metric['name']}\" in namespace \"{metric['namespace']}\".")
+                    counted_metrics.append(metric['name'])
                 else:  
                     for alarm in self.__alarms:
                         if metric['namespace'] == alarm['namespace'] and alarm not in counted_alarms:
@@ -188,15 +188,15 @@ class ResourceMonitoring(ReviewPoint):
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['failure_cause'].append('Alarm for function not connected to notification topic.')
                                 dictionary[entry]['mitigations'].append(f"Suggest adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". ")  
-                        counted_metrics.append(metric)
+                        counted_metrics.append(metric['name'])
                         counted_alarms.append(alarm)
             #databases
-            elif metric['namespace'] in names_database and metric not in counted_metrics:
+            elif metric['namespace'] in names_database and metric['name'] not in counted_metrics:
                 if metric['namespace'] not in alarm_namespaces:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['failure_cause'].append('No alarms enabled for database metric.')
-                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for database metric\"{metric['namespace']}\".")
-                    counted_metrics.append(metric)
+                    dictionary[entry]['mitigations'].append(f"Suggest creating alarms for database metric\"{metric['name']}\" in namespace \"{metric['namespace']}\".")
+                    counted_metrics.append(metric['name'])
                 else:  
                     for alarm in self.__alarms:
                         if metric['namespace'] == alarm['namespace'] and alarm not in counted_alarms:
@@ -208,11 +208,11 @@ class ResourceMonitoring(ReviewPoint):
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['failure_cause'].append('Alarm for database not connected to notification topic.')
                                 dictionary[entry]['mitigations'].append(f"Suggest adding a notification to the alarm: \"{alarm['display_name']}\" in compartment: \"{alarm['compartment_id']}\". ")  
-                        counted_metrics.append(metric)
+                        counted_metrics.append(metric['name'])
                         counted_alarms.append(alarm)
             else:
-                return  
-        debug(counted_metrics, "cyan")
-        debug(counted_alarms, "red")
+                pass
+
+        debug(dictionary, "cyan")
         return dictionary
 
