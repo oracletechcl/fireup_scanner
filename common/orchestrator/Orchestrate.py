@@ -68,11 +68,8 @@ from classes.opsefficiency.MetricAlarms import MetricAlarms
 from classes.opsefficiency.ConfigureAuditing import ConfigureAuditing
 from classes.opsefficiency.ServiceLogs import ServiceLogs
 from classes.opsefficiency.CloudGuardEnabled import CloudGuardEnabled
-<<<<<<< HEAD
 from classes.opsefficiency.ResourceMonitoring import ResourceMonitoring
-=======
 from classes.opsefficiency.PatchesAndUpdates import PatchesAndUpdates
->>>>>>> 3047cf3ee028192480a5a77eb9a63de3ea446a55
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
