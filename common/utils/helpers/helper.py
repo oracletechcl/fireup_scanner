@@ -835,3 +835,19 @@ def get_responder_rules_by_compartment(cloud_guard_client, responder_id, compart
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
+#notification control plane client
+def get_notification_control_plane_client(config, signer):
+    try:
+        notification_control_plane_client = oci.ons.NotificationControlPlaneClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Notification client: " + e)
+    return notification_control_plane_client
+
+#using control plane client
+def get_notification_data(notification_control_plane_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        notification_control_plane_client.list_topics,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data

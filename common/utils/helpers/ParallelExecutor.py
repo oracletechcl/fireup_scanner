@@ -31,6 +31,7 @@ limit_availabilities_with_regions = []
 
 alarms = []
 metrics = []
+notifications = []
 
 ### CIDRSize.py Global Variables
 # VCN list for use with parallel_executor
@@ -1242,3 +1243,17 @@ def get_responder_rules(item):
         responder_recipes_with_rules.append( (responder_recipe, rules) )
 
     return responder_recipes_with_rules
+
+#using notification control plane client
+def get_notifications(item):
+    notification_control_plane_client = item[0]
+    compartments = item[1:]
+
+    notifications = []
+
+    for compartment in compartments:
+        notification_data = get_notification_data(notification_control_plane_client, compartment.id)
+        for notification in notification_data:
+            notifications.append(notification)
+
+    return notifications
