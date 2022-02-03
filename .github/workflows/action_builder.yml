@@ -2,11 +2,10 @@ name: action-builder
 
 on:
   pull_request:
-    branches:
-      - "feature/*"
-      - main
+
 jobs:
   run_actions:
+    if: ${{ contains(github.event.pull_request.head.ref, 'feature/') }}
     name: Run Actions on pull request
     runs-on: ubuntu-latest
     steps:
@@ -29,7 +28,7 @@ jobs:
           echo "${{ github.event.pull_request.head.ref }}"
       - name: Run Action Builder
         if: ${{ always() }}
-        uses: oraclecloudbricks/action_fireup@98987c2823c08e864ab157d3ba14766ca3e36093
+        uses: oraclecloudbricks/action_fireup@e00436fc4b0cbfaac8c17db8952f23cfcf424a99
         with:
           files_added: ${{ steps.abc.outputs.added }}
           files_modified: ${{ steps.abc.outputs.modified }}
@@ -45,6 +44,15 @@ jobs:
           echo "::set-output name=pr_tests_action_outcome::$(jq '.[] | select(.action_name=="check_pr_tests") | .passed' results.json)"
           echo "::set-output name=helpers_action_outcome::$(jq '.[] | select(.action_name=="check_helpers") | .passed' results.json)"
           cat results.json
+      - name: Define Errors
+        id: errors
+        run: |
+          echo "::set-output name=read_me_action_msg::$(jq '.[] | select(.action_name=="check_readme") | .description' results.json)"
+          echo "::set-output name=test_suite_action_msg::$(jq '.[] | select(.action_name=="check_test_suite") | .description' results.json)"
+          echo "::set-output name=statics_action_msg::$(jq '.[] | select(.action_name=="check_statics") | .description' results.json)"
+          echo "::set-output name=headers_action_msg::$(jq '.[] | select(.action_name=="check_header") | .description' results.json)"
+          echo "::set-output name=pr_tests_action_msg::$(jq '.[] | select(.action_name=="check_pr_tests") | .description' results.json)"
+          echo "::set-output name=helpers_action_msg::$(jq '.[] | select(.action_name=="check_helpers") | .description' results.json)"
       - name: Comment if analysis finds missing readme
         if: ${{ steps.analysis.outputs.read_me_action_outcome == 0}}
         uses: mshick/add-pr-comment@v1
@@ -52,6 +60,8 @@ jobs:
           message: |
             :no_entry: **FAILURE: Missing README**
             :exclamation: The README file seems to be missing. Please add it.
+            :speech_balloon: **ERROR MESSAGE RETRIEVED:**
+            *${{ steps.errors.outputs.read_me_action_msg }}*
           allow-repeats: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -61,7 +71,9 @@ jobs:
         with:
           message: |
             :no_entry: **FAILURE: Missing TEST SUITE**
-            :exclamation: The test suite for the corresponding class seems to be missing. Please add it.
+            :exclamation: ***The test suite for the corresponding class seems to be missing. Please add it.***
+            :speech_balloon: **ERROR MESSAGE RETRIEVED:**
+            *${{ steps.errors.outputs.test_suite_action_msg }}*
           allow-repeats: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,7 +83,9 @@ jobs:
         with:
           message: |
             :no_entry: **FAILURE: Missing STATICS ENTRY**
-            :exclamation: The Statics.py file is missing entries. Please update it.
+            :exclamation: ***The Statics.py file is missing entries. Please update it.***
+            :speech_balloon: **ERROR MESSAGE RETRIEVED:**
+            *${{ steps.errors.outputs.statics_action_msg }}*
           allow-repeats: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -81,7 +95,9 @@ jobs:
         with:
           message: |
             :no_entry: **FAILURE: Wrong HEADERS FOUND**
-            :exclamation: The class file added contains the wrong headers. Please update it.
+            :exclamation: ***The class file added contains the wrong headers. Please update it.***
+            :speech_balloon: **ERROR MESSAGE RETRIEVED:**
+            *${{ steps.errors.outputs.headers_action_msg }}*
           allow-repeats: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -91,7 +107,9 @@ jobs:
         with:
           message: |
             :no_entry: **FAILURE: Missing PR TESTS**
-            :exclamation: Some of the tests included in the PR are either missing or have failed. Please review the PR body.
+            :exclamation: ***Some of the tests included in the PR are either missing or have failed. Please review the PR body.***
+            :speech_balloon: **ERROR MESSAGE RETRIEVED:**
+            *${{ steps.errors.outputs.pr_tests_action_msg }}*
           allow-repeats: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -101,17 +119,11 @@ jobs:
         with:
           message: |
             :no_entry: **FAILURE: Missing RETRY STRATEGY**
-            :exclamation: The helper you added in helper.py seems to be missing a retry strategy. Please add it.
+            :exclamation: ***The helper you added in helper.py seems to be missing a retry strategy. Please add it.***
+            :speech_balloon: **ERROR MESSAGE RETRIEVED:**
+            *${{ steps.errors.outputs.helpers_action_msg }}*
           allow-repeats: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Verify Linked Issue
-        uses: hattan/verify-linked-issue-action@v1.1.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          message: |
-            :no_entry: **FAILURE: There is no linked issue to this PR**
-            :exclamation: Please link this PR to an issue.
 
       - name: Fail job if Exeption appears
         id: failure
@@ -137,3 +149,20 @@ jobs:
             :white_check_mark: **SUCCESS: All actions passed**
             :sparkles: The Branch can now be merged!
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  run_others:
+    if: ${{ always() && !contains(github.event.pull_request.head.ref, 'feature/')}}
+    name: Run other actions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - uses: jitterbit/get-changed-files@v1
+        id: abc
+        with:
+          format: space-delimited
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Getting File info
+        run: |
+          echo "${{ steps.abc.outputs.added }}"
+          echo "${{ steps.abc.outputs.modified }}"
