@@ -525,10 +525,10 @@ __rp_4_3 = {
 __rp_4_4 = {
     'entry': '4.4',
     'area': 'Operational Efficiency',
-    'sub_area': '',
-    'review_point': '',    
-    'success_criteria': '',
-    'fireup_items': [],
+    'sub_area': 'Monitor Your Workload',
+    'review_point': 'Enable OCI Operations Insights',    
+    'success_criteria': 'Check if OCI Operations insights is enabled',
+    'fireup_items': ['Fireup Task: 59 - Do you have insight into the state & health of your workload'],
 }
 
 __rp_4_5 = {

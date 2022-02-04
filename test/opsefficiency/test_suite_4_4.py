@@ -4,7 +4,8 @@
 # Description: Main test suite for fireup review tool
 # Dependencies: pytest
 
-from classes.opsefficiency.ServiceLogs import ServiceLogs
+from lib2to3.pgen2.token import OP
+from classes.opsefficiency.OperationsInsights import OperationsInsights
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug
 from common.utils.statics import Statics
@@ -19,22 +20,22 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = ServiceLogs(Statics.__rp_4_3['entry'], 
-    Statics.__rp_4_3['area'], 
-    Statics.__rp_4_3['sub_area'], 
-    Statics.__rp_4_3['review_point'], 
+    result_dictionary = OperationsInsights(Statics.__rp_4_5['entry'],
+    Statics.__rp_4_5['area'],
+    Statics.__rp_4_5['sub_area'],
+    Statics.__rp_4_5['review_point'],
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_4_3['entry'])   
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_4_5['entry'])
 
-    for item in dictionary[Statics.__rp_4_3['entry']]['findings']:
+    for item in dictionary[Statics.__rp_4_5['entry']]['findings']:
         debug(item)
         results_in_fault += 1
 
-    assert results_in_fault == 406
+    assert results_in_fault == 5
 
     __test_suite_log(capsys)

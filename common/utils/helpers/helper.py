@@ -173,12 +173,14 @@ def get_mysql_backup_client(config, signer):
         raise RuntimeError("Failed to create MySQL Backup client: " + e)
     return mysql_backup_client
 
+
 def get_autoscaling_client(config, signer):
     try:
         autoscaling_client = oci.autoscaling.AutoScalingClient(config, signer=signer)
     except Exception as e:
         raise RuntimeError("Failed to create Autoscaling client: " + e)
     return autoscaling_client
+
 
 def get_compute_management_client(config, signer):
     try:
@@ -187,6 +189,7 @@ def get_compute_management_client(config, signer):
         raise RuntimeError("Failed to create Compute Management client: " + e)
     return compute_management_client
 
+
 def get_service_client(config, signer):
     try:
         service_client = oci.sch.ServiceConnectorClient(config, signer=signer)
@@ -194,12 +197,22 @@ def get_service_client(config, signer):
         raise RuntimeError("Failed to create MySQL Backup client: " + e)
     return service_client
 
+
+def get_operations_insights_client(config, signer):
+    try:
+        operations_insights_client = oci.opsi.OperationsInsightsClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create operations insights client: " + e)
+    return operations_insights_client
+
+
 def get_functions_management_client(config, signer):
     try:
         functions_management_client = oci.functions.FunctionsManagementClient(config, signer=signer)
     except Exception as e:
         raise RuntimeError("Failed to create functions management client: " + e)
     return functions_management_client
+
 
 def get_tenancy_data(identity_client, config):
     try:
@@ -216,10 +229,12 @@ def get_regions_data(identity_client, config):
         raise RuntimeError("Failed to get regions: " + e)
     return regions
 
+
 def get_cost_tracking_tags(identity_client, root_compartment_id):
     cost_tracking_tags_response = identity_client.list_cost_tracking_tags(
         root_compartment_id).data
     return cost_tracking_tags_response
+
 
 def get_home_region(identity_client, config):
     regions = get_regions_data(identity_client, config)
@@ -249,12 +264,14 @@ def get_policies_data(identity_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_dns_zone_data(dns_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         dns_client.list_zones,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_service_connectors(service_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
@@ -263,6 +280,7 @@ def get_service_connectors(service_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_bucket_retention_rules(object_storage_client, namespace_name,bucket_name):
     return oci.pagination.list_call_get_all_results(
         object_storage_client.list_retention_rules,
@@ -270,6 +288,7 @@ def get_bucket_retention_rules(object_storage_client, namespace_name,bucket_name
         bucket_name,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_user_data(identity_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
@@ -711,12 +730,14 @@ def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
     except oci.exceptions.ServiceError as e:
         return e
 
+
 def get_autoscaling_configurations_per_compartment(autoscaling_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
         autoscaling_client.list_auto_scaling_configurations,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_instance_pools_per_compartment(compute_management_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
@@ -725,10 +746,12 @@ def get_instance_pools_per_compartment(compute_management_client, compartment_id
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_audit_configuration_data(audit_client, tenancy_id):
     return audit_client.get_configuration(
         tenancy_id
     ).data
+
 
 def get_monitoring_client(config, signer):
     try:
@@ -754,12 +777,14 @@ def get_metric_data(monitoring_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_log_group_data_per_compartment(logging_management_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         logging_management_client.list_log_groups,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_log_data(logging_management_client, log_group_id):
     return oci.pagination.list_call_get_all_results(
@@ -776,12 +801,14 @@ def get_applications_per_compartment(functions_management_client, compartment_id
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_functions_per_application(functions_management_client, application_id):
     return oci.pagination.list_call_get_all_results(
         functions_management_client.list_functions,
         application_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_ip_sec_connections_per_compartment(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
@@ -790,12 +817,14 @@ def get_ip_sec_connections_per_compartment(network_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_ip_sec_connections_tunnels_per_connection(network_client, ipsec_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_ip_sec_connection_tunnels,
         ipsec_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+
 
 def get_event_rules_per_compartment(events_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
@@ -811,6 +840,20 @@ def get_quota_policy_data(quota_client, quota_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
+def list_operations_insights_warehouses(operations_insights_client, compartment_id):
+    return operations_insights_client.list_operations_insights_warehouses(
+        compartment_id=compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def list_awr_hubs(operations_insights_client, operations_insights_warehouse_id, compartment_id):
+    return operations_insights_client.list_awr_hubs(
+        operations_insights_warehouse_id=operations_insights_warehouse_id,
+        compartment_id=compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
 def get_detector_recipes_by_compartments(cloud_guard_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         cloud_guard_client.list_detector_recipes,
