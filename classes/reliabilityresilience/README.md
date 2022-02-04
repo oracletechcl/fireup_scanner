@@ -13,6 +13,7 @@
 | 2.9          | [CIDRSize.py](CIDRSize.py)                              |
 | 2.10         | [LBaaSBackends.py](LBaaSBackends.py)                    |
 | 2.11         | [CheckGateways.py](CheckGateways.py)                    |
+| 2.12         | [TransitRouting.py](TransitRouting.py)                  |
 | 2.13         | [LBaaSHealthChecks.py](LBaaSHealthChecks.py)            |
 | 2.14         | [CheckBackupPolicies.py](CheckBackupPolicies.py)        |
 | 2.15         | [BackupDatabases.py](BackupDatabases.py)                |

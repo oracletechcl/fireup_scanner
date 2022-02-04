@@ -7,7 +7,6 @@
 #              - Via constructor, initialize the dictionary entry as it applies to the excel spreadsheet
 #              - Per each class, implemented in the corresponding abstract class, call the object and then call analyze_entity()
 
-from unittest.mock import patch
 from classes.securitycompliance.InstancePrincipal import InstancePrincipal
 from classes.securitycompliance.SecurityList import SecurityList
 from classes.securitycompliance.ApiKeys import ApiKeys
@@ -51,6 +50,7 @@ from classes.reliabilityresilience.DataSecurity import DataSecurity
 from classes.reliabilityresilience.ReplicateData import ReplicateData
 from classes.reliabilityresilience.CheckAutoscaling import CheckAutoscaling
 from classes.reliabilityresilience.DistributeTraffic import DistributeTraffic
+from classes.reliabilityresilience.TransitRouting import TransitRouting
 
 from classes.performancecost.TenancyQuotas import TenancyQuotas
 from classes.performancecost.CheckAutoTuning import CheckAutoTuning
@@ -118,6 +118,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_2_9,
                             __call_2_10,
                             __call_2_11,
+                            __call_2_12,
                             __call_2_13,
                             __call_2_14,
                             __call_2_15,
@@ -618,6 +619,18 @@ def __call_2_11(config, signer, report_directory):
     __dictionary = checkGateways.analyze_entity(Statics.__rp_2_11['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_11['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_11['fireup_items'])
+
+def __call_2_12(config, signer, report_directory):    
+    transitRouting = TransitRouting(
+    Statics.__rp_2_12['entry'],
+    Statics.__rp_2_12['area'],
+    Statics.__rp_2_12['sub_area'],
+    Statics.__rp_2_12['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_2_12['entry']+"_"+Statics.__rp_2_12['area']+"_"+Statics.__rp_2_12['sub_area']+"_mitigations"
+    __dictionary = transitRouting.analyze_entity(Statics.__rp_2_12['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_2_12['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_2_12['fireup_items'])
 
 
 def __call_2_13(config, signer, report_directory):    

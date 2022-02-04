@@ -123,6 +123,10 @@ quotas = []
 ### DistributeTraffic.py Global Variables
 dns_zones = []
 
+### TransitRouting.py Global Variables
+networking_topology = []
+cross_connects = []
+
 ## OptimizationMonitor.py
 # List for use with parallel_executor
 detector_recipes = []
@@ -1180,8 +1184,8 @@ def get_ip_sec_connections(item):
     for compartment in compartments:
         ip_sec_data = get_ip_sec_connections_per_compartment(network_client, compartment.id)
         for ip_sec_connection in ip_sec_data:
-            ip_sec_connections.append(ip_sec_connection)
-
+            if ip_sec_connection:
+                ip_sec_connections.append(ip_sec_connection)
     return ip_sec_connections
 
 
@@ -1212,8 +1216,12 @@ def get_events_rules(item):
         for rule in rule_data:
             events_rules.append(rule)
     return events_rules
+<<<<<<< HEAD
+    
+=======
 
 
+>>>>>>> d32aaab9e7e227abd1fdd21a000667310ef53fe3
 def get_quotas_in_compartments(item):
     # Pull out the client that you need as well as the list of compartments from the passed item
     quota_client = item[0]
@@ -1228,6 +1236,18 @@ def get_quotas_in_compartments(item):
 
     return quotas
 
+def get_cross_connects(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    cross_connects = []
+
+    for compartment in compartments:
+        cross_connects_data = get_cross_connects_per_compartment(network_client, compartment.id)
+        if cross_connects_data:
+            cross_connects.append(cross_connects_data)
+
+    return cross_connects
 
 def get_operations_insights_warehouses(item):
     operations_insights_client = item[0]

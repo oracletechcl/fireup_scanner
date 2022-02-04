@@ -832,13 +832,26 @@ def get_event_rules_per_compartment(events_client, compartment_id):
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
-
-    
+   
 def get_quota_policy_data(quota_client, quota_id):
     return quota_client.get_quota(
         quota_id = quota_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
+    
+def get_networking_topology_per_compartment(network_client, compartment_id):
+    return network_client.get_networking_topology(
+        compartment_id,query_compartment_subtree = True,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+def get_cross_connects_per_compartment(network_client, compartment_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_cross_connects,
+        compartment_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+        
 
 
 def list_operations_insights_warehouses(operations_insights_client, compartment_id):
@@ -867,7 +880,6 @@ def get_responder_recipes_by_compartments(cloud_guard_client, compartment_id):
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
-
 
 def get_detector_rules_by_compartment(cloud_guard_client, detector_id, compartment_id):
     return oci.pagination.list_call_get_all_results(
