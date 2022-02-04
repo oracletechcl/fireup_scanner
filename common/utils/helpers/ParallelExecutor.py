@@ -1216,12 +1216,8 @@ def get_events_rules(item):
         for rule in rule_data:
             events_rules.append(rule)
     return events_rules
-<<<<<<< HEAD
-    
-=======
 
 
->>>>>>> d32aaab9e7e227abd1fdd21a000667310ef53fe3
 def get_quotas_in_compartments(item):
     # Pull out the client that you need as well as the list of compartments from the passed item
     quota_client = item[0]
