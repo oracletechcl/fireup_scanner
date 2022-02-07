@@ -6,7 +6,7 @@
 #!/bin/bash
 
 export KEY_FILE_REGEX_TODO="key_file=<path to your private keyfile> # TODO"
-export CLI_CONFIG_FILE="/home/opc/.oci/config"
+export CLI_CONFIG_FILE=~/.oci/config
 
 cli_documentation() {
     echo "Follow this documentation to finish the CLI configuration: https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Entries"    
@@ -17,7 +17,7 @@ cli_documentation() {
     echo "tenancy = ocid1.tenancy.oc1..aaaaaaaaw7e6nkszrry6d5hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     echo "user = ocid1.user.oc1..aaaaaaaayblfepjieoxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     echo "fingerprint = 19:1d:7b:3a:17"
-    echo "key_file = /home/opc/.oci/oci_api_key.pem"  
+    echo "key_file = ~/.oci/oci_api_key.pem"  
     echo ""  
     echo "Please finish the configuration of file $CLI_CONFIG_FILE and run ./fireup.sh script again."
 }
@@ -25,11 +25,11 @@ cli_documentation() {
 source "/home/opc/.bashrc"
 
 if ! [ -x "$(command -v python3)" ]; then
-  echo '============== Python Installation Pre-Requisites =============='
-  echo 'Error: Python3 is not installed.' >&2
-  echo 'Installing Python3...'
-  
-  #Check if this is a redhat based system. if So install python3 from yum else check if this is a debian based system. if so install python3 from apt
+    echo '============== Python Installation Pre-Requisites =============='
+    echo 'Error: Python3 is not installed.' >&2
+    echo 'Installing Python3...'
+
+    #Check if this is a redhat based system. if So install python3 from yum else check if this is a debian based system. if so install python3 from apt
     if [ -f /etc/redhat-release ]; then
         sudo yum install python3
     elif [ -f /etc/debian_version ]; then
@@ -37,7 +37,7 @@ if ! [ -x "$(command -v python3)" ]; then
     else
         echo 'Error: This is not a supported system.' >&2
         exit 1
-    fi  
+    fi
 fi
 
 if ! oci &>/dev/null ; then    
@@ -54,16 +54,15 @@ if ! oci &>/dev/null ; then
     sudo runuser -l opc -c 'touch /home/opc/.oci/config'
     sudo runuser -l opc -c 'oci setup repair-file-permissions --file /home/opc/.oci/config'
 fi
-    source "/home/opc/.bashrc"
-    [ -s /home/opc/.oci/config ]
-    if [ $? -eq 0 ]; then  # This checks if the oci config file is emtpy
-        if [[ $(grep "$KEY_FILE_REGEX_TODO" $CLI_CONFIG_FILE) ]] ; then
-             echo "Checking key configuration on $CLI_CONFIG_FILE..."
-             echo "Config file $CLI_CONFIG_FILE does not contain a valid key file path"     
-             cli_documentation        
-        fi
-    else
-            echo "Checking OCI CLI config file..."
-            echo "Config file $CLI_CONFIG_FILE is empty"
-            cli_documentation
+
+if [ -s $CLI_CONFIG_FILE ]; then  # This checks if the oci config file is not emtpy
+    if [[ $(grep "$KEY_FILE_REGEX_TODO" $CLI_CONFIG_FILE) ]] ; then
+        echo "Checking key configuration on $CLI_CONFIG_FILE..."
+        echo "Config file $CLI_CONFIG_FILE does not contain a valid key file path"
+        cli_documentation
     fi
+else
+    echo "Checking OCI CLI config file..."
+    echo "Config file $CLI_CONFIG_FILE is empty"
+    cli_documentation
+fi
