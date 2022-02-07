@@ -34,6 +34,7 @@ if ! [ -x "$(command -v python3)" ]; then
         sudo yum install python3
     elif [ -f /etc/debian_version ]; then
         sudo apt-get install python3
+        sudo apt-get install python3-pip
     else
         echo 'Error: This is not a supported system.' >&2
         exit 1

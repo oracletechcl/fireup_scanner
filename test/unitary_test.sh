@@ -8,7 +8,7 @@
 if [ ! -d "venv" ] 
 then
     echo "venv not present. Creating" 
-    sh ../common/bash/dependencies.sh
+    bash ../common/bash/dependencies.sh
     chmod -R 775 venv
 fi
 
