@@ -925,3 +925,11 @@ def get_notification_data(notification_control_plane_client, compartment_id):
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data 
+
+def custom_retry(tested_function,*args,codes):
+    #try:
+        return tested_function(*args)
+    #except oci.exceptions.TransientServiceError as e:
+     #   for code in codes:
+      #      if e.status == code:
+       #         return custom_retry(tested_function,*args,codes)

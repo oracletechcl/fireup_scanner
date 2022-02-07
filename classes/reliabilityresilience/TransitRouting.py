@@ -3,6 +3,7 @@
 # TransitRouting.py
 # Description: Implementation of class TransitRouting based on abstract
 
+from pyexpat.errors import codes
 from classes.abstract.ReviewPoint import ReviewPoint
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
@@ -87,7 +88,7 @@ class TransitRouting(ReviewPoint):
 
                     n_client = get_virtual_network_client(region_needed, self.signer)
                     n_client.base_client.endpoint = 'https://vnca-api.' + region.region_name + '.oci.oraclecloud.com'
-                    self.__topologies_with_cpe_connections_objects.append(get_networking_topology_per_compartment(n_client,com_region[0]))
+                    self.__topologies_with_cpe_connections_objects.append(custom_retry(get_networking_topology_per_compartment,n_client,com_region[0], codes = ['500'] ))
 
         for network_topology in self.__topologies_with_cpe_connections_objects:
             record = {
