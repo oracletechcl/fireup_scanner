@@ -14,8 +14,8 @@ class BackupDatabases(ReviewPoint):
     # Class Variables
     __db_system_home_objects = []
     __mysql_database_objects = []
+    __dbs_from_db_homes = []
 
-    __db_systems_with_no_backups = []
     __db_systems_with_no_backups_dicts = []
     __mysql_dbs_with_no_backups = []
     __mysql_dbs_with_no_backups_dicts = []
@@ -72,28 +72,24 @@ class BackupDatabases(ReviewPoint):
         self.__db_system_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], compartments, ParallelExecutor.get_database_homes, len(compartments), ParallelExecutor.db_system_homes)
 
         if len(self.__db_system_home_objects) > 0:
-            self.__db_systems_with_no_backups = ParallelExecutor.executor(db_system_clients, self.__db_system_home_objects, ParallelExecutor.get_db_systems_with_no_backups, len(self.__db_system_home_objects), ParallelExecutor.db_systems_with_no_backups)
+            self.__dbs_from_db_homes = ParallelExecutor.executor(db_system_clients, self.__db_system_home_objects, ParallelExecutor.get_dbs_from_db_homes, len(self.__db_system_home_objects), ParallelExecutor.dbs_from_db_homes)
 
-        for db, db_home in self.__db_systems_with_no_backups:
-            record = {
-                'compartment_id': db_home.compartment_id,
-                'defined_tags': db_home.defined_tags,
-                'display_name': db_home.display_name,
-                'id': db_home.id,
-                'time_created': db_home.time_created,
-                'db_system_id': db_home.db_system_id,
-                'db_version': db_home.db_version,
-                'lifecycle_state': db_home.lifecycle_state,
-                'vm_cluster_id': db_home.vm_cluster_id,
-                'current_placement': '',
-                'description': '',
-                'endpoints': '',
-                'heat_wave_cluster': '',
-                'mysql_version': '',
-                'availability_domain': '',
-                'is_highly_available': '',
-            }
-            self.__db_systems_with_no_backups_dicts.append( (db, record) )
+        for db_home in self.__db_system_home_objects:
+            for db in self.__dbs_from_db_homes:
+                if db_home.id == db.db_home_id:
+                    if not db.db_backup_config.auto_backup_enabled:
+                        record = {
+                            'compartment_id': db_home.compartment_id,
+                            'defined_tags': db_home.defined_tags,
+                            'display_name': db_home.display_name,
+                            'id': db_home.id,
+                            'time_created': db_home.time_created,
+                            'db_system_id': db_home.db_system_id,
+                            'db_version': db_home.db_version,
+                            'lifecycle_state': db_home.lifecycle_state,
+                            'vm_cluster_id': db_home.vm_cluster_id,
+                        }
+                        self.__db_systems_with_no_backups_dicts.append( (db, record) )
 
         self.__mysql_database_objects = ParallelExecutor.executor(mysql_clients, compartments, ParallelExecutor.get_mysql_dbs, len(compartments), ParallelExecutor.mysql_dbsystems)
 
@@ -115,9 +111,6 @@ class BackupDatabases(ReviewPoint):
                 'lifecycle_state': mysql_db.lifecycle_state,
                 'mysql_version': mysql_db.mysql_version,
                 'time_created': mysql_db.time_created,
-                'db_system_id': '',
-                'db_version': '',
-                'vm_cluster_id': '',
             }
             self.__mysql_dbs_with_no_backups_dicts.append(record)
 
