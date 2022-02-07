@@ -7,12 +7,12 @@
 
 
 # Calling OS pre-requisites script
-sh common/bash/prereqs.sh
+bash common/bash/prereqs.sh
 
 if [ ! -d "venv" ] 
 then
     echo "venv not present. Creating" 
-    sh common/bash/dependencies.sh
+    bash common/bash/dependencies.sh
     chmod -R 775 venv
 fi
 
