@@ -72,7 +72,6 @@ security_lists_from_mount_targets = []
 # Database list for use with parallel_executor
 db_system_homes = []
 mysql_dbsystems = []
-db_systems_with_no_backups = []
 mysql_dbs_with_no_backups = []
 
 ### InstancePrincipal.py Global Variables
@@ -507,24 +506,6 @@ def get_mysql_dbs_with_no_backups(item):
                 backups.append(mysql_database)
 
     return backups
-
-
-def get_db_systems_with_no_backups(item):
-    database_client = item[0]
-    db_system_homes = item[1:]
-
-    disabled_backups = []
-
-    for db_home in db_system_homes:
-        region = db_home.id.split('.')[3]
-        if database_client[1] in region or database_client[2] in region:
-            databases = database_client[0].list_databases(db_home_id=db_home.id, system_id=db_home.db_system_id, compartment_id=db_home.compartment_id).data
-            for db in databases:
-                if "TERMINATED" not in db.lifecycle_state:
-                    if not db.db_backup_config.auto_backup_enabled:
-                        disabled_backups.append( (db, db_home) )
-
-    return disabled_backups
 
 
 def get_dbs_from_db_homes(item):
