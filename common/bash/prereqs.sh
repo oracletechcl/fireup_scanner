@@ -73,9 +73,40 @@ if ! [ -x "$(command -v python3)" ]; then
 fi
 }
 
+__is_oci_cli_installed(){
+    __source_bashrc    
+    if __is_ubuntu_or_debian; then
+        if [ -d /home/ubuntu/oci_cli ]; then
+            return 0
+        else
+            return 1
+        fi
+    elif __is_redhat_or_centos; then
+        if [ -d /home/opc/oci_cli ]; then
+            return 0
+        else
+            return 1
+        fi
+    else
+        echo 'Error: This is not a supported system.' >&2
+        exit 1
+    fi    
+}
+
+__install_os_dependencies(){
+    if ! __is_oci_cli_installed; then
+        if __is_ubuntu_or_debian; then
+            sudo apt-get -y install python3.8-venv
+        fi
+    fi
+        __install_python3
+
+}
+
 
 __install_oci_cli(){
-if ! oci &>/dev/null ; then    
+__source_bashrc
+if ! __is_oci_cli_installed ; then    
   echo '============== CLI Pre-Requisites =============='
     if __is_redhat_or_centos ; then      
         echo 'Installing OCI CLI in RedHat or CentOS...'
@@ -89,11 +120,7 @@ if ! oci &>/dev/null ; then
         sudo runuser -l opc -c 'touch /home/opc/.oci/config'
         sudo runuser -l opc -c 'oci setup repair-file-permissions --file /home/opc/.oci/config'
     elif __is_ubuntu_or_debian ; then
-    echo 'Installing OCI CLI in RedHat or CentOS...'
-        sudo apt-get -y install python3-pip
-        sudo apt-get -y install python3-venv
-        sudo apt-get -y install python3.8-venv
-        
+        echo 'Installing OCI CLI in Ubuntu or Debian...'
         sudo runuser -l ubuntu -c 'mkdir -p /home/ubuntu/oci_cli'
         sudo runuser -l ubuntu -c 'wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh'
         sudo runuser -l ubuntu -c 'chmod +x install.sh'
@@ -109,12 +136,16 @@ fi
 if [ -s $CLI_CONFIG_FILE ]; then  # This checks if the oci config file is not emtpy
     if [[ $(grep "$KEY_FILE_REGEX_TODO" $CLI_CONFIG_FILE) ]] ; then
         echo "Checking key configuration on $CLI_CONFIG_FILE..."
+        echo "*************ERROR**************"
         echo "Config file $CLI_CONFIG_FILE does not contain a valid key file path"
+        echo "*************ERROR**************"
         __cli_documentation
     fi
 else
     echo "Checking OCI CLI config file..."
+    echo "*************ERROR**************"
     echo "Config file $CLI_CONFIG_FILE is empty"
+    echo "*************ERROR**************"
     __cli_documentation
 fi
 }
@@ -123,9 +154,9 @@ fi
 
 
 
-__main__(){
+__main__(){    
     __source_bashrc
-    __install_python3
+    __install_os_dependencies
     __install_oci_cli
 }
 
