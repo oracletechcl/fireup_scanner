@@ -115,8 +115,8 @@ class Rbac(ReviewPoint):
                     if value < 5:
                         dictionary[entry]['status'] = False
                         dictionary[entry]['findings'].append(compartment)
-                        dictionary[entry]['failure_cause'].append('Not enough granular policies found in compartment')
-                        dictionary[entry]['mitigations'].append('Create further granular policies attached to compartment: '+compartment['name']+" Current total policies found: "+str(value))
+                        dictionary[entry]['failure_cause'].append("Not enough granular policies found in compartment")
+                        dictionary[entry]['mitigations'].append(f"Create further granular policies attached to compartment: \"{compartment['name']}\" Current total policies found: \"{value}\"")
 
         
         for key, value in self.__no_policy_compartments.items():
@@ -124,15 +124,15 @@ class Rbac(ReviewPoint):
                 if key == compartment['id']:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(compartment)
-                    dictionary[entry]['failure_cause'].append('Not enough granular policies found in compartment')
-                    dictionary[entry]['mitigations'].append('Create further granular policies attached to compartment: '+compartment['name']+" Current total policies found: "+str(value))    
+                    dictionary[entry]['failure_cause'].append("Not enough granular policies found in compartment")
+                    dictionary[entry]['mitigations'].append(f"Create further granular policies attached to compartment: \"{compartment['name']}\" Current total policies found: \"{value}\"")
         
 
         if len(policies_in_root_compartment) > 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Root compartment has policies')            
+            dictionary[entry]['failure_cause'].append("Some policies are attached to the root compartment")
             for policy in policies_in_root_compartment:
-                dictionary[entry]['mitigations'].append("Remove policy: " + policy['name']+" from root compartment and attach it to a more specific compartment")
+                dictionary[entry]['mitigations'].append(f"Remove policy \"{policy['name']}\" from root compartment")
                         
         return dictionary
 

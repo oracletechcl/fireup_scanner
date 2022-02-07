@@ -131,12 +131,10 @@ class CompartmentsAndPolicies(ReviewPoint):
             
         non_compliant_compartments_names = list(set(all_compartment_names) - set(compliant_compartment_names))        
 
-
         if len(compliant_compartment_names) < 5:
-            dictionary[entry]['status'] = False        
+            dictionary[entry]['status'] = False
 
-
-        for compartments in self.__compartments:         
+        for compartments in self.__compartments:
             all_compartment_names.append(compartments['name'])
             for env in env_list:
                 if env.lower() not in compartments['name'].lower():
@@ -146,24 +144,15 @@ class CompartmentsAndPolicies(ReviewPoint):
                     continue
 
         for item in non_compliant_compartments_names:
-            dictionary[entry]['failure_cause'].append("Compartment name does not match environment name convention containing these keywords: " + str(env_list))
-            dictionary[entry]['mitigations'].append("Rename compartment: " + item + " to match the environment name convention")
+            dictionary[entry]['failure_cause'].append(f"Compartment name does not match environment name convention containing these keywords: {env_list}")
+            dictionary[entry]['mitigations'].append(f"Rename compartment: \"{item}\" to match the environment name convention")
 
-         
-   
-
-        # Policy Analysis    
+        # Policy Analysis
         for policy in self.__policies:
             if policy['compartment_id'] == self.__tenancy.id:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(policy)
-                dictionary[entry]['failure_cause'].append('Some policies are attached to the root compartment')
-                dictionary[entry]['mitigations'].append('Remove policy'+ policy['name'] +' from root compartment')                
-        
+                dictionary[entry]['failure_cause'].append("Some policies are attached to the root compartment")
+                dictionary[entry]['mitigations'].append(f"Remove policy \"{policy['name']}\" from root compartment")                
 
-
-
-                
         return dictionary
-
-        

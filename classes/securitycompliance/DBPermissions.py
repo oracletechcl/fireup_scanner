@@ -92,8 +92,8 @@ class DBPermissions(ReviewPoint):
         
         if counter < 1: 
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('No Policies for Restricting Database deletion have been detected')                
-            dictionary[entry]['mitigations'].append('Add the following policies into the tenancy to enforce database protection: '+ __db_policy_1 + ' and ' + __db_policy_2 + ' and ' + __db_policy_3)                
+            dictionary[entry]['failure_cause'].append("No Policies for Restricting Database deletion have been detected")                
+            dictionary[entry]['mitigations'].append(f"Add the following policies into the tenancy to enforce database protection:\n\"{__db_policy_1}\"\n\"{__db_policy_2}\"\n\"{__db_policy_3}\"")                
         else:
             dictionary[entry]['status'] = True
             dictionary[entry]['findings'].append(policy)     

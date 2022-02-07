@@ -149,24 +149,23 @@ class OptimizationMonitor(ReviewPoint):
    
         # Check if Cloud Guard and Rules are enabled
         if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] == 'ENABLED':
-            for rule in self.__non_compliant_detector_rules:                    
+            for rule in self.__non_compliant_detector_rules:
                 dictionary[entry]['status'] = False
                 if rule[0] not in dictionary[entry]['findings']:
-                    dictionary[entry]['findings'].append(rule[0])                    
+                    dictionary[entry]['findings'].append(rule[0])
                 dictionary[entry]['failure_cause'].append("Cloud Guard detector rule not correctly configured")
-                dictionary[entry]['mitigations'].append("Enable Detector rule: "+rule[1]['display_name']+" associated to recipe: "+rule[0]['display_name'])
+                dictionary[entry]['mitigations'].append(f"Enable Detector rule: \"{rule[1]['display_name']}\" associated to recipe: \"{rule[0]['display_name']}\"")
 
-            for rule in self.__non_compliant_responder_rules:                   
+            for rule in self.__non_compliant_responder_rules:
                 dictionary[entry]['status'] = False
                 if rule[0] not in dictionary[entry]['findings']:
-                    dictionary[entry]['findings'].append(rule[0])                    
+                    dictionary[entry]['findings'].append(rule[0])
                 dictionary[entry]['failure_cause'].append("Cloud Guard responder rule not correctly configured")
-                dictionary[entry]['mitigations'].append("Enable Response rule: "+rule[1]['display_name']+" associated to recipe: "+rule[0]['display_name'])  
+                dictionary[entry]['mitigations'].append(f"Enable Detector rule: \"{rule[1]['display_name']}\" associated to recipe: \"{rule[0]['display_name']}\"")
         else:
             dictionary[entry]['status'] = False
-            dictionary[entry]['findings'].append(self.__tenancy_data_including_cloud_guard) 
+            dictionary[entry]['findings'].append(self.__tenancy_data_including_cloud_guard)
             dictionary[entry]['failure_cause'].append("Cloud Gaurd is not enabled")
-            dictionary[entry]['mitigations'].append('Enable Cloud Guard in tenancy: ' + self.__tenancy_data_including_cloud_guard['tenancy_name'])                    
-        
-                                  
+            dictionary[entry]['mitigations'].append("Enable Cloud Guard in tenancy")
+
         return dictionary

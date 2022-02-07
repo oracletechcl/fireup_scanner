@@ -18,6 +18,7 @@ class SecureLoadBalancers(ReviewPoint):
     __policies = []
     __policy_objects = []
 
+
     def __init__(self,
                  entry: str,
                  area: str,
@@ -44,7 +45,7 @@ class SecureLoadBalancers(ReviewPoint):
         self.config = config
         self.signer = signer
         self.__identity = get_identity_client(self.config, self.signer)
-        self.__tenancy = get_tenancy_data(self.__identity, self.config)
+
 
     def load_entity(self):
 
@@ -62,10 +63,7 @@ class SecureLoadBalancers(ReviewPoint):
             # Create a network client for each region
             load_balancer_clients.append(get_load_balancer_client(region_config, self.signer))
 
-        self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments,
-                                                                 ParallelExecutor.get_load_balancers,
-                                                                 len(self.__compartments),
-                                                                 ParallelExecutor.load_balancers)
+        self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
 
         for load_balancer in self.__load_balancer_objects:
             record = {
@@ -78,10 +76,8 @@ class SecureLoadBalancers(ReviewPoint):
             }
             self.__load_balancers.append(record)
 
-        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments,
-                                                          ParallelExecutor.get_policies,
-                                                          len(self.__compartments),
-                                                          ParallelExecutor.policies)
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
+        
         for policy in self.__policy_objects:
             record = {
                 "compartment_id": policy.compartment_id,
@@ -114,8 +110,8 @@ class SecureLoadBalancers(ReviewPoint):
 
         if failure_case == True:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('No Policies for securing load balancers have been detected')
-            dictionary[entry]['mitigations'].append('Add load-balancer policies into the tenancy to enforce load balancer protection.')
+            dictionary[entry]['failure_cause'].append("No Policies for securing load balancers have been detected")
+            dictionary[entry]['mitigations'].append("Add load-balancer policies into the tenancy to enforce load balancer protection.")
 
         for load_balancer in self.__load_balancers:
             for listener in load_balancer['listeners']:
@@ -124,7 +120,6 @@ class SecureLoadBalancers(ReviewPoint):
                         dictionary[entry]['status'] = False
                         dictionary[entry]['findings'].append(load_balancer)
                         dictionary[entry]['failure_cause'].append('Application load balancer listeners should use SSL encryption.')
-                        dictionary[entry]['mitigations'].append(f"Application load balancer: {load_balancer['display_name']}, located in {get_compartment_name(self.__compartments, load_balancer['compartment_id'])}, has a listener without SSL enabled.")
-
+                        dictionary[entry]['mitigations'].append(f"Application load balancer: \"{load_balancer['display_name']}\" located in \"{get_compartment_name(self.__compartments, load_balancer['compartment_id'])}\" has a listener without SSL enabled.")
 
         return dictionary

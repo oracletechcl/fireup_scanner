@@ -137,7 +137,7 @@ class DBSystemPatch(ReviewPoint):
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['findings'].append(dbhome_applied_patches)
                                 dictionary[entry]['failure_cause'].append("Oracle DB Home does not have the latest patchset applied")                                   
-                                dictionary[entry]['mitigations'].append("Apply Patchset: "+get_month_and_year(latest_patches_available['db_home_patch']) + " to "+ dbname)
+                                dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbname}\"")
                                 break                      
 
                         else:
@@ -145,7 +145,7 @@ class DBSystemPatch(ReviewPoint):
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['findings'].append(dbhome_applied_patches)
                                 dictionary[entry]['failure_cause'].append("Oracle DB Home does not have any patches applied")                                   
-                                dictionary[entry]['mitigations'].append("Apply Patchset: "+get_month_and_year(latest_patches_available['db_home_patch']) +" to database: "+ dbname)
+                                dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbname}\"")
                                 break   
        
         for dbsystem_applied_patches in self.__dbsystem_patches:
@@ -158,7 +158,7 @@ class DBSystemPatch(ReviewPoint):
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['findings'].append(dbsystem_applied_patches)
                                 dictionary[entry]['failure_cause'].append("Oracle DB System does not have the latest patchset applied")                                   
-                                dictionary[entry]['mitigations'].append("Apply Patchset: "+get_month_and_year(latest_patches_available['db_system_patch']) + " to "+ dbname) 
+                                dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbname}\"")
                                 break                     
 
                         else:
@@ -166,7 +166,7 @@ class DBSystemPatch(ReviewPoint):
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['findings'].append(dbsystem_applied_patches)
                                 dictionary[entry]['failure_cause'].append("Oracle DB System does not have any patches applied")                                   
-                                dictionary[entry]['mitigations'].append("Apply Patchset: "+get_month_and_year(latest_patches_available['db_system_patch']) +" to dbsystem: "+ dbname)
+                                dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbname}\"")
                                 break              
                 
                                                      

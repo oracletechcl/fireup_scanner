@@ -73,9 +73,6 @@ class AdminAbility(ReviewPoint):
             }
             self.__policies.append(record)
 
-    
-       
-        
 
     def analyze_entity(self, entry):
         self.load_entity()        
@@ -86,15 +83,15 @@ class AdminAbility(ReviewPoint):
                 if "service".upper() not in statement.upper():                    
                     if "Allow group".upper() in statement.upper():
                         if "to inspect groups in tenancy".upper() in statement.upper():
-                            if "Administrator".upper() or "admin".upper() or "adm".upper() or "UsrAdmins".upper() in statement.upper():             
+                            if "Administrator".upper() or "admin".upper() or "adm".upper() or "UserAdmins".upper() in statement.upper():             
                                 counter+=1
         
         if counter == 0 : 
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append('Policy \'Allow group UserAdmins to inspect groups in tenancy\' does not exists in tenancy')                
-                    dictionary[entry]['mitigations'].append('Create a policy \' Allow group UserAdmins to inspect groups in tenancy\'')
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append("Policy to allow user admins to inspect groups does not exists in tenancy")                
+            dictionary[entry]['mitigations'].append("Create a policy \"Allow group UserAdmins to inspect groups in tenancy\"")
         else:
-                    dictionary[entry]['status'] = True
-                    dictionary[entry]['findings'].append(policy)  
+            dictionary[entry]['status'] = True
+            dictionary[entry]['findings'].append(policy)  
      
         return dictionary

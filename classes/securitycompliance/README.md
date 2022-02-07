@@ -5,8 +5,8 @@
 | 1.1          | [Mfa.py](Mfa.py)                                        |
 | 1.2          | [Admin.py](Admin.py)                                    |
 | 1.3          | [AdminAbility.py](AdminAbility.py)                      |
-| 1.4          | [PolicyAdmin.py](PolicyAdmin.py)                        |
-| 1.5          | [FederatedUser.py](FederatedUser.py)                    |
+| 1.4          | [PolicyAdmins.py](PolicyAdmins.py)                      |
+| 1.5          | [FederatedUsers.py](FederatedUsers.py)                  |
 | 1.6          | [ApiKeys.py](ApiKeys.py)                                |
 | 1.7          | [CompartmentsAndPolicies.py](CompartmentsAndPolicies.py)|
 | 1.8          | [Rbac.py](Rbac.py)                                      |
@@ -15,7 +15,7 @@
 | 1.11         | [MaxSecurityZone.py](MaxSecurityZone.py)                |
 | 1.12         | [DBSystemControl.py](DBSystemControl.py)                |
 | 1.13         | [DBPermissions.py](DBPermissions.py)                    |
-| 1.14         | [DBKey.py](DBKey.py)                                    |
+| 1.14         | [DBKeys.py](DBKeys.py)                                  |
 | 1.15         | [DBSystemPatch.py](DBSystemPatch.py)                    |
 | 1.16         | [ADBSystemAccess.py](ADBSystemAccess.py)                |
 | 1.17         | [StoragePermissions.py](StoragePermissions.py)          |

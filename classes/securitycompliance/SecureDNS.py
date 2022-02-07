@@ -49,10 +49,7 @@ class SecureDNS(ReviewPoint):
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments,
-                                                          ParallelExecutor.get_policies,
-                                                          len(self.__compartments),
-                                                          ParallelExecutor.policies)
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
 
         for policy in self.__policy_objects:
             record = {
@@ -87,8 +84,7 @@ class SecureDNS(ReviewPoint):
 
         if failure_case:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('No Policies for securing dns-zones or dns-records')
-            dictionary[entry]['mitigations'].append(
-                'Add dns-zones or dns-records policies into the tenancy to enforce DNS protection.')
+            dictionary[entry]['failure_cause'].append("No Policies for securing dns-zones or dns-records")
+            dictionary[entry]['mitigations'].append("Add \"dns-zones\" and/or \"dns-records\" policies into the tenancy to enforce DNS protection.")
 
         return dictionary

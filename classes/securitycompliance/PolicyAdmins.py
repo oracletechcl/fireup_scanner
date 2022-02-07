@@ -72,9 +72,6 @@ class PolicyAdmins(ReviewPoint):
             }
             self.__policies.append(record)
 
-    
-       
-        
 
     def analyze_entity(self, entry):
         self.load_entity()        
@@ -86,10 +83,11 @@ class PolicyAdmins(ReviewPoint):
                     counter+=1
         
         if counter < 1: 
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append('Policy \'Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE \' does not exists')                
-                    dictionary[entry]['mitigations'].append('Add Policy \'Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE \' does not exists')                
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append('Policy \"Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE\'\" does not exist')                
+            dictionary[entry]['mitigations'].append("Add Policy \"Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE\'\"")                
         else:
-                    dictionary[entry]['status'] = True
-                    dictionary[entry]['findings'].append(policy)                    
+            dictionary[entry]['status'] = True
+            dictionary[entry]['findings'].append(policy)    
+                
         return dictionary

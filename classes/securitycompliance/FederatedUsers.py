@@ -66,7 +66,8 @@ class FederatedUsers(ReviewPoint):
                     'name': user.name,
                     'groups': []
                 }   
-                self.__users.append(record)    
+                self.__users.append(record)  
+
         return self.__users
         
 
@@ -86,11 +87,11 @@ class FederatedUsers(ReviewPoint):
         
         if total_user_count < 5:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('User base is too small. This suggests that no enough role separation is being done')  
-            dictionary[entry]['mitigations'].append('Your current use base is: '+str(total_user_count)+' users. You should have more than 10 users to ensure privileges and further access is correctly spread')
+            dictionary[entry]['failure_cause'].append("User base is too small. This suggests that no enough role separation is being done")  
+            dictionary[entry]['mitigations'].append(f"Your current use base is: \"{total_user_count}\" users. You should have more than \"10\" users to ensure privileges and further access is correctly spread")
         if none_idp_user_count/total_user_count <= 0.9:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('The gross majority of your users are IAM Users') 
-            dictionary[entry]['mitigations'].append('Move the following user to a federated mode: '+str(faulty_user))       
+            dictionary[entry]['failure_cause'].append("The gross majority of your users are IAM Users") 
+            dictionary[entry]['mitigations'].append(f"Move the following user(s) to a federated mode: {faulty_user}")
 
         return dictionary

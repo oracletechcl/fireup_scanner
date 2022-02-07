@@ -67,11 +67,7 @@ class MaxSecurityZone(ReviewPoint):
             comp_max_sec_zone = get_max_security_zone_data(self.__identity, comp.id)            
             if "isMaximumSecurityZone" not in comp_max_sec_zone:                
                 self.__max_sec_zone.append(comp_max_sec_zone)
-                
-                
-  
 
-            
 
     def analyze_entity(self, entry):
     
@@ -81,9 +77,8 @@ class MaxSecurityZone(ReviewPoint):
         for msc in self.__max_sec_zone:
                if len(self.__max_sec_zone) > 0:             
                 dictionary[entry]['status'] = False
-                dictionary[entry]['failure_cause'].append('Compartments do not have maximum security zone enabled')
+                dictionary[entry]['failure_cause'].append("Compartments do not have maximum security zone enabled")
                 dictionary[entry]['findings'].append(msc)
-                dictionary[entry]['mitigations'].append('If compartment: '+msc['name']+ ' contains a production workload, Enable Maximum Security Zone into it')                              
+                dictionary[entry]['mitigations'].append(f"If compartment: \"{msc['name']}\" contains a production workload, Enable Maximum Security Zone into it")                              
                                        
         return dictionary
-

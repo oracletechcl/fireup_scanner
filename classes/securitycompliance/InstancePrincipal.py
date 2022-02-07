@@ -15,6 +15,7 @@ class InstancePrincipal(ReviewPoint):
     # Class Variables
     __identity = None
     __tenancy = None
+    __compartments = []
     __dyn_groups = []
     __instances = []
     __instance_objects = []
@@ -86,10 +87,10 @@ class InstancePrincipal(ReviewPoint):
             compute_clients.append(get_compute_client(region_config, self.signer))
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__instance_objects = ParallelExecutor.executor(compute_clients, compartments, ParallelExecutor.get_instances, len(compartments), ParallelExecutor.instances)
+        self.__instance_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_instances, len(self.__compartments), ParallelExecutor.instances)
 
         for instance in self.__instance_objects:
             instance_record = {
@@ -109,8 +110,8 @@ class InstancePrincipal(ReviewPoint):
                 if instance['compartment_id'] not in self.__inst_prin_compartment_id_list:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(instance)
-                    dictionary[entry]['mitigations'].append('Create an instance principal that contains instance: '+ instance['display_name'] + ' in compartment: ' + instance['compartment_id'] + " as target")
-                    dictionary[entry]['failure_cause'].append('Instances detected without proper Instance Principal Configuration')
+                    dictionary[entry]['mitigations'].append(f"Create an instance principal that contains instance: \"{instance['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, instance['compartment_id'])}\" as target")
+                    dictionary[entry]['failure_cause'].append("Instances detected without proper Instance Principal Configuration")
 
         return dictionary
 

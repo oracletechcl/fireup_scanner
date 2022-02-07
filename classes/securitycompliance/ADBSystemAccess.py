@@ -18,17 +18,12 @@ class ADBSystemAccess(ReviewPoint):
 
     # Class Variables
     __identity = None
-
-    __subnet_objects = []
-    __subnets = []
     __adbs = []
     __compartments = []
     __autonomous_database_objects = []
     __adb_nsgs = []
 
   
-    
-
 
     def __init__(self,
                 entry:str, 
@@ -64,7 +59,6 @@ class ADBSystemAccess(ReviewPoint):
         # mysql_clients = []
         network_clients = []
 
-
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
@@ -79,12 +73,8 @@ class ADBSystemAccess(ReviewPoint):
              
         self.__autonomous_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
         self.__adb_nsg_objects = ParallelExecutor.executor(network_clients, self.__autonomous_database_objects, ParallelExecutor.get_adb_nsgs, len(self.__autonomous_database_objects), ParallelExecutor.adb_nsgs)
-        
-
-        
       
         #Filling autonomous database object
-
         for adbobject in self.__autonomous_database_objects:
             adb_record = {
                 "display_name": adbobject.display_name,
@@ -97,7 +87,7 @@ class ADBSystemAccess(ReviewPoint):
             }
             self.__adbs.append(adb_record)
 
-    # Fill NSG Data
+        # Fill NSG Data
         for nsgs, adb in self.__adb_nsg_objects:         
 
             for nsg in nsgs:             
@@ -127,41 +117,33 @@ class ADBSystemAccess(ReviewPoint):
         for adb in self.__adbs:
             if adb['private_endpoint'] == None:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(adb)   
+                dictionary[entry]['findings'].append(adb)
                 dictionary[entry]['failure_cause'].append("ADB has no private endpoint")
-                dictionary[entry]['mitigations'].append("ADB Database: "+adb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, adb['compartment_id'])+" doesn't contain a private endpoint. Ensure that the ADB has the proper restrictions for access")                                    
+                dictionary[entry]['mitigations'].append(f"ADB Database: \"{adb['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, adb['compartment_id'])}\" doesn't contain a private endpoint. Ensure that the ADB has the proper restrictions for access")                                    
             else: 
                 # Check that ADB is associated to an NSG which contains a stateless ingress rule with protocol TCP and destination port 1521 or 1522.
                 for adb_nsg in self.__adb_nsgs:
                     if adb_nsg['adb_id'] == adb['id']:
                         if adb_nsg['direction'] == 'INGRESS' and adb_nsg['protocol'] == '6' and (adb_nsg['source'] == '1521' or adb_nsg['source'] == '1522'):
-                            dictionary[entry]['status'] = True                            
+                            dictionary[entry]['status'] = True
                             break
                         else:
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(adb)
                             dictionary[entry]['failure_cause'].append("ADB does not contain a valid NSG Ingress configuration")
-                            dictionary[entry]['mitigations'].append("ADB Database: "+adb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, adb['compartment_id'])+" should contain a restrictive stateless Ingress Rule with Protocol TCP and Destination Port equal to the Database Listener Port (1521 and 1522)")
+                            dictionary[entry]['mitigations'].append(f"ADB Database: \"{adb['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, adb['compartment_id'])}\" should contain a restrictive stateless Ingress Rule with Protocol TCP and Destination Port equal to the Database Listener Port (1521 and 1522)")
                             break
                 # Check that ADB is associated to an NSG wehich contains a stateless egress rule with Protocol TCP which has any CIDR block as destination
                 for adb_nsg in self.__adb_nsgs:
                     if adb_nsg['adb_id'] == adb['id']:
                         if adb_nsg['direction'] == 'EGRESS' and adb_nsg['protocol'] == '6': 
-                            dictionary[entry]['status'] = True                            
+                            dictionary[entry]['status'] = True
                             break
                         else:
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(adb)
                             dictionary[entry]['failure_cause'].append("ADB does not contain a valid NSG Egress configuration")
-                            dictionary[entry]['mitigations'].append("ADB Database: "+adb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, adb['compartment_id'])+" should contain a restrictive stateless Egress Rule with Protocol TCP and Destination as Consumer Subnet CIDR Block ")
+                            dictionary[entry]['mitigations'].append(f"ADB Database: \"{adb['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, adb['compartment_id'])}\" should contain a restrictive stateless Egress Rule with Protocol TCP and Destination as Consumer Subnet CIDR Block ")
                             break
-      
-        
-                
-        
-                                                     
+                    
         return dictionary
-
-
-
-        
