@@ -8,6 +8,15 @@
 export KEY_FILE_REGEX_TODO="key_file=<path to your private keyfile> # TODO"
 export CLI_CONFIG_FILE=~/.oci/config
 
+__is_cloud_shell(){
+  #if whoami command result is different from opc then return true. Else return false
+    if [ "$(whoami)" != "opc" ] && [ "$(whoami)" != "ubuntu" ] ; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 __is_ubuntu_or_debian() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -108,46 +117,51 @@ __install_oci_cli(){
 __source_bashrc
 if ! __is_oci_cli_installed ; then    
   echo '============== CLI Pre-Requisites =============='
-    if __is_redhat_or_centos ; then      
-        echo 'Installing OCI CLI in RedHat or CentOS...'
-        sudo runuser -l opc -c 'mkdir -p /home/opc/oci_cli'
-        sudo runuser -l opc -c 'wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh'
-        sudo runuser -l opc -c 'chmod +x install.sh'
-        sudo runuser -l opc -c '/home/opc/install.sh --install-dir /home/opc/oci_cli/lib/oracle-cli --exec-dir /home/opc/oci_cli/bin --accept-all-defaults'
-        sudo runuser -l opc -c 'cp -rl /home/opc/bin /home/opc/oci_cli'
-        sudo runuser -l opc -c 'rm -r /home/opc/bin'
-        sudo runuser -l opc -c 'mkdir -p /home/opc/.oci'
-        sudo runuser -l opc -c 'touch /home/opc/.oci/config'
-        sudo runuser -l opc -c 'oci setup repair-file-permissions --file /home/opc/.oci/config'
-    elif __is_ubuntu_or_debian ; then
-        echo 'Installing OCI CLI in Ubuntu or Debian...'
-        sudo runuser -l ubuntu -c 'mkdir -p /home/ubuntu/oci_cli'
-        sudo runuser -l ubuntu -c 'wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh'
-        sudo runuser -l ubuntu -c 'chmod +x install.sh'
-        sudo runuser -l ubuntu -c '/home/ubuntu/install.sh --install-dir /home/ubuntu/oci_cli/lib/oracle-cli --exec-dir /home/ubuntu/oci_cli/bin --accept-all-defaults'
-        sudo runuser -l ubuntu -c 'cp -rl /home/ubuntu/bin /home/ubuntu/oci_cli'
-        sudo runuser -l ubuntu -c 'rm -r /home/ubuntu/bin'
-        sudo runuser -l ubuntu -c 'mkdir -p /home/ubuntu/.oci'
-        sudo runuser -l ubuntu -c 'touch /home/ubuntu/.oci/config'
-        sudo runuser -l ubuntu -c 'oci setup repair-file-permissions --file /home/ubuntu/.oci/config'
+    if __is_redhat_or_centos ; then
+        if ! __is_cloud_shell ; then      
+            echo 'Installing OCI CLI in RedHat or CentOS...'
+            sudo runuser -l opc -c 'mkdir -p /home/opc/oci_cli'
+            sudo runuser -l opc -c 'wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh'
+            sudo runuser -l opc -c 'chmod +x install.sh'
+            sudo runuser -l opc -c '/home/opc/install.sh --install-dir /home/opc/oci_cli/lib/oracle-cli --exec-dir /home/opc/oci_cli/bin --accept-all-defaults'
+            sudo runuser -l opc -c 'cp -rl /home/opc/bin /home/opc/oci_cli'
+            sudo runuser -l opc -c 'rm -r /home/opc/bin'
+            sudo runuser -l opc -c 'mkdir -p /home/opc/.oci'
+            sudo runuser -l opc -c 'touch /home/opc/.oci/config'
+            sudo runuser -l opc -c 'oci setup repair-file-permissions --file /home/opc/.oci/config'
+        fi
+        if __is_ubuntu_or_debian ; then
+            echo 'Installing OCI CLI in Ubuntu or Debian...'
+            sudo runuser -l ubuntu -c 'mkdir -p /home/ubuntu/oci_cli'
+            sudo runuser -l ubuntu -c 'wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh'
+            sudo runuser -l ubuntu -c 'chmod +x install.sh'
+            sudo runuser -l ubuntu -c '/home/ubuntu/install.sh --install-dir /home/ubuntu/oci_cli/lib/oracle-cli --exec-dir /home/ubuntu/oci_cli/bin --accept-all-defaults'
+            sudo runuser -l ubuntu -c 'cp -rl /home/ubuntu/bin /home/ubuntu/oci_cli'
+            sudo runuser -l ubuntu -c 'rm -r /home/ubuntu/bin'
+            sudo runuser -l ubuntu -c 'mkdir -p /home/ubuntu/.oci'
+            sudo runuser -l ubuntu -c 'touch /home/ubuntu/.oci/config'
+            sudo runuser -l ubuntu -c 'oci setup repair-file-permissions --file /home/ubuntu/.oci/config'
+        fi
     fi
 fi
 
 if [ -s $CLI_CONFIG_FILE ]; then  # This checks if the oci config file is not emtpy
-    if [[ $(grep "$KEY_FILE_REGEX_TODO" $CLI_CONFIG_FILE) ]] ; then
-        echo "Checking key configuration on $CLI_CONFIG_FILE..."
-        echo "*************ERROR**************"
-        echo "Config file $CLI_CONFIG_FILE does not contain a valid key file path"
-        echo "*************ERROR**************"
-        __cli_documentation
+    if ! __is_cloud_shell; then
+        if [[ $(grep "$KEY_FILE_REGEX_TODO" $CLI_CONFIG_FILE) ]] ; then
+            echo "Checking key configuration on $CLI_CONFIG_FILE..."
+            echo "*************ERROR**************"
+            echo "Config file $CLI_CONFIG_FILE does not contain a valid key file path"
+            echo "*************ERROR**************"
+            __cli_documentation
+        fi
+        else
+            echo "Checking OCI CLI config file..."
+            echo "*************ERROR**************"
+            echo "Config file $CLI_CONFIG_FILE is empty"
+            echo "*************ERROR**************"
+            __cli_documentation
+        fi
     fi
-else
-    echo "Checking OCI CLI config file..."
-    echo "*************ERROR**************"
-    echo "Config file $CLI_CONFIG_FILE is empty"
-    echo "*************ERROR**************"
-    __cli_documentation
-fi
 }
 
 

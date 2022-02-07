@@ -5,6 +5,16 @@
 #
 # Purpose: Main module which starts the application
 
+# if OS user is opc or ubuntu then return true. Else return false
+__is_cloud_shell(){
+  #if whoami command result is different from opc then return true. Else return false
+    if [ "$(whoami)" != "opc" ] && [ "$(whoami)" != "ubuntu" ] ; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 
 # Calling OS pre-requisites script
 bash common/bash/prereqs.sh
@@ -28,10 +38,20 @@ fi
 
 # save the output to a file but also show in console
 
-python3 fireup.py 2>&1 | tee ./reports/fireup_color.log 
-sed 's/\x1b\[[0-9;]*[mGKH]//g' ./reports/fireup_color.log > ./reports/fireup.log
-sed -i '$d' ./reports/fireup.log
-rm ./reports/fireup_color.log
+if ! __is_cloud_shell; then
+    python3 fireup.py 2>&1 | tee ./reports/fireup_color.log 
+    sed 's/\x1b\[[0-9;]*[mGKH]//g' ./reports/fireup_color.log > ./reports/fireup.log
+    sed -i '$d' ./reports/fireup.log
+    rm ./reports/fireup_color.log
 
-tar -cvf reports.tar.gz ./reports &>/dev/null
-rm -rf reports
+    tar -cvf reports.tar.gz ./reports &>/dev/null
+    rm -rf reports
+else
+    python3 fireup.py -dt 2>&1 | tee ./reports/fireup_color.log 
+    sed 's/\x1b\[[0-9;]*[mGKH]//g' ./reports/fireup_color.log > ./reports/fireup.log
+    sed -i '$d' ./reports/fireup.log
+    rm ./reports/fireup_color.log
+
+    tar -cvf reports.tar.gz ./reports &>/dev/null
+    rm -rf reports
+fi
