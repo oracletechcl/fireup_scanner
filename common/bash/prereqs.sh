@@ -24,7 +24,7 @@ __is_ubuntu_or_debian() {
 __is_redhat_or_centos() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
-    if [ "$ID" = "rhel" -o "$ID" = "centos" ]; then
+    if [ "$ID" = "rhel" -o "$ID" = "centos" -o "$ID" = "ol" ]; then
       return 0
     else
       return 1
