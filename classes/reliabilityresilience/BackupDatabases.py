@@ -19,6 +19,8 @@ class BackupDatabases(ReviewPoint):
     __db_systems_with_no_backups_dicts = []
     __mysql_dbs_with_no_backups = []
     __mysql_dbs_with_no_backups_dicts = []
+
+    __compartments = []
     __identity = None
 
     def __init__(self,
@@ -66,10 +68,10 @@ class BackupDatabases(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__db_system_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], compartments, ParallelExecutor.get_database_homes, len(compartments), ParallelExecutor.db_system_homes)
+        self.__db_system_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_homes, len(self.__compartments), ParallelExecutor.db_system_homes)
 
         if len(self.__db_system_home_objects) > 0:
             self.__dbs_from_db_homes = ParallelExecutor.executor(db_system_clients, self.__db_system_home_objects, ParallelExecutor.get_dbs_from_db_homes, len(self.__db_system_home_objects), ParallelExecutor.dbs_from_db_homes)
@@ -91,7 +93,7 @@ class BackupDatabases(ReviewPoint):
                         }
                         self.__db_systems_with_no_backups_dicts.append( (db, record) )
 
-        self.__mysql_database_objects = ParallelExecutor.executor(mysql_clients, compartments, ParallelExecutor.get_mysql_dbs, len(compartments), ParallelExecutor.mysql_dbsystems)
+        self.__mysql_database_objects = ParallelExecutor.executor(mysql_clients, self.__compartments, ParallelExecutor.get_mysql_dbs, len(self.__compartments), ParallelExecutor.mysql_dbsystems)
 
         if len(self.__mysql_database_objects) > 0:
             self.__mysql_dbs_with_no_backups = ParallelExecutor.executor(mysql_backup_clients, self.__mysql_database_objects, ParallelExecutor.get_mysql_dbs_with_no_backups, len(self.__mysql_database_objects), ParallelExecutor.mysql_dbs_with_no_backups)
@@ -125,13 +127,13 @@ class BackupDatabases(ReviewPoint):
         for db, db_home in self.__db_systems_with_no_backups_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(db_home)
-            dictionary[entry]['failure_cause'].append('Each Database System database should have automatic backup enabled')
-            dictionary[entry]['mitigations'].append(f"Make sure database {db.db_name} within database home {db_home['display_name']} has automatic backup enabled.")
+            dictionary[entry]['failure_cause'].append("Each Database System database should have automatic backup enabled")
+            dictionary[entry]['mitigations'].append(f"Make sure database \"{db.db_name}\" within database home \"{db_home['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, db_home['compartment_id'])}\" has automatic backup enabled.")
 
         for mysql_database in self.__mysql_dbs_with_no_backups_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(mysql_database)
-            dictionary[entry]['failure_cause'].append('Each MySQL Database should have automatic backup enabled')
-            dictionary[entry]['mitigations'].append(f"Make sure MySQL Database {mysql_database['display_name']} has automatic backup enabled.")
+            dictionary[entry]['failure_cause'].append("Each MySQL Database should have automatic backup enabled")
+            dictionary[entry]['mitigations'].append(f"Make sure MySQL Database \"{mysql_database['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, mysql_database['compartment_id'])}\" has automatic backup enabled.")
 
         return dictionary

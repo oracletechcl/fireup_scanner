@@ -100,6 +100,6 @@ class BusyLimits(ReviewPoint):
         for key, value in self.__non_compliant_limits.items():
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('Ensure you have room for growth and expansion in your tenancy.')
-            dictionary[entry]['mitigations'].append(f"Limit name: {key}, has reached 90% or greater use in: {value}")
+            dictionary[entry]['mitigations'].append(f"Limit name: \"{key}\", has reached \"90%\" or greater use in: {value}")
 
         return dictionary

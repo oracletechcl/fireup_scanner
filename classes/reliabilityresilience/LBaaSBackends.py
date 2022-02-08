@@ -15,6 +15,7 @@ class LBaaSBackends(ReviewPoint):
     __combined_load_balancers = []
     __load_balancer_objects = []
     __network_load_balancer_objects = []
+    __compartments = []
     __identity = None
 
     def __init__(self,
@@ -61,12 +62,12 @@ class LBaaSBackends(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, compartments, ParallelExecutor.get_load_balancers, len(compartments), ParallelExecutor.load_balancers)
+        self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
         
-        self.__network_load_balancer_objects = ParallelExecutor.executor(network_load_balancer_clients, compartments, ParallelExecutor.get_network_load_balancers, len(compartments), ParallelExecutor.network_load_balancers)
+        self.__network_load_balancer_objects = ParallelExecutor.executor(network_load_balancer_clients, self.__compartments, ParallelExecutor.get_network_load_balancers, len(self.__compartments), ParallelExecutor.network_load_balancers)
 
         for load_balancer in self.__load_balancer_objects + self.__network_load_balancer_objects:
             record = {
@@ -97,11 +98,11 @@ class LBaaSBackends(ReviewPoint):
                 if len(backend_set_dict) == 0:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(load_balancer)
-                    dictionary[entry]['failure_cause'].append('Load balancers should all have attached backend sets populated with one or more backend.')
+                    dictionary[entry]['failure_cause'].append("Load balancers should all have attached backend sets populated with one or more backend.")
                     if "networkloadbalancer" in load_balancer['id']:
-                        dictionary[entry]['mitigations'].append('Make sure network load balancer '+str(load_balancer['display_name'])+' has backends attached to it.')
+                        dictionary[entry]['mitigations'].append(f"Make sure network load balancer \"{load_balancer['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, load_balancer['compartment_id'])}\" has backends attached to it.")
                     else:
-                        dictionary[entry]['mitigations'].append('Make sure load balancer '+str(load_balancer['display_name'])+' has backends attached to it.')
+                        dictionary[entry]['mitigations'].append(f"Make sure load balancer \"{load_balancer['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, load_balancer['compartment_id'])}\" has backends attached to it.")
                     break
 
         return dictionary

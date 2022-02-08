@@ -14,6 +14,7 @@ class CIDRSize(ReviewPoint):
     # Class Variables
     __vcns = []
     __vcn_objects = []
+    __compartments = []
     __identity = None
 
     def __init__(self,
@@ -58,10 +59,10 @@ class CIDRSize(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__vcn_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_vcns_in_compartments, len(compartments), ParallelExecutor.vcns)
+        self.__vcn_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_vcns_in_compartments, len(self.__compartments), ParallelExecutor.vcns)
 
         for vcn in self.__vcn_objects:
             record = {
@@ -86,7 +87,7 @@ class CIDRSize(ReviewPoint):
                 if int(cidr.split('/')[1]) > 24:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(vcn)
-                    dictionary[entry]['failure_cause'].append('VCNs CIDR Blocks are too small, making it harder to expand.')
-                    dictionary[entry]['mitigations'].append('Make sure vcn '+str(vcn['display_name'])+' CIDR block(s) are at least /24 or bigger.')
+                    dictionary[entry]['failure_cause'].append("VCNs CIDR Blocks are too small, making it harder to expand.")
+                    dictionary[entry]['mitigations'].append(f"Make sure vcn: \"{vcn['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, vcn['compartment_id'])}\" CIDR block(s) are at least /24 or bigger.")
 
         return dictionary

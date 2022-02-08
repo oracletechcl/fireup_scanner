@@ -17,6 +17,7 @@ class ServiceLimits(ReviewPoint):
     __non_compliant_limits = dict()
     __identity = None
 
+
     def __init__(self,
                 entry:str, 
                 area:str, 
@@ -108,7 +109,7 @@ class ServiceLimits(ReviewPoint):
         for key, value in self.__non_compliant_limits.items():
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('Limits should be correctly configured to what is required for the workload.')
-            dictionary[entry]['mitigations'].append(f"Limit name: \"{key[0]}\", is different to expected default of: \"{key[1]}\" in: \"{value}\"")
+            dictionary[entry]['mitigations'].append(f"Limit name: \"{key[0]}\", is different to expected default of: \"{key[1]}\" in: {value}")
 
         return dictionary
 

@@ -106,8 +106,8 @@ class DataSecurity(ReviewPoint):
             if not instance['launch_options'].is_pv_encryption_in_transit_enabled:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(instance)
-                dictionary[entry]['mitigations'].append(f"Instance: {instance['display_name']}, located in {get_compartment_name(self.__compartments, instance['compartment_id'])}, does not have in-transit encryption enabled.")
-                dictionary[entry]['failure_cause'].append('Instances detected without in-transit encryption between boot volume and instance.')
+                dictionary[entry]['failure_cause'].append("Instances detected without in-transit encryption between boot volume and instance.")
+                dictionary[entry]['mitigations'].append(f"Instance: \"{instance['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, instance['compartment_id'])}\" does not have in-transit encryption enabled.")
 
         # Checks a policy exists relating to each of the following families
         __criteria = ["file-family", "object-family", "volume-family", "autonomous-database-family", "database-family"]
@@ -120,7 +120,7 @@ class DataSecurity(ReviewPoint):
 
         for criteria in __criteria:
             dictionary[entry]['status'] = False
-            dictionary[entry]['mitigations'].append(f"Add a policy for managing the family: {criteria}.")
-            dictionary[entry]['failure_cause'].append('Add missing policies for providing granular access controls for your data and its backups.')
+            dictionary[entry]['failure_cause'].append("Add missing policies for providing granular access controls for your data and its backups.")
+            dictionary[entry]['mitigations'].append(f"Add a policy for managing the family: \"{criteria}\"")
 
         return dictionary

@@ -114,9 +114,9 @@ class CheckAutoscaling(ReviewPoint):
                     break
             if not configuration_present:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(instance_pool)    
-                dictionary[entry]['failure_cause'].append('The instance pool does not have any autoscaling configuraiton created')                
-                dictionary[entry]['mitigations'].append('Make sure to create and attach autoscaling configuraiton for instance pool named: ' + instance_pool['display_name'])          
+                dictionary[entry]['findings'].append(instance_pool)
+                dictionary[entry]['failure_cause'].append("The instance pool does not have any autoscaling configuraiton created")                
+                dictionary[entry]['mitigations'].append(f"Make sure to create and attach autoscaling configuraiton for instance pool named: \"{instance_pool['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, instance_pool['compartment_id'])}\"")          
         
         # Check if Autoscaler for Kubernetes is enabled in policy statements
         __subject = 'dynamic-group'
@@ -132,8 +132,8 @@ class CheckAutoscaling(ReviewPoint):
                             break
             if not have_autoscaling_policy:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(oke_cluster)    
-                dictionary[entry]['failure_cause'].append('Kubernetes cluster does not have any autoscaling enabled')                
-                dictionary[entry]['mitigations'].append('Make sure that the right policies are in place to enable Kubernetes autoscaler in a cluster named: ' + oke_cluster['name'])
+                dictionary[entry]['findings'].append(oke_cluster)
+                dictionary[entry]['failure_cause'].append("Kubernetes cluster does not have any autoscaling enabled")
+                dictionary[entry]['mitigations'].append(f"Make sure that the auto scaling is enabled for cluster: \"{oke_cluster['name']}\" in compartment: \"{get_compartment_name(self.__compartments, oke_cluster['compartment_id'])}\"")
                 
         return dictionary
