@@ -87,53 +87,57 @@ class OptimizationMonitor(ReviewPoint):
         self.__detector_recipes_data = ParallelExecutor.executor(self.__cloud_guard_client, compartments, ParallelExecutor.get_detector_recipes, len(compartments), ParallelExecutor.detector_recipes)
         self.__responder_recipes_data = ParallelExecutor.executor(self.__cloud_guard_client, compartments, ParallelExecutor.get_responder_recipes, len(compartments), ParallelExecutor.responder_recipes)
 
-        if len(self.__detector_recipes_data) > 0:
-            self.__detector_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__detector_recipes_data, ParallelExecutor.get_detector_rules, len(self.__detector_recipes_data), ParallelExecutor.detector_recipes_with_rules)
-        
-        if len(self.__responder_recipes_data) > 0:
-            self.__responder_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__responder_recipes_data, ParallelExecutor.get_responder_rules, len(self.__responder_recipes_data), ParallelExecutor.responder_recipes_with_rules)
-        
-        for recipe_with_rules in self.__detector_recipes_with_rules_data:
-            if recipe_with_rules[0].owner == "CUSTOMER":
-                recipe_record = {
-                    'display_name': recipe_with_rules[0].display_name,
-                    'id': recipe_with_rules[0].id,
-                    'owner': recipe_with_rules[0].owner,
-                    'lifecycle_state': recipe_with_rules[0].lifecycle_state,
-                    'description': recipe_with_rules[0].description,
-                }
-                for rule in recipe_with_rules[1]:
-                    if not rule.detector_details.is_enabled:
-                        rule_record = {
-                            'display_name': rule.display_name,
-                            'description': rule.description,
-                            'id': rule.id,
-                            'service_type': rule.service_type,
-                            'resource_type': rule.resource_type,
-                            'detector': rule.detector,
-                            'risk_level': rule.detector_details.risk_level,
-                            'detector_details': rule.detector_details,
-                        }
-                        self.__non_compliant_detector_rules.append( (recipe_record, rule_record) )
+        if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] == 'ENABLED':
+            if len(self.__detector_recipes_data) > 0:            
+                    self.__detector_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__detector_recipes_data, ParallelExecutor.get_detector_rules, len(self.__detector_recipes_data), ParallelExecutor.detector_recipes_with_rules)
 
-        for recipe_with_rules in self.__responder_recipes_with_rules_data:
-            if recipe_with_rules[0].owner == "CUSTOMER":
-                recipe_record = {
-                    'display_name': recipe_with_rules[0].display_name,
-                    'id': recipe_with_rules[0].id,
-                    'owner': recipe_with_rules[0].owner,
-                    'lifecycle_state': recipe_with_rules[0].lifecycle_state,
-                    'description': recipe_with_rules[0].description,
-                }
-                for rule in recipe_with_rules[1]:
-                    if not rule.details.is_enabled:
-                        rule_record = {
-                            'display_name': rule.display_name,
-                            'description': rule.description,
-                            'id': rule.id,
-                            'details': rule.details,
-                        }
-                        self.__non_compliant_responder_rules.append( (recipe_record, rule_record) )
+        if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] == 'ENABLED':
+            if len(self.__responder_recipes_data) > 0:            
+                    self.__responder_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__responder_recipes_data, ParallelExecutor.get_responder_rules, len(self.__responder_recipes_data), ParallelExecutor.responder_recipes_with_rules)
+        
+        if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] == 'ENABLED':
+            for recipe_with_rules in self.__detector_recipes_with_rules_data:
+                if recipe_with_rules[0].owner == "CUSTOMER":
+                    recipe_record = {
+                        'display_name': recipe_with_rules[0].display_name,
+                        'id': recipe_with_rules[0].id,
+                        'owner': recipe_with_rules[0].owner,
+                        'lifecycle_state': recipe_with_rules[0].lifecycle_state,
+                        'description': recipe_with_rules[0].description,
+                    }
+                    for rule in recipe_with_rules[1]:
+                        if not rule.detector_details.is_enabled:
+                            rule_record = {
+                                'display_name': rule.display_name,
+                                'description': rule.description,
+                                'id': rule.id,
+                                'service_type': rule.service_type,
+                                'resource_type': rule.resource_type,
+                                'detector': rule.detector,
+                                'risk_level': rule.detector_details.risk_level,
+                                'detector_details': rule.detector_details,
+                            }
+                            self.__non_compliant_detector_rules.append( (recipe_record, rule_record) )
+                            
+        if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] == 'ENABLED':
+            for recipe_with_rules in self.__responder_recipes_with_rules_data:
+                if recipe_with_rules[0].owner == "CUSTOMER":
+                    recipe_record = {
+                        'display_name': recipe_with_rules[0].display_name,
+                        'id': recipe_with_rules[0].id,
+                        'owner': recipe_with_rules[0].owner,
+                        'lifecycle_state': recipe_with_rules[0].lifecycle_state,
+                        'description': recipe_with_rules[0].description,
+                    }
+                    for rule in recipe_with_rules[1]:
+                        if not rule.details.is_enabled:
+                            rule_record = {
+                                'display_name': rule.display_name,
+                                'description': rule.description,
+                                'id': rule.id,
+                                'details': rule.details,
+                            }
+                            self.__non_compliant_responder_rules.append( (recipe_record, rule_record) )
 
         
     def analyze_entity(self, entry):
