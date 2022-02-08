@@ -90,10 +90,10 @@ class OptimizationMonitor(ReviewPoint):
         self.__responder_recipes_data = ParallelExecutor.executor(self.__cloud_guard_client, compartments, ParallelExecutor.get_responder_recipes, len(compartments), ParallelExecutor.responder_recipes)
 
         if len(self.__detector_recipes_data) > 0:            
-                self.__detector_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__detector_recipes_data, ParallelExecutor.get_detector_rules, len(self.__detector_recipes_data), ParallelExecutor.detector_recipes_with_rules)
+            self.__detector_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__detector_recipes_data, ParallelExecutor.get_detector_rules, len(self.__detector_recipes_data), ParallelExecutor.detector_recipes_with_rules)
 
         if len(self.__responder_recipes_data) > 0:            
-                self.__responder_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__responder_recipes_data, ParallelExecutor.get_responder_rules, len(self.__responder_recipes_data), ParallelExecutor.responder_recipes_with_rules)
+            self.__responder_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__responder_recipes_data, ParallelExecutor.get_responder_rules, len(self.__responder_recipes_data), ParallelExecutor.responder_recipes_with_rules)
 
         for recipe_with_rules in self.__detector_recipes_with_rules_data:
             if recipe_with_rules[0].owner == "CUSTOMER":
