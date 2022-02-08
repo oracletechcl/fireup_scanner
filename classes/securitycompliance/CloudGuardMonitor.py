@@ -52,7 +52,7 @@ class CloudGuardMonitor(ReviewPoint):
        self.__cloud_guard_client = get_cloud_guard_client(self.config, self.signer)
 
 
-    def load_entity(self):   
+    def load_entity(self):
         
         # Get cloud guard configuration data based on tenancy id
         self.__cloud_guard_data = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)
@@ -85,8 +85,8 @@ class CloudGuardMonitor(ReviewPoint):
         # Check if Cloud Guard is enable
         if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
             dictionary[entry]['status'] = False
-            dictionary[entry]['findings'].append(self.__tenancy_data_including_cloud_guard) 
+            dictionary[entry]['findings'].append(self.__tenancy_data_including_cloud_guard)
             dictionary[entry]['failure_cause'].append("Root level of the tenancy does not have Cloud Guard enabled")
-            dictionary[entry]['mitigations'].append('Enable Cloud Guard on tenancy: ' + self.__tenancy_data_including_cloud_guard['tenancy_name'])
-                                  
+            dictionary[entry]['mitigations'].append("Enable Cloud Guard on tenancy")
+
         return dictionary

@@ -72,9 +72,6 @@ class Admin(ReviewPoint):
             }
             self.__policies.append(record)
 
-    
-       
-        
 
     def analyze_entity(self, entry):
         self.load_entity()        
@@ -90,12 +87,13 @@ class Admin(ReviewPoint):
                         if "service".upper() not in statement.upper(): # Filter out service policies
                             if "group".upper() and "manage".upper() and "family".upper() in statement.upper(): # Check for segregated policies for manage, assigned to specific groups
                                 if "functions-family".upper() not in statement.upper(): # Filter out functions-family policies as this is mandatory policy in case of functions usage                                    
-                                    counter+=1                 # count the value of a compliant policy
+                                    counter+=1 # count the value of a compliant policy
                                     good_policy_list.append(policy['statements'])
         
         if counter < 10: #criteria today is above 10 policies, will regard an IAM schema applied. 
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['findings'].append(policy)
-                    dictionary[entry]['failure_cause'].append("Not enough policies found that are compliant with granularity. A minimum of 10 is considered acceptable")                
-                    dictionary[entry]['mitigations'].append('Increase the amount of granular policies containing \'manage family\' as verbs. Sample: '+str(good_policy_list))                                  
+            dictionary[entry]['status'] = False
+            dictionary[entry]['findings'].append(policy)
+            dictionary[entry]['failure_cause'].append("Not enough policies found that are compliant with granularity. A minimum of 10 is considered acceptable")                
+            dictionary[entry]['mitigations'].append(f"Increase the amount of granular policies containing \"manage family\" as verbs. Sample: {good_policy_list}")
+
         return dictionary

@@ -19,6 +19,7 @@ class BucketEncryption(ReviewPoint):
     __identity = None
     __tenancy = None
     __bucket_objects = []
+    __compartments = []
      
     def __init__(self,
                 entry:str, 
@@ -57,8 +58,8 @@ class BucketEncryption(ReviewPoint):
         object_storage_clients = []
         regions = get_regions_data(self.__identity, self.config)
 
-        compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
         # get clients from each region 
         for region in regions:
@@ -66,7 +67,7 @@ class BucketEncryption(ReviewPoint):
             region_config['region'] = region.region_name
             object_storage_clients.append((get_object_storage_client(region_config, self.signer), obj_namespace))
       
-        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, compartments, ParallelExecutor.get_buckets, len(compartments), ParallelExecutor.buckets)     
+        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)     
 
     def analyze_entity(self, entry):
     
@@ -77,8 +78,8 @@ class BucketEncryption(ReviewPoint):
             if  not bucket.kms_key_id:               
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append({index:bucket.name})
-                dictionary[entry]['failure_cause'].append(f'The bucket is by default encrypted using an Oracle-managed master encryption key.')   
-                dictionary[entry]['mitigations'].append(f'For bucket: "{bucket.name}" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service and rotate at a schedule that you define.')   
+                dictionary[entry]['failure_cause'].append("The bucket is by default encrypted using an Oracle-managed master encryption key.")   
+                dictionary[entry]['mitigations'].append(f"For bucket: \"{bucket.name}\" in compartment: \"{get_compartment_name(self.__compartments, bucket.compartment_id)}\" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service and rotate at a schedule that you define.")   
 
         return dictionary
 
