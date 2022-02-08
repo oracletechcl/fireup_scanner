@@ -3,7 +3,6 @@
 # TransitRouting.py
 # Description: Implementation of class TransitRouting based on abstract
 
-from pyexpat.errors import codes
 from classes.abstract.ReviewPoint import ReviewPoint
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
