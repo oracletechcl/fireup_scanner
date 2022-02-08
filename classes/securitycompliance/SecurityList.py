@@ -13,6 +13,7 @@ class SecurityList(ReviewPoint):
 
     # Class Variables
     __identity = None
+    __compartments = []
     __sec_list_objects = []
     __non_compliant_sec_list = []
 
@@ -58,10 +59,10 @@ class SecurityList(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__sec_list_objects = ParallelExecutor.executor(network_clients, compartments, ParallelExecutor.get_security_lists, len(compartments), ParallelExecutor.security_lists)
+        self.__sec_list_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_security_lists, len(self.__compartments), ParallelExecutor.security_lists)
 
         for sec_list in self.__sec_list_objects:
             for ingress in sec_list.ingress_security_rules:
@@ -92,11 +93,11 @@ class SecurityList(ReviewPoint):
 
         if len(self.__non_compliant_sec_list) > 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Security List contains a wide open \"0.0.0.0/0\" CIDR in ingress rule that needs to be closed')
+            dictionary[entry]['failure_cause'].append("Security List contains a wide open \"0.0.0.0/0\" CIDR in ingress rule that needs to be closed")
             for sec_list in self.__non_compliant_sec_list:
                 if sec_list not in dictionary[entry]['findings']:
                     dictionary[entry]['findings'].append(sec_list)
-                    dictionary[entry]['mitigations'].append('Make sure to reduce access and set more granular permissions into: '+sec_list['display_name'])
+                    dictionary[entry]['mitigations'].append(f"Make sure to reduce access and set more granular permissions into: \"{sec_list['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, sec_list['compartment_id'])}\"")
                                        
         return dictionary
 

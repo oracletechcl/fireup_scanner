@@ -12,11 +12,11 @@ from common.utils.helpers.helper import *
 class DistributeTraffic(ReviewPoint):
     # Class Variables
     __steering_policy_objects = []
-    __steering_policies = []
     __load_balancer_objects = []
     __dns_zone_objects = []
     __compartments = []
     __identity = None
+
 
     def __init__(self,
                  entry: str,
@@ -45,6 +45,7 @@ class DistributeTraffic(ReviewPoint):
         self.signer = signer
         self.__identity = get_identity_client(self.config, self.signer)
 
+
     def load_entity(self):
         regions = get_regions_data(self.__identity, self.config)
 
@@ -63,19 +64,12 @@ class DistributeTraffic(ReviewPoint):
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__steering_policy_objects = ParallelExecutor.executor(dns_clients, self.__compartments,
-                                                                   ParallelExecutor.get_steering_policies,
-                                                                   len(self.__compartments),
-                                                                   ParallelExecutor.steering_policies)
-        self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments,
-                                                                 ParallelExecutor.get_load_balancers,
-                                                                 len(self.__compartments),
-                                                                 ParallelExecutor.load_balancers)
-        self.__dns_zone_objects = ParallelExecutor.executor(dns_clients, self.__compartments,
-                                                            ParallelExecutor.get_dns_zones, len(self.__compartments),
-                                                            ParallelExecutor.dns_zones)
+        self.__steering_policy_objects = ParallelExecutor.executor(dns_clients, self.__compartments, ParallelExecutor.get_steering_policies, len(self.__compartments), ParallelExecutor.steering_policies)
+        self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
+        self.__dns_zone_objects = ParallelExecutor.executor(dns_clients, self.__compartments, ParallelExecutor.get_dns_zones, len(self.__compartments), ParallelExecutor.dns_zones)
 
         return self.__steering_policy_objects
+
 
     def analyze_entity(self, entry):
         self.load_entity()
@@ -84,20 +78,17 @@ class DistributeTraffic(ReviewPoint):
 
         if len(self.__steering_policy_objects) == 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('No steering policies found but in this tenancy')
-            dictionary[entry]['mitigations'].append('Consider using steering policies if workload is split across '
-                                                    'multiple regions.')
+            dictionary[entry]['failure_cause'].append("No steering policies found but in this tenancy")
+            dictionary[entry]['mitigations'].append("Consider using \"steering policies\" if workload is split across multiple regions.")
 
         if len(self.__load_balancer_objects) == 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('No load balancers were found but in this tenancy')
-            dictionary[entry]['mitigations'].append('Consider using load balancers to improves resource utilization, '
-                                                    'scaling, and ensure high availability')
+            dictionary[entry]['failure_cause'].append("No load balancers were found but in this tenancy")
+            dictionary[entry]['mitigations'].append("Consider using \"load balancers\" to improves resource utilization, scaling, and ensure high availability")
 
         if len(self.__dns_zone_objects) == 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('No DNS Zones were found but in this tenancy')
-            dictionary[entry]['mitigations'].append('Consider using DNS Zones to handle your DNS queries for better '
-                                                    'resource distribution.')
+            dictionary[entry]['failure_cause'].append("No DNS Zones were found but in this tenancy")
+            dictionary[entry]['mitigations'].append("Consider using \"DNS Zones\" to handle your DNS queries for better resource distribution.")
 
         return dictionary

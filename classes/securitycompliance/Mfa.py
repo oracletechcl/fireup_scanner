@@ -99,7 +99,7 @@ class Mfa(ReviewPoint):
                 
 
     def analyze_entity(self, entry):
-        self.load_entity()       
+        self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         counter = 0
         __criteria_1 = "in tenancy where request.user.mfaTotpVerified='true'"
@@ -108,25 +108,18 @@ class Mfa(ReviewPoint):
             if user['is_mfa_activated'] == False and user['lifecycle_state'] == 'ACTIVE':
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(user)
-                dictionary[entry]['failure_cause'].append("User does not have MFA activated")                
-                dictionary[entry]['mitigations'].append('Enable MFA on user: ' + user['name'])      
+                dictionary[entry]['failure_cause'].append("User does not have MFA activated")
+                dictionary[entry]['mitigations'].append(f"Enable MFA on user: \"{user['name']}\"")
 
         for policy in self.__policies:
             for statement in policy['statements']:
-                if __criteria_1.upper() in statement.upper() :                                        
+                if __criteria_1.upper() in statement.upper():
                     counter+=1
 
 
         if counter < 1: 
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('No Policies for enforcing MFA have been detected')                
-            dictionary[entry]['mitigations'].append('Add the following policies into the tenancy to enforce MFA: allow group GroupA to manage instance-family in tenancy where request.user.mfaTotpVerified=\'true\'')                          
+            dictionary[entry]['failure_cause'].append("No Policies for enforcing MFA have been detected")
+            dictionary[entry]['mitigations'].append("Add the following policies into the tenancy to enforce MFA: \"allow group GroupA to manage instance-family in tenancy where request.user.mfaTotpVerified=\'true\'\"")                          
 
         return dictionary
-
-        
-        
-
-
-
-    

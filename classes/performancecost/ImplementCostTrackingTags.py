@@ -18,6 +18,8 @@ class ImplementCostTrackingTags(ReviewPoint):
     __compartments = []
     __identity = None
 
+
+
     def __init__(self,
                  entry: str,
                  area: str,
@@ -45,6 +47,7 @@ class ImplementCostTrackingTags(ReviewPoint):
         self.signer = signer
         self.__identity = get_identity_client(self.config, self.signer)
 
+
     def load_entity(self):
 
         regions = get_regions_data(self.__identity, self.config)
@@ -60,9 +63,7 @@ class ImplementCostTrackingTags(ReviewPoint):
             region_config['region'] = region.region_name
             identity_clients.append(get_identity_client(region_config, self.signer))
 
-        self.__cost_tracking_tags_objects = get_cost_tracking_tags(identity_clients[0],
-                                                                   root_compartment_id=get_tenancy_data(self.__identity,
-                                                                                                        self.config).id)
+        self.__cost_tracking_tags_objects = get_cost_tracking_tags(identity_clients[0], root_compartment_id=get_tenancy_data(self.__identity, self.config).id)
 
         for cost_tracking_tag in self.__cost_tracking_tags_objects:
             record = {
@@ -79,10 +80,8 @@ class ImplementCostTrackingTags(ReviewPoint):
             }
             self.__cost_tracking_tags.append(record)
 
-        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments,
-                                                          ParallelExecutor.get_policies,
-                                                          len(self.__compartments),
-                                                          ParallelExecutor.policies)
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
+        
         for policy in self.__policy_objects:
             record = {
                 "compartment_id": policy.compartment_id,
@@ -100,6 +99,7 @@ class ImplementCostTrackingTags(ReviewPoint):
 
         return self.__cost_tracking_tags, self.__policies
 
+
     def analyze_entity(self, entry):
         self.load_entity()
 
@@ -107,9 +107,8 @@ class ImplementCostTrackingTags(ReviewPoint):
 
         if len(self.__cost_tracking_tags) == 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('No Cost Tracking Tags were found in this tenancy')
-            dictionary[entry]['mitigations'].append(
-                'Consider adding Cost Tracking Tags to allow for more flexibility in where resources are placed and how to cost data is queried.')
+            dictionary[entry]['failure_cause'].append("No Cost Tracking Tags were found in this tenancy")
+            dictionary[entry]['mitigations'].append("Consider adding \"Cost Tracking Tags\" to allow for more flexibility in where resources are placed and how to cost data is queried.")
 
         failure_case = True
         for policy in self.__policies:
@@ -119,8 +118,7 @@ class ImplementCostTrackingTags(ReviewPoint):
 
         if failure_case:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append(
-                'No Policies for securing  tagged namespaces were found in this tenancy')
-            dictionary[entry]['mitigations'].append(
-                'Consider implementing Policies to protect tagged namespaces to ensure only Tag administrators can make changes')
+            dictionary[entry]['failure_cause'].append("No Policies for securing  tagged namespaces were found in this tenancy")
+            dictionary[entry]['mitigations'].append("Consider implementing \"Policies\" to protect tagged namespaces to ensure only \"Tag administrators\" can make changes")
+
         return dictionary

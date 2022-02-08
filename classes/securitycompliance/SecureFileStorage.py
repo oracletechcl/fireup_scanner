@@ -154,7 +154,9 @@ class SecureFileStorage(ReviewPoint):
                             'identity_squash': export_details.export_options[0].identity_squash,
                         }
                         self.__non_compliant_export_list.append(export_list_record)
+
         return self.__non_compliant_sec_list, self.__non_compliant_export_list, self.__non_compliant_open_sec_list
+
 
     def analyze_entity(self, entry):
 
@@ -170,29 +172,22 @@ class SecureFileStorage(ReviewPoint):
             for sec_list in self.__non_compliant_sec_list:
                 if sec_list not in dictionary[entry]['findings']:
                     dictionary[entry]['findings'].append(sec_list)
-                    dictionary[entry]['mitigations'].append(
-                        'Make sure to alter destination port range to the required ports: ' + sec_list[
-                            'display_name'] + ('Compartment name: ' + str(get_compartment_name(self.__compartments,sec_list['compartment_id']))))
+                    dictionary[entry]['mitigations'].append(f"Make sure to alter destination port range of security list: \"{sec_list['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, sec_list['compartment_id'])}\"")
 
         if len(self.__non_compliant_export_list) > 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append(
-                'NFS all_squash option does not map all the users to ALL')
+            dictionary[entry]['failure_cause'].append("NFS all_squash option does not map all the users to ALL")
             for export in self.__non_compliant_export_list:
                 if export not in dictionary[entry]['findings']:
                     dictionary[entry]['findings'].append(export)
-                    dictionary[entry]['mitigations'].append(
-                        'Make sure to set squash options to ALL: ' + (str(export['path'])) + ' ' + ('Compartment name: ' + str(get_compartment_name(self.__compartments,export['compartment_id']))))
+                    dictionary[entry]['mitigations'].append(f"Make sure to set squash options to ALL in export path: \"{export['path']}\" in compartment: \"{get_compartment_name(self.__compartments, export['compartment_id'])}\"")
 
         if len(self.__non_compliant_open_sec_list) > 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append(
-                'An all in rule is in place where destination ports are open')
+            dictionary[entry]['failure_cause'].append("An all in rule is in place where destination ports are open")
             for source in self.__non_compliant_open_sec_list:
                 if source not in dictionary[entry]['findings']:
                     dictionary[entry]['findings'].append(source)
-                    dictionary[entry]['mitigations'].append(
-                        'Consider closing this to a micro-segmented CIDR Block: ' + source[
-                            'display_name'] + ('Compartment name: ' + str(get_compartment_name(self.__compartments,source['compartment_id']))))
+                    dictionary[entry]['mitigations'].append(f"Consider closing to a micro-segmented CIDR Block in security list: \"{source['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, source['compartment_id'])}\"")
 
         return dictionary

@@ -36,7 +36,6 @@ class ServiceLogs(ReviewPoint):
     
 
 
-
     def __init__(self,
                 entry:str, 
                 area:str, 
@@ -121,7 +120,8 @@ class ServiceLogs(ReviewPoint):
         self.__extract_dict(self.__functions, self.__functions_objects,"Function",["display_name","lifecycle_state","application_id"])
         self.__extract_dict(self.__ip_sec_tunnels, self.__ip_sec_tunnels_objects,"IPSec Tunnel",["display_name","lifecycle_state","status","vpn_ip"])
         self.__extract_dict(self.__events_rules, self.__events_rules_objects,"Event",["display_name","lifecycle_state","description","is_enabled"])
-        
+
+
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
@@ -135,6 +135,7 @@ class ServiceLogs(ReviewPoint):
         self.__check_logs(self.__events_rules, dictionary,entry)
 
         return dictionary
+
 
     def __check_logs(self,resources, dictionary,entry):
         for resource in resources:
@@ -152,13 +153,14 @@ class ServiceLogs(ReviewPoint):
             if not log_enabled:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(resource)
-                dictionary[entry]['failure_cause'].append('The ' + resource['asset'] + ' does not have Log Service enabled')
-                dictionary[entry]['mitigations'].append('Consider enabling Log Service for ' + resource['asset'] + ': ' + resource_name + ' located in compartment: ' + get_compartment_name(self.__compartments, resource['compartment_id']) + '.')
+                dictionary[entry]['failure_cause'].append(f"\"{resource['asset']}(s)\" found without Log Services enabled")
+                dictionary[entry]['mitigations'].append(f"Consider enabling Log Service for {resource['asset']}: \"{resource_name}\" in compartment: \"{get_compartment_name(self.__compartments, resource['compartment_id'])}\"")
     
+
     def __extract_dict(self, destination_list, resource_objects, asset, custom_fields ):
          for element in resource_objects:
             record = {
-                    "compartment_id": element.compartment_id,   
+                    "compartment_id": element.compartment_id,
                     "id": element.id,   
                     "time_created": element.time_created,
                     "asset": asset
@@ -167,10 +169,3 @@ class ServiceLogs(ReviewPoint):
                 record[field] = getattr(element,field)
 
             destination_list.append(record)
-
-
-
-
-
-
-

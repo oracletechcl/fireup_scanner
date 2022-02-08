@@ -109,6 +109,6 @@ class CompartmentWorkload(ReviewPoint):
                     "lifecycle_state": compartment.lifecycle_state,
                 }
                 dictionary[entry]['findings'].append(compartment_record)
-                dictionary[entry]['mitigations'].append(f"Compartment {get_compartment_name(self.__compartments, compartment.id)}, appears to house no workload.")
+                dictionary[entry]['mitigations'].append(f"Compartment: \"{get_compartment_name(self.__compartments, compartment.id)}\" appears to house no workload.")
 
         return dictionary

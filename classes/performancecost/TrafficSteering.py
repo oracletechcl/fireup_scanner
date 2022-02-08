@@ -78,6 +78,6 @@ class TrafficSteering(ReviewPoint):
         if self.__vcns_in_multiple_regions and len(self.__steering_policy_objects) == 0:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('No steering policies found but VCNs are in multiple regions')
-            dictionary[entry]['mitigations'].append('Consider using steering policies if workload is split across multiple regions.')
+            dictionary[entry]['mitigations'].append('Consider using \"steering policies\" if workload is split across multiple regions.')
             
         return dictionary

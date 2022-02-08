@@ -94,7 +94,7 @@ class LifecycleManagement(ReviewPoint):
             if not bucket['policies']:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(bucket)    
-                dictionary[entry]['failure_cause'].append('Adds lifecycle policies to each bucket to reduce your storage costs and the amount of time you spend managing data.')                
+                dictionary[entry]['failure_cause'].append("Adds lifecycle policies to each bucket to reduce your storage costs and the amount of time you spend managing data.")                
                 dictionary[entry]['mitigations'].append(f"Bucket: \"{bucket['name']}\" in compartment: \"{get_compartment_name(self.__compartments, bucket['compartment_id'])}\" has no lifecycle policies attached to it.")
 
         return dictionary

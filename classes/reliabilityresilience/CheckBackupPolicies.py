@@ -19,6 +19,7 @@ class CheckBackupPolicies(ReviewPoint):
     __file_system_objects = []
     __file_systems_with_no_snapshots = []
     __file_systems_with_no_snapshots_dicts = []
+    __compartments = []
     __identity = None
 
     def __init__(self,
@@ -79,12 +80,12 @@ class CheckBackupPolicies(ReviewPoint):
                     file_system_clients_with_ADs.append( (file_storage_client[0], availability_domain) )
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__block_volume_objects = ParallelExecutor.executor([x[0] for x in block_storage_clients], compartments, ParallelExecutor.get_block_volumes, len(compartments), ParallelExecutor.block_volumes)
+        self.__block_volume_objects = ParallelExecutor.executor([x[0] for x in block_storage_clients], self.__compartments, ParallelExecutor.get_block_volumes, len(self.__compartments), ParallelExecutor.block_volumes)
 
-        self.__boot_volume_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, compartments, ParallelExecutor.get_boot_volumes, len(compartments), ParallelExecutor.boot_volumes)
+        self.__boot_volume_objects = ParallelExecutor.executor(block_storage_clients_with_ADs, self.__compartments, ParallelExecutor.get_boot_volumes, len(self.__compartments), ParallelExecutor.boot_volumes)
 
         if len(self.__block_volume_objects + self.__boot_volume_objects) > 0:
             self.__storages_with_no_policy = ParallelExecutor.executor(block_storage_clients, self.__block_volume_objects + self.__boot_volume_objects, ParallelExecutor.get_block_storages_with_no_policy, len(self.__block_volume_objects + self.__boot_volume_objects), ParallelExecutor.storages_with_no_policy)
@@ -105,10 +106,6 @@ class CheckBackupPolicies(ReviewPoint):
                     'volume_group_id': block_storage.volume_group_id,
                     'vpus_per_gb': block_storage.vpus_per_gb,
                     'time_created': block_storage.time_created,
-                    'metered_bytes': '',
-                    'is_clone_parent': '',
-                    'lifecycle_details': '',
-                    'source_details': '',
                 }
             else:
                 record = {
@@ -125,15 +122,11 @@ class CheckBackupPolicies(ReviewPoint):
                     'volume_group_id': block_storage.volume_group_id,
                     'vpus_per_gb': block_storage.vpus_per_gb,
                     'time_created': block_storage.time_created,
-                    'metered_bytes': '',
-                    'is_clone_parent': '',
-                    'lifecycle_details': '',
-                    'source_details': '',
                 }
             
             self.__block_storages_with_no_policy_dicts.append(record)
 
-        self.__file_system_objects = ParallelExecutor.executor(file_system_clients_with_ADs, compartments, ParallelExecutor.get_file_systems, len(compartments), ParallelExecutor.file_systems)
+        self.__file_system_objects = ParallelExecutor.executor(file_system_clients_with_ADs, self.__compartments, ParallelExecutor.get_file_systems, len(self.__compartments), ParallelExecutor.file_systems)
 
         if len(self.__file_system_objects) > 0:
             self.__file_systems_with_no_snapshots = ParallelExecutor.executor(file_storage_clients, self.__file_system_objects, ParallelExecutor.get_file_systems_with_no_snapshots, len(self.__file_system_objects), ParallelExecutor.file_systems_with_no_snapshots)
@@ -152,11 +145,6 @@ class CheckBackupPolicies(ReviewPoint):
                 'metered_bytes': file_system.metered_bytes,
                 'source_details': file_system.source_details,
                 'time_created': file_system.time_created,
-                'vpus_per_gb': '',
-                'size_in_gbs': '',
-                'is_auto_tune_enabled': '',
-                'image_id': '',
-                'volume_group_id': '',
             }
             self.__file_systems_with_no_snapshots_dicts.append(record)
 
@@ -170,13 +158,13 @@ class CheckBackupPolicies(ReviewPoint):
         for block_storage in self.__block_storages_with_no_policy_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(block_storage)
-            dictionary[entry]['failure_cause'].append('Each block storages should have a backup policy.')
-            dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_storage['display_name'])+' has a backup policy assigned to it.')
+            dictionary[entry]['failure_cause'].append("Each block storages should have a backup policy.")
+            dictionary[entry]['mitigations'].append(f"Make sure block storage \"{block_storage['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, block_storage['compartment_id'])}\" has a backup policy assigned to it.")
 
         for file_system in self.__file_systems_with_no_snapshots_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(file_system)
-            dictionary[entry]['failure_cause'].append('Each file system should have snapshots within the last week.')
-            dictionary[entry]['mitigations'].append('Make sure file system '+str(file_system['display_name'])+' is creating a snapshot weekly.')
+            dictionary[entry]['failure_cause'].append("Each file system should have snapshots within the last week.")
+            dictionary[entry]['mitigations'].append(f"Make sure file system \"{file_system['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, file_system['compartment_id'])}\" is creating a snapshot weekly.")
 
         return dictionary

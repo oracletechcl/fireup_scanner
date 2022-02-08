@@ -91,9 +91,7 @@ class StoragePermissions(ReviewPoint):
                         if banned_resources in statement:
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(policy) 
-                            dictionary[entry]['failure_cause'].append('Found policy allowing un-authorized users to Delete Storage Resources')                                            
-                            dictionary[entry]['mitigations'].append("Evaluate to update policy: " + policy['name']+
-                                                                    " in compartment: "+get_compartment_name(self.__compartments, policy['compartment_id']) + 
-                                                                    " removing wide permissions: " +__verb_list[0] +" " + banned_resources)      
+                            dictionary[entry]['failure_cause'].append("Found policy allowing unauthorized users to Delete Storage Resources")                                            
+                            dictionary[entry]['mitigations'].append(f"Evaluate to update policy: \"{policy['name']}\" in compartment: \"{get_compartment_name(self.__compartments, policy['compartment_id'])}\" removing wide permissions: \"{__verb_list[0]} {banned_resources}\"")      
                
         return dictionary

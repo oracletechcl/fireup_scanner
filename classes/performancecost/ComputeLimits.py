@@ -117,7 +117,7 @@ class ComputeLimits(ReviewPoint):
 
         for key, value in self.__non_compliant_compute_limits.items():
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Limits should be correctly configured to what is required for the workload.')
-            dictionary[entry]['mitigations'].append(f"Limit name: {key}, is set greater than 5 in all of these ADs: {value}")
+            dictionary[entry]['failure_cause'].append("Limits should be correctly configured to what is required for the workload.")
+            dictionary[entry]['mitigations'].append(f"Limit name: \"{key}\", is set greater than \"5\" in all of these ADs: {value}")
 
         return dictionary

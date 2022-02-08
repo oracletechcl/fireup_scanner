@@ -19,6 +19,7 @@ class LBaaSHealthChecks(ReviewPoint):
     __load_balancer_healths = []
     __network_load_balancer_healths = []
     __combined_load_balancers = []
+    __compartments = []
     __identity = None
     
 
@@ -66,12 +67,12 @@ class LBaaSHealthChecks(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
-        compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments = get_compartments_data(self.__identity, tenancy.id)
+        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
 
-        self.__load_balancer_objects = ParallelExecutor.executor([x[0] for x in load_balancer_clients], compartments, ParallelExecutor.get_load_balancers, len(compartments), ParallelExecutor.load_balancers)
+        self.__load_balancer_objects = ParallelExecutor.executor([x[0] for x in load_balancer_clients], self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
         
-        self.__network_load_balancer_objects = ParallelExecutor.executor([x[0] for x in network_load_balancer_clients], compartments, ParallelExecutor.get_network_load_balancers, len(compartments), ParallelExecutor.network_load_balancers)
+        self.__network_load_balancer_objects = ParallelExecutor.executor([x[0] for x in network_load_balancer_clients], self.__compartments, ParallelExecutor.get_network_load_balancers, len(self.__compartments), ParallelExecutor.network_load_balancers)
 
         if len(self.__load_balancer_objects) > 0:
             self.__load_balancer_healths = ParallelExecutor.executor(load_balancer_clients, self.__load_balancer_objects, ParallelExecutor.get_load_balancer_healths, len(self.__load_balancer_objects), ParallelExecutor.load_balancer_healths)
@@ -121,8 +122,8 @@ class LBaaSHealthChecks(ReviewPoint):
                 dictionary[entry]['findings'].append(load_balancer)
                 dictionary[entry]['failure_cause'].append('Load balancers should all have passing health checks.')
                 if "networkloadbalancer" in load_balancer['id']:
-                    dictionary[entry]['mitigations'].append('Make sure network load balancer '+str(load_balancer['display_name'])+' has passing health checks')
+                    dictionary[entry]['mitigations'].append(f"Make sure network load balancer \"{load_balancer['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, load_balancer['compartment_id'])}\" has passing health checks")
                 else:
-                    dictionary[entry]['mitigations'].append('Make sure load balancer '+str(load_balancer['display_name'])+' has passing health checks')
+                    dictionary[entry]['mitigations'].append(f"Make sure load balancer \"{load_balancer['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, load_balancer['compartment_id'])}\" has passing health checks")
 
         return dictionary

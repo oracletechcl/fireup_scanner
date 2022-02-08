@@ -162,18 +162,16 @@ class BucketPermissions(ReviewPoint):
                         if past.date() < present.date():
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(par)
-                            dictionary[entry]['failure_cause'].append('The pre-authenticated request is expired')   
-                            dictionary[entry]['mitigations'].append('Check if PAR: "' + par['name'] +
-                                                                    '" at bucket: "' + bucket['name'] +
-                                                                    '" expired at: ' + str(par['time_expires'].date())+ ' is still needed')      
+                            dictionary[entry]['failure_cause'].append("The pre-authenticated request is expired")   
+                            dictionary[entry]['mitigations'].append(f"Check if PAR: \"{par['name']}\" on bucket: \"{bucket['name']}\" which expired at: \"{par['time_expires'].date()}\" is still needed")      
             else:
                 total_public_buckets+=1     
         
         # Check if there is too many public buckets
         if total_public_buckets > (total_public_buckets + total_private_buckets)/2:
-             dictionary[entry]['status'] = False
-             dictionary[entry]['failure_cause'].append('Gross majority of buckets are public')
-             dictionary[entry]['mitigations'].append('Consider make Bucket: "'+ bucket['name'] + 'private')
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append("Gross majority of buckets are public")
+            dictionary[entry]['mitigations'].append(f"Consider making Bucket: \"{bucket['name']}\" private")
             
         # Check how many users have access to update bucket access
         __problem_policies = []
@@ -189,13 +187,11 @@ class BucketPermissions(ReviewPoint):
                 __problem_policies.append(policy)   
    
         for policy in __problem_policies:
-            for statement in policy['statements']:       
+            for statement in policy['statements']:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(policy)    
-                dictionary[entry]['failure_cause'].append('This policy allows users to update private bucket to public access')                
-                dictionary[entry]['mitigations'].append('Evaluate updating Policy: "' + statement + 
-                                                        " in compartment: "+get_compartment_name(self.__compartments, policy['compartment_id'])+                                                        
-                                                        ' to give less access to buckets')
-        
-        return dictionary
+                dictionary[entry]['findings'].append(policy)
+                dictionary[entry]['failure_cause'].append("This policy allows users to update private bucket to public access")                
+                dictionary[entry]['mitigations'].append(f"Evaluate updating Policy: \"{statement}\" in compartment: \"{get_compartment_name(self.__compartments, policy['compartment_id'])}\" to give less access to buckets")
+                break
 
+        return dictionary

@@ -162,23 +162,23 @@ class ReplicateData(ReviewPoint):
             else:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(block_storage)
-                dictionary[entry]['failure_cause'].append('Each block storages should be replicated to a disaster recovery region.')
-                dictionary[entry]['mitigations'].append('Make sure block storage '+str(block_storage['display_name'])+' located in compartment: '+str(get_compartment_name(self.__compartments, block_storage['compartment_id'])+' and region: '+str(block_storage['region'])+' is replicated to a disaster recovery region.'))
+                dictionary[entry]['failure_cause'].append("Each block storages should be replicated to a disaster recovery region.")
+                dictionary[entry]['mitigations'].append(f"Make sure block storage \"{block_storage['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, block_storage['compartment_id'])}\" and region: \"{block_storage['region']}\" is replicated to a disaster recovery region.")
 
         
         for bucket in self.__bucket_dicts:
             if not bucket['is_read_only'] and not bucket['replication_enabled']:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(bucket)
-                dictionary[entry]['failure_cause'].append('Each bucket should be replicated to a disaster recovery region.')
-                dictionary[entry]['mitigations'].append('Make sure bucket '+str(bucket['display_name'])+' located in compartment: '+str(get_compartment_name(self.__compartments, bucket['compartment_id'])+' and region: '+str(bucket['region'])+' is replicated to a disaster recovery region.'))
+                dictionary[entry]['failure_cause'].append("Each bucket should be replicated to a disaster recovery region.")
+                dictionary[entry]['mitigations'].append(f"Make sure bucket \"{bucket['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, bucket['compartment_id'])}\" and region: \"{bucket['region']}\" is replicated to a disaster recovery region.")
 
 
         for adb in self.__autonomous_database_dicts:
             if adb['dataguard_region_type'] == None:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(adb)
-                dictionary[entry]['failure_cause'].append('Each autonomous database should have datagaurd enabled.')
-                dictionary[entry]['mitigations'].append('Make sure autonomous database '+str(adb['display_name'])+' located in compartment: '+str(get_compartment_name(self.__compartments, adb['compartment_id'])+' and region: '+str(adb['region'])+' has dataguard enabled.'))
+                dictionary[entry]['failure_cause'].append("Each autonomous database should have datagaurd enabled.")
+                dictionary[entry]['mitigations'].append(f"Make sure autonomous database \"{adb['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, adb['compartment_id'])}\" and region: \"{adb['region']}\" has dataguard enabled.")
 
         return dictionary

@@ -17,7 +17,6 @@ class DBSystemControl(ReviewPoint):
 
     # Class Variables
     __identity = None
-
     __subnet_objects = []
     __subnets = []
     __oracle_database_objects = []
@@ -27,11 +26,9 @@ class DBSystemControl(ReviewPoint):
     __compartments = []
     __autonomous_database_objects = []
     __autonomous_database_ocids = []
-    __autonomous_database_nsgs = []
     __adb_nsg_objects = []
     __adb_nsgs = []
   
-    
 
 
     def __init__(self,
@@ -68,7 +65,6 @@ class DBSystemControl(ReviewPoint):
         mysql_clients = []
         network_clients = []
 
-
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
@@ -89,10 +85,6 @@ class DBSystemControl(ReviewPoint):
         self.__autonomous_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
         self.__adb_nsg_objects = ParallelExecutor.executor(network_clients, self.__autonomous_database_objects, ParallelExecutor.get_adb_nsgs, len(self.__autonomous_database_objects), ParallelExecutor.adb_nsgs)
         
-
-
-
-
         # Filling local array object for MySQL Database OCIDS
         for mysqldbobject in self.__mysql_full_objects:           
             mysql_db_record = {
@@ -176,7 +168,7 @@ class DBSystemControl(ReviewPoint):
                        dictionary[entry]['status'] = False
                        dictionary[entry]['findings'].append(mysql)   
                        dictionary[entry]['failure_cause'].append("MySQL Database is in a public subnet")
-                       dictionary[entry]['mitigations'].append("MySQL Database: "+mysql['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, mysql['compartment_id'])+" needs to be in a private subnet")
+                       dictionary[entry]['mitigations'].append(f"MySQL Database: \"{mysql['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, mysql['compartment_id'])}\" needs to be in a private subnet")
         
         # Cycle Check for Oracle Databases
         for orcldb in self.__oracle_database_subnet_ocids:
@@ -187,10 +179,10 @@ class DBSystemControl(ReviewPoint):
                         dictionary[entry]['findings'].append(orcldb)                           
                         if orcldb['nsg_ids'] != None:                                     
                             dictionary[entry]['failure_cause'].append("Oracle Database in Public Subnet without NSG Attached")
-                            dictionary[entry]['mitigations'].append("Oracle Database: "+orcldb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, orcldb['compartment_id'])+" needs to be in a private subnet or attach a NSG")
+                            dictionary[entry]['mitigations'].append(f"Oracle Database: \"{orcldb['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, orcldb['compartment_id'])}\" needs to be in a private subnet or attach a NSG")
                         else:
                             dictionary[entry]['failure_cause'].append("Oracle Database is in a public subnet")
-                            dictionary[entry]['mitigations'].append("Oracle Database: "+orcldb['display_name']+ " located in compartment: "+get_compartment_name(self.__compartments, orcldb['compartment_id'])+" needs to be in a private subnet")                      
+                            dictionary[entry]['mitigations'].append(f"Oracle Database: \"{orcldb['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, orcldb['compartment_id'])}\" needs to be in a private subnet")                      
 
         # Check for empty NSGs into Autonomous Databases
         for adbs in self.__autonomous_database_ocids:
@@ -201,10 +193,6 @@ class DBSystemControl(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(adbs)   
                 dictionary[entry]['failure_cause'].append("Autonomous Database protected with an Empty NSG")
-                dictionary[entry]['mitigations'].append("NSG of Autonomous Database: "+str(adbs['display_name'])+" located in compartment: "+get_compartment_name(self.__compartments, adbs['compartment_id'])+" is empty")
+                dictionary[entry]['mitigations'].append(f"NSG of Autonomous Database: \"{adbs['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, adbs['compartment_id'])}\" is empty")
                                                      
         return dictionary
-
-
-
-        

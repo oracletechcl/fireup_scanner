@@ -100,6 +100,6 @@ class LowLimits(ReviewPoint):
         for key, value in self.__non_compliant_limits.items():
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Don't set limits too high if not required.")
-            dictionary[entry]['mitigations'].append(f"Limit name: {key}, is used less than 10% in: {value}")
+            dictionary[entry]['mitigations'].append(f"Limit name: \"{key}\", is used less than \"10%\" in: {value}")
 
         return dictionary

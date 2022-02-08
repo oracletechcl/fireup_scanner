@@ -82,37 +82,34 @@ class NetworkSources(ReviewPoint):
             for statement in policy.statements:
                 self.__policy_statements.add(statement)
 
+
     def analyze_entity(self, entry):
-    
         self.load_entity()     
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         if self.__network_sources:
-            # check if created network sources are in use                   
+            # check if created network sources are in use
             for n_source in self.__network_sources:
                 present = False
-                for statement in self.__policy_statements:              
+                for statement in self.__policy_statements:
                     if f"request.networkSource.name='{n_source['name']}'" in statement:
                         present = True
                         break
                 if not present:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(n_source)
-                    dictionary[entry]['failure_cause'].append(f'Network source is created but currently not in use')   
-                    dictionary[entry]['mitigations'].append(f'Network source named : "{n_source["name"]}" is available but is not currently in use. '
-                                                            'Make sure to attach it to a policy.')   
+                    dictionary[entry]['failure_cause'].append("Network source is created but currently not in use")
+                    dictionary[entry]['mitigations'].append(f"Network source named: \"{n_source['name']}\" is available but is not currently in use. Make sure to attach it to a policy.")   
                 
         else:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Network sources are not created')   
-            dictionary[entry]['mitigations'].append('Create network sources to restrict access to resources. '
-                                                    'Then specify the network source in an IAM policy to control access based on the originating IP address.')   
+            dictionary[entry]['failure_cause'].append("Network sources are not created")
+            dictionary[entry]['mitigations'].append("Create network sources to restrict access to resources. Then specify the network source in an IAM policy to control access based on the originating IP address.")   
 
         # Check network source restrictions for signing in to the OCI Console
         if not self.__authentication_policy.network_policy.network_source_ids:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['failure_cause'].append(f'Users can sign-in to the OCI Console from any IP')   
-                dictionary[entry]['mitigations'].append(f'Specify the network source in your tenancy\'s authentication settings to restrict sign in to the OCI Console.')   
+                dictionary[entry]['failure_cause'].append("Users can sign-in to the OCI Console from any IP")
+                dictionary[entry]['mitigations'].append("Specify the network source in your tenancy's authentication settings to restrict sign in to the OCI Console.")   
 
         return dictionary
-

@@ -99,9 +99,9 @@ class RedundantConnections(ReviewPoint):
             dictionary[entry]['failure_cause'].append('When using fast connect, ensure that a reduntant virtual circuit is set up')
             for virtual_circuit in non_compliant_virtual_circuits:
                 dictionary[entry]['findings'].append(virtual_circuit)
-                dictionary[entry]['mitigations'].append(f"Virtual Circuit: {virtual_circuit['display_name']} in Compartment: {get_compartment_name(self.__compartments, virtual_circuit['compartment_id'])} has not been set up correctly.")
+                dictionary[entry]['mitigations'].append(f"Virtual Circuit: \"{virtual_circuit['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, virtual_circuit['compartment_id'])}\" has not been set up correctly.")
             if len(compliant_virtual_circuits) > 0:
                 dictionary[entry]['findings'].append(compliant_virtual_circuits[0])
-                dictionary[entry]['mitigations'].append(f"Virtual Circuit: {compliant_virtual_circuits[0]['display_name']} in Compartment: {get_compartment_name(self.__compartments, compliant_virtual_circuits[0]['compartment_id'])} has no redundant connection.")
+                dictionary[entry]['mitigations'].append(f"Virtual Circuit: \"{compliant_virtual_circuits[0]['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, compliant_virtual_circuits[0]['compartment_id'])}\" has no redundant connection.")
 
         return dictionary

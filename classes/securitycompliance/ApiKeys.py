@@ -101,16 +101,18 @@ class ApiKeys(ReviewPoint):
                 for api_key in user['api_key']:                   
                     time_created = api_key['time_created']
                     time_now = datetime.datetime.strptime(self.__now_formatted, "%d/%m/%Y %H:%M:%S")
-                    time_difference = time_now - time_created.replace(tzinfo=None)                    
+                    time_difference = time_now - time_created.replace(tzinfo=None)
                     if time_difference.days > 90 and total_user_count > 5:                        
                         dictionary[entry]['findings'].append(user)
                         dictionary[entry]['status'] = False
-                        dictionary[entry]['failure_cause'].append('Users have an API key that is older than 90 days')
-                        dictionary[entry]['mitigations'].append('Update API Key: '+str(api_key['fingerprint'])+' of user'+user['name'])
+                        dictionary[entry]['failure_cause'].append("Users have an API key that is older than 90 days")
+                        dictionary[entry]['mitigations'].append(f"Update API Key: \"{(api_key['fingerprint'])}\" of user \"{user['name']}\"")
+
         if total_user_count <= 5:
             for user in self.__users:
                 dictionary[entry]['findings'].append(user)
                 dictionary[entry]['status'] = False
-                dictionary[entry]['failure_cause'].append('Less than 5 users in tenancy have been detected')
-            dictionary[entry]['mitigations'].append('Consider creating more users to avoid using a single shared Administrator user for all tasks')
+                dictionary[entry]['failure_cause'].append("Less than 5 users in tenancy have been detected")
+            dictionary[entry]['mitigations'].append("Consider creating more users to avoid using a single shared Administrator user for all tasks")
+
         return dictionary

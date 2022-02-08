@@ -26,8 +26,6 @@ class DBKeys(ReviewPoint):
     __now_formatted = __now.strftime("%d/%m/%Y %H:%M:%S")
 
   
-    
-
 
     def __init__(self,
                 entry:str, 
@@ -61,13 +59,10 @@ class DBKeys(ReviewPoint):
         regions = get_regions_data(self.__identity, self.config)
         db_system_clients = []
 
-
-
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
             db_system_clients.append( (get_database_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
-
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
@@ -76,9 +71,6 @@ class DBKeys(ReviewPoint):
         self.__compartments.append(tenancy)           
                
         self.__autonomous_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
-        
-        
-      
         
         # Filling local array object for Autonomous Databases Subnet OCIDS
         for adb in self.__autonomous_database_objects: 
@@ -90,17 +82,15 @@ class DBKeys(ReviewPoint):
                 'lifecycle_state': adb.lifecycle_state,
             }
             self.__adb_entry.append(adb_record)
-        
-     
+
 
     def analyze_entity(self, entry):
     
         self.load_entity()    
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
-        
         # Cycle Check for Autonomous Database Key Entry
-        if len(self.__adb_entry) > 0:            
+        if len(self.__adb_entry) > 0:
             for adb in self.__adb_entry:
                 if "TERMINATED" not in adb['lifecycle_state'] or "TERMINATING" not in adb['lifecycle_state']:
                     for key_entry in adb['key_history_entry']:
@@ -112,14 +102,7 @@ class DBKeys(ReviewPoint):
                         if time_difference.days > 90:
                             dictionary[entry]['findings'].append(adb)
                             dictionary[entry]['status'] = False
-                            dictionary[entry]['failure_cause'].append('Encryption Key used in ADB is older than 90 days')
-                            dictionary[entry]['mitigations'].append('Update Encryption Key of ADB: '+str(adb['display_name'])+' located in compartment: '+ get_compartment_name(self.__compartments, adb['compartment_id'])+' in region: '+region)
+                            dictionary[entry]['failure_cause'].append("Encryption Key used in ADB is older than 90 days")
+                            dictionary[entry]['mitigations'].append(f"Update Encryption Key of ADB: \"{adb['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, adb['compartment_id'])}\" in region: \"{region}\"")
 
-
-     
-                                                     
         return dictionary
-
-
-
-        

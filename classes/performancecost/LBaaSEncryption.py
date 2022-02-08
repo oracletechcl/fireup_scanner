@@ -90,6 +90,6 @@ class LBaaSEncryption(ReviewPoint):
                         dictionary[entry]['status'] = False
                         dictionary[entry]['findings'].append(load_balancer)
                         dictionary[entry]['failure_cause'].append('Application load balancer listeners should use SSL encryption.')
-                        dictionary[entry]['mitigations'].append(f"Application load balancer: {load_balancer['display_name']}, located in {get_compartment_name(self.__compartments, load_balancer['compartment_id'])}, has a listener without SSL enabled.")
+                        dictionary[entry]['mitigations'].append(f"Application load balancer: \"{load_balancer['display_name']}\" located in \"{get_compartment_name(self.__compartments, load_balancer['compartment_id'])}\" has a listener without SSL enabled.")
 
         return dictionary

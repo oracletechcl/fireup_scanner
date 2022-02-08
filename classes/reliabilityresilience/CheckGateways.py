@@ -105,7 +105,7 @@ class CheckGateways(ReviewPoint):
                 dictionary[entry]['status'] = True
 
         if not dictionary[entry]['status']:
-            dictionary[entry]['failure_cause'].append('No method of bypassing the internet to access OCI was found.')
-            dictionary[entry]['mitigations'].append('When connecting OCI to public resources, use FastConnect, VPN Connect, or a service gateway to bypass the internet.')
+            dictionary[entry]['failure_cause'].append("No method of bypassing the internet to access OCI was found.")
+            dictionary[entry]['mitigations'].append("When connecting OCI to public resources, use \"FastConnect\", \"VPN Connect\", or a \"service gateway\" to bypass the internet.")
 
         return dictionary

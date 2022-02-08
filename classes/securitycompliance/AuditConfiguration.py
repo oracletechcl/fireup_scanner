@@ -74,6 +74,6 @@ class AuditConfiguration(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(tenancy)
                 dictionary[entry]['failure_cause'].append("Audit retention is not set to 365 Days")
-                dictionary[entry]['mitigations'].append('Set audit retention to 365 days on tenancy: ' + tenancy['tenancy_name'])
+                dictionary[entry]['mitigations'].append("Set audit retention to 365 days on tenancy")
                                   
         return dictionary

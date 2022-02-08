@@ -98,12 +98,12 @@ class CheckBudgets(ReviewPoint):
                     else:
                         if budget_dict not in dictionary[entry]['findings']:
                             dictionary[entry]['findings'].append(budget_dict)
-                        dictionary[entry]['failure_cause'].append('Ensure that budgets have email recipient(s) and an email message.')
-                        dictionary[entry]['mitigations'].append(f"Make alert rule \"{alert_rule['display_name']}\" for budget \"{budget_dict['display_name']}\" has email recipient(s) and an email message.")
+                        dictionary[entry]['failure_cause'].append("Ensure that budgets have email recipient(s) and an email message.")
+                        dictionary[entry]['mitigations'].append(f"Make sure alert rule: \"{alert_rule['display_name']}\" for budget: \"{budget_dict['display_name']}\" has email recipient(s) and an email message.")
 
         if not dictionary[entry]['status']:
-            dictionary[entry]['failure_cause'].append('Add budgets to your tenancy with alert rules to better monitor your spend.')
+            dictionary[entry]['failure_cause'].append("Add budgets to your tenancy with alert rules to better monitor your spend.")
             if len(dictionary[entry]['mitigations']) == 0:
-                dictionary[entry]['mitigations'].append('Create at least one budget that has an alert rule tied to it')
+                dictionary[entry]['mitigations'].append("Create at least one budget that has an alert rule tied to it")
 
         return dictionary
