@@ -22,6 +22,7 @@ class ConfigureAuditing(ReviewPoint):
     __service_connectors = []
     __retention_rules_list = []
 
+
     def __init__(self,
                  entry: str,
                  area: str,
@@ -51,6 +52,7 @@ class ConfigureAuditing(ReviewPoint):
         self.__tenancy = get_tenancy_data(self.__identity, self.config)
         self.__audit_client = get_audit_client(self.config, self.signer)
 
+
     def load_entity(self):
 
         tenancy = get_tenancy_data(self.__identity, self.config)
@@ -78,13 +80,9 @@ class ConfigureAuditing(ReviewPoint):
             region_config = self.config
             region_config['region'] = region.region_name
             service_clients.append(get_service_client(region_config, self.signer))
-            object_storage_clients.append((get_object_storage_client(region_config, self.signer), namespace,
-                                           region.region_name, region.region_key.lower()))
+            object_storage_clients.append((get_object_storage_client(region_config, self.signer), namespace, region.region_name, region.region_key.lower()))
 
-        self.__service_connectors_objects = ParallelExecutor.executor(service_clients, self.__compartments,
-                                                                      ParallelExecutor.get_service_connectors_info,
-                                                                      len(self.__compartments),
-                                                                      ParallelExecutor.service_connectors)
+        self.__service_connectors_objects = ParallelExecutor.executor(service_clients, self.__compartments, ParallelExecutor.get_service_connectors_info, len(self.__compartments), ParallelExecutor.service_connectors)
 
         for service_connector in self.__service_connectors_objects:
             record = {
@@ -99,19 +97,11 @@ class ConfigureAuditing(ReviewPoint):
             }
             self.__service_connectors.append(record)
 
-        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments,
-                                                          ParallelExecutor.get_buckets, len(self.__compartments),
-                                                          ParallelExecutor.buckets)
+        self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)
 
-        self.__retention_rules_list = ParallelExecutor.executor(object_storage_clients, self.__bucket_objects,
-                                                                          ParallelExecutor.get_bucket_retention_rules_info,
-                                                                          len(self.__bucket_objects),
-                                                                          ParallelExecutor.bucket_retention_rules)
+        self.__retention_rules_list = ParallelExecutor.executor(object_storage_clients, self.__bucket_objects, ParallelExecutor.get_bucket_retention_rules_info, len(self.__bucket_objects), ParallelExecutor.bucket_retention_rules)
 
-        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments,
-                                                          ParallelExecutor.get_policies,
-                                                          len(self.__compartments),
-                                                          ParallelExecutor.policies)
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
 
         for policy in self.__policy_objects:
             record = {
@@ -130,6 +120,7 @@ class ConfigureAuditing(ReviewPoint):
 
         return self.__tenancy_data, self.__service_connectors, self.__retention_rules_list, self.__policies, self.__bucket_objects
 
+
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
@@ -139,23 +130,20 @@ class ConfigureAuditing(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(tenancy)
                 dictionary[entry]['failure_cause'].append("Audit retention is not set to 365 Days")
-                dictionary[entry]['mitigations'].append(
-                    'Set audit retention to 365 days on tenancy: ' + tenancy['tenancy_name'])
+                dictionary[entry]['mitigations'].append("Set audit retention to 365 days on tenancy")
 
         if len(self.__service_connectors) < 1:
             dictionary[entry]['status'] = True
-            dictionary[entry]['failure_cause'].append('No Service Connectors were found in this tenancy')
-            dictionary[entry]['mitigations'].append(
-                'If you have third party tools that must access OCI Audit data configure a Service Connector to copy the OCI Audit data to Oracle Cloud Infrastructure Object Storage.')
+            dictionary[entry]['failure_cause'].append("No Service Connectors were found in this tenancy")
+            dictionary[entry]['mitigations'].append("If you have third party tools that must access \"OCI Audit\" data configure a Service Connector to copy the OCI Audit data to Oracle Cloud Infrastructure Object Storage.")
 
         if len(self.__retention_rules_list) != len(self.__bucket_objects):
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Some buckets do not have a retention period in place')
+            dictionary[entry]['failure_cause'].append("Some buckets do not have a retention period in place")
             for bucket in self.__bucket_objects:
                 for retention_rule in self.__retention_rules_list:
                     if bucket.id != retention_rule['bucket_id']:
-                        dictionary[entry]['mitigations'].append(
-                        'Consider adding retention period on the following storage bucket: ' + str(bucket.name))
+                        dictionary[entry]['mitigations'].append(f"Consider adding retention a period on the following storage bucket: \"{bucket.name}\" in compartment: \"{get_compartment_name(self.__compartments, bucket.compartment_id)}\"")
 
         criteria = 'loganalytics'
         failure_case = True
@@ -166,8 +154,7 @@ class ConfigureAuditing(ReviewPoint):
 
         if failure_case:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('OCI Log Analytics were not enabled on this tenancy')
-            dictionary[entry]['mitigations'].append(
-                'Consider Enabling OCI Log Analytics for better insight and detailed analysis of patterns and trends. ')
+            dictionary[entry]['failure_cause'].append("OCI Log Analytics were not enabled on this tenancy")
+            dictionary[entry]['mitigations'].append("Consider Enabling \"OCI Log Analytics\" for better insight and detailed analysis of patterns and trends.")
 
         return dictionary

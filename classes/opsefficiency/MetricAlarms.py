@@ -81,9 +81,9 @@ class MetricAlarms(ReviewPoint):
             if alarm.namespace in self.__namespaces:
                 self.__namespaces.remove(alarm.namespace)
 
-        for namespace in self.__namespaces:
+        if len(self.__namespaces) > 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Consider adding alarms for each namespace used within the tenancy.')
-            dictionary[entry]['mitigations'].append(f"Suggest adding an alarm to manage the following namespace: {namespace}.")
+            dictionary[entry]['failure_cause'].append("Consider adding alarms for each namespace used within the tenancy.")
+            dictionary[entry]['mitigations'].append(f"Suggest adding alarm(s) to manage the following namespaces: {self.__namespaces}.")
 
         return dictionary

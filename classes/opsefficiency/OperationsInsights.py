@@ -104,7 +104,7 @@ class OperationsInsights(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(db)
                 dictionary[entry]['failure_cause'].append("DB systems doesn't have database management enabled")
-                dictionary[entry]['mitigations'].append(f"Make sure db \"{db['db_name']}\", in compartment: \"{get_compartment_name(self.__compartments, db['compartment_id'])}\", has database management enabled.")
+                dictionary[entry]['mitigations'].append(f"Make sure database: \"{db['db_name']}\" in compartment: \"{get_compartment_name(self.__compartments, db['compartment_id'])}\" has database management enabled.")
 
         non_compliant_regions = db_regions[:]
 
@@ -116,6 +116,6 @@ class OperationsInsights(ReviewPoint):
         for region in non_compliant_regions:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Region with databases should have an operations insight warehouse and hub")
-            dictionary[entry]['mitigations'].append(f"Make sure region \"{region}\", has as operations insight warehouse and hub.")
+            dictionary[entry]['mitigations'].append(f"Make sure region: \"{region}\" has as operations insight warehouse and hub.")
 
         return dictionary

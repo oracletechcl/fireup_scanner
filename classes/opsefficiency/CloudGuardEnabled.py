@@ -69,7 +69,7 @@ class CloudGuardEnabled(ReviewPoint):
             "cloud_guard_enable_stautus" : self.__cloud_guard_data.status
         }
         self.__tenancy_data_including_cloud_guard = tenancy_data_including_cloud_guard
-    
+
 
     def analyze_entity(self, entry):
         self.load_entity()        
@@ -81,12 +81,12 @@ class CloudGuardEnabled(ReviewPoint):
             dictionary[entry]['mitigations'].append(str(self.__cloud_guard_data.message))
 
             return dictionary
-        
+
         # Check if Cloud Guard is enable
         if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(self.__tenancy_data_including_cloud_guard) 
             dictionary[entry]['failure_cause'].append("Root level of the tenancy does not have Cloud Guard enabled")
-            dictionary[entry]['mitigations'].append('Enable Cloud Guard on tenancy: ' + self.__tenancy_data_including_cloud_guard['tenancy_name'])
-                                  
+            dictionary[entry]['mitigations'].append("Enable Cloud Guard on tenancy")
+
         return dictionary
