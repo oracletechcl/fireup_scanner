@@ -13,6 +13,8 @@ Fireup automated gathering and check tool
   - [Class Structure](#class-structure)
   - [Pre-requisites](#pre-requisites)
   - [How to use](#how-to-use)
+     - [Using Cloud Shell](#UsingCloudShell)
+     - [Using Jump Server](#UsingJumpServer)
   - [Expected output on console](#expected-output-on-console)
   - [Credits](#credits)
   - [Contributing](#contributing)
@@ -76,20 +78,61 @@ ___
 <div id="PreReqs"></div>
 
 ## Pre-requisites
-- Pre-created Oracle Linux 7.9+ operative system to run the tool
-- Python3 pre-installed
-- Pre-configured Oracle Cloud Infrastructure (OCI) account
-- CLI will be automatically installed if not present on the jump system. Make sure to complete the configuration of the CLI by filling the contents of the file `~/.oci/config` accordingly 
-  - For more details, refer to the following links:  
-    - [Manual and Offline Installations](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/climanualinst.htm)
-    - [Config File Location](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Name_and_Location)
-    - [Config File Contents](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Entries)
+You can run FireUp Scanner in two ways. Follow below instructions to execute it: 
+
+- Using the Cloud Shell  
+- Using a Jump Server
+  - Currently supported Servers are: 
+    - OL7.x, Ubuntu 20.X
+  - Python3 pre-installed
+  - Pre-configured Oracle Cloud Infrastructure (OCI) account with API Keys associated to the user
+  - CLI will be automatically installed if not present on the jump system. Make sure to complete the configuration of the CLI by filling the contents of the file `~/.oci/config` accordingly 
+    - For more details, refer to the following links:  
+      - [Manual and Offline Installations](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/climanualinst.htm)
+      - [Config File Location](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Name_and_Location)
+      - [Config File Contents](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Entries)
 
 
 <div id="HowToUse"></div>
 
 ## How to use
 
+<div id="UsingCloudShell"></div>
+
+### If using Cloud Shell
+- Open Cloud Shell, by clicking into the icon as depicted in the image below: 
+
+![Open Cloud Shell](./images/Cloud_Shell_01.png)
+- Download the release given by your Oracle for Startups Architect
+- To upload the release into Cloud Shell, click on the icon depicted in the image below: 
+![Upload Release](./images/Cloud_Shell_02.png)
+- Click in the *Upload* button
+ 
+![Upload Release](./images/Cloud_Shell_03.png)
+- Select the release you want to upload, clicking on *select from your computer* and then click *Upload*
+
+![Upload Release](./images/Cloud_Shell_04.png)
+
+- Unzip the file 
+- Execute the script `fireup.sh`
+- Once ran, deliver the `reports.tar.gz` file to your Oracle for Startups Architect for review. To get this file:
+  - Click in the hamburger menu and then in *Download*
+
+![Download Reports](./images/Cloud_Shell_05.png)
+
+  - Type in `reports.tar.gz` and hit *Download*
+
+![Download Reports](./images/Cloud_Shell_06.png)
+
+   - A screen like this will appear
+
+![Download Reports](./images/Cloud_Shell_07.png)
+
+
+<div id="UsingJumpServer"></div>
+
+### If using Jump Server
+- Create a jump server into your tenancy. The supported Operative Systems are: OL7.x, Ubuntu 20.X
 - Download the release given by your Oracle for Startups Architect
 - Unzip the file 
 - Execute the script `fireup.sh`

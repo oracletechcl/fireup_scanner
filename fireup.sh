@@ -53,5 +53,7 @@ else
     rm ./reports/fireup_color.log
 
     tar -cvf reports.tar.gz ./reports &>/dev/null
-    rm -rf reports
+    rm -rf reports &>/dev/null
+    rm -rf ~/reports.tar.gz
+    mv reports.tar.gz ~/
 fi
