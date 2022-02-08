@@ -66,9 +66,6 @@ class OptimizationMonitor(ReviewPoint):
         if type(self.__cloud_guard_data) == oci.exceptions.ServiceError:
             return
 
-        if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
-            return
-
         # Record some data of a tenancy and its cloud guard enable status
         tenancy_data_including_cloud_guard = {
             "tenancy_id" : self.__tenancy.id,
@@ -77,6 +74,9 @@ class OptimizationMonitor(ReviewPoint):
             "tenancy_region_key" : self.__tenancy.home_region_key,
             "cloud_guard_enable_stautus" : self.__cloud_guard_data.status
         }
+
+        if tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
+            return
 
         home_region = get_home_region(self.__identity, self.config)
 
