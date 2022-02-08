@@ -7,6 +7,19 @@ import oci
 from common.utils.tokenizer.signer import *
 from common.utils.formatter.printer import *
 
+# Custom retry strategy which is based on DEFAULT_RETRY_STRATEGY with additional service error checks
+CUSTOM_RETRY_STRATEGY = oci.retry.RetryStrategyBuilder().add_max_attempts(max_attempts=8) \
+                                                        .add_total_elapsed_time(total_elapsed_time_seconds=600) \
+                                                        .add_service_error_check(service_error_retry_config=  {   
+                                                                                                            -1: [],
+                                                                                                            409: ['IncorrectState'],
+                                                                                                            429: [],
+                                                                                                            500: [404], 
+                                                                                                            500: [429] 
+                                                                                                        },
+                                                                                service_error_retry_on_any_5xx=True) \
+                                                        .get_retry_strategy()
+
 
 def get_config_and_signer():
     try:
@@ -842,7 +855,7 @@ def get_quota_policy_data(quota_client, quota_id):
 def get_networking_topology_per_compartment(network_client, compartment_id):
     return network_client.get_networking_topology(
         compartment_id,query_compartment_subtree = True,
-        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        retry_strategy= CUSTOM_RETRY_STRATEGY
     ).data
 
 def get_cross_connects_per_compartment(network_client, compartment_id):
@@ -925,3 +938,4 @@ def get_notification_data(notification_control_plane_client, compartment_id):
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data 
+
