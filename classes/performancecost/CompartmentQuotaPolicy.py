@@ -14,12 +14,9 @@ class CompartmentQuotaPolicy(ReviewPoint):
 
     # Class Variables
     __compartments = []
-    __compartment_info = []
-    __quota_statement_full_data = []
-    __compartments_with_quotas = []
+    __quotas_data = []
     __identity = None
-    __tenancy = None
-    __quota_objects = []
+    __quotas = None
 
 
     def __init__(self,
@@ -49,67 +46,88 @@ class CompartmentQuotaPolicy(ReviewPoint):
         self.signer = signer
 
         self.__identity = get_identity_client(self.config, self.signer)
-        self.__tenancy = get_tenancy_data(self.__identity, self.config)
         
 
     def load_entity(self):
-        quota_clients = []
+        tenancy = get_tenancy_data(self.__identity, self.config)
+        compartments = get_compartments_data(self.__identity, tenancy.id)
+        
         home_region = get_home_region(self.__identity, self.config)
 
-        # Get the home region
-        home_region_config = self.config
-        home_region_config['region'] = home_region.region_name
-        quota_clients.append(get_quotas_client(home_region_config, self.signer))
-        
-        # Get all compartments
-        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        self.__compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
+        region_config = self.config
+        region_config['region'] = home_region.region_name
 
-        # Get quota objects using parallel executor
-        self.__quota_objects = ParallelExecutor.executor(   quota_clients, self.__compartments, 
-                                                            ParallelExecutor.get_quotas_in_compartments, 
-                                                            len(self.__compartments), ParallelExecutor.quotas)
-        
-        # Store compartments with quotas enabled
-        for quota in self.__quota_objects:            
-            quota_config = {
-                'compartment_id': quota.compartment_id,
-                'compartment_name': get_compartment_name(self.__compartments, quota.compartment_id),
-                'statements': get_quota_policy_data(quota_clients[0], quota.id).statements
-            }
-            self.__quota_statement_full_data.append(quota_config)
+        self.__quotas = get_quotas_client(region_config, self.signer)
 
-        for compartment in self.__compartments:
-            comp_data = {
+        for compartment in compartments:
+            compartment_record = {
+                'compartment_id': compartment.id,
+                'defined_tags': compartment.defined_tags,
+                'description': compartment.description,
+                'freeform_tags': compartment.freeform_tags,
                 'id': compartment.id,
-                'name': compartment.name
+                'inactive_status': compartment.inactive_status,
+                'is_accessible': compartment.is_accessible,
+                'lifecycle_state': compartment.lifecycle_state,
+                'name': compartment.name,
+                'time_created': compartment.time_created,  
+                'statements': ""              
             }
-            self.__compartment_info.append(comp_data)
+            self.__compartments.append(compartment_record)
+        
+        quotas_data = list_quota_data(self.__quotas, tenancy.id)
+
+        for quota in quotas_data:
+            quota_record = {
+                'compartment_id': quota.compartment_id,
+                'defined_tags': quota.defined_tags,
+                'description': quota.description,
+                'freeform_tags': quota.freeform_tags,
+                'id': quota.id,
+                'lifecycle_state': quota.lifecycle_state,
+                'name': quota.name,
+                'time_created': compartment.time_created
+            }
+            self.__quotas_data.append(quota_record)
+        
+        return self.__compartments, self.__quotas_data
 
 
-        for quotadata in self.__quota_statement_full_data:
-            statement = str(quotadata['statements'])           
-            self.__compartments_with_quotas.append(self.__get_compartment_from_statement(statement))
-            
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
+        compliant_compartment_names = []
+        all_compartment_names = []
+        compliant_compartment_count = 0
 
-        for compartment in self.__compartment_info:
-            if compartment['name'] not in self.__compartments_with_quotas:            
-                 dictionary[entry]['status'] = False            
-                 dictionary[entry]['findings'].append(compartment)
-                 dictionary[entry]['failure_cause'].append("Compartments without quota policy detected")
-                 dictionary[entry]['mitigations'].append("Consider enabling quota for compartment: " + compartment['name'])  
+        for compartments in self.__compartments:
+            all_compartment_names.append(compartments['name'])
+    
+        for quotas_data in self.__quotas_data:
+            quota_compart = self.__quotas.get_quota(quotas_data['id'])
+    
+            for statement in quota_compart.data.statements:
+                # Regex that recieves compartment name from quota
+                compart_name = re.search('(?<=in compartment )(\w+)', statement).group(1)
+                for compartments in self.__compartments:
+                    if compartments['name'] == compart_name:
+                        compliant_compartment_count += 1
+                        compliant_compartment_names.append(compartments['name'])
+                        break
+                    else:
+                        continue
 
-        return dictionary 
-
-
-    def __get_compartment_from_statement(self, statement):  
-        compartment = statement.split("compartment", 1)[1][:-2]
-        if "]" in compartment:             
-            return compartment[:-2]
-        elif "where" in compartment:
-            return compartment.split(" ", 1)[1].split(" ", 1)[0]
-            
+        non_compliant_compartments_names = list(set(all_compartment_names) - set(compliant_compartment_names))
         
+        for compartments in self.__compartments:
+            for compartment in non_compliant_compartments_names:
+                dictionary[entry]['status'] = False
+                if compartments['name'] == compartment:
+                    dictionary[entry]['findings'].append(compartments)
+                    dictionary[entry]['failure_cause'].append("Some compartments do not have a quota set")
+                    dictionary[entry]['mitigations'].append(f"Please set a quota for compartment: \"{compartment}\"")  
+                    break
+                else:
+                    continue
+
+        return dictionary

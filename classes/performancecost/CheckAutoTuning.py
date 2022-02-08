@@ -103,7 +103,7 @@ class CheckAutoTuning(ReviewPoint):
             if not block_storage['is_auto_tune_enabled']:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(block_storage)
-                dictionary[entry]['failure_cause'].append('Block and boot volumes should have auto tune enabled to reduce cost when not attached')
-                dictionary[entry]['mitigations'].append(f"Block storage: {block_storage['display_name']}, located in {get_compartment_name(self.__compartments, block_storage['compartment_id'])}, does not have auto tune enabled.")
+                dictionary[entry]['failure_cause'].append("Block and boot volumes should have auto tune enabled to reduce cost when not attached")
+                dictionary[entry]['mitigations'].append(f"Block storage: \"{block_storage['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, block_storage['compartment_id'])}\" does not have auto tune enabled.")
 
         return dictionary

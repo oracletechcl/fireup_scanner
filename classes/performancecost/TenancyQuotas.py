@@ -115,19 +115,18 @@ class TenancyQuotas(ReviewPoint):
                         break
                     else:
                         continue
-        non_compliant_compartments_names = list(set(all_compartment_names) - set(compliant_compartment_names))
 
+        non_compliant_compartments_names = list(set(all_compartment_names) - set(compliant_compartment_names))
         
         for compartments in self.__compartments:
-            for compart in non_compliant_compartments_names:
+            for compartment in non_compliant_compartments_names:
                 dictionary[entry]['status'] = False
-                if compartments['name'] == compart:
+                if compartments['name'] == compartment:
                     dictionary[entry]['findings'].append(compartments)
-                    dictionary[entry]['failure_cause'].append("Compartment name does not have the quota set: " + compart)
-                    dictionary[entry]['mitigations'].append("Please set the quota for : " + compart + " to make it complaint")  
+                    dictionary[entry]['failure_cause'].append("Some compartments do not have a quota set")
+                    dictionary[entry]['mitigations'].append(f"Please set a quota for compartment: \"{compartment}\"")  
                     break
                 else:
                     continue
 
-
-        return dictionary 
+        return dictionary
