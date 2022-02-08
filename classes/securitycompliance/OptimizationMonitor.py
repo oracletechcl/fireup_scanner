@@ -67,7 +67,7 @@ class OptimizationMonitor(ReviewPoint):
             return
 
         # Record some data of a tenancy and its cloud guard enable status
-        tenancy_data_including_cloud_guard = {
+        self.__tenancy_data_including_cloud_guard = {
             "tenancy_id" : self.__tenancy.id,
             "tenancy_name" : self.__tenancy.name,
             "tenancy_description" : self.__tenancy.description,
@@ -75,7 +75,7 @@ class OptimizationMonitor(ReviewPoint):
             "cloud_guard_enable_stautus" : self.__cloud_guard_data.status
         }
 
-        if tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
+        if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
             return
 
         home_region = get_home_region(self.__identity, self.config)
@@ -85,7 +85,6 @@ class OptimizationMonitor(ReviewPoint):
         self.__cloud_guard_client = [get_cloud_guard_client(region_config, self.signer)]
 
         # get tenancy and rules data
-        self.__tenancy_data_including_cloud_guard = tenancy_data_including_cloud_guard
         self.__detector_recipes_data = ParallelExecutor.executor(self.__cloud_guard_client, compartments, ParallelExecutor.get_detector_recipes, len(compartments), ParallelExecutor.detector_recipes)
         self.__responder_recipes_data = ParallelExecutor.executor(self.__cloud_guard_client, compartments, ParallelExecutor.get_responder_recipes, len(compartments), ParallelExecutor.responder_recipes)
 
