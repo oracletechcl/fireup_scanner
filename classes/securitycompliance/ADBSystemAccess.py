@@ -84,6 +84,7 @@ class ADBSystemAccess(ReviewPoint):
                 "private_endpoint_ip": adbobject.private_endpoint_ip,
                 "subnet_id": adbobject.subnet_id,
                 "compartment_id": adbobject.compartment_id,
+                "lifecycle_state": adbobject.lifecycle_state,
             }
             self.__adbs.append(adb_record)
 

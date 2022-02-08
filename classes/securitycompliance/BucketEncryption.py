@@ -19,6 +19,7 @@ class BucketEncryption(ReviewPoint):
     __identity = None
     __tenancy = None
     __bucket_objects = []
+    __bucket_dicts = []
     __compartments = []
      
     def __init__(self,
@@ -69,17 +70,26 @@ class BucketEncryption(ReviewPoint):
       
         self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)     
 
+        for bucket in self.__bucket_objects:
+            record = {
+                    "compartment_id": bucket.compartment_id,
+                    "id": bucket.id,
+                    "kms_key_id": bucket.kms_key_id,
+                    "name": bucket.name,
+            }
+            self.__bucket_dicts.append(record)
+
+
     def analyze_entity(self, entry):
     
         self.load_entity()     
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
-        for index, bucket in enumerate(self.__bucket_objects):
-            if  not bucket.kms_key_id:               
+        for bucket in self.__bucket_dicts:
+            if not bucket['kms_key_id']:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append({index:bucket.name})
+                dictionary[entry]['findings'].append(bucket)
                 dictionary[entry]['failure_cause'].append("The bucket is by default encrypted using an Oracle-managed master encryption key.")   
-                dictionary[entry]['mitigations'].append(f"For bucket: \"{bucket.name}\" in compartment: \"{get_compartment_name(self.__compartments, bucket.compartment_id)}\" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service and rotate at a schedule that you define.")   
+                dictionary[entry]['mitigations'].append(f"For bucket: \"{bucket['name']}\" in compartment: \"{get_compartment_name(self.__compartments, bucket['compartment_id'])}\" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service and rotate at a schedule that you define.")   
 
         return dictionary
-
