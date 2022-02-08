@@ -4,6 +4,9 @@ stderr.out
 stdout.out
 results.out
 
+# Distro list
+release.tar.gz
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
