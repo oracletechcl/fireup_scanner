@@ -72,10 +72,10 @@ class BucketEncryption(ReviewPoint):
 
         for bucket in self.__bucket_objects:
             record = {
-                    "compartment_id": bucket.compartment_id,
-                    "id": bucket.id,
-                    "kms_key_id": bucket.kms_key_id,
-                    "name": bucket.name,
+                "compartment_id": bucket.compartment_id,
+                "id": bucket.id,
+                "kms_key_id": bucket.kms_key_id,
+                "name": bucket.name,
             }
             self.__bucket_dicts.append(record)
 
