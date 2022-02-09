@@ -20,6 +20,7 @@ class TransitRouting(ReviewPoint):
     __cross_connections_objects = None
     __topologies_with_cpe_connections_objects = []
     __topologies_with_cpe_connections = []
+    __cloud_shell_mitigation = []
 
     def __init__(self,
                 entry:str, 
@@ -52,7 +53,7 @@ class TransitRouting(ReviewPoint):
 
     def load_entity(self):
 
-        network_cleints = []
+        network_clients = []
         vpn_fc_connections_per_compartment = set()
 
         self.__regions = get_regions_data(self.__identity, self.config)
@@ -63,10 +64,10 @@ class TransitRouting(ReviewPoint):
             
             region_config = self.config
             region_config['region'] = region.region_name     
-            network_cleints.append(get_virtual_network_client(region_config, self.signer))
+            network_clients.append(get_virtual_network_client(region_config, self.signer))
 
-        self.__ip_sec_connections_objects = ParallelExecutor.executor(network_cleints, self.__compartments, ParallelExecutor.get_ip_sec_connections, len(self.__compartments), ParallelExecutor.ip_sec_connections)
-        self.__cross_connections_objects = ParallelExecutor.executor(network_cleints, self.__compartments, ParallelExecutor.get_cross_connects, len(self.__compartments), ParallelExecutor.cross_connects)
+        self.__ip_sec_connections_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_ip_sec_connections, len(self.__compartments), ParallelExecutor.ip_sec_connections)
+        self.__cross_connections_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_cross_connects, len(self.__compartments), ParallelExecutor.cross_connects)
         
         # find compartment and region with VPN or FastConnect
         for vpn_connections in self.__ip_sec_connections_objects:
@@ -79,15 +80,19 @@ class TransitRouting(ReviewPoint):
 
         # gather network topology, use workaround from github to get it from compartments which have CPE connectiity
         for com_region in vpn_fc_connections_per_compartment:
-            region_needed = None
-            for region in self.__regions:
-                if com_region[1] == region.region_key.lower() or com_region[1] == region.region_name.lower() :
-                    region_needed = self.config
-                    region_needed['region'] = region.region_name
-                    debug(region_needed,color = 'cyan')
-                    n_client = get_virtual_network_client(region_needed, self.signer)
-                    n_client.base_client.endpoint = 'https://vnca-api.' + region.region_name + '.oci.oraclecloud.com'
-                    self.__topologies_with_cpe_connections_objects.append(get_networking_topology_per_compartment(n_client,com_region[0]))
+            if com_region != get_home_region(self.__identity, self.config).region_name:           
+                self.__cloud_shell_mitigation.append(com_region)
+                break;
+            else:
+                region_needed = None
+                for region in self.__regions:
+                    if com_region[1] == region.region_key.lower() or com_region[1] == region.region_name.lower() :
+                        region_needed = self.config
+                        region_needed['region'] = region.region_name
+                        debug(region_needed,color = 'cyan')
+                        n_client = get_virtual_network_client(region_needed, self.signer)
+                        n_client.base_client.endpoint = 'https://vnca-api.' + region.region_name + '.oci.oraclecloud.com'
+                        self.__topologies_with_cpe_connections_objects.append(get_networking_topology_per_compartment(n_client,com_region[0]))
 
         for network_topology in self.__topologies_with_cpe_connections_objects:
             record = {
@@ -154,5 +159,12 @@ class TransitRouting(ReviewPoint):
                 dictionary[entry]['findings'].append(network)
                 dictionary[entry]['failure_cause'].append("The network contains an inefficient number of DRGs.")   
                 dictionary[entry]['mitigations'].append(f"There are redundant DRGs created in the Compartment: \"{get_compartment_name(self.__compartments, network['entities'][0]['compartmentId'])}\". Make sure you utilise only one DRG with a HUB-and-Spoke pattern for optimal performance.")
+
+        if len(self.__cloud_shell_mitigation) != 0:
+            dictionary[entry]['status'] = False
+            for region in self.__cloud_shell_mitigation:
+                dictionary[entry]['failure_cause'].append("Given cloud shell limitations, some regions were not checked")   
+                dictionary[entry]['mitigations'].append(f"To get more details about this review point, run in a Jump Server")
+            
 
         return dictionary
