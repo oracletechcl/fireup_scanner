@@ -91,39 +91,17 @@ class CheckBackupPolicies(ReviewPoint):
             self.__storages_with_no_policy = ParallelExecutor.executor(block_storage_clients, self.__block_volume_objects + self.__boot_volume_objects, ParallelExecutor.get_block_storages_with_no_policy, len(self.__block_volume_objects + self.__boot_volume_objects), ParallelExecutor.storages_with_no_policy)
 
         for block_storage in self.__storages_with_no_policy:
-            if "bootvolume" in block_storage.id:
-                record = {
-                    'availability_domain': block_storage.availability_domain,
-                    'compartment_id': block_storage.compartment_id,
-                    'display_name': block_storage.display_name,
-                    'id': block_storage.id,
-                    'image_id': block_storage.image_id,
-                    'is_auto_tune_enabled': block_storage.is_auto_tune_enabled,
-                    'is_hydrated': block_storage.is_hydrated,
-                    'kms_key_id': block_storage.kms_key_id,
-                    'lifecycle_state': block_storage.lifecycle_state,
-                    'size_in_gbs': block_storage.size_in_gbs,
-                    'volume_group_id': block_storage.volume_group_id,
-                    'vpus_per_gb': block_storage.vpus_per_gb,
-                    'time_created': block_storage.time_created,
-                }
-            else:
-                record = {
-                    'availability_domain': block_storage.availability_domain,
-                    'compartment_id': block_storage.compartment_id,
-                    'display_name': block_storage.display_name,
-                    'id': block_storage.id,
-                    'image_id': '',
-                    'is_auto_tune_enabled': block_storage.is_auto_tune_enabled,
-                    'is_hydrated': block_storage.is_hydrated,
-                    'kms_key_id': block_storage.kms_key_id,
-                    'lifecycle_state': block_storage.lifecycle_state,
-                    'size_in_gbs': block_storage.size_in_gbs,
-                    'volume_group_id': block_storage.volume_group_id,
-                    'vpus_per_gb': block_storage.vpus_per_gb,
-                    'time_created': block_storage.time_created,
-                }
-            
+            record = {
+                'availability_domain': block_storage.availability_domain,
+                'compartment_id': block_storage.compartment_id,
+                'display_name': block_storage.display_name,
+                'id': block_storage.id,
+                'is_auto_tune_enabled': block_storage.is_auto_tune_enabled,
+                'lifecycle_state': block_storage.lifecycle_state,
+                'size_in_gbs': block_storage.size_in_gbs,
+                'vpus_per_gb': block_storage.vpus_per_gb,
+                'time_created': block_storage.time_created,
+            }            
             self.__block_storages_with_no_policy_dicts.append(record)
 
         self.__file_system_objects = ParallelExecutor.executor(file_system_clients_with_ADs, self.__compartments, ParallelExecutor.get_file_systems, len(self.__compartments), ParallelExecutor.file_systems)
@@ -137,13 +115,8 @@ class CheckBackupPolicies(ReviewPoint):
                 'compartment_id': file_system.compartment_id,
                 'id': file_system.id,
                 'display_name': file_system.display_name,
-                'is_clone_parent': file_system.is_clone_parent,
-                'is_hydrated': file_system.is_hydrated,
-                'kms_key_id': file_system.kms_key_id,
                 'lifecycle_state': file_system.lifecycle_state,
-                'lifecycle_details': file_system.lifecycle_details,
                 'metered_bytes': file_system.metered_bytes,
-                'source_details': file_system.source_details,
                 'time_created': file_system.time_created,
             }
             self.__file_systems_with_no_snapshots_dicts.append(record)

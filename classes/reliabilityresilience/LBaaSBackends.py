@@ -74,7 +74,6 @@ class LBaaSBackends(ReviewPoint):
                 'display_name': load_balancer.display_name,
                 'id': load_balancer.id,
                 'compartment_id': load_balancer.compartment_id,
-                'ip_addresses': load_balancer.ip_addresses,
                 'backend_sets': load_balancer.backend_sets,
                 'is_private': load_balancer.is_private,
                 'lifecycle_state': load_balancer.lifecycle_state,
