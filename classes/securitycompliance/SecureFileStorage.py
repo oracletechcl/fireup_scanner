@@ -7,7 +7,6 @@ from common.utils.helpers.helper import *
 from classes.abstract.ReviewPoint import ReviewPoint
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
-from oci.exceptions import ServiceError
 
 
 class SecureFileStorage(ReviewPoint):
@@ -94,6 +93,7 @@ class SecureFileStorage(ReviewPoint):
                         'display_name': sec_list.display_name,
                         'vcn_id': sec_list.vcn_id,
                         'id': sec_list.id,
+                        'lifecycle_state': sec_list.lifecycle_state,
                         'ingress_tcp_options': ingress.tcp_options,
                         'ingress_udp_options': ingress.udp_options,
                     }
@@ -104,6 +104,7 @@ class SecureFileStorage(ReviewPoint):
                         'display_name': sec_list.display_name,
                         'vcn_id': sec_list.vcn_id,
                         'id': sec_list.id,
+                        'lifecycle_state': sec_list.lifecycle_state,
                         'ingress_tcp_options': ingress.tcp_options,
                         'ingress_udp_options': ingress.udp_options,
                     }
@@ -130,12 +131,13 @@ class SecureFileStorage(ReviewPoint):
                                 udp_ports.append(i)
             if tcp_ports not in tcp_ports_list or udp_ports not in upd_ports_list:
                 sec_list_record = {
-                        'compartment_id': sec_list.compartment_id,
-                        'display_name': sec_list.display_name,
-                        'vcn_id': sec_list.vcn_id,
-                        'id': sec_list.id,
-                        'ingress_tcp_options': ingress.tcp_options,
-                        'ingress_udp_options': ingress.udp_options,
+                    'compartment_id': sec_list.compartment_id,
+                    'display_name': sec_list.display_name,
+                    'vcn_id': sec_list.vcn_id,
+                    'id': sec_list.id,
+                    'lifecycle_state': sec_list.lifecycle_state,
+                    'ingress_tcp_options': ingress.tcp_options,
+                    'ingress_udp_options': ingress.udp_options,
                 }
                 self.__non_compliant_sec_list.append(sec_list_record)
 
@@ -147,6 +149,7 @@ class SecureFileStorage(ReviewPoint):
                         file_name = file_storage_client[0].get_file_system(file_system_id = export_details.file_system_id).data
                         export_list_record = {
                             'compartment_id': file_name.compartment_id,
+                            'lifecycle_state': file_name.lifecycle_state,
                             'export_set_id': export_details.export_set_id,
                             'file_system_id': export_details.file_system_id,
                             'id': export_details.id,

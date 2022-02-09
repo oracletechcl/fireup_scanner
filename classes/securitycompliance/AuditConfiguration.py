@@ -72,7 +72,6 @@ class AuditConfiguration(ReviewPoint):
         for tenancy in self.__tenancy_data:
             if tenancy['audit_retention_period_days'] != 365:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(tenancy)
                 dictionary[entry]['failure_cause'].append("Audit retention is not set to 365 Days")
                 dictionary[entry]['mitigations'].append("Set audit retention to 365 days on tenancy")
                                   

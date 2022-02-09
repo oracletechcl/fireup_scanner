@@ -102,6 +102,7 @@ class OptimizationMonitor(ReviewPoint):
                     'owner': recipe_with_rules[0].owner,
                     'lifecycle_state': recipe_with_rules[0].lifecycle_state,
                     'description': recipe_with_rules[0].description,
+                    'compartment_id': recipe_with_rules[0].compartment_id,
                 }
                 for rule in recipe_with_rules[1]:
                     if not rule.detector_details.is_enabled:
@@ -125,6 +126,7 @@ class OptimizationMonitor(ReviewPoint):
                     'owner': recipe_with_rules[0].owner,
                     'lifecycle_state': recipe_with_rules[0].lifecycle_state,
                     'description': recipe_with_rules[0].description,
+                    'compartment_id': recipe_with_rules[0].compartment_id,
                 }
                 for rule in recipe_with_rules[1]:
                     if not rule.details.is_enabled:

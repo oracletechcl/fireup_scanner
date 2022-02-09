@@ -64,10 +64,8 @@ class NetworkSources(ReviewPoint):
                 "freeform_tags": n_source.freeform_tags,
                 "id": n_source.id,
                 "name": n_source.name,
-                "public_source_list": n_source.public_source_list,
                 "services": n_source.services,
                 "time_created": n_source.time_created,
-                "virtual_source_list": n_source.virtual_source_list
             }
             self.__network_sources.append(record)
 

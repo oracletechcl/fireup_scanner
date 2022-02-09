@@ -94,7 +94,7 @@ class CheckAutoscaling(ReviewPoint):
                 "id": oke_cluster.id, 
                 "kubernetes_version": oke_cluster.kubernetes_version, 
                 "lifecycle_state": oke_cluster.lifecycle_state, 
-                "name": oke_cluster.name,
+                "display_name": oke_cluster.name,
                 "vcn_id": oke_cluster.vcn_id
             }
             self.__oke_clusters.append(record)
@@ -134,6 +134,6 @@ class CheckAutoscaling(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(oke_cluster)
                 dictionary[entry]['failure_cause'].append("Kubernetes cluster does not have any autoscaling enabled")
-                dictionary[entry]['mitigations'].append(f"Make sure that the auto scaling is enabled for cluster: \"{oke_cluster['name']}\" in compartment: \"{get_compartment_name(self.__compartments, oke_cluster['compartment_id'])}\"")
+                dictionary[entry]['mitigations'].append(f"Make sure that the auto scaling is enabled for cluster: \"{oke_cluster['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, oke_cluster['compartment_id'])}\"")
                 
         return dictionary

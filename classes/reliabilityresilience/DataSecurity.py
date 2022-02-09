@@ -69,7 +69,6 @@ class DataSecurity(ReviewPoint):
                 'id': instance.id,
                 'display_name': instance.display_name,
                 'compartment_id': instance.compartment_id,
-                'availability_domain': instance.availability_domain,
                 'lifecycle_state': instance.lifecycle_state,
                 'launch_options': instance.launch_options,
                 'time_created': instance.time_created,

@@ -82,14 +82,12 @@ class BackupDatabases(ReviewPoint):
                     if not db.db_backup_config.auto_backup_enabled:
                         record = {
                             'compartment_id': db_home.compartment_id,
-                            'defined_tags': db_home.defined_tags,
                             'display_name': db_home.display_name,
                             'id': db_home.id,
                             'time_created': db_home.time_created,
                             'db_system_id': db_home.db_system_id,
-                            'db_version': db_home.db_version,
+                            'database_version': db_home.db_version,
                             'lifecycle_state': db_home.lifecycle_state,
-                            'vm_cluster_id': db_home.vm_cluster_id,
                         }
                         self.__db_systems_with_no_backups_dicts.append( (db, record) )
 
@@ -100,18 +98,12 @@ class BackupDatabases(ReviewPoint):
 
         for mysql_db in self.__mysql_dbs_with_no_backups:
             record = {
-                'availability_domain': mysql_db.availability_domain,
                 'compartment_id': mysql_db.compartment_id,
-                'current_placement': mysql_db.current_placement,
-                'defined_tags': mysql_db.defined_tags,
                 'description': mysql_db.description,
                 'display_name': mysql_db.display_name,
-                'endpoints': mysql_db.endpoints,
-                'heat_wave_cluster': mysql_db.heat_wave_cluster,
                 'id': mysql_db.id,
-                'is_highly_available': mysql_db.is_highly_available,
                 'lifecycle_state': mysql_db.lifecycle_state,
-                'mysql_version': mysql_db.mysql_version,
+                'database_version': mysql_db.mysql_version,
                 'time_created': mysql_db.time_created,
             }
             self.__mysql_dbs_with_no_backups_dicts.append(record)
