@@ -86,7 +86,9 @@ class TransitRouting(ReviewPoint):
                     region_needed['region'] = region.region_name
 
                     n_client = get_virtual_network_client(region_needed, self.signer)
+                    debug(n_client.base_client.endpoint,color = 'blue')
                     n_client.base_client.endpoint = 'https://vnca-api.' + region.region_name + '.oci.oraclecloud.com'
+                    debug(n_client.base_client.endpoint,color = 'yellow')
                     self.__topologies_with_cpe_connections_objects.append(get_networking_topology_per_compartment(n_client,com_region[0]))
 
         for network_topology in self.__topologies_with_cpe_connections_objects:
