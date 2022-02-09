@@ -67,14 +67,16 @@ class OptimizationMonitor(ReviewPoint):
             return
 
         # Record some data of a tenancy and its cloud guard enable status
-        tenancy_data_including_cloud_guard = {
+        self.__tenancy_data_including_cloud_guard = {
             "tenancy_id" : self.__tenancy.id,
             "tenancy_name" : self.__tenancy.name,
             "tenancy_description" : self.__tenancy.description,
             "tenancy_region_key" : self.__tenancy.home_region_key,
             "cloud_guard_enable_stautus" : self.__cloud_guard_data.status
-
         }
+
+        if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
+            return
 
         home_region = get_home_region(self.__identity, self.config)
 
@@ -83,16 +85,15 @@ class OptimizationMonitor(ReviewPoint):
         self.__cloud_guard_client = [get_cloud_guard_client(region_config, self.signer)]
 
         # get tenancy and rules data
-        self.__tenancy_data_including_cloud_guard = tenancy_data_including_cloud_guard
         self.__detector_recipes_data = ParallelExecutor.executor(self.__cloud_guard_client, compartments, ParallelExecutor.get_detector_recipes, len(compartments), ParallelExecutor.detector_recipes)
         self.__responder_recipes_data = ParallelExecutor.executor(self.__cloud_guard_client, compartments, ParallelExecutor.get_responder_recipes, len(compartments), ParallelExecutor.responder_recipes)
 
-        if len(self.__detector_recipes_data) > 0:
+        if len(self.__detector_recipes_data) > 0:            
             self.__detector_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__detector_recipes_data, ParallelExecutor.get_detector_rules, len(self.__detector_recipes_data), ParallelExecutor.detector_recipes_with_rules)
-        
-        if len(self.__responder_recipes_data) > 0:
+
+        if len(self.__responder_recipes_data) > 0:            
             self.__responder_recipes_with_rules_data = ParallelExecutor.executor(self.__cloud_guard_client, self.__responder_recipes_data, ParallelExecutor.get_responder_rules, len(self.__responder_recipes_data), ParallelExecutor.responder_recipes_with_rules)
-        
+
         for recipe_with_rules in self.__detector_recipes_with_rules_data:
             if recipe_with_rules[0].owner == "CUSTOMER":
                 recipe_record = {
