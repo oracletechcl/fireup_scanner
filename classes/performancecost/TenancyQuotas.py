@@ -61,16 +61,11 @@ class TenancyQuotas(ReviewPoint):
         for compartment in compartments:
             compartment_record = {
                 'compartment_id': compartment.id,
-                'defined_tags': compartment.defined_tags,
                 'description': compartment.description,
-                'freeform_tags': compartment.freeform_tags,
                 'id': compartment.id,
-                'inactive_status': compartment.inactive_status,
-                'is_accessible': compartment.is_accessible,
                 'lifecycle_state': compartment.lifecycle_state,
                 'name': compartment.name,
-                'time_created': compartment.time_created,  
-                'statements': ""              
+                'time_created': compartment.time_created,
             }
             self.__compartments.append(compartment_record)
         
