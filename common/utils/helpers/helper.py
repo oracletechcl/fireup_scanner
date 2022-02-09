@@ -939,3 +939,10 @@ def get_notification_data(notification_control_plane_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data 
 
+def is_cloud_shell():
+    # check the current os user running this program. If user is ubuntu or opc return false. Else return true
+    if os.getenv("USER") == "ubuntu" or os.getenv("USER") == "opc":
+        return False    
+    else:
+        return True
+    

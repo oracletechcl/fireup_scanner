@@ -80,6 +80,7 @@ class TransitRouting(ReviewPoint):
 
         # gather network topology, use workaround from github to get it from compartments which have CPE connectiity
         for com_region in vpn_fc_connections_per_compartment:
+          if is_cloud_shell():
             if com_region != get_home_region(self.__identity, self.config).region_name:           
                 self.__cloud_shell_mitigation.append(com_region)
                 break;
