@@ -113,39 +113,24 @@ class CompartmentsAndPolicies(ReviewPoint):
     def analyze_entity(self, entry):
         self.load_entity()              
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        compliant_compartment_count = 0
 
-        env_list = ['prd', 'dev', 'test', 'stage', 'qa', 'sandbox', 'prod', 'tst', 'stg', 'quality', 'sbx','sand', 'hub', 'hom']
+        env_list = ['prd', 'dev', 'test', 'stage', 'qa', 'sandbox', 'prod', 'tst', 'stg', 'quality', 'sbx', 'sand', 'hub', 'hom']
         compliant_compartment_names = []
-        all_compartment_names = []
 
-        for compartments in self.__compartments:         
-            all_compartment_names.append(compartments['name'])
+        for compartment in self.__compartments:
+            compartment_name = compartment['name']
             for env in env_list:
-                if env.lower() in compartments['name'].lower():
-                    compliant_compartment_count += 1
-                    compliant_compartment_names.append(compartments['name'])
+                if env.lower() in compartment['name'].lower():
+                    compliant_compartment_names.append(compartment_name)
                     break
-                else:
-                    continue
-            
-        non_compliant_compartments_names = list(set(all_compartment_names) - set(compliant_compartment_names))        
-
+            else:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['failure_cause'].append(f"Compartment name does not match environment name convention containing these keywords: {env_list}")
+                dictionary[entry]['mitigations'].append(f"Rename compartment: \"{compartment_name}\" to match the environment name convention")
+      
         if len(compliant_compartment_names) < 5:
             dictionary[entry]['status'] = False
-
-        for compartments in self.__compartments:
-            all_compartment_names.append(compartments['name'])
-            for env in env_list:
-                if env.lower() not in compartments['name'].lower():
-                    dictionary[entry]['findings'].append(compartments)
-                    break
-                else:
-                    continue
-
-        for item in non_compliant_compartments_names:
-            dictionary[entry]['failure_cause'].append(f"Compartment name does not match environment name convention containing these keywords: {env_list}")
-            dictionary[entry]['mitigations'].append(f"Rename compartment: \"{item}\" to match the environment name convention")
+            dictionary[entry]['failure_cause'].append("Not enough compliant compartments are present within the tenancy.")
 
         # Policy Analysis
         for policy in self.__policies:
