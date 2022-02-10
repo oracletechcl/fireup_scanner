@@ -26,7 +26,6 @@ class BucketPermissions(ReviewPoint):
     __bucket_objects = []
     __buckets = []
     __par_data = {}
-    __par_bucket_tuple = {}
  
     def __init__(self,
                 entry:str, 
