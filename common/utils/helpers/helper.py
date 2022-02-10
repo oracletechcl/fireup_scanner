@@ -939,6 +939,7 @@ def get_notification_data(notification_control_plane_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data 
 
+
 def is_cloud_shell():
     # check the current os user running this program. If user is ubuntu or opc return false. Else return true
     if os.getenv("USER") == "ubuntu" or os.getenv("USER") == "opc":
@@ -946,3 +947,14 @@ def is_cloud_shell():
     else:
         return True
     
+
+def get_bucket_info(bucket_name, bucket_objects, compartment_objects):
+    bucket_info = []
+    for bucket in bucket_objects:
+        if bucket.name == bucket_name:
+            bucket_info.append(bucket.compartment_id)
+            bucket_info.append(get_compartment_name(compartment_objects, bucket.compartment_id))
+        
+    return bucket_info
+
+
