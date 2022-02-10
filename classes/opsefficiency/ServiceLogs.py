@@ -113,13 +113,13 @@ class ServiceLogs(ReviewPoint):
         self.__events_rules_objects = ParallelExecutor.executor(events_clients, self.__compartments, ParallelExecutor.get_events_rules, len(self.__compartments), ParallelExecutor.events_rules)
 
         # JSON data to Python dictionary
-        self.__extract_dict(self.__buckets, self.__bucket_objects,"Bucket",["created_by","name","namespace"])
-        self.__extract_dict(self.__load_balancers, self.__load_balancers_objects,"Load Balancer",["display_name","lifecycle_state","shape_name"])
-        self.__extract_dict(self.__network_load_balancers, self.__network_load_balancers_objects,"Network Load Balancer",["display_name","lifecycle_state",])
-        self.__extract_dict(self.__subnets, self.__subnets_objects,"Subnet",["display_name","lifecycle_state","cidr_block","subnet_domain_name","dns_label"])
-        self.__extract_dict(self.__functions, self.__functions_objects,"Function",["display_name","lifecycle_state","application_id"])
-        self.__extract_dict(self.__ip_sec_tunnels, self.__ip_sec_tunnels_objects,"IPSec Tunnel",["display_name","lifecycle_state","status","vpn_ip"])
-        self.__extract_dict(self.__events_rules, self.__events_rules_objects,"Event",["display_name","lifecycle_state","description","is_enabled"])
+        self.__extract_dict(self.__buckets, self.__bucket_objects, "Bucket", [])
+        self.__extract_dict(self.__load_balancers, self.__load_balancers_objects, "Load Balancer", ["display_name", "lifecycle_state"])
+        self.__extract_dict(self.__network_load_balancers, self.__network_load_balancers_objects, "Network Load Balancer", ["display_name", "lifecycle_state"])
+        self.__extract_dict(self.__subnets, self.__subnets_objects, "Subnet", ["display_name", "cidr_block", "lifecycle_state"])
+        self.__extract_dict(self.__functions, self.__functions_objects, "Function", ["display_name", "lifecycle_state"])
+        self.__extract_dict(self.__ip_sec_tunnels, self.__ip_sec_tunnels_objects, "IPSec Tunnel", ["display_name", "lifecycle_state"])
+        self.__extract_dict(self.__events_rules, self.__events_rules_objects, "Event", ["display_name", "description", "lifecycle_state"])
 
 
     def analyze_entity(self, entry):
@@ -158,14 +158,15 @@ class ServiceLogs(ReviewPoint):
     
 
     def __extract_dict(self, destination_list, resource_objects, asset, custom_fields ):
-         for element in resource_objects:
+        for element in resource_objects:
             record = {
-                    "compartment_id": element.compartment_id,
-                    "id": element.id,   
-                    "time_created": element.time_created,
-                    "asset": asset
+                "compartment_id": element.compartment_id,
+                "id": element.id,
+                "asset": asset,
             }
+            if asset == "Bucket":
+                record['display_name'] = element.name
             for field in custom_fields:
-                record[field] = getattr(element,field)
+                record[field] = getattr(element, field)
 
             destination_list.append(record)

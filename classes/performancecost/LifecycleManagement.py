@@ -49,9 +49,7 @@ class LifecycleManagement(ReviewPoint):
     def load_entity(self):
 
         regions = get_regions_data(self.__identity, self.config)
-
         tenancy = get_tenancy_data(self.__identity, self.config)
-
         namespace = get_object_storage_client(self.config, self.signer).get_namespace().data
 
         object_storage_clients = []
@@ -73,9 +71,7 @@ class LifecycleManagement(ReviewPoint):
             record = {
                     "compartment_id": bucket.compartment_id,
                     "name": bucket.name,
-                    "namespace": bucket.namespace,
                     "id": bucket.id,
-                    "created_by": bucket.created_by,
                     "policies": False,
                 }
             if lifecycle_policies is not None:

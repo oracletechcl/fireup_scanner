@@ -99,15 +99,12 @@ class ReplicateData(ReviewPoint):
 
         for block_storage in self.__block_volumes_objects + self.__boot_volumes_objects:
             record = {
-                'availability_domain': block_storage.availability_domain,
                 'compartment_id': block_storage.compartment_id,
                 'display_name': block_storage.display_name,
                 'id': block_storage.id,
                 'lifecycle_state': block_storage.lifecycle_state,
                 'size_in_gbs': block_storage.size_in_gbs,
-                'volume_group_id': block_storage.volume_group_id,
                 'vpus_per_gb': block_storage.vpus_per_gb,
-                'time_created': block_storage.time_created,
                 'region': block_storage.id.split('.')[3]
             }
             self.__block_storage_dicts.append(record)
@@ -117,14 +114,9 @@ class ReplicateData(ReviewPoint):
         for extended_bucket_data in self.__bucket_objects:
             record = {
                 'compartment_id': extended_bucket_data.compartment_id,
-                'created_by': extended_bucket_data.created_by,
-                'etag': extended_bucket_data.etag,
                 'display_name': extended_bucket_data.name,
-                'namespace': extended_bucket_data.namespace,
-                'time_created': extended_bucket_data.time_created,
                 'id': extended_bucket_data.id,
                 'is_read_only': extended_bucket_data.is_read_only,
-                'approximate_size': extended_bucket_data.approximate_size,
                 'replication_enabled': extended_bucket_data.replication_enabled,
                 'region': extended_bucket_data.id.split('.')[3]
             }
@@ -138,7 +130,6 @@ class ReplicateData(ReviewPoint):
                 'dataguard_region_type': adb.dataguard_region_type,
                 'compartment_id': adb.compartment_id,
                 'id': adb.id,
-                'time_created': adb.time_created,
                 'region': adb.id.split('.')[3]
             }
             self.__autonomous_database_dicts.append(record)
