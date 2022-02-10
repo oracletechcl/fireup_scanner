@@ -82,7 +82,8 @@ class OperationsInsights(ReviewPoint):
                 'db_system_id': db.db_system_id,
                 'db_home_id': db.db_home_id,
                 'compartment_id': db.compartment_id,
-                'database_management_config': db.database_management_config,                
+                'lifecycle_state': db.lifecycle_state,
+                'database_management_config': db.database_management_config,
             }
             self.__dbs_from_db_homes_dicts.append(record)
 

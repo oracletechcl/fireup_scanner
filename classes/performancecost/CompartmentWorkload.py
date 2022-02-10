@@ -12,9 +12,6 @@ from common.utils.helpers.helper import *
 class CompartmentWorkload(ReviewPoint):
 
     # Class Variables
-    __block_volume_objects = []
-    __boot_volume_objects = []
-    __block_storages = []
     __compartments = []
     __identity = None
 

@@ -12,9 +12,8 @@ from collections import defaultdict
 
 class Rbac(ReviewPoint):
 
-    # Class Variables    
-    __compartments = [] 
-    __policies = []
+    # Class Variables
+    __compartments = []
     __root_policies = []
     __compartment_dicts = []
     __policies_per_compartment = []

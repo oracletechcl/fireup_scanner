@@ -92,6 +92,7 @@ class DBSystemControl(ReviewPoint):
                 'display_name': mysqldbobject.display_name,
                 'id': mysqldbobject.id,
                 'subnet_id': mysqldbobject.subnet_id,
+                'lifecycle_state': mysqldbobject.lifecycle_state,
             }
             self.__mysql_database_ocids.append(mysql_db_record)
 
@@ -104,7 +105,7 @@ class DBSystemControl(ReviewPoint):
                 'id': dbobject.id,
                 'subnet_id': dbobject.subnet_id,
                 'nsg_ids': dbobject.nsg_ids,
-                
+                'lifecycle_state': dbobject.lifecycle_state,
             }
             self.__oracle_database_subnet_ocids.append(orcl_db_record)
         
@@ -119,7 +120,7 @@ class DBSystemControl(ReviewPoint):
                 'nsg_ids': adb.nsg_ids,
                 'subnet_id': adb.subnet_id,
                 'compartment_id': adb.compartment_id,
-
+                'lifecycle_state': adb.lifecycle_state,
             }
             self.__autonomous_database_ocids.append(record)
 

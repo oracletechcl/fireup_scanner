@@ -97,6 +97,7 @@ class InstancePrincipal(ReviewPoint):
                 'id': instance.id,
                 'display_name': instance.display_name,
                 'compartment_id': instance.compartment_id,
+                'lifecycle_state': instance.lifecycle_state,
             }
             self.__instances.append(instance_record)
     

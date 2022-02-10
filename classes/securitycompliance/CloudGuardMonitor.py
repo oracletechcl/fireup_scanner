@@ -85,7 +85,6 @@ class CloudGuardMonitor(ReviewPoint):
         # Check if Cloud Guard is enable
         if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
             dictionary[entry]['status'] = False
-            dictionary[entry]['findings'].append(self.__tenancy_data_including_cloud_guard)
             dictionary[entry]['failure_cause'].append("Root level of the tenancy does not have Cloud Guard enabled")
             dictionary[entry]['mitigations'].append("Enable Cloud Guard on tenancy")
 

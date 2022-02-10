@@ -114,7 +114,6 @@ class BucketPermissions(ReviewPoint):
             for par_object in par_list:
                 record = {
                     "access_type": par_object.access_type,
-                    "bucket_listing_action": par_object.bucket_listing_action,
                     "id": par_object.id,
                     "name": par_object.name, 
                     "object_name": par_object.object_name, 
