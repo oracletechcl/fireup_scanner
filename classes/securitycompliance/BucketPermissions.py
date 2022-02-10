@@ -26,6 +26,7 @@ class BucketPermissions(ReviewPoint):
     __bucket_objects = []
     __buckets = []
     __par_data = {}
+    __par_bucket_tuple = {}
  
     def __init__(self,
                 entry:str, 
@@ -105,7 +106,7 @@ class BucketPermissions(ReviewPoint):
             self.__buckets.append(record)
 
         par_data = ParallelExecutor.executor(par_object_storage_clients, self.__bucket_objects, ParallelExecutor.get_preauthenticated_requests_per_bucket, len(self.__bucket_objects), ParallelExecutor.bucket_preauthenticated_requests)
-
+        
         for par in par_data:
             par_objects = []
             bucket_name = next(iter(par.keys()))
@@ -113,6 +114,9 @@ class BucketPermissions(ReviewPoint):
 
             for par_object in par_list:
                 record = {
+                    "bucket_name": bucket_name,
+                    "compartment_id": get_bucket_info(bucket_name, self.__bucket_objects, self.__compartments)[0],
+                    "compartment_name": get_bucket_info(bucket_name, self.__bucket_objects, self.__compartments)[1],
                     "access_type": par_object.access_type,
                     "id": par_object.id,
                     "name": par_object.name, 
@@ -162,7 +166,7 @@ class BucketPermissions(ReviewPoint):
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(par)
                             dictionary[entry]['failure_cause'].append("The pre-authenticated request is expired")   
-                            dictionary[entry]['mitigations'].append(f"Check if PAR: \"{par['name']}\" on bucket: \"{bucket['name']}\" which expired at: \"{par['time_expires'].date()}\" is still needed")      
+                            dictionary[entry]['mitigations'].append(f"Check if PAR: \"{par['name']}\" on bucket: \"{bucket['name']}\" located in compartment \"{par['compartment_name']}\" which expired at: \"{par['time_expires'].date()}\" is still needed")      
             else:
                 total_public_buckets+=1     
         
@@ -194,3 +198,4 @@ class BucketPermissions(ReviewPoint):
                 break
 
         return dictionary
+
