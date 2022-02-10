@@ -130,16 +130,12 @@ class BucketPermissions(ReviewPoint):
 
         for policy in self.__policy_objects:  
             record = {
-                "compartment_id": policy.compartment_id,
-                "defined_tags": policy.defined_tags,
-                "description": policy.description,
-                "freeform_tags": policy.freeform_tags,
+                "compartment_id": policy.compartment_id,                
+                "description": policy.description,                
                 "id": policy.id,
                 "lifecycle_state": policy.lifecycle_state,
                 "name": policy.name,
-                "statements": policy.statements,
-                "time_created": policy.time_created,
-                "version_date": policy.version_date
+                "statements": policy.statements,      
             }
             self.__policies.append(record)
 
