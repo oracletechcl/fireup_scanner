@@ -74,24 +74,25 @@ class StoragePermissions(ReviewPoint):
 
 
     def analyze_entity(self, entry):
-    
+
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        __verb_list = ['manage']
-        __resource_list = ['all-resources', 'volume-family','file-family', 'object-family',
-                             'volumes', 'volume-attachments', 'volume-backups',
-                             'file-systems', 'mount-targets','export-sets',
-                             'buckets', 'objects'
-                             ]
+        __resource_list = [
+            'all-resources', 'volume-family','file-family', 'object-family',
+            'volumes', 'volume-attachments', 'volume-backups',
+            'file-systems', 'mount-targets','export-sets',
+            'buckets', 'objects'
+        ]
+
         for policy in self.__policies:
             for statement in policy['statements']:
-                if __verb_list[0] in statement:
+                if 'manage' in statement.lower():
                     for banned_resources in __resource_list:
-                        if banned_resources in statement:
+                        if banned_resources in statement.lower():
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(policy) 
-                            dictionary[entry]['failure_cause'].append("Found policy allowing unauthorized users to Delete Storage Resources")                                            
-                            dictionary[entry]['mitigations'].append(f"Evaluate to update policy: \"{policy['name']}\" in compartment: \"{get_compartment_name(self.__compartments, policy['compartment_id'])}\" removing wide permissions: \"{__verb_list[0]} {banned_resources}\"")      
+                            dictionary[entry]['failure_cause'].append("Found policy allowing users to Delete Storage Resources")                                            
+                            dictionary[entry]['mitigations'].append(f"Consider updating policy: \"{policy['name']}\" in compartment: \"{get_compartment_name(self.__compartments, policy['compartment_id'])}\" by removing manage permissions of: \"{banned_resources}\"")      
                
         return dictionary
