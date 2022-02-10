@@ -75,30 +75,23 @@ class AdminAbility(ReviewPoint):
 
 
     def analyze_entity(self, entry):
-        self.load_entity()
+        self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        policy_body_items = ['allow group', 'to inspect groups in tenancy']
-        policy_user_items = ['administrator', 'admin', 'adm', 'useradmins']
-        policy_found = False
-
-        # Checks if a policy contains all items in policy_body_items and one of policy_user_items
+        counter = 0        
         for policy in self.__policies:
             for statement in policy['statements']:
-                for body_item in policy_body_items:
-                    if not body_item in statement.lower():
-                        break
-                else:
-                    for user_item in policy_user_items:
-                        if user_item in statement.lower():
-                            policy_found = True
-                            break
-                    else:
-                        continue
-                    break
+                if "service".upper() not in statement.upper():                    
+                    if "Allow group".upper() in statement.upper():
+                        if "to inspect groups in tenancy".upper() in statement.upper():
+                            if "Administrator".upper() or "admin".upper() or "adm".upper() or "UserAdmins".upper() in statement.upper():             
+                                counter+=1
         
-        if not policy_found: 
+        if counter == 0 : 
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Policy to allow user admins to inspect groups does not exists in tenancy")                
             dictionary[entry]['mitigations'].append("Create a policy \"Allow group UserAdmins to inspect groups in tenancy\"")
+        else:
+            dictionary[entry]['status'] = True
+            dictionary[entry]['findings'].append(policy)  
      
         return dictionary
