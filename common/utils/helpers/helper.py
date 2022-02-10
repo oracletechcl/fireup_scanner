@@ -939,3 +939,12 @@ def get_notification_data(notification_control_plane_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data 
 
+def get_bucket_info(bucket_name, bucket_objects, compartment_objects):
+    bucket_info = []
+    for bucket in bucket_objects:
+        if bucket.name == bucket_name:
+            bucket_info.append(bucket.compartment_id)
+            bucket_info.append(get_compartment_name(compartment_objects, bucket.compartment_id))
+        
+    return bucket_info
+
