@@ -42,3 +42,4 @@ def test_review_point(capsys):
 
 
     __test_suite_log(capsys)
+    

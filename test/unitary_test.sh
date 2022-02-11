@@ -5,6 +5,8 @@
 #
 # Purpose: Main test suite executor
 
+trap "kill 0" EXIT
+
 if [ ! -d "venv" ] 
 then
     echo "venv not present. Creating" 
@@ -14,4 +16,17 @@ fi
 
 source "venv/bin/activate"
 echo "Unit Test Started at: $(date)"
-python3 -m pytest --durations=0 -v
+
+if [ ! -f "unitary_testing.out" ]
+then
+    echo "Creating Logfile"
+    touch unitary_testing.out
+else
+    echo "Removing and Recreating Logfile" 
+    rm unitary_testing.out > /dev/null
+    touch unitary_testing.out
+fi
+
+tail -f unitary_testing.out &
+python3 logger.py
+sed -i 's/\x1b\[[0-9;]*[mGKH]//g' ./unitary_testing.out

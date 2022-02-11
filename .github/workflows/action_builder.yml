@@ -41,14 +41,13 @@ jobs:
           echo "${{ github.event.pull_request.head.ref }}"
       - name: Run Action Builder
         if: ${{ always() }}
-        uses: oraclecloudbricks/action_fireup@facc657488ec832d4c773d2f4b8bc1b5c6b32306
+        uses: oraclecloudbricks/action_fireup@19765b826a066688159ba721390cff250c1a419a
         with:
           files_added: ${{ steps.abc.outputs.added }}
           files_modified: ${{ steps.abc.outputs.modified }}
           pr_body: ${{ github.event.pull_request.body }}
           branch_name: ${{ github.event.pull_request.head.ref }}
       - name: Overall analysis
-        if: ${{ always() }}
         id: analysis
         run: |
           echo "::set-output name=read_me_action_outcome::$(jq '.[] | select(.action_name=="check_readme") | .passed' results.json)"
@@ -59,7 +58,6 @@ jobs:
           echo "::set-output name=helpers_action_outcome::$(jq '.[] | select(.action_name=="check_helpers") | .passed' results.json)"
           cat results.json
       - name: Define Errors
-        if: ${{ always() }}
         id: errors
         run: |
           echo "::set-output name=read_me_action_msg::$(jq '.[] | select(.action_name=="check_readme") | .description' results.json)"
@@ -68,16 +66,6 @@ jobs:
           echo "::set-output name=headers_action_msg::$(jq '.[] | select(.action_name=="check_header") | .description' results.json)"
           echo "::set-output name=pr_tests_action_msg::$(jq '.[] | select(.action_name=="check_pr_tests") | .description' results.json)"
           echo "::set-output name=helpers_action_msg::$(jq '.[] | select(.action_name=="check_helpers") | .description' results.json)"
-      - name: Printing Errors Messages for Debugging
-        if: ${{ always() }}
-        run: |
-          echo "${{ steps.errors.outputs.read_me_action_msg }}"
-          echo "${{ steps.errors.outputs.test_suite_action_msg }}"
-          echo "${{ steps.errors.outputs.statics_action_msg }}"
-          echo "${{ steps.errors.outputs.headers_action_msg }}"
-          echo "${{ steps.errors.outputs.pr_tests_action_msg }}"
-          echo "${{ steps.errors.outputs.helpers_action_msg }}"
-
   check-readme:
     if: ${{ contains(github.event.pull_request.head.ref, 'feature/') }}
     name: Check README.md
@@ -95,7 +83,7 @@ jobs:
           message: |
             :no_entry: **FAILURE: Missing README**
             :exclamation: ***The README file seems to be missing. Please add it.***
-            ***Error Message:***
+            **Error Message:**
             *${{ needs.setup-actions.outputs.read_me_action_msg }}*
           allow-repeats: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -227,11 +215,122 @@ jobs:
       - name: Fail job if Exeption appears
         if: ${{ needs.setup-actions.outputs.helpers_action_outcome == 0 }}
         run: exit 1
-
-  run_others:
-    if: ${{ always() && !contains(github.event.pull_request.head.ref, 'feature/')}}
-    name: Run Other Actions
+    
+  remove-log:
+    if: ${{ contains(github.event.pull_request.head.ref, 'feature/') }}
+    name: Remove File
     runs-on: ubuntu-latest
+    needs: [check-readme,check-test-suite,check-statics,check-headers,check-pr-tests,check-helpers]
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+      env:
+        ACCESS_TOKEN: '${{ secrets.ACCESS_TOKEN }}'    
+    - name: Remove file if all jobs pass
+      run: |
+        git config user.name "$(git log -n 1 --pretty=format:%an)"
+        git config user.email "$(git log -n 1 --pretty=format:%ae)"
+        
+        cd test
+        git rm unitary_testing.out
+
+        git commit -m "Removing unitary_testing.out"
+        git push   
+
+  run-others:
+    if: ${{ always() && !contains(github.event.pull_request.head.ref, 'feature/')}}
+    name: Setup Non-Feature Actions
+    runs-on: ubuntu-latest
+    outputs:
+      pr_tests_outcome: ${{ steps.analysis.outputs.pr_tests_outcome }}
+      pr_tests_msg: ${{ steps.errors.outputs.pr_tests_msg }}
+      branch_name: ${{ github.event.pull_request.head.ref }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+      - uses: jitterbit/get-changed-files@v1
+        id: abc
+        with:
+          format: space-delimited
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Getting File info
+        run: |
+          echo "${{ steps.abc.outputs.added }}"
+          echo "${{ steps.abc.outputs.modified }}"
+      - name: Get PR info
+        run: |
+          echo "${{ github.event.issue.number }}"
+          echo "${{ github.event.pull_request.body }}"
+          echo "${{ github.event.pull_request.title }}"
+          echo "${{ github.event.pull_request.head.ref }}"
+      - name: Run Action Builder
+        if: ${{ always() }}
+        uses: oraclecloudbricks/action_fireup@19765b826a066688159ba721390cff250c1a419a
+        with:
+          files_added: ${{ steps.abc.outputs.added }}
+          files_modified: ${{ steps.abc.outputs.modified }}
+          pr_body: ${{ github.event.pull_request.body }}
+          branch_name: ${{ github.event.pull_request.head.ref }}
+      - name: Overall analysis
+        id: analysis
+        run: |
+          echo "::set-output name=pr_tests_outcome::$(jq '.[] | select(.action_name=="check_pr_tests") | .passed' results.json)"
+          cat results.json
+      - name: Define Errors
+        id: errors
+        run: |
+          echo "::set-output name=pr_tests_msg::$(jq '.[] | select(.action_name=="check_pr_tests") | .description' results.json)"
+  check-pr-tests-other:
+    if: ${{ !contains(github.event.pull_request.head.ref, 'feature/') }}
+    name: Check Non-Feature Tests Pass
+    runs-on: ubuntu-latest
+    needs: run-others
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+        env:
+          ACCESS_TOKEN: '${{ secrets.ACCESS_TOKEN }}'
+      - name: Getting variables
+        run: |
+          echo "${{ needs.run-others.outputs.pr_tests_outcome }}"
+          echo "${{ needs.run-others.outputs.pr_tests_msg }}"
+      - name: Comment if analysis finds failed tests
+        if: ${{ needs.run-others.outputs.pr_tests_outcome == 0}}
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            :no_entry: **FAILURE: Failing Tests Detected**
+            :exclamation: ***There was an issue with the test file. Please review the following Error.***
+            ***Error message:***
+            *${{ needs.run-others.outputs.pr_tests_msg }}*
+          allow-repeats: true
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Fail job if Exeption appears
+        if: ${{ needs.run-others.outputs.pr_tests_outcome == 0 }}
+        run: exit 1
+  remove-log2:
+    if: ${{ !contains(github.event.pull_request.head.ref, 'feature/') }}
+    name: Remove File
+    runs-on: ubuntu-latest
+    needs: check-pr-tests-other
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+      env:
+        ACCESS_TOKEN: '${{ secrets.ACCESS_TOKEN }}'    
+    - name: Remove file if all jobs pass
+      run: |
+        git config user.name "$(git log -n 1 --pretty=format:%an)"
+        git config user.email "$(git log -n 1 --pretty=format:%ae)"
+        
+        cd test
+        git rm unitary_testing.out
+
+        git commit -m "Removing unitary_testing.out"
+        git push   
