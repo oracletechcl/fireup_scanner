@@ -589,7 +589,7 @@ def get_db_system_patch_details(database_client, db_system_id, patch_id):
 
 
 def get_db_home_patch_details(database_client, db_home_id, patch_id):
-    return database_client.get_db_home_patch(db_home_id,patch_id).data
+    return database_client.get_db_home_patch(db_home_id, patch_id).data
 
   
 def get_drg_data(network_client, compartment_id):
