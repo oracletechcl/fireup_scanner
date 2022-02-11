@@ -25,7 +25,7 @@ class BucketPermissions(ReviewPoint):
     __policies = []
     __bucket_objects = []
     __buckets = []
-    __par_data = {}
+    __buckets_with_pars = []
  
     def __init__(self,
                 entry:str, 
@@ -63,7 +63,6 @@ class BucketPermissions(ReviewPoint):
         obj_namespace = get_objectstorage_namespace_data(obj_client)
 
         object_storage_clients = []
-        par_object_storage_clients = []
         regions = get_regions_data(self.__identity, self.config)
 
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
@@ -73,65 +72,44 @@ class BucketPermissions(ReviewPoint):
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
-            object_storage_clients.append((get_object_storage_client(region_config, self.signer), obj_namespace))
-            par_object_storage_clients.append((get_object_storage_client(region_config, self.signer),obj_namespace, region.region_name, region.region_key.lower()))
+            object_storage_clients.append( (get_object_storage_client(region_config, self.signer), obj_namespace, region.region_name, region.region_key.lower()) )
       
         self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)
 
-        for bucket in self.__bucket_objects:
-            record = {
-                    "approximate_count": bucket.approximate_count,
-                    "approximate_size": bucket.approximate_size,
-                    "auto_tiering": bucket.auto_tiering,
-                    "compartment_id": bucket.compartment_id,
-                    "created_by": bucket.created_by,
-                    "defined_tags": bucket.defined_tags,
-                    "etag": bucket.etag,
-                    "freeform_tags": bucket.freeform_tags,
-                    "id": bucket.id,
-                    "is_read_only": bucket.is_read_only,
-                    "kms_key_id": bucket.kms_key_id,
-                    "metadata":bucket.metadata,
-                    "name": bucket.name,
-                    "namespace": bucket.namespace,
-                    "object_events_enabled": bucket.object_events_enabled,
-                    "object_lifecycle_policy_etag": bucket.object_lifecycle_policy_etag,
-                    "public_access_type": bucket.public_access_type,
-                    "replication_enabled": bucket.replication_enabled,
-                    "storage_tier": bucket.storage_tier,
-                    "time_created": bucket.time_created,
-                    "versioning": bucket.versioning
-            }
-            self.__buckets.append(record)
-
-        par_data = ParallelExecutor.executor(par_object_storage_clients, self.__bucket_objects, ParallelExecutor.get_preauthenticated_requests_per_bucket, len(self.__bucket_objects), ParallelExecutor.bucket_preauthenticated_requests)
+        par_data = ParallelExecutor.executor(object_storage_clients, self.__bucket_objects, ParallelExecutor.get_preauthenticated_requests_per_bucket, len(self.__bucket_objects), ParallelExecutor.bucket_preauthenticated_requests)
         
-        for par in par_data:
-            par_objects = []
-            bucket_name = next(iter(par.keys()))
-            par_list = next(iter(par.values()))
+        # Loop through tuples of bucket objects with PARs objects
+        for bucket, par_list in par_data:
+            par_dicts = []
+
+            bucket_dict = {
+                "compartment_id": bucket.compartment_id,
+                "id": bucket.id,
+                "name": bucket.name,
+                "public_access_type": bucket.public_access_type,
+            }
 
             for par_object in par_list:
                 record = {
-                    "bucket_name": bucket_name,
-                    "compartment_id": get_bucket_info(bucket_name, self.__bucket_objects, self.__compartments)[0],
-                    "compartment_name": get_bucket_info(bucket_name, self.__bucket_objects, self.__compartments)[1],
+                    "bucket_name": bucket.name,
+                    "id": bucket.id,
+                    "compartment_id": bucket.compartment_id,
                     "access_type": par_object.access_type,
-                    "id": par_object.id,
                     "name": par_object.name, 
-                    "object_name": par_object.object_name, 
-                    "time_created": par_object.time_created, 
+                    "object_name": par_object.object_name,
                     "time_expires": par_object.time_expires
                 }
-                par_objects.append(record) 
-            self.__par_data.update({bucket_name:par_objects})
+                par_dicts.append(record)
+
+            # Add tuples of buckets and list of PARs in dictionary form
+            self.__buckets_with_pars.append( (bucket_dict, par_dicts) )
         
         self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
 
         for policy in self.__policy_objects:  
             record = {
-                "compartment_id": policy.compartment_id,                
-                "description": policy.description,                
+                "compartment_id": policy.compartment_id,
+                "description": policy.description,
                 "id": policy.id,
                 "lifecycle_state": policy.lifecycle_state,
                 "name": policy.name,
@@ -142,28 +120,26 @@ class BucketPermissions(ReviewPoint):
 
     def analyze_entity(self, entry):
     
-        self.load_entity()     
+        self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         total_private_buckets = 0
-        total_public_buckets = 0        
-        
-        # Find expired PARs
-        for bucket in self.__buckets: 
+        total_public_buckets = 0
+
+        # Loop through tuples of buckets and pars in dictionary form
+        for bucket, pars in self.__buckets_with_pars:
             if bucket['public_access_type'] == 'NoPublicAccess':
-                total_private_buckets+=1
-                             
-                if bucket['name'] in self.__par_data:
-                    for par in self.__par_data[bucket['name']]:
-                        past = par['time_expires']
-                        present = datetime.now()
-                        if past.date() < present.date():
-                            dictionary[entry]['status'] = False
-                            dictionary[entry]['findings'].append(par)
-                            dictionary[entry]['failure_cause'].append("The pre-authenticated request is expired")   
-                            dictionary[entry]['mitigations'].append(f"Check if PAR: \"{par['name']}\" on bucket: \"{bucket['name']}\" located in compartment \"{par['compartment_name']}\" which expired at: \"{par['time_expires'].date()}\" is still needed")      
+                total_private_buckets += 1
+                for par in pars:
+                    expiry = par['time_expires']
+                    present = datetime.now()
+                    if expiry.date() < present.date():
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['findings'].append(par)
+                        dictionary[entry]['failure_cause'].append("The pre-authenticated request is expired")
+                        dictionary[entry]['mitigations'].append(f"Check if PAR: \"{par['name']}\" on bucket: \"{par['bucket_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, par['compartment_id'])}\" which expired at: \"{par['time_expires'].date()}\" is still needed")
             else:
-                total_public_buckets+=1     
+                total_public_buckets += 1 
         
         # Check if there is too many public buckets
         if total_public_buckets > (total_public_buckets + total_private_buckets)/2:
@@ -172,25 +148,17 @@ class BucketPermissions(ReviewPoint):
             dictionary[entry]['mitigations'].append(f"Consider making Bucket: \"{bucket['name']}\" private")
             
         # Check how many users have access to update bucket access
-        __problem_policies = []
-        __criteria_list = ['manage','use','all-resources', 'object-family', 'buckets']
+        verb_list = ['manage', 'use']
+        criteria_list = ['all-resources', 'object-family', 'buckets']
 
         for policy in self.__policies:
-            problem_statements = []
-            for statement in policy['statements']:             
-                if (__criteria_list[0].lower() in statement.lower() or __criteria_list[1].lower() in statement.lower()) and any(criteria.lower() in statement.lower() for criteria in __criteria_list[2:]):
-                    problem_statements.append(statement)
-            if problem_statements:
-                policy['statements'] = problem_statements
-                __problem_policies.append(policy)   
-   
-        for policy in __problem_policies:
             for statement in policy['statements']:
-                dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(policy)
-                dictionary[entry]['failure_cause'].append("This policy allows users to update private bucket to public access")                
-                dictionary[entry]['mitigations'].append(f"Evaluate updating Policy: \"{statement}\" in compartment: \"{get_compartment_name(self.__compartments, policy['compartment_id'])}\" to give less access to buckets")
-                break
+                if any(verb in statement.lower() for verb in verb_list):
+                    if any(critera in statement.lower() for critera in criteria_list):
+                        dictionary[entry]['status'] = False
+                        if policy not in dictionary[entry]['findings']:
+                            dictionary[entry]['findings'].append(policy)
+                        dictionary[entry]['failure_cause'].append("This policy allows users to update private bucket to public access")                
+                        dictionary[entry]['mitigations'].append(f"Evaluate updating statement: \"{statement}\" in policy: \"{policy['name']}\" in compartment: \"{get_compartment_name(self.__compartments, policy['compartment_id'])}\" to give less access to buckets")
 
         return dictionary
-
