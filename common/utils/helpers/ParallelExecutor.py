@@ -804,25 +804,20 @@ def get_database_homes_applied_patch_history(item):
         if database_client[1] in region or database_client[2] in region:
             if db_home_ocids.lifecycle_state == "AVAILABLE":
                 patches_data = get_db_home_patch_history(database_client[0], db_home_ocids.id)
+                db_home_patch_history_dict = {
+                    "db_home_ocid": db_home_ocids.id,
+                    "display_name": db_home_ocids.display_name,
+                    "db_version": db_home_ocids.db_version,
+                    "compartment_id": db_home_ocids.compartment_id,
+                    "lifecycle_state": db_home_ocids.lifecycle_state,
+                }
                 if len(patches_data) > 0:
                     patch_ocid = patches_data[0].patch_id
-
-                    db_home_patch_history_dict = {
-                        "db_home_ocid": db_home_ocids.id,
-                        'db_version': db_home_ocids.db_version,
-                        "patch_id" : patch_ocid,
-                        "database_client": database_client[0]
-                    }
+                    db_home_patch_history_dict['patch_id'] = patch_ocid
                 else:
-                    db_home_patch_history_dict = {
-                        "db_home_ocid": db_home_ocids.id,
-                        'db_version': db_home_ocids.db_version,
-                        "patch_id" : None,
-                        "database_client": None
-                    }
+                    db_home_patch_history_dict['patch_id'] = None
 
                 oracle_db_home_patch_history.append(db_home_patch_history_dict)
-
 
     return oracle_db_home_patch_history
 
@@ -839,27 +834,23 @@ def get_database_systems_applied_patch_history(item):
         if database_client[1] in region or database_client[2] in region:
             if db_system_ocids.lifecycle_state == "AVAILABLE":
                 patches_data = get_db_system_patch_history(database_client[0], db_system_ocids.id)
-
+                db_system_patch_history_dict = {
+                    "db_system_ocid": db_system_ocids.id,
+                    "display_name": db_system_ocids.display_name,
+                    "db_version": db_system_ocids.version,
+                    "compartment_id": db_system_ocids.compartment_id,
+                    "lifecycle_state": db_system_ocids.lifecycle_state,
+                }
                 if len(patches_data) > 0:
                     patch_ocid = patches_data[0].patch_id
-
-                    db_system_patch_history_dict = {
-                        "db_system_ocid": db_system_ocids.id,
-                        "db_version": db_system_ocids.version,
-                        "patch_id" : patch_ocid,
-                        "database_client": database_client[0]
-                    }
+                    db_system_patch_history_dict['patch_id'] = patch_ocid
                 else:
-                    db_system_patch_history_dict = {
-                        "db_system_ocid": db_system_ocids.id,
-                        "db_version": db_system_ocids.version,
-                        "patch_id" : None,
-                        "database_client": None
-                    }
+                    db_system_patch_history_dict['patch_id'] = None
 
                 oracle_db_system_patch_history.append(db_system_patch_history_dict)
 
     return oracle_db_system_patch_history
+
 
 def get_steering_policies(item):
     dns_client = item[0]
