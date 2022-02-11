@@ -631,7 +631,7 @@ mysql_clients = []
 for region in regions:
   region_config = self.config
   region_config['region'] = region.region_name
-  mysql_clients.append( (get_mysql_client(region_config, self.signer), region.region_name, reregion_key.lower()) )
+  mysql_clients.append( (get_mysql_client(region_config, self.signer), region.region_name, region_key.lower()) )
 ```
 
 This error is then thrown because the parallel executor is called with the list of tuples in the client list.
