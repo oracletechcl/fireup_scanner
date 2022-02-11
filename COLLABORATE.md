@@ -977,7 +977,12 @@ To have a succesful run when developing any other branch type where any other fi
 In order for the above actions to run succesfully make sure that any feature branch has the following naming convention (where *'X'* signifies the review point number )
 - *feature/rp_X_X*
 
-A particular naming convention is not required by the action builder for non-feature branches. 
+For bugs and enhacements the following branch naming convention applies:
+- *bug/ISSUE_NUMBER*
+- *en/ISSUE_NUMBER*
+
+For branches relating to other forms of development use the following convention:
+- *development_type/ISSUE_NUMBER*
 
 The actions were developed using Docker and can be found in the following public repo:
 `https://github.com/oraclecloudbricks/action_fireup`
