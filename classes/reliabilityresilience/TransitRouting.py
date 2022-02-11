@@ -86,7 +86,9 @@ class TransitRouting(ReviewPoint):
             self.__topologies_with_cpe_connections.append(record)
     
     def analyze_entity(self, entry):
-        # RP currently doesn't work well on cloud shell, so is disabled
+        # RP currently doesn't work correctly on cloud shell, so is disabled. This logic needs to be ammended when the below bugs are fixed:
+        # https://github.com/oracle/oci-python-sdk/issues/429 and https://github.com/oracle/oci-python-sdk/issues/425
+        # This circuit breaker should be removed once the API offers concurrent support for delegation token.
         if is_cloud_shell():
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("This review point is currently disabled in cloud shell.")   
