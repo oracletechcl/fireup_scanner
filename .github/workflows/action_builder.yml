@@ -41,7 +41,7 @@ jobs:
           echo "${{ github.event.pull_request.head.ref }}"
       - name: Run Action Builder
         if: ${{ always() }}
-        uses: nicolinap/new_action_publish@2e5447a47978f09bd1b55a4f6f0a11fe20ee342d
+        uses: oraclecloudbricks/action_fireup@cb3f02844dbad0e9cfaf7030c0336acc52d84c53
         with:
           files_added: ${{ steps.abc.outputs.added }}
           files_modified: ${{ steps.abc.outputs.modified }}
@@ -215,6 +215,29 @@ jobs:
       - name: Fail job if Exeption appears
         if: ${{ needs.setup-actions.outputs.helpers_action_outcome == 0 }}
         run: exit 1
+    
+  remove-log:
+    if: ${{ contains(github.event.pull_request.head.ref, 'feature/') }}
+    name: Remove File
+    runs-on: ubuntu-latest
+    needs: [check-readme,check-test-suite,check-statics,check-headers,check-pr-tests,check-helpers]
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+      env:
+        ACCESS_TOKEN: '${{ secrets.ACCESS_TOKEN }}'    
+    - name: Remove file if all jobs pass
+      run: |
+        git config user.name "$(git log -n 1 --pretty=format:%an)"
+        git config user.email "$(git log -n 1 --pretty=format:%ae)"
+        
+        cd test
+        git rm unitary_testing.out
+
+        git commit -m "Removing unitary_testing.out"
+        git push   
 
   run-others:
     if: ${{ always() && !contains(github.event.pull_request.head.ref, 'feature/')}}
@@ -244,7 +267,7 @@ jobs:
           echo "${{ github.event.pull_request.head.ref }}"
       - name: Run Action Builder
         if: ${{ always() }}
-        uses: nicolinap/new_action_publish@beb76ddb17d76581f48c612ba435ff1c06db11d0
+        uses: oraclecloudbricks/action_fireup@cb3f02844dbad0e9cfaf7030c0336acc52d84c53
         with:
           files_added: ${{ steps.abc.outputs.added }}
           files_modified: ${{ steps.abc.outputs.modified }}
