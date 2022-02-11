@@ -977,9 +977,9 @@ To have a succesful run when developing any other branch type where any other fi
 In order for the above actions to run succesfully make sure that any feature branch has the following naming convention (where *'X'* signifies the review point number )
 - *feature/rp_X_X*
 
-For bugs and enhacements the following branch naming convention applies:
+For bugs and enhancements the following branch naming convention applies:
 - *bug/ISSUE_NUMBER*
-- *en/ISSUE_NUMBER*
+- *er/ISSUE_NUMBER*
 
 For branches relating to other forms of development use the following convention:
 - *development_type/ISSUE_NUMBER*
