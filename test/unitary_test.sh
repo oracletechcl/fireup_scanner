@@ -17,16 +17,16 @@ fi
 source "venv/bin/activate"
 echo "Unit Test Started at: $(date)"
 
-if [ ! -f "test_status.log" ]
+if [ ! -f "unitary_testing.out" ]
 then
     echo "Creating Logfile"
-    touch test_status.log
+    touch unitary_testing.out
 else
     echo "Removing and Recreating Logfile" 
-    rm test_status.log > /dev/null
-    touch test_status.log
+    rm unitary_testing.out > /dev/null
+    touch unitary_testing.out
 fi
 
-tail -f test_status.log &
+tail -f unitary_testing.out &
 python3 logger.py
-sed -i 's/\x1b\[[0-9;]*[mGKH]//g' ./test_status.log 
+sed -i 's/\x1b\[[0-9;]*[mGKH]//g' ./unitary_testing.out
