@@ -241,7 +241,7 @@ jobs:
 
   run-others:
     if: ${{ always() && !contains(github.event.pull_request.head.ref, 'feature/')}}
-    name: Setup Non-Feautre Actions
+    name: Setup Non-Feature Actions
     runs-on: ubuntu-latest
     outputs:
       pr_tests_outcome: ${{ steps.analysis.outputs.pr_tests_outcome }}

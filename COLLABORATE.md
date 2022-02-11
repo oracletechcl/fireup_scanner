@@ -937,18 +937,18 @@ Also, it'll show a debug on screen for the failed object related to the failed r
 **IMPORTANT**
 If you have any question, slack or email denny.alquinta@oracle.com before doing any PR or commit
 
-<div id="BestPractices"></div>
+<div id="GithubActions"></div>
 
 ## Github Actions Guidelines
 
-Github Actions were developed to run on every Pull Request. The actions performed will depend on the type of branch being merged into main. This is primarily because different actions were developed for '*feature*' branches in comparison to '*enhancement*', *bug* or other types of branches. 
+Github Actions were developed to run on every Pull Request. The actions performed will depend on the type of branch being merged into main. This is primarily because different actions were developed for '*feature*' branches in comparison to '*enhancement*', '*bug*' or other types of branches. 
 
 If you are developing a feature the following auto-checks will be performed when a PR is opened against the feature branch: 
 - Check that the README.md file of the corresponsing class has been updated with the review point entry.
 - Check that a test suite was included for the corresponding feature.
 - Check that Statics.py has been updated with the relevant entries.
 - Check that the Headers of the class file have the correct class name.
-- Check that a unitary_testing.out file was included in the PR and all the tests reccorded in it pass.
+- Check that a unitary_testing.out file was included in the PR and all the tests recorded in it pass.
 - **If all of the above jobs pass the unitary_testing.out file is then deleted by Github Actions.**
 
 If you are developing an enhancement, working on a bug or anything else where any other file appart from a `.yml` , `.md` or `Statics.py` file has been modified or added then, the following auto-checks will be performed when a PR is opened against the relevant non-feature branch: 
@@ -962,7 +962,7 @@ When all checks pass the unitary_testing.out file will be removed and all jobs w
 ### What do I need to do to have a succesful run?
 
 To have a succesful run when developing a feature branch:
-- Make sure the update the README.md of the corresponsing class with the new review point entry.
+- Make sure to update the README.md of the corresponding class with the new review point entry.
 - Make sure to include a test suite for the corresponding feature.
 - Update the headers of the class file with the correct class name.
 - Run ./unitary_test.sh then **COMMIT & PUSH** the unitary_testing.out file generated during the run. Please do make sure that all the tests included in the output file have indeed passed. 
