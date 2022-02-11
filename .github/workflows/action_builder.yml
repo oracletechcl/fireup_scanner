@@ -312,14 +312,25 @@ jobs:
       - name: Fail job if Exeption appears
         if: ${{ needs.run-others.outputs.pr_tests_outcome == 0 }}
         run: exit 1
-      - name: Remove log file
-        run: |
+  remove-log2:
+    if: ${{ !contains(github.event.pull_request.head.ref, 'feature/') }}
+    name: Remove File
+    runs-on: ubuntu-latest
+    needs: check-pr-tests-other
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+      env:
+        ACCESS_TOKEN: '${{ secrets.ACCESS_TOKEN }}'    
+    - name: Remove file if all jobs pass
+      run: |
+        git config user.name "$(git log -n 1 --pretty=format:%an)"
+        git config user.email "$(git log -n 1 --pretty=format:%ae)"
+        
+        cd test
+        git rm unitary_testing.out
 
-          git config user.name "$(git log -n 1 --pretty=format:%an)"
-          git config user.email "$(git log -n 1 --pretty=format:%ae)"
-          
-          cd test
-          git rm unitary_testing.out
-
-          git commit -m "Removing unitary_testing.out"
-          git push 
+        git commit -m "Removing unitary_testing.out"
+        git push   
