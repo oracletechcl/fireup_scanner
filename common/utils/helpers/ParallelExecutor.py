@@ -125,6 +125,7 @@ dns_zones = []
 ### TransitRouting.py Global Variables
 networking_topology = []
 cross_connects = []
+topologies_with_cpe_connections = []
 
 ## OptimizationMonitor.py
 # List for use with parallel_executor
@@ -1213,6 +1214,7 @@ def get_quotas_in_compartments(item):
 
     return quotas
 
+
 def get_cross_connects(item):
     network_client = item[0]
     compartments = item[1:]
@@ -1225,6 +1227,21 @@ def get_cross_connects(item):
             cross_connects.append(cross_connects_data)
 
     return cross_connects
+
+
+def get_networking_topologies(item):
+    network_client = item[0]
+    compartments_with_regions = item[1:]
+
+    topologies_with_cpe_connections = []
+
+    for compartment, region in compartments_with_regions:
+        if region == network_client[1] or region == network_client[2]:
+            network_client[0].base_client.endpoint = f"https://vnca-api.{network_client[1]}.oci.oraclecloud.com"
+            topologies_with_cpe_connections.append(get_networking_topology_per_compartment(network_client[0], compartment))
+
+    return topologies_with_cpe_connections
+
 
 def get_operations_insights_warehouses(item):
     operations_insights_client = item[0]
