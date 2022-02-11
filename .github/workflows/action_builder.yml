@@ -41,7 +41,7 @@ jobs:
           echo "${{ github.event.pull_request.head.ref }}"
       - name: Run Action Builder
         if: ${{ always() }}
-        uses: oraclecloudbricks/action_fireup@cb3f02844dbad0e9cfaf7030c0336acc52d84c53
+        uses: oraclecloudbricks/action_fireup@19765b826a066688159ba721390cff250c1a419a
         with:
           files_added: ${{ steps.abc.outputs.added }}
           files_modified: ${{ steps.abc.outputs.modified }}
@@ -267,7 +267,7 @@ jobs:
           echo "${{ github.event.pull_request.head.ref }}"
       - name: Run Action Builder
         if: ${{ always() }}
-        uses: oraclecloudbricks/action_fireup@cb3f02844dbad0e9cfaf7030c0336acc52d84c53
+        uses: oraclecloudbricks/action_fireup@19765b826a066688159ba721390cff250c1a419a
         with:
           files_added: ${{ steps.abc.outputs.added }}
           files_modified: ${{ steps.abc.outputs.modified }}
