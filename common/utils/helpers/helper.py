@@ -589,7 +589,7 @@ def get_db_system_patch_details(database_client, db_system_id, patch_id):
 
 
 def get_db_home_patch_details(database_client, db_home_id, patch_id):
-    return database_client.get_db_home_patch(db_home_id,patch_id).data
+    return database_client.get_db_home_patch(db_home_id, patch_id).data
 
   
 def get_drg_data(network_client, compartment_id):
@@ -854,8 +854,9 @@ def get_quota_policy_data(quota_client, quota_id):
     
 def get_networking_topology_per_compartment(network_client, compartment_id):
     return network_client.get_networking_topology(
-        compartment_id,query_compartment_subtree = True,
-        retry_strategy= CUSTOM_RETRY_STRATEGY
+        compartment_id,
+        query_compartment_subtree=True,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
 def get_cross_connects_per_compartment(network_client, compartment_id):
