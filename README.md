@@ -10,11 +10,10 @@ Fireup automated gathering and check tool
 - [FireUp Scanner](#fireup-scanner)
 - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
-  - [Class Structure](#class-structure)
   - [Pre-requisites](#pre-requisites)
   - [How to use](#how-to-use)
-     - [Using Cloud Shell](#UsingCloudShell)
-     - [Using Jump Server](#UsingJumpServer)
+    - [If using Cloud Shell](#if-using-cloud-shell)
+    - [If using Jump Server](#if-using-jump-server)
   - [Expected output on console](#expected-output-on-console)
   - [Credits](#credits)
   - [Contributing](#contributing)
@@ -58,20 +57,6 @@ The following is the detail of areas of interest
 |                                   | OS management                                                                                                                 |
 |                                   | Support                                                                                                                       |
 
-
-<div id="ClassStructure"></div>
-
-## Class Structure
-
-The following is the class structure applied to the Fireup Tool
-
-![Class Structure](./images/fireup_class_diagram.jpeg)
-
-The following design patterns are applied to this project: 
-
-- [Abstract Factory Pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern)
-- [Iterator Pattern](https://en.wikipedia.org/wiki/Iterator_pattern)
-- [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern)
 
 ___
 
