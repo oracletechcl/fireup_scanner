@@ -12,8 +12,6 @@ from common.utils.helpers.helper import *
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.helpers.WebScrapper import *
 import pandas as pd
-from operator import itemgetter
-
 
 
 class PatchesAndUpdates(ReviewPoint):
@@ -42,7 +40,7 @@ class PatchesAndUpdates(ReviewPoint):
     __compute_objects = []
     __computes = []
     __os_image_objects = []
-    __os_images = []
+    __os_image_ids = []
 
     # Scrapper variables
     __db_patches_website = "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/patchingDB.htm"
@@ -96,21 +94,21 @@ class PatchesAndUpdates(ReviewPoint):
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(tenancy)
-        
+
         self.__oracle_database_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_homes, len(self.__compartments), ParallelExecutor.db_system_homes)      
         self.__oracle_database_systems_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_systems, len(self.__compartments), ParallelExecutor.oracle_dbsystems)      
 
-        self.__oracle_databases_home_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_home_objects, ParallelExecutor.get_database_homes_applied_patch_history, len(self.__oracle_database_home_objects), ParallelExecutor.oracle_db_home_patch_history)      
-        self.__oracle_database_system_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_systems_objects, ParallelExecutor.get_database_systems_applied_patch_history, len(self.__oracle_database_systems_objects), ParallelExecutor.oracle_db_system_patch_history)
+        if len(self.__oracle_database_home_objects) > 0:
+            self.__oracle_databases_home_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_home_objects, ParallelExecutor.get_database_homes_applied_patch_history, len(self.__oracle_database_home_objects), ParallelExecutor.oracle_db_home_patch_history)      
+        if len(self.__oracle_database_systems_objects) > 0:
+            self.__oracle_database_system_patches_history = ParallelExecutor.executor(db_system_clients, self.__oracle_database_systems_objects, ParallelExecutor.get_database_systems_applied_patch_history, len(self.__oracle_database_systems_objects), ParallelExecutor.oracle_db_system_patch_history)
 
         self.__compute_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_compute_instances, len(self.__compartments), ParallelExecutor.compute_instances)      
         self.__os_image_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_compute_images, len(self.__compartments), ParallelExecutor.compute_images)      
-        
-        self.__last_patch_level = get_db_patches(self.__db_patches_website, self.__db_patches_website_id)
-      
-     
 
-        for compute in self.__compute_objects: 
+        self.__last_patch_level = get_db_patches(self.__db_patches_website, self.__db_patches_website_id)
+
+        for compute in self.__compute_objects:
             compute_record = {
                 'display_name': compute.display_name,
                 'id': compute.id,
@@ -121,14 +119,7 @@ class PatchesAndUpdates(ReviewPoint):
             self.__computes.append(compute_record)
 
         for image in self.__os_image_objects:
-            os_img_record = {
-                'display_name': image.display_name,
-                'id': image.id,
-                'compartment_name': get_compartment_name(self.__compartments, image.compartment_id),
-                'operating_system': image.operating_system,
-                'operating_system_version': image.operating_system_version,
-            }
-            self.__os_images.append(os_img_record)
+            self.__os_image_ids.append(image.id)
               
         # Filling local array object for Oracle Database 
         for dbobject in self.__oracle_database_home_objects:            
@@ -147,83 +138,60 @@ class PatchesAndUpdates(ReviewPoint):
             }
             self.__oracle_database_systems.append(orcl_db_record)
 
-
         self.__dbhome_patches = get_db_home_latest_patching_details(self.__oracle_databases_home_patches_history)
         self.__dbsystem_patches = get_db_system_latest_patching_details(self.__oracle_database_system_patches_history)
-
 
     def analyze_entity(self, entry):
     
         self.load_entity()    
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        
 
         # iterate through variable self.__dbhome_patches and self.__last_patch_level. If the versions of the database are the same, then print out the patch level of database and patch applicable to that version
         for dbhome_applied_patches in self.__dbhome_patches:
             for latest_patches_available in self.__last_patch_level:
-                if dbhome_applied_patches['db_home_version'] != None: 
-                    if latest_patches_available['db_version'][0:2] in dbhome_applied_patches['db_home_version']:
+                if dbhome_applied_patches['db_version'] != None: 
+                    if latest_patches_available['db_version'][0:2] in dbhome_applied_patches['db_version']:
                         if dbhome_applied_patches['db_home_latest_applied_patch'] != None:
                             if get_month_and_year(latest_patches_available['db_home_patch']) not in dbhome_applied_patches['db_home_latest_applied_patch'].lower(): 
-                                dbname, compartment_id = self.__get_db_name_and_compartment(dbhome_applied_patches['db_home_id'], "db_home_id")
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['findings'].append(dbhome_applied_patches)
                                 dictionary[entry]['failure_cause'].append("Oracle DB Home does not have the latest patchset applied")                                   
-                                dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbname}\" in compartment: \"{get_compartment_name(self.__compartments, compartment_id)}\"")
+                                dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbhome_applied_patches['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, dbhome_applied_patches['compartment_id'])}\"")
                                 break
                         else:
-                            dbname, compartment_id = self.__get_db_name_and_compartment(dbhome_applied_patches['db_home_id'], "db_home")
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(dbhome_applied_patches)
                             dictionary[entry]['failure_cause'].append("Oracle DB Home does not have any patches applied")                                   
-                            dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbname}\" in compartment: \"{get_compartment_name(self.__compartments, compartment_id)}\"")
+                            dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbhome_applied_patches['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, dbhome_applied_patches['compartment_id'])}\"")
                             break
-       
+
         for dbsystem_applied_patches in self.__dbsystem_patches:
             for latest_patches_available in self.__last_patch_level:
-                if dbsystem_applied_patches['db_system_version'] != None: 
-                    if latest_patches_available['db_version'][0:2] in dbsystem_applied_patches['db_system_version']:   
-                        if dbsystem_applied_patches['db_system_latest_applied_patch'] != None and dbsystem_applied_patches['db_system_version'] != None:
+                if dbsystem_applied_patches['db_version'] != None:
+                    if latest_patches_available['db_version'][0:2] in dbsystem_applied_patches['db_version']:
+                        if dbsystem_applied_patches['db_system_latest_applied_patch'] != None:
                             if get_month_and_year(latest_patches_available['db_system_patch']) not in dbsystem_applied_patches['db_system_latest_applied_patch'].lower(): 
-                                dbname, compartment_id = self.__get_db_name_and_compartment(dbsystem_applied_patches['db_system_id'], "db_system")
                                 dictionary[entry]['status'] = False
                                 dictionary[entry]['findings'].append(dbsystem_applied_patches)
                                 dictionary[entry]['failure_cause'].append("Oracle DB System does not have the latest patchset applied")                                   
-                                dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbname}\" in compartment: \"{get_compartment_name(self.__compartments, compartment_id)}\"")
+                                dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbsystem_applied_patches['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, dbsystem_applied_patches['compartment_id'])}\"")
                                 break
                         else:
-                            dbname, compartment_id = self.__get_db_name_and_compartment(dbsystem_applied_patches['db_system_id'], "db_system")
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(dbsystem_applied_patches)
                             dictionary[entry]['failure_cause'].append("Oracle DB System does not have any patches applied")                                   
-                            dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbname}\" in compartment: \"{get_compartment_name(self.__compartments, compartment_id)}\"")
+                            dictionary[entry]['mitigations'].append(f"Apply Patchset: \"{get_month_and_year(latest_patches_available['db_home_patch'])}\" to database: \"{dbsystem_applied_patches['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, dbsystem_applied_patches['compartment_id'])}\"")
                             break
 
-        for image in self.__os_images:
-            for compute in self.__computes:
-                if compute['image_id'] not in image['id']:
-                    if compute['lifecycle_state'] != 'TERMINATED':                        
-                        if compute not in dictionary[entry]['findings']:
-                            dictionary[entry]['status'] = False
-                            dictionary[entry]['findings'].append(compute)
-                            dictionary[entry]['failure_cause'].append("Compute may not be on latest patchset update")
-                            dictionary[entry]['mitigations'].append(f"Check that compute instance: \"{compute['display_name']}\" in compartment: \"{compute['compartment_name']}\" is on latest patchset update.")
-                            break
-                                             
+        for compute in self.__computes:
+            if compute['lifecycle_state'] != 'TERMINATED':
+                if compute['image_id'] not in self.__os_image_ids:
+                    dictionary[entry]['status'] = False
+                    dictionary[entry]['findings'].append(compute)
+                    dictionary[entry]['failure_cause'].append("Compute may not be on latest patchset update")
+                    dictionary[entry]['mitigations'].append(f"Check that compute instance: \"{compute['display_name']}\" in compartment: \"{compute['compartment_name']}\" is on latest patchset update.")
+
         return dictionary
-
-
-    def __get_db_name_and_compartment(self, db_ocid, db_type):
-        if db_type == "db_home":
-            for db_obj in self.__oracle_databases_homes:
-                if db_obj['id'] == db_ocid:
-                    return db_obj['display_name'], db_obj['compartment_id']
-            return None
-        elif db_type == "db_system":
-            for db_obj in self.__oracle_database_systems:
-                if db_obj['id'] == db_ocid:
-                    return db_obj['display_name'], db_obj['compartment_id']
-            return None
 
 
 def get_month_and_year(patchset_date):
@@ -298,19 +266,11 @@ def get_db_home_latest_patching_details(db_home_collection):
     for db_registry in db_home_collection:
         if db_registry['patch_id'] != "" and db_registry['patch_id'] != None:
             latest_applied_patch = get_db_home_patch_details(db_registry['database_client'], db_registry['db_home_ocid'], db_registry['patch_id']).description
-            db_home_patches_dict = {
-                'db_home_id': db_registry['db_home_ocid'],
-                'db_home_latest_applied_patch': latest_applied_patch,            
-                'db_home_version': db_registry['db_version']                     
-            }
-        elif db_registry['patch_id'] == None:
-            db_home_patches_dict = {
-                'db_home_id': db_registry['db_home_ocid'],
-                'db_home_latest_applied_patch': None,
-                'db_home_version': db_registry['db_version']                     
-            }
-            
-        db_home_applied_patches.append(db_home_patches_dict)
+            db_registry['db_home_latest_applied_patch'] = latest_applied_patch
+        else:
+            db_registry['db_home_latest_applied_patch'] = None
+
+        db_home_applied_patches.append(db_registry)
       
     return db_home_applied_patches
 
@@ -321,18 +281,10 @@ def get_db_system_latest_patching_details(db_system_collection):
     for db_registry in db_system_collection:    
         if db_registry['patch_id'] != "" and db_registry['patch_id'] != None:
             latest_applied_patch = get_db_system_patch_details(db_registry['database_client'], db_registry['db_system_ocid'], db_registry['patch_id']).description
-            db_home_patches_dict = {
-                'db_system_id': db_registry['db_system_ocid'],
-                'db_system_latest_applied_patch': latest_applied_patch,        
-                'db_system_version': db_registry['db_version']                     
-            }            
-        elif db_registry['patch_id'] == None:
-            db_home_patches_dict = {
-                'db_system_id': db_registry['db_system_ocid'],
-                'db_system_latest_applied_patch': None,
-                'db_system_version': db_registry['db_version']                     
-            }      
-        db_system_applied_patches.append(db_home_patches_dict)
-        
-       
+            db_registry['db_system_latest_applied_patch'] = latest_applied_patch
+        else:
+            db_registry['db_system_latest_applied_patch'] = None
+
+        db_system_applied_patches.append(db_registry)
+
     return db_system_applied_patches
