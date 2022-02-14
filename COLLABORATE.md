@@ -1,6 +1,7 @@
 # Table of Contents
 
 - [Table of Contents](#table-of-contents)
+  - [Class Structure](#class-structure)
 - [Collaboration Guidelines](#collaboration-guidelines)
   - [Get Started](#get-started)
   - [Branch and Collaboration](#branch-and-collaboration)
@@ -15,10 +16,27 @@
     - [Common Issues](#common-issues)
     - [Resource Registry](#resource-registry)
   - [Unitary Testing](#unitary-testing)
+  - [Github Actions Guidelines](#github-actions-guidelines)
+    - [What do I need to do to have a succesful run?](#what-do-i-need-to-do-to-have-a-succesful-run)
+    - [Branch Naming Convention](#branch-naming-convention)
   - [Github Best Practices](#github-best-practices)
 
 
 ____
+
+<div id="Class-Structure"></div>
+
+## Class Structure
+
+The following is the class structure applied to the Fireup Tool
+
+![Class Structure](./images/fireup_class_diagram.jpeg)
+
+The following design patterns are applied to this project: 
+
+- [Abstract Factory Pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern)
+- [Iterator Pattern](https://en.wikipedia.org/wiki/Iterator_pattern)
+- [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern)
 
 # Collaboration Guidelines
 
