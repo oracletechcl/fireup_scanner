@@ -16,7 +16,6 @@ __is_cloud_shell(){
 
 
 __install_os_prereqs(){
-    echo "====== INSTALING OS PRE-REQUISITES ======"
     bash common/bash/prereqs.sh
 }
 

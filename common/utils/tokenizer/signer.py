@@ -87,7 +87,7 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
                   f"     fingerprint = 19:1d:7b:3a:17\n"
                   f"     key_file = ~/.oci/oci_api_key.pem\n"
                   f"     \n\n"
-                  f"Once file is created, run command: chmod 600 {oci.config.DEFAULT_LOCATION} and run ./fireup.sh script again. \n"
+                  f"Once file is created, run command: chmod 600 ~/.oci/oci_api_key.pem and run ./fireup.sh script again. \n"
                   f"  \n"
                   f"  ****************************************************************** CALL TO ACTION ******************************************************************\n" )
 
