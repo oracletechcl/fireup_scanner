@@ -5,7 +5,6 @@
 #
 # Purpose: Main module which starts the application
 
-# if OS user is opc or ubuntu then return true. Else return false
 __is_cloud_shell(){
   #if whoami command result is different from opc then return true. Else return false
     if [ "$(whoami)" != "opc" ] && [ "$(whoami)" != "ubuntu" ] ; then
@@ -16,29 +15,34 @@ __is_cloud_shell(){
 }
 
 
-# Calling OS pre-requisites script
-bash common/bash/prereqs.sh
+__install_os_prereqs(){
+    echo "====== INSTALING OS PRE-REQUISITES ======"
+    bash common/bash/prereqs.sh
+}
 
-if [ ! -d "venv" ] 
-then
-    echo "venv not present. Creating" 
-    bash common/bash/dependencies.sh
-    chmod -R 775 venv
-fi
 
-source "./venv/bin/activate"
 
-if [ ! -d "reports" ] 
-then
-    mkdir reports
-else
-    rm -rf reports &>/dev/null
-    mkdir reports
-fi
 
-# save the output to a file but also show in console
+__create_venv(){
+    if [ ! -d "venv" ] 
+    then
+        echo "venv not present. Creating" 
+        bash common/bash/dependencies.sh
+        chmod -R 775 venv
+    fi
 
-if ! __is_cloud_shell; then
+    source "./venv/bin/activate"
+
+    if [ ! -d "reports" ] 
+    then
+        mkdir reports
+    else
+        rm -rf reports &>/dev/null
+        mkdir reports
+    fi
+}
+
+__call_fireup(){
     python3 fireup.py 2>&1 | tee ./reports/fireup_color.log 
     sed 's/\x1b\[[0-9;]*[mGKH]//g' ./reports/fireup_color.log > ./reports/fireup.log
     sed -i '$d' ./reports/fireup.log
@@ -46,7 +50,9 @@ if ! __is_cloud_shell; then
 
     tar -cvf reports.tar.gz ./reports &>/dev/null
     rm -rf reports
-else
+}
+
+__call_fireup_with_dt(){
     python3 fireup.py -dt 2>&1 | tee ./reports/fireup_color.log 
     sed 's/\x1b\[[0-9;]*[mGKH]//g' ./reports/fireup_color.log > ./reports/fireup.log
     sed -i '$d' ./reports/fireup.log
@@ -56,4 +62,23 @@ else
     rm -rf reports &>/dev/null
     rm -rf ~/reports.tar.gz
     mv reports.tar.gz ~/
-fi
+}
+
+__start_fireup(){
+    if ! __is_cloud_shell; then
+    __call_fireup
+    else
+    __call_fireup_with_dt
+    fi
+}
+
+
+
+__main__(){ 
+    __install_os_prereqs
+    __create_venv
+    __start_fireup
+}
+
+
+__main__
