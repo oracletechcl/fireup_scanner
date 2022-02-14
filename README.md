@@ -68,7 +68,7 @@ You can run FireUp Scanner in two ways. Follow below instructions to execute it:
 - Using the Cloud Shell  
 - Using a Jump Server
   - Currently supported Servers are: 
-    - OL7.x, Ubuntu 20.X
+    - OL7.x, OL8, Ubuntu 20.X
   - Python3 pre-installed
   - Pre-configured Oracle Cloud Infrastructure (OCI) account with API Keys associated to the user
   - CLI will be automatically installed if not present on the jump system. Make sure to complete the configuration of the CLI by filling the contents of the file `~/.oci/config` accordingly 
