@@ -84,8 +84,10 @@ class Admin(ReviewPoint):
         for policy in self.__policies:
             for statement in policy['statements']:
                 if not any(policy_group in statement.lower() for policy_group in policy_groups):
-                    if any(policy_action in statement.lower() for policy_action in policy_actions):
+                    if all(policy_action in statement.lower() for policy_action in policy_actions):
                         compliant_policies.append(statement)
+        
+        print(compliant_policies)
 
         if len(compliant_policies) < 10:
             dictionary[entry]['status'] = False
