@@ -234,16 +234,6 @@ jobs:
         with:
           format: space-delimited
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Getting File info
-        run: |
-          echo "${{ steps.abc.outputs.added }}"
-          echo "${{ steps.abc.outputs.modified }}"
-      - name: Get PR info
-        run: |
-          echo "${{ github.event.issue.number }}"
-          echo "${{ github.event.pull_request.body }}"
-          echo "${{ github.event.pull_request.title }}"
-          echo "${{ github.event.pull_request.head.ref }}"
       - name: Run Action Builder
         if: ${{ always() }}
         uses: oraclecloudbricks/action_fireup@1d4ae78bb99a7a0020b37bd69dea4cb47e5addbe
@@ -253,11 +243,13 @@ jobs:
           pr_body: ${{ github.event.pull_request.body }}
           branch_name: ${{ github.event.pull_request.head.ref }}
       - name: Overall analysis
+        if: ${{ always() }}
         id: analysis
         run: |
           echo "::set-output name=pr_tests_outcome::$(jq '.[] | select(.action_name=="check_pr_tests") | .passed' results.json)"
           cat results.json
       - name: Define Errors
+        if: ${{ always() }}
         id: errors
         run: |
           echo "::set-output name=pr_tests_msg::$(jq '.[] | select(.action_name=="check_pr_tests") | .description' results.json)"
