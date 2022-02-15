@@ -76,24 +76,19 @@ class Admin(ReviewPoint):
     def analyze_entity(self, entry):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        counter = 0
-        good_policy_list = []
-        # check if the policy contains in its statement the word manage and the word family if it does print ok
 
+        compliant_policies = []
+        policy_groups = ['administrators', 'dynamic-group', 'service','functions-family']
+        policy_actions = ['group','manage','family']
+        
         for policy in self.__policies:
             for statement in policy['statements']:
-                if "Administrators".upper() not in statement.upper(): # Drop the word Administrator from statement
-                    if "dynamic-group".upper() not in statement.upper(): # Filter out all dynamic-group based policies
-                        if "service".upper() not in statement.upper(): # Filter out service policies
-                            if "group".upper() and "manage".upper() and "family".upper() in statement.upper(): # Check for segregated policies for manage, assigned to specific groups
-                                if "functions-family".upper() not in statement.upper(): # Filter out functions-family policies as this is mandatory policy in case of functions usage                                    
-                                    counter+=1 # count the value of a compliant policy
-                                    good_policy_list.append(policy['statements'])
+                if not any(policy_group in statement.lower() for policy_group in policy_groups):
+                    if all(policy_action in statement.lower() for policy_action in policy_actions):
+                        compliant_policies.append(statement)
         
-        if counter < 10: #criteria today is above 10 policies, will regard an IAM schema applied. 
+        if len(compliant_policies) < 10:
             dictionary[entry]['status'] = False
-            dictionary[entry]['findings'].append(policy)
             dictionary[entry]['failure_cause'].append("Not enough policies found that are compliant with granularity. A minimum of 10 is considered acceptable")                
-            dictionary[entry]['mitigations'].append(f"Increase the amount of granular policies containing \"manage family\" as verbs. Sample: {good_policy_list}")
-
+            dictionary[entry]['mitigations'].append(f"Increase the amount of granular policies containing \"manage family\" as verbs. Sample: \"{compliant_policies[0]}\"")
         return dictionary
