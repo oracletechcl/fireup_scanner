@@ -56,21 +56,21 @@ class CompartmentsAndPolicies(ReviewPoint):
         users_data = get_user_data(self.__identity, self.__tenancy.id)
         
         for user in users_data:
-                user_record = {
-                    'id': user.id,
-                    'defined_tags': user.defined_tags,
-                    'description': user.description,
-                    'email': user.email,
-                    'email_verified': user.email_verified,
-                    'external_identifier': user.external_identifier,
-                    'identity_provider_id': user.identity_provider_id,
-                    'is_mfa_activated': user.is_mfa_activated,
-                    'lifecycle_state': user.lifecycle_state,
-                    'time_created': user.time_created,
-                    'name': user.name,
-                    'groups': []
-                }
-                self.__users.append(user_record)
+            user_record = {
+                'id': user.id,
+                'defined_tags': user.defined_tags,
+                'description': user.description,
+                'email': user.email,
+                'email_verified': user.email_verified,
+                'external_identifier': user.external_identifier,
+                'identity_provider_id': user.identity_provider_id,
+                'is_mfa_activated': user.is_mfa_activated,
+                'lifecycle_state': user.lifecycle_state,
+                'time_created': user.time_created,
+                'name': user.name,
+                'groups': []
+            }
+            self.__users.append(user_record)
    
         compartments = get_compartments_data(self.__identity, self.__tenancy.id)        
         for compartment in compartments:
@@ -125,10 +125,10 @@ class CompartmentsAndPolicies(ReviewPoint):
                     break
             else:
                 dictionary[entry]['status'] = False
-                dictionary[entry]['failure_cause'].append(f"Compartment name does not match environment name convention containing these keywords: {env_list}")
+                dictionary[entry]['failure_cause'].append(f"Some compartment names do not match environment name convention containing these keywords: {env_list}")
                 dictionary[entry]['mitigations'].append(f"Rename compartment: \"{compartment_name}\" to match the environment name convention")
       
-        if len(compliant_compartment_names) < 5:
+        if len(compliant_compartment_names) < 2:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Not enough compliant compartments are present within the tenancy.")
 
