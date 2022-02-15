@@ -111,7 +111,7 @@ class InstancePrincipal(ReviewPoint):
                 if instance['compartment_id'] not in self.__inst_prin_compartment_id_list:
                     dictionary[entry]['status'] = False
                     dictionary[entry]['findings'].append(instance)
-                    dictionary[entry]['mitigations'].append(f"Create an instance principal that contains instance: \"{instance['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, instance['compartment_id'])}\" as target")
+                    dictionary[entry]['mitigations'].append(f"Consider creating an instance principal that contains instance: \"{instance['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, instance['compartment_id'])}\" as the target")
                     dictionary[entry]['failure_cause'].append("Instances detected without proper Instance Principal Configuration")
 
         return dictionary
