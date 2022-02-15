@@ -17,10 +17,19 @@ __is_cloud_shell(){
     fi
 }
 
+__is_autonomous_linux(){
+    sudo alx show &>/dev/null
+    if [ $? -eq 0 ]; then        
+        return 0
+    else
+        return 1
+    fi
+}
+
 __is_ubuntu_or_debian() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
-    if [ "$ID" = "ubuntu" -o "$ID" = "debian" ]; then
+    if [ "$ID" = "ubuntu" -o "$ID" = "debian" ]; then      
       return 0
     else
       return 1
@@ -33,7 +42,7 @@ __is_ubuntu_or_debian() {
 __is_redhat_or_centos() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
-    if [ "$ID" = "rhel" -o "$ID" = "centos" -o "$ID" = "ol" ]; then
+    if [ "$ID" = "rhel" -o "$ID" = "centos" -o "$ID" = "ol" ]; then      
       return 0
     else
       return 1
@@ -85,13 +94,19 @@ fi
 __is_oci_cli_installed(){
     __source_bashrc    
     if __is_ubuntu_or_debian; then
-        if [ -d /home/ubuntu/oci_cli ]; then
+        if [ -d /home/ubuntu/oci_cli ]; then            
             return 0
         else
             return 1
         fi
     elif __is_redhat_or_centos; then
-        if [ -d /home/opc/oci_cli ]; then
+        if [ -d /home/opc/oci_cli ]; then            
+            return 0
+        else
+            return 1
+        fi
+    elif __is_autonomous_linux; then            
+        if [ -d /usr/bin/oci ]; then
             return 0
         else
             return 1
@@ -118,19 +133,21 @@ __source_bashrc
 if ! __is_oci_cli_installed ; then    
   echo '============== CLI Pre-Requisites =============='
     if __is_redhat_or_centos ; then
-        if ! __is_cloud_shell ; then      
-            echo 'Installing OCI CLI in RedHat or CentOS...'
-            sudo runuser -l opc -c 'mkdir -p /home/opc/oci_cli'
-            sudo runuser -l opc -c 'wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh'
-            sudo runuser -l opc -c 'chmod +x install.sh'
-            sudo runuser -l opc -c '/home/opc/install.sh --install-dir /home/opc/oci_cli/lib/oracle-cli --exec-dir /home/opc/oci_cli/bin --accept-all-defaults'
-            sudo runuser -l opc -c 'cp -rl /home/opc/bin /home/opc/oci_cli'
-            sudo runuser -l opc -c 'rm -r /home/opc/bin'
-            sudo runuser -l opc -c 'mkdir -p /home/opc/.oci'
-            sudo runuser -l opc -c 'touch /home/opc/.oci/config'
-            sudo runuser -l opc -c 'oci setup repair-file-permissions --file /home/opc/.oci/config'
+        if ! __is_cloud_shell ; then  
+            if ! __is_autonomous_linux; then    
+                echo 'Installing OCI CLI in RedHat or CentOS...'
+                sudo runuser -l opc -c 'mkdir -p /home/opc/oci_cli'
+                sudo runuser -l opc -c 'wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh'
+                sudo runuser -l opc -c 'chmod +x install.sh'
+                sudo runuser -l opc -c '/home/opc/install.sh --install-dir /home/opc/oci_cli/lib/oracle-cli --exec-dir /home/opc/oci_cli/bin --accept-all-defaults'
+                sudo runuser -l opc -c 'cp -rl /home/opc/bin /home/opc/oci_cli'
+                sudo runuser -l opc -c 'rm -r /home/opc/bin'
+                sudo runuser -l opc -c 'mkdir -p /home/opc/.oci'
+                sudo runuser -l opc -c 'touch /home/opc/.oci/config'
+                sudo runuser -l opc -c 'oci setup repair-file-permissions --file /home/opc/.oci/config'
+            fi
         fi
-        if __is_ubuntu_or_debian ; then
+    elif __is_ubuntu_or_debian ; then
             echo 'Installing OCI CLI in Ubuntu or Debian...'
             sudo runuser -l ubuntu -c 'mkdir -p /home/ubuntu/oci_cli'
             sudo runuser -l ubuntu -c 'wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh'
@@ -141,8 +158,7 @@ if ! __is_oci_cli_installed ; then
             sudo runuser -l ubuntu -c 'mkdir -p /home/ubuntu/.oci'
             sudo runuser -l ubuntu -c 'touch /home/ubuntu/.oci/config'
             sudo runuser -l ubuntu -c 'oci setup repair-file-permissions --file /home/ubuntu/.oci/config'
-        fi
-    fi
+    fi    
 fi
 
 if [ -s $CLI_CONFIG_FILE ]; then  # This checks if the oci config file is not emtpy
