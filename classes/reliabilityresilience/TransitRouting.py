@@ -86,6 +86,7 @@ class TransitRouting(ReviewPoint):
             self.__topologies_with_cpe_connections.append(record)
     
     def analyze_entity(self, entry):
+        dictionary = ReviewPoint.get_benchmark_dictionary(self)
         # RP currently doesn't work correctly on cloud shell, so is disabled. This logic needs to be ammended when the below bugs are fixed:
         # https://github.com/oracle/oci-python-sdk/issues/429 and https://github.com/oracle/oci-python-sdk/issues/425
         # This circuit breaker should be removed once the API offers concurrent support for delegation token.
@@ -97,8 +98,6 @@ class TransitRouting(ReviewPoint):
             return dictionary
 
         self.load_entity()
-
-        dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         for network in self.__topologies_with_cpe_connections:
             vpn_connections = []
