@@ -18,9 +18,8 @@ __is_cloud_shell(){
 }
 
 __is_autonomous_linux(){
-    sudo alx show
-    if [ $? -eq 0 ]; then
-        echo "Autonomous Linux detected"
+    sudo alx show &>/dev/null
+    if [ $? -eq 0 ]; then        
         return 0
     else
         return 1
