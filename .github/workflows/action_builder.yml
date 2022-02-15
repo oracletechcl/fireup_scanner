@@ -48,6 +48,7 @@ jobs:
           pr_body: ${{ github.event.pull_request.body }}
           branch_name: ${{ github.event.pull_request.head.ref }}
       - name: Overall analysis
+        if: ${{ always() }}
         id: analysis
         run: |
           echo "::set-output name=read_me_action_outcome::$(jq '.[] | select(.action_name=="check_readme") | .passed' results.json)"
@@ -58,6 +59,7 @@ jobs:
           echo "::set-output name=helpers_action_outcome::$(jq '.[] | select(.action_name=="check_helpers") | .passed' results.json)"
           cat results.json
       - name: Define Errors
+        if: ${{ always() }}
         id: errors
         run: |
           echo "::set-output name=read_me_action_msg::$(jq '.[] | select(.action_name=="check_readme") | .description' results.json)"
