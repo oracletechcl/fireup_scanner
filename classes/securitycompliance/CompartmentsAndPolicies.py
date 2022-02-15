@@ -14,8 +14,7 @@ from common.utils.helpers.helper import *
 
 class CompartmentsAndPolicies(ReviewPoint):
 
-    # Class Variables    
-    __users = []
+    # Class Variables
     __compartments = []
     __policy_objects = []
     __policies = []
@@ -52,25 +51,7 @@ class CompartmentsAndPolicies(ReviewPoint):
        self.__tenancy = get_tenancy_data(self.__identity, self.config)
 
 
-    def load_entity(self):  
-        users_data = get_user_data(self.__identity, self.__tenancy.id)
-        
-        for user in users_data:
-                user_record = {
-                    'id': user.id,
-                    'defined_tags': user.defined_tags,
-                    'description': user.description,
-                    'email': user.email,
-                    'email_verified': user.email_verified,
-                    'external_identifier': user.external_identifier,
-                    'identity_provider_id': user.identity_provider_id,
-                    'is_mfa_activated': user.is_mfa_activated,
-                    'lifecycle_state': user.lifecycle_state,
-                    'time_created': user.time_created,
-                    'name': user.name,
-                    'groups': []
-                }
-                self.__users.append(user_record)
+    def load_entity(self):
    
         compartments = get_compartments_data(self.__identity, self.__tenancy.id)        
         for compartment in compartments:
@@ -105,47 +86,32 @@ class CompartmentsAndPolicies(ReviewPoint):
                 "statements": policy.statements,
                 "time_created": policy.time_created,
             }
-            self.__policies.append(policy_record)               
+            self.__policies.append(policy_record)
             
-        return self.__users, self.__compartments, self.__policies
+        return self.__compartments, self.__policies
         
 
     def analyze_entity(self, entry):
-        self.load_entity()              
+        self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        compliant_compartment_count = 0
 
-        env_list = ['prd', 'dev', 'test', 'stage', 'qa', 'sandbox', 'prod', 'tst', 'stg', 'quality', 'sbx','sand', 'hub', 'hom']
+        env_list = ['prd', 'dev', 'test', 'stage', 'qa', 'sandbox', 'prod', 'tst', 'stg', 'quality', 'sbx', 'sand', 'hub', 'hom']
         compliant_compartment_names = []
-        all_compartment_names = []
 
-        for compartments in self.__compartments:         
-            all_compartment_names.append(compartments['name'])
+        for compartment in self.__compartments:
+            compartment_name = compartment['name']
             for env in env_list:
-                if env.lower() in compartments['name'].lower():
-                    compliant_compartment_count += 1
-                    compliant_compartment_names.append(compartments['name'])
+                if env.lower() in compartment['name'].lower():
+                    compliant_compartment_names.append(compartment_name)
                     break
-                else:
-                    continue
-            
-        non_compliant_compartments_names = list(set(all_compartment_names) - set(compliant_compartment_names))        
-
-        if len(compliant_compartment_names) < 5:
+            else:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['failure_cause'].append(f"Some compartment names do not match environment name convention containing these keywords: {env_list}")
+                dictionary[entry]['mitigations'].append(f"Rename compartment: \"{compartment_name}\" to match the environment name convention")
+      
+        if len(compliant_compartment_names) < 2:
             dictionary[entry]['status'] = False
-
-        for compartments in self.__compartments:
-            all_compartment_names.append(compartments['name'])
-            for env in env_list:
-                if env.lower() not in compartments['name'].lower():
-                    dictionary[entry]['findings'].append(compartments)
-                    break
-                else:
-                    continue
-
-        for item in non_compliant_compartments_names:
-            dictionary[entry]['failure_cause'].append(f"Compartment name does not match environment name convention containing these keywords: {env_list}")
-            dictionary[entry]['mitigations'].append(f"Rename compartment: \"{item}\" to match the environment name convention")
+            dictionary[entry]['failure_cause'].append("Not enough compliant compartments (2) are present within the tenancy.")
 
         # Policy Analysis
         for policy in self.__policies:
