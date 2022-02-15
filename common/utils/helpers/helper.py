@@ -744,7 +744,7 @@ def get_cloud_guard_configuration_data(cloud_guard_client, tenancy_id):
         return e
 
 
-def get_autoscaling_configurations_per_compartment(autoscaling_client, compartment_id): 
+def get_autoscaling_configurations_data(autoscaling_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
         autoscaling_client.list_auto_scaling_configurations,
         compartment_id,
@@ -752,7 +752,7 @@ def get_autoscaling_configurations_per_compartment(autoscaling_client, compartme
     ).data
 
 
-def get_instance_pools_per_compartment(compute_management_client, compartment_id): 
+def get_instance_pools_data(compute_management_client, compartment_id): 
     return oci.pagination.list_call_get_all_results(
         compute_management_client.list_instance_pools,
         compartment_id,
