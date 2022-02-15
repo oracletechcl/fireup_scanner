@@ -76,26 +76,22 @@ class DBPermissions(ReviewPoint):
     def analyze_entity(self, entry):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        __db_policy_1 = "Allow group DBUsers to manage db-systems in tenancy where request.permission!=\'DB_SYSTEM_DELETE\'"
-        __db_policy_2 = "Allow group DBUsers to manage databases in tenancy where request.permission!=\'DATABASE_DELETE\'"
-        __db_policy_3 = "Allow group DBUsers to manage db-homes in tenancy where request.permission!=\'DB_HOME_DELETE\'"
 
-        __criteria_1 = "tenancy where request.permission!='DB_SYSTEM_DELETE'"
-        __criteria_2 = "tenancy where request.permission!='DATABASE_DELETE'"
-        __criteria_3 = "tenancy where request.permission!='DB_HOME_DELETE'"
+        policy_body_items = [
+            "manage db-systems in tenancy where request.permission!='DB_SYSTEM_DELETE'", 
+            "manage databases in tenancy where request.permission!='DATABASE_DELETE'", 
+            "manage db-homes in tenancy where request.permission!='DB_HOME_DELETE'"
+        ]
 
-        counter = 0        
         for policy in self.__policies:
             for statement in policy['statements']:
-                if __criteria_1.upper() in statement.upper() and __criteria_2.upper() in statement.upper() and __criteria_3.upper() in statement.upper():                                        
-                    counter+=1
-        
-        if counter < 1: 
+                for body_item in policy_body_items:
+                    if body_item in statement:
+                        policy_body_items.remove(body_item)
+
+        for body_item in policy_body_items:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append("No Policies for Restricting Database deletion have been detected")                
-            dictionary[entry]['mitigations'].append(f"Add the following policies into the tenancy to enforce database protection:\n\"{__db_policy_1}\"\n\"{__db_policy_2}\"\n\"{__db_policy_3}\"")                
-        else:
-            dictionary[entry]['status'] = True
-            dictionary[entry]['findings'].append(policy)     
-               
+            dictionary[entry]['failure_cause'].append("Missing policies for Restricting Database deletion have been detected")
+            dictionary[entry]['mitigations'].append(f"Add something like the following policies into the tenancy: \"Allow group DBUsers to {body_item}\"")
+
         return dictionary
