@@ -78,17 +78,17 @@ class Admin(ReviewPoint):
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
         compliant_policies = []
-        policy_user_items = ['administrator', 'admin', 'adm', 'useradmins', 'dynamic-group', 'service','group','functions-family']
+        policy_groups = ['administrators', 'dynamic-group', 'service','functions-family']
+        policy_actions = ['group','manage','family']
         
         for policy in self.__policies:
             for statement in policy['statements']:
-                for user_item in policy_user_items:
-                    if user_item in statement.lower():
-                        compliant_policies.append(policy)
-        
+                if not any(policy_group in statement.lower() for policy_group in policy_groups):
+                    if any(policy_action in statement.lower() for policy_action in policy_actions):
+                        compliant_policies.append(statement)
+
         if len(compliant_policies) < 10:
             dictionary[entry]['status'] = False
-            dictionary[entry]['findings'].append(policy)
             dictionary[entry]['failure_cause'].append("Not enough policies found that are compliant with granularity. A minimum of 10 is considered acceptable")                
             dictionary[entry]['mitigations'].append(f"Increase the amount of granular policies containing \"manage family\" as verbs. Sample: {compliant_policies}")
 
