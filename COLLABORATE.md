@@ -967,15 +967,13 @@ If you are developing a feature the following auto-checks will be performed when
 - Check that Statics.py has been updated with the relevant entries.
 - Check that the Headers of the class file have the correct class name.
 - Check that a unitary_testing.out file was included in the PR and all the tests recorded in it pass.
-- **If all of the above jobs pass the unitary_testing.out file is then deleted by Github Actions.**
 
 If you are developing an enhancement, working on a bug or anything else where any other file appart from a `.yml` , `.md` or `Statics.py` file has been modified or added then, the following auto-checks will be performed when a PR is opened against the relevant non-feature branch: 
 - Check that a unitary_testing.out file was included in the PR and all the tests reccorded in it pass.
-- **If the above job passes the file is then deleted by Github Actions.**
 
 In the case where one or more of the above checks fail a comment will be posted in the PR indicating which action failed and the error obtained.
 
-When all checks pass the unitary_testing.out file will be removed and all jobs will show as completed. 
+***Please make sure to first handle any merge conflicts between main and your development branch caused by the unitary_testing.out file in order for the auto-checks to run.***
 
 ### What do I need to do to have a succesful run?
 
