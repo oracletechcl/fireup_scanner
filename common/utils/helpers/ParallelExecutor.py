@@ -738,7 +738,7 @@ def get_bucket_lifecycle_policies(item):
                 bucket_lifecycle_policies.append( (bucket, lifecycle_policies) )
             else:
                 bucket_lifecycle_policies.append( (bucket, None) )
-                
+
     return bucket_lifecycle_policies
 
 
@@ -750,12 +750,12 @@ def get_preauthenticated_requests_per_bucket(item):
     bucket_preauthenticated_requests = []
 
     for bucket in buckets:
-        region = bucket.id.split('.')[3]  
-        if object_storage_client[2] in region or object_storage_client[3] in region:    
-            preauthenticated_requests = get_preauthenticated_requests(object_storage_client[0],namespace,bucket.name)
+        region = bucket.id.split('.')[3]
+        if object_storage_client[2] in region or object_storage_client[3] in region:
+            preauthenticated_requests = get_preauthenticated_requests(object_storage_client[0], namespace, bucket.name)
             if preauthenticated_requests:
-                bucket_preauthenticated_requests.append({bucket.name:preauthenticated_requests})
-                
+                bucket_preauthenticated_requests.append( (bucket, preauthenticated_requests) )
+
     return bucket_preauthenticated_requests
 
 
