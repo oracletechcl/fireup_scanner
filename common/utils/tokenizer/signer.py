@@ -75,6 +75,22 @@ def create_signer(config_profile, is_instance_principals, is_delegation_token):
             )
             return config, signer
         except Exception:
-            print(
-                f'** OCI Config was not found here : {oci.config.DEFAULT_LOCATION} or env varibles missing, aborting **')
+            print(f""
+                  f"  ****************************************************************** CALL TO ACTION ******************************************************************\n"
+                  f"  Please finish the configuration of file {oci.config.DEFAULT_LOCATION} \n"               
+                  f"  Follow this documentation to finish the CLI configuration: https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Entries\n"    
+                  f"  A correct configuration file at {oci.config.DEFAULT_LOCATION} looks like this:\n\n" 
+                  f"     [DEFAULT]\n"
+                  f"     region = us-ashburn-1\n"
+                  f"     tenancy = ocid1.tenancy.oc1..aaaaaaaaw7e6nkszrry6d5hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
+                  f"     user = ocid1.user.oc1..aaaaaaaayblfepjieoxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n" 
+                  f"     fingerprint = 19:1d:7b:3a:17\n"
+                  f"     key_file = ~/.oci/oci_api_key.pem\n"
+                  f"     \n\n"
+                  f"Once file is created, run command: chmod 600 ~/.oci/oci_api_key.pem and run ./fireup.sh script again. \n"
+                  f"  \n"
+                  f"  ****************************************************************** CALL TO ACTION ******************************************************************\n" )
+
+    
+
             raise SystemExit

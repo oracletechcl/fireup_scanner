@@ -93,7 +93,7 @@ class CheckBudgets(ReviewPoint):
                 dictionary[entry]['mitigations'].append(f"Make sure Budget \"{budget_dict['display_name']}\" has alert rules tied to it.")
             else:
                 for alert_rule in alert_rules:
-                    if alert_rule['recipients'] is not "" and alert_rule['message'] is not None:
+                    if alert_rule['recipients'] != "" and alert_rule['message'] is not None:
                         dictionary[entry]['status'] = True
                     else:
                         if budget_dict not in dictionary[entry]['findings']:
