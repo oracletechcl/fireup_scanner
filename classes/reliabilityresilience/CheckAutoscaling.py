@@ -15,12 +15,13 @@ class CheckAutoscaling(ReviewPoint):
     __identity = None
     __tenancy = None
     __compartments = []
-    __autoscaling_configurations_objects = None
-    __instance_pools_objects = None
+    __autoscaling_configurations_objects = []
+    __autoscaling_configurations_resource_ids = []
+    __instance_pools_objects = []
     __instance_pools = []
     __oke_clusters = []
-    __oke_clusters_objects = None
-    __policy_objects = None
+    __oke_clusters_objects = []
+    __policy_objects = []
     
 
 
@@ -60,7 +61,7 @@ class CheckAutoscaling(ReviewPoint):
         container_engine_clients = []
 
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
         regions = get_regions_data(self.__identity, self.config)
 
         for region in regions:
@@ -74,6 +75,9 @@ class CheckAutoscaling(ReviewPoint):
         self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
         self.__instance_pools_objects = ParallelExecutor.executor(compute_management_clients, self.__compartments, ParallelExecutor.get_instance_pools, len(self.__compartments), ParallelExecutor.instance_pools)
         self.__oke_clusters_objects = ParallelExecutor.executor(container_engine_clients, self.__compartments, ParallelExecutor.get_oke_clusters, len(self.__compartments), ParallelExecutor.oke_clusters)     
+
+        for autoscaling_config in self.__autoscaling_configurations_objects:
+            self.__autoscaling_configurations_resource_ids.append(autoscaling_config.resource.id)
 
         for instance_pool in self.__instance_pools_objects:  
             record = {
@@ -108,32 +112,32 @@ class CheckAutoscaling(ReviewPoint):
         # Check for autoscaling configuration for instance pools
         for instance_pool in self.__instance_pools:
             configuration_present = False
-            for configuration in self.__autoscaling_configurations_objects:
-                if instance_pool['id'] == configuration.resource.id:
-                    configuration_present = True
-                    break
+
+            if instance_pool['id'] in self.__autoscaling_configurations_resource_ids:
+                configuration_present = True
+
             if not configuration_present:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(instance_pool)
-                dictionary[entry]['failure_cause'].append("The instance pool does not have any autoscaling configuraiton created")                
-                dictionary[entry]['mitigations'].append(f"Make sure to create and attach autoscaling configuraiton for instance pool named: \"{instance_pool['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, instance_pool['compartment_id'])}\"")          
-        
+                dictionary[entry]['failure_cause'].append("The instance pool does not have any autoscaling configuration created")                
+                dictionary[entry]['mitigations'].append(f"Make sure to create and attach autoscaling configuration for instance pool named: \"{instance_pool['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, instance_pool['compartment_id'])}\"")          
+
         # Check if Autoscaler for Kubernetes is enabled in policy statements
-        __subject = 'dynamic-group'
-        __verb_and_resource_type = 'manage cluster-node-pools in compartment '
+        verb_and_resource_type = 'manage cluster-node-pools in compartment '
 
         for oke_cluster in self.__oke_clusters:
             have_autoscaling_policy = False
             for policy in self.__policy_objects:
                 for statement in policy.statements:
-                    if __subject in statement:
-                        if (__verb_and_resource_type + get_compartment_name(self.__compartments, oke_cluster['compartment_id'] )) in statement:
+                    if 'dynamic-group' in statement:
+                        if verb_and_resource_type + get_compartment_name(self.__compartments, oke_cluster['compartment_id']) in statement:
                             have_autoscaling_policy = True
                             break
+
             if not have_autoscaling_policy:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(oke_cluster)
                 dictionary[entry]['failure_cause'].append("Kubernetes cluster does not have any autoscaling enabled")
                 dictionary[entry]['mitigations'].append(f"Make sure that the auto scaling is enabled for cluster: \"{oke_cluster['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, oke_cluster['compartment_id'])}\"")
-                
+
         return dictionary

@@ -999,6 +999,7 @@ def get_virtual_circuits(item):
 
     return virtual_circuits
 
+
 def get_autoscaling_configurations(item):
     autoscaling_client = item[0]
     compartments = item[1:]
@@ -1006,12 +1007,12 @@ def get_autoscaling_configurations(item):
     autoscaling_configurations = []
 
     for compartment in compartments:
-        autoscaling_configurations_data = get_autoscaling_configurations_per_compartment(autoscaling_client, compartment.id)
-        if autoscaling_configurations_data:
-            for configuration in autoscaling_configurations_data:
-                autoscaling_configurations.append(configuration)
+        autoscaling_configurations_data = get_autoscaling_configurations_data(autoscaling_client, compartment.id)
+        for configuration in autoscaling_configurations_data:
+            autoscaling_configurations.append(configuration)
             
     return autoscaling_configurations
+
 
 def get_instance_pools(item):
     compute_management_client = item[0]
@@ -1019,10 +1020,9 @@ def get_instance_pools(item):
     instance_pools = []
 
     for compartment in compartments:
-        instance_pools_data = get_instance_pools_per_compartment(compute_management_client, compartment.id)
-        if instance_pools_data:
-            for instance_pool in instance_pools_data:        
-                instance_pools.append(instance_pool)
+        instance_pools_data = get_instance_pools_data(compute_management_client, compartment.id)
+        for instance_pool in instance_pools_data:        
+            instance_pools.append(instance_pool)
         
     return instance_pools
 
