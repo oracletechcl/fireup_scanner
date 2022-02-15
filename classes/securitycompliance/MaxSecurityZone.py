@@ -3,9 +3,7 @@
 # SecurityList.py
 # Description: Implementation of class SecurityList based on abstract
 
-from oci.identity import identity_client
 from classes.abstract.ReviewPoint import ReviewPoint
-import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
@@ -15,7 +13,6 @@ class MaxSecurityZone(ReviewPoint):
     # Class Variables
     __identity = None
     __max_sec_zone = []
-
 
 
     def __init__(self,
@@ -61,24 +58,23 @@ class MaxSecurityZone(ReviewPoint):
         # Get all compartments including root compartment
         compartments = get_compartments_data(self.__identity, tenancy.id)
         compartments.append(get_tenancy_data(self.__identity, self.config))
-        
 
         for comp in compartments:
-            comp_max_sec_zone = get_max_security_zone_data(self.__identity, comp.id)            
-            if "isMaximumSecurityZone" not in comp_max_sec_zone:                
+            comp_max_sec_zone = get_max_security_zone_data(self.__identity, comp.id)
+            if "isMaximumSecurityZone" not in comp_max_sec_zone:
                 self.__max_sec_zone.append(comp_max_sec_zone)
 
 
     def analyze_entity(self, entry):
     
-        self.load_entity()    
+        self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-                
+
         for msc in self.__max_sec_zone:
-               if len(self.__max_sec_zone) > 0:             
+            if len(self.__max_sec_zone) > 0:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['failure_cause'].append("Compartments do not have maximum security zone enabled")
                 dictionary[entry]['findings'].append(msc)
-                dictionary[entry]['mitigations'].append(f"If compartment: \"{msc['name']}\" contains a production workload, Enable Maximum Security Zone into it")                              
-                                       
+                dictionary[entry]['mitigations'].append(f"If compartment: \"{msc['name']}\" contains a production workload, Enable Maximum Security Zone into it")
+
         return dictionary
