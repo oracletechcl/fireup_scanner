@@ -502,8 +502,8 @@ Next you need whatever you will be looping through. More often than not, this is
 
 ```python
 # Get all compartments including root compartment
-compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-compartments.append(self.__tenancy)
+self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+self.__compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
 ```
 *Note: If you don't need the root compartmewnt for whatever reason, omit the second line.*
 

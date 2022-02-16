@@ -58,7 +58,7 @@ class OptimizationMonitor(ReviewPoint):
 
     def load_entity(self):   
         compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
 
         # Get cloud guard configuration data based on tenancy id
         self.__cloud_guard_data = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)

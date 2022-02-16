@@ -57,7 +57,7 @@ class MaxSecurityZone(ReviewPoint):
 
         # Get all compartments including root compartment
         compartments = get_compartments_data(self.__identity, tenancy.id)
-        compartments.append(get_tenancy_data(self.__identity, self.config))
+        compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         for comp in compartments:
             comp_max_sec_zone = get_max_security_zone_data(self.__identity, comp.id)

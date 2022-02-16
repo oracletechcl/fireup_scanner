@@ -93,7 +93,7 @@ class PatchesAndUpdates(ReviewPoint):
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(tenancy)
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__oracle_database_home_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_homes, len(self.__compartments), ParallelExecutor.db_system_homes)      
         self.__oracle_database_systems_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_database_systems, len(self.__compartments), ParallelExecutor.oracle_dbsystems)      
