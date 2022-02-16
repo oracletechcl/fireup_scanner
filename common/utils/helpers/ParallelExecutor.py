@@ -488,7 +488,7 @@ def get_mysql_dbs_with_no_backups(item):
     mysql_backup_client = item[0]
     mysql_dbsystems = item[1:]
 
-    backups = []
+    mysql_dbs_with_no_backups = []
     backup_window = 10
 
     # Checks that each MySQL DB has a backup within the last `backup_window` days
@@ -496,17 +496,15 @@ def get_mysql_dbs_with_no_backups(item):
         region = mysql_database.id.split('.')[3]
         if mysql_backup_client[1] in region or mysql_backup_client[2] in region:
             backup_data = get_mysql_backup_data(mysql_backup_client[0], mysql_database.compartment_id)
-            # Checks if there are any backups, the newest isn't deleted, 
-            # matches to the current db, and is within the last `backup_window` days
-            if len(backup_data) > 0: 
-                if ("DELETED" not in backup_data[0].lifecycle_state and
-                mysql_database.id == backup_data[0].db_system_id and
-                datetime.now() > (backup_data[0].time_created.replace(tzinfo=None) + timedelta(days=backup_window))):
-                    backups.append(mysql_database)
+            # Checks if there are any backups for the current db within the last `backup_window` days
+            for backup in backup_data:
+                if "DELETED" not in backup.lifecycle_state and mysql_database.id == backup.db_system_id:
+                    if datetime.now() < (backup.time_created.replace(tzinfo=None) + timedelta(days=backup_window)):
+                        break
             else:
-                backups.append(mysql_database)
+                mysql_dbs_with_no_backups.append(mysql_database)
 
-    return backups
+    return mysql_dbs_with_no_backups
 
 
 def get_dbs_from_db_homes(item):
