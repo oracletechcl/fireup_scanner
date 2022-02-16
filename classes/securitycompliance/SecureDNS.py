@@ -47,7 +47,7 @@ class SecureDNS(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
 

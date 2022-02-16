@@ -85,7 +85,7 @@ class ReplicateData(ReviewPoint):
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__block_volumes_objects = ParallelExecutor.executor([x[0] for x in block_storage_clients], self.__compartments, ParallelExecutor.get_block_volumes, len(self.__compartments), ParallelExecutor.block_volumes)
 

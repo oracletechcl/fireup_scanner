@@ -62,7 +62,7 @@ class ConfigureAuditing(ReviewPoint):
         namespace = get_object_storage_client(self.config, self.signer).get_namespace().data
 
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         audit_data = get_audit_configuration_data(self.__audit_client, self.__tenancy.id)
 

@@ -60,7 +60,7 @@ class SecurityList(ReviewPoint):
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__sec_list_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_security_lists, len(self.__compartments), ParallelExecutor.security_lists)
 

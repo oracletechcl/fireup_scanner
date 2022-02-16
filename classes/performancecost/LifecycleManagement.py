@@ -60,7 +60,7 @@ class LifecycleManagement(ReviewPoint):
             object_storage_clients.append( (get_object_storage_client(region_config, self.signer), namespace, region.region_name, region.region_key.lower()) )
 
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)
 
