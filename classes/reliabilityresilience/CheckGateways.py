@@ -64,7 +64,7 @@ class CheckGateways(ReviewPoint):
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments .append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__drg_objects = ParallelExecutor.executor([x[0] for x in network_clients], self.__compartments , ParallelExecutor.get_drgs, len(self.__compartments ), ParallelExecutor.drgs)
 
@@ -87,7 +87,7 @@ class CheckGateways(ReviewPoint):
         # i.e some method of bypassing the internet is present
         dictionary[entry]['status'] = False
 
-        # Checks if and DRGs are attachment to IPSEC VPN Tunnels or Virtual Circuits
+        # Checks if DRGs are attached to IPSEC VPN Tunnels or Virtual Circuits
         valid_attachments = ['VIRTUAL_CIRCUIT', 'IPSEC_TUNNEL']
         for attachment in self.__drg_attachments:
             if attachment.network_details is not None:

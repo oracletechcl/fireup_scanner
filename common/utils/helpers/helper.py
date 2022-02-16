@@ -376,6 +376,24 @@ def get_network_load_balancer_data(network_load_balancer_client, compartment_id)
     ).data
 
 
+def get_network_load_balancer_health_data(network_load_balancer_client, load_balancer_id):
+    return (
+        network_load_balancer_client.get_network_load_balancer_health(
+        load_balancer_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        ).data
+    )
+
+
+def get_load_balancer_health_data(load_balancer_client, load_balancer_id):
+    return (
+        load_balancer_client.get_load_balancer_health(
+        load_balancer_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        ).data
+    )
+
+
 def get_dynamic_group_data(identity_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_dynamic_groups,
@@ -521,6 +539,13 @@ def list_quota_data(quotas_client, compartment_id):
     ).data
 
 
+def get_quota_policy_data(quota_client, quota_id):
+    return quota_client.get_quota(
+        quota_id = quota_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
 def get_subnets_per_compartment_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_subnets,
@@ -600,6 +625,23 @@ def get_drg_data(network_client, compartment_id):
     ).data
 
 
+def get_all_drg_attachments_data(network_client, drg_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.get_all_drg_attachments,
+        drg_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_drg_attachment_data(network_client, drg_attachment_id):
+    return (
+        network_client.get_drg_attachment(
+            drg_attachment_id, 
+            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        ).data
+    )
+
+
 def get_service_gateway_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_service_gateways,
@@ -652,7 +694,8 @@ def get_resource_availability_data(limits_client, service_name, limit_name, comp
 
 
 def get_services(limits_client, compartment_id):
-    return limits_client.list_services(
+    return oci.pagination.list_call_get_all_results( 
+        limits_client.list_services,
         compartment_id=compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
@@ -846,12 +889,7 @@ def get_event_rules_per_compartment(events_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
    
-def get_quota_policy_data(quota_client, quota_id):
-    return quota_client.get_quota(
-        quota_id = quota_id,
-        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-    ).data
-    
+
 def get_networking_topology_per_compartment(network_client, compartment_id):
     return network_client.get_networking_topology(
         compartment_id,
@@ -859,13 +897,13 @@ def get_networking_topology_per_compartment(network_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_cross_connects_per_compartment(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_cross_connects,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
-        
 
 
 def list_operations_insights_warehouses(operations_insights_client, compartment_id):
