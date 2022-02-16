@@ -76,18 +76,20 @@ class PolicyAdmins(ReviewPoint):
     def analyze_entity(self, entry):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        counter = 0        
+        detected = False
+
         for policy in self.__policies:
             for statement in policy['statements']:
-                if "to manage to manage policies in tenancy where request.permission='POLICY_CREATE'".upper() in statement.upper():                    
-                    counter+=1
-        
-        if counter < 1: 
+                if "to manage policies in tenancy where request.permission='POLICY_CREATE'".upper() in statement.upper():
+                    detected = True
+                    break  
+            else:
+                continue
+            break   
+            
+        if not detected:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('Policy \"Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE\'\" does not exist')                
-            dictionary[entry]['mitigations'].append("Add Policy \"Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE\'\"")                
-        else:
-            dictionary[entry]['status'] = True
-            dictionary[entry]['findings'].append(policy)    
-                
+            dictionary[entry]['mitigations'].append("Add Policy \"Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE\'\"")
+            
         return dictionary
