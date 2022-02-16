@@ -88,8 +88,9 @@ class BackupDatabases(ReviewPoint):
                             'db_system_id': db_home.db_system_id,
                             'database_version': db_home.db_version,
                             'lifecycle_state': db_home.lifecycle_state,
+                            'db_name': db.db_name,
                         }
-                        self.__db_systems_with_no_backups_dicts.append( (db, record) )
+                        self.__db_systems_with_no_backups_dicts.append(record)
 
         self.__mysql_database_objects = ParallelExecutor.executor(mysql_clients, self.__compartments, ParallelExecutor.get_mysql_dbs, len(self.__compartments), ParallelExecutor.mysql_dbsystems)
 
@@ -116,11 +117,11 @@ class BackupDatabases(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        for db, db_home in self.__db_systems_with_no_backups_dicts:
+        for db_home in self.__db_systems_with_no_backups_dicts:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(db_home)
             dictionary[entry]['failure_cause'].append("Each Database System database should have automatic backup enabled")
-            dictionary[entry]['mitigations'].append(f"Make sure database \"{db.db_name}\" within database home \"{db_home['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, db_home['compartment_id'])}\" has automatic backup enabled.")
+            dictionary[entry]['mitigations'].append(f"Make sure database \"{db_home['db_name']}\" within database home \"{db_home['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, db_home['compartment_id'])}\" has automatic backup enabled.")
 
         for mysql_database in self.__mysql_dbs_with_no_backups_dicts:
             dictionary[entry]['status'] = False
