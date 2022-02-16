@@ -521,6 +521,13 @@ def list_quota_data(quotas_client, compartment_id):
     ).data
 
 
+def get_quota_policy_data(quota_client, quota_id):
+    return quota_client.get_quota(
+        quota_id = quota_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
 def get_subnets_per_compartment_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_subnets,
@@ -846,12 +853,7 @@ def get_event_rules_per_compartment(events_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
    
-def get_quota_policy_data(quota_client, quota_id):
-    return quota_client.get_quota(
-        quota_id = quota_id,
-        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
-    ).data
-    
+
 def get_networking_topology_per_compartment(network_client, compartment_id):
     return network_client.get_networking_topology(
         compartment_id,
@@ -859,13 +861,13 @@ def get_networking_topology_per_compartment(network_client, compartment_id):
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
 
+
 def get_cross_connects_per_compartment(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_cross_connects,
         compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data
-        
 
 
 def list_operations_insights_warehouses(operations_insights_client, compartment_id):
