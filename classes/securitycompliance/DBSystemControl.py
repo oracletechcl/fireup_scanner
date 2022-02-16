@@ -76,7 +76,7 @@ class DBSystemControl(ReviewPoint):
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(tenancy)
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
         
         self.__subnet_objects = ParallelExecutor.executor([x[0] for x in network_clients], self.__compartments, ParallelExecutor.get_subnets_in_compartments, len(self.__compartments), ParallelExecutor.subnets)
         self.__oracle_database_objects = ParallelExecutor.executor([x[0] for x in db_system_clients], self.__compartments, ParallelExecutor.get_oracle_dbsystem, len(self.__compartments), ParallelExecutor.oracle_dbsystems)
