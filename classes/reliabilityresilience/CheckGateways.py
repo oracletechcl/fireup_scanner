@@ -64,7 +64,7 @@ class CheckGateways(ReviewPoint):
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__drg_objects = ParallelExecutor.executor([x[0] for x in network_clients], self.__compartments , ParallelExecutor.get_drgs, len(self.__compartments ), ParallelExecutor.drgs)
 
