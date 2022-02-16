@@ -17,6 +17,7 @@ class ReplicateData(ReviewPoint):
     __block_storage_dicts = []
     __block_volume_replicas_objects = []
     __boot_volume_replicas_objects = []
+    __block_storage_replica_ids = []
     __bucket_objects = []
     __bucket_dicts = []
     __autonomous_database_objects = []
@@ -108,6 +109,12 @@ class ReplicateData(ReviewPoint):
                 'region': block_storage.id.split('.')[3]
             }
             self.__block_storage_dicts.append(record)
+
+        for block_storage_replica in self.__block_volume_replicas_objects + self.__boot_volume_replicas_objects:
+            if hasattr(block_storage_replica, "block_volume_id"):
+                self.__block_storage_replica_ids.append(block_storage_replica.block_volume_id)
+            if hasattr(block_storage_replica, "boot_volume_id"):
+                self.__block_storage_replica_ids.append(block_storage_replica.boot_volume_id)
         
         self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)
 
@@ -140,17 +147,8 @@ class ReplicateData(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        block_storage_replicas = self.__block_volume_replicas_objects + self.__boot_volume_replicas_objects
-
         for block_storage in self.__block_storage_dicts:
-            for block_storage_replica in block_storage_replicas:
-                if hasattr(block_storage_replica, "block_volume_id"):
-                    if block_storage['id'] == block_storage_replica.block_volume_id:
-                        break
-                if hasattr(block_storage_replica, "boot_volume_id"):
-                    if block_storage['id'] == block_storage_replica.boot_volume_id:
-                        break
-            else:
+            if block_storage['id'] not in self.__block_storage_replica_ids:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(block_storage)
                 dictionary[entry]['failure_cause'].append("Each block storages should be replicated to a disaster recovery region.")
