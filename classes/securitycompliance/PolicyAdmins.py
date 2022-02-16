@@ -80,7 +80,7 @@ class PolicyAdmins(ReviewPoint):
 
         for policy in self.__policies:
             for statement in policy['statements']:
-                if "to manage policies in tenancy where request.permission='\POLICY_CREATE\'".upper() in statement.upper():
+                if "to manage policies in tenancy where request.permission='POLICY_CREATE'".upper() in statement.upper():
                     detected = True
                     break  
             else:
