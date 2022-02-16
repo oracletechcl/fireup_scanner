@@ -80,7 +80,7 @@ class LBaaSHealthChecks(ReviewPoint):
         if len(self.__network_load_balancer_objects) > 0:
             self.__network_load_balancer_healths = ParallelExecutor.executor(network_load_balancer_clients, self.__network_load_balancer_objects, ParallelExecutor.get_load_balancer_healths, len(self.__network_load_balancer_objects), ParallelExecutor.network_load_balancer_healths)
 
-        for load_balancer, health in self.__load_balancer_healths:
+        for load_balancer, health in self.__load_balancer_healths + self.__network_load_balancer_healths:
             record = {
                 'display_name': load_balancer.display_name,
                 'id': load_balancer.id,
@@ -88,21 +88,9 @@ class LBaaSHealthChecks(ReviewPoint):
                 'is_private': load_balancer.is_private,
                 'lifecycle_state': load_balancer.lifecycle_state,
                 'time_created': load_balancer.time_created,
+                'health_status': health.status
             }
-            self.__load_balancers.append( (record, health) )
-
-        for network_load_balancer, health in self.__network_load_balancer_healths:
-            record = {
-                'display_name': network_load_balancer.display_name,
-                'id': network_load_balancer.id,
-                'compartment_id': network_load_balancer.compartment_id,
-                'is_private': network_load_balancer.is_private,
-                'lifecycle_state': network_load_balancer.lifecycle_state,
-                'time_created': network_load_balancer.time_created,
-            }
-            self.__network_load_balancers.append( (record, health) )
-
-        self.__combined_load_balancers = self.__load_balancers + self.__network_load_balancers
+            self.__combined_load_balancers.append(record)
 
         return self.__combined_load_balancers
 
@@ -112,8 +100,8 @@ class LBaaSHealthChecks(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        for load_balancer, health in self.__combined_load_balancers:
-            if "OK" not in health.status:
+        for load_balancer in self.__combined_load_balancers:
+            if "OK" not in load_balancer['health_status']:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(load_balancer)
                 dictionary[entry]['failure_cause'].append('Load balancers should all have passing health checks.')
