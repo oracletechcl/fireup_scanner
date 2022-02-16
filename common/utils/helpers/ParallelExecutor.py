@@ -290,10 +290,10 @@ def get_load_balancer_healths(item):
         id = load_balancer.id
         if "networkloadbalancer" in id:
             if client[1] in id or client[2] in id:
-                healths.append( (load_balancer, client[0].get_network_load_balancer_health(id).data) )
+                healths.append( (load_balancer, get_network_load_balancer_health_data(client[0], id)) )
         else:
             if client[1] in id or client[2] in id:
-                healths.append( (load_balancer, client[0].get_load_balancer_health(id).data) )
+                healths.append( (load_balancer, get_load_balancer_health_data(client[0], id)) )
 
     return healths
 

@@ -376,6 +376,24 @@ def get_network_load_balancer_data(network_load_balancer_client, compartment_id)
     ).data
 
 
+def get_network_load_balancer_health_data(network_load_balancer_client, load_balancer_id):
+    return (
+        network_load_balancer_client.get_network_load_balancer_health(
+        load_balancer_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        ).data
+    )
+
+
+def get_load_balancer_health_data(load_balancer_client, load_balancer_id):
+    return (
+        load_balancer_client.get_load_balancer_health(
+        load_balancer_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        ).data
+    )
+
+
 def get_dynamic_group_data(identity_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         identity_client.list_dynamic_groups,
