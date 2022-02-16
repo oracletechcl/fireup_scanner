@@ -178,7 +178,7 @@ def executor(dependent_clients:list, independent_iterator:list, fuction_to_execu
 
 def get_availability_domains(identity_clients, tenancy_id):
     """
-    Get all availability domains in a region using an identity client from each region
+    Get all availability domains using an identity client from each region
     """
     values = availability_domains
 
