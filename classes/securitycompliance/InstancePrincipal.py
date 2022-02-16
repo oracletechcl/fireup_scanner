@@ -88,7 +88,7 @@ class InstancePrincipal(ReviewPoint):
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
 
         self.__instance_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_instances, len(self.__compartments), ParallelExecutor.instances)
 

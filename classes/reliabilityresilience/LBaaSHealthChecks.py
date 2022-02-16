@@ -68,7 +68,7 @@ class LBaaSHealthChecks(ReviewPoint):
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__load_balancer_objects = ParallelExecutor.executor([x[0] for x in load_balancer_clients], self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
         

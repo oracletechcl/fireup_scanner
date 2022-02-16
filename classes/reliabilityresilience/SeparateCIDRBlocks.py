@@ -62,7 +62,7 @@ class SeparateCIDRBlocks(ReviewPoint):
 
         # Get all compartments including root compartment
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         # self.__vcns = parallel_executor(network_clients, compartments, self.__search_compartments, len(compartments), "__vcns")
 

@@ -60,7 +60,7 @@ class BucketEncryption(ReviewPoint):
         regions = get_regions_data(self.__identity, self.config)
 
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        self.__compartments.append(get_tenancy_data(self.__identity, self.config))
+        self.__compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
 
         # get clients from each region 
         for region in regions:
