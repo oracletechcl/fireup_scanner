@@ -80,14 +80,13 @@ class PolicyAdmins(ReviewPoint):
 
         for policy in self.__policies:
             for statement in policy['statements']:
-                if "to manage policies in tenancy where request.permission='POLICY_CREATE'".upper() in statement.upper():
-                    dictionary[entry]['status'] = True
-                    dictionary[entry]['findings'].append(policy)
-                    print(statement)
+                if "to manage policies in tenancy where request.permission='\POLICY_CREATE\'".upper() in statement.upper():
                     detected = True
-                break
-            break
-        
+                    break  
+            else:
+                continue
+            break   
+            
         if not detected:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append('Policy \"Allow group PolicyAdmins to manage policies in tenancy where request.permission=\'POLICY_CREATE\'\" does not exist')                
