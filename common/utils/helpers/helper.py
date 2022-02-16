@@ -669,7 +669,8 @@ def get_resource_availability_data(limits_client, service_name, limit_name, comp
 
 
 def get_services(limits_client, compartment_id):
-    return limits_client.list_services(
+    return oci.pagination.list_call_get_all_results( 
+        limits_client.list_services,
         compartment_id=compartment_id,
         retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
     ).data

@@ -49,7 +49,6 @@ class ServiceLimits(ReviewPoint):
     def load_entity(self):
 
         regions = get_regions_data(self.__identity, self.config)
-
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         limits_clients = []
@@ -58,7 +57,7 @@ class ServiceLimits(ReviewPoint):
             region_config['region'] = region.region_name
             limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, region.region_name) )
 
-        services = limits_clients[0][0].list_services(tenancy.id).data
+        services = get_services(limits_clients[0][0], tenancy.id)
 
         self.__limit_value_objects = ParallelExecutor.executor(limits_clients, services, ParallelExecutor.get_limit_values, len(services), ParallelExecutor.limit_values_with_regions)
 
@@ -108,7 +107,7 @@ class ServiceLimits(ReviewPoint):
 
         for key, value in self.__non_compliant_limits.items():
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Limits should be correctly configured to what is required for the workload.')
+            dictionary[entry]['failure_cause'].append("Limits should be correctly configured to what is required for the workload.")
             dictionary[entry]['mitigations'].append(f"Limit name: \"{key[0]}\", is different to expected default of: \"{key[1]}\" in: {value}")
 
         return dictionary
