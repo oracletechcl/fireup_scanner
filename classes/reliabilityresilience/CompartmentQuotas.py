@@ -15,7 +15,7 @@ class CompartmentQuotas(ReviewPoint):
     __compartments = []
     __quotas_data = []
     __identity = None
-    __quotas = None
+    __quotas_client = None
 
 
     def __init__(self,
@@ -51,12 +51,11 @@ class CompartmentQuotas(ReviewPoint):
         tenancy = get_tenancy_data(self.__identity, self.config)
         compartments = get_compartments_data(self.__identity, tenancy.id)
         
+        # Create quotas client in home region
         home_region = get_home_region(self.__identity, self.config)
-
         region_config = self.config
         region_config['region'] = home_region.region_name
-
-        self.__quotas = get_quotas_client(region_config, self.signer)
+        self.__quotas_client = get_quotas_client(region_config, self.signer)
 
         for compartment in compartments:
             compartment_record = {
@@ -65,22 +64,18 @@ class CompartmentQuotas(ReviewPoint):
                 'id': compartment.id,
                 'lifecycle_state': compartment.lifecycle_state,
                 'name': compartment.name,
-                'time_created': compartment.time_created,
             }
             self.__compartments.append(compartment_record)
         
-        quotas_data = list_quota_data(self.__quotas, tenancy.id)
+        quotas_data = list_quota_data(self.__quotas_client, tenancy.id)
 
         for quota in quotas_data:
             quota_record = {
                 'compartment_id': quota.compartment_id,
-                'defined_tags': quota.defined_tags,
                 'description': quota.description,
-                'freeform_tags': quota.freeform_tags,
                 'id': quota.id,
                 'lifecycle_state': quota.lifecycle_state,
                 'name': quota.name,
-                'time_created': compartment.time_created
             }
             self.__quotas_data.append(quota_record)
         
@@ -90,38 +85,24 @@ class CompartmentQuotas(ReviewPoint):
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        compliant_compartment_names = []
-        all_compartment_names = []
-        compliant_compartment_count = 0
 
-        for compartments in self.__compartments:
-            all_compartment_names.append(compartments['name'])
+        # Create copy of compartments
+        non_compliant_compartments = self.__compartments[:]
     
-        for quotas_data in self.__quotas_data:
-            quota_compart = self.__quotas.get_quota(quotas_data['id'])
-    
-            for statement in quota_compart.data.statements:
+        for quota_data in self.__quotas_data:
+            quota_policy_data = get_quota_policy_data(self.__quotas_client, quota_data['id'])
+            for statement in quota_policy_data.statements:
                 # Regex that recieves compartment name from quota
-                compart_name = re.search('(?<=in compartment )(\w+)', statement).group(1)
-                for compartments in self.__compartments:
-                    if compartments['name'] == compart_name:
-                        compliant_compartment_count += 1
-                        compliant_compartment_names.append(compartments['name'])
+                quoata_compartment_name = re.search('(?<=in compartment )(\w+)', statement).group(1)
+                for compartment in non_compliant_compartments:
+                    if compartment['name'] == quoata_compartment_name:
+                        non_compliant_compartments.remove(compartment)
                         break
-                    else:
-                        continue
 
-        non_compliant_compartments_names = list(set(all_compartment_names) - set(compliant_compartment_names))
-        
-        for compartments in self.__compartments:
-            for compartment in non_compliant_compartments_names:
-                dictionary[entry]['status'] = False
-                if compartments['name'] == compartment:
-                    dictionary[entry]['findings'].append(compartments)
-                    dictionary[entry]['failure_cause'].append("Some compartments do not have a quota set")
-                    dictionary[entry]['mitigations'].append(f"Please set a quota for compartment: \"{compartment}\"")  
-                    break
-                else:
-                    continue
-
+        for compartment in non_compliant_compartments:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['findings'].append(compartment)
+            dictionary[entry]['failure_cause'].append("Some compartments do not have quota(s) set")
+            dictionary[entry]['mitigations'].append(f"Please set quota(s) for compartment: \"{compartment['name']}\"")  
+  
         return dictionary
