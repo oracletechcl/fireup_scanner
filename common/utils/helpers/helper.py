@@ -600,6 +600,23 @@ def get_drg_data(network_client, compartment_id):
     ).data
 
 
+def get_all_drg_attachments_data(network_client, drg_id):
+    return oci.pagination.list_call_get_all_results(
+        network_client.get_all_drg_attachments,
+        drg_id,
+        retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+    ).data
+
+
+def get_drg_attachment_data(network_client, drg_attachment_id):
+    return (
+        network_client.get_drg_attachment(
+            drg_attachment_id, 
+            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
+        ).data
+    )
+
+
 def get_service_gateway_data(network_client, compartment_id):
     return oci.pagination.list_call_get_all_results(
         network_client.list_service_gateways,

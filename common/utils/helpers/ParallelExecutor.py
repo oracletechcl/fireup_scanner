@@ -928,7 +928,7 @@ def get_drg_attachment_ids(item):
     for drg in drgs:
         region = drg.id.split('.')[3]
         if network_client[1] in region or network_client[2] in region:
-            drg_attachment_ids_data = network_client[0].get_all_drg_attachments(drg.id).data
+            drg_attachment_ids_data = get_all_drg_attachments_data(network_client[0], drg.id)
             for drg_attachment_id in drg_attachment_ids_data:
                 drg_attachment_ids.append(drg_attachment_id)
 
@@ -944,10 +944,9 @@ def get_drg_attachments(item):
     for drg_attachment_id in drg_attachment_ids:
         region = drg_attachment_id.id.split('.')[3]
         if network_client[1] in region or network_client[2] in region:
-            # Try + except necessary here as API seems to sometimes return
-            # DRG ids not within the tenancy, throwing an error.
+            # A try, except is needed here for old version DRGs that do not return data correctly.
             try:
-                drg_attachment_data = network_client[0].get_drg_attachment(drg_attachment_id.id).data
+                drg_attachment_data = get_drg_attachment_data(network_client[0], drg_attachment_id.id)
                 drg_attachments.append(drg_attachment_data)
             except:
                 continue
