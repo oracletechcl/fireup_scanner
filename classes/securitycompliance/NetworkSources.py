@@ -72,7 +72,7 @@ class NetworkSources(ReviewPoint):
         self.__authentication_policy = get_authentication_policy(self.__identity_client, self.__tenancy.id)
 
         compartments = get_compartments_data(self.__identity, self.__tenancy.id)
-        compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
+        compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
 
         policy_data = ParallelExecutor.executor([self.__identity_client], compartments, ParallelExecutor.get_policies, len(compartments), ParallelExecutor.policies)
 
