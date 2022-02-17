@@ -17,6 +17,7 @@ class TrafficSteering(ReviewPoint):
     __compartments = []
     __identity = None
 
+
     def __init__(self,
                 entry:str, 
                 area:str, 
@@ -64,7 +65,7 @@ class TrafficSteering(ReviewPoint):
         self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__steering_policy_objects = ParallelExecutor.executor(dns_clients, self.__compartments, ParallelExecutor.get_steering_policies, len(self.__compartments), ParallelExecutor.steering_policies)
-        self.__vcns_in_multiple_regions = ParallelExecutor.check_vcns_in_multiple_regions(network_clients, regions, self.__compartments, ParallelExecutor.vcns_in_multiple_regions)
+        self.__vcns_in_multiple_regions = ParallelExecutor.check_vcns_in_multiple_regions(network_clients, regions, self.__compartments)
 
         return self.__steering_policy_objects, self.__vcns_in_multiple_regions
 
@@ -76,7 +77,7 @@ class TrafficSteering(ReviewPoint):
 
         if self.__vcns_in_multiple_regions and len(self.__steering_policy_objects) == 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('No steering policies found but VCNs are in multiple regions')
-            dictionary[entry]['mitigations'].append('Consider using \"steering policies\" if workload is split across multiple regions.')
+            dictionary[entry]['failure_cause'].append("No steering policies found but VCNs are in multiple regions")
+            dictionary[entry]['mitigations'].append("Consider using \"steering policies\" if workload is split across multiple regions.")
 
         return dictionary
