@@ -98,7 +98,7 @@ class CheckBudgets(ReviewPoint):
                     else:
                         if budget_dict not in dictionary[entry]['findings']:
                             dictionary[entry]['findings'].append(budget_dict)
-                        dictionary[entry]['failure_cause'].append("Ensure that budgets have email recipient(s) and an email message.")
+                        dictionary[entry]['failure_cause'].append("Ensure that budget alerts have email recipient(s) and an email message.")
                         dictionary[entry]['mitigations'].append(f"Make sure alert rule: \"{alert_rule['display_name']}\" for budget: \"{budget_dict['display_name']}\" has email recipient(s) and an email message.")
 
         if not dictionary[entry]['status']:
