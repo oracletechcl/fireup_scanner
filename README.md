@@ -68,9 +68,11 @@ You can run FireUp Scanner in two ways. Follow below instructions to execute it:
 - Using the Cloud Shell  
 - Using a Jump Server
   - Currently supported Servers are: 
-    - OL7.x, OL8, Autonomous Linux 7.9, Ubuntu 20.X
-  - Python3 pre-installed
-  - Pre-configured Oracle Cloud Infrastructure (OCI) account with API Keys associated to the user
+    - `Oracle Linux 7.x`
+    - `Oracle Linux 8.x`
+    - `Oracle Autonomous Linux`
+    - `Ubuntu 20.x`      
+  - Pre-configured Oracle Cloud Infrastructure (OCI) account with API Keys associated to the user. This user can have minimal read only permissions
   - CLI will be automatically installed if not present on the jump system. Make sure to complete the configuration of the CLI by filling the contents of the file `~/.oci/config` accordingly 
     - For more details, refer to the following links:  
       - [Manual and Offline Installations](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/climanualinst.htm)
@@ -117,10 +119,136 @@ You can run FireUp Scanner in two ways. Follow below instructions to execute it:
 <div id="UsingJumpServer"></div>
 
 ### If using Jump Server
-- Create a jump server into your tenancy. The supported Operative Systems are: OL7.x, Ubuntu 20.X
-- Download the release given by your Oracle for Startups Architect
-- Unzip the file 
+- Create a jump server into your tenancy. The supported Operative Systems are: 
+    - `Oracle Linux 7.x`
+    - `Oracle Linux 8.x`
+    - `Oracle Autonomous Linux`
+    - `Ubuntu 20.x`   
+
+For this example, the machine `ol7example` has been created
+
+![JumpServer01](./images/Jump_Server_01.png)
+
+- Download the release given by your Oracle for Startups Architect and upload it into the jump server
+
+
+```shell
+[opc@ol7example ~]$ ls
+fireup-1.0.0.zip
+```
+
+- Unzip the file
+
+```shell
+[opc@ol7example ~]$ unzip fireup-1.0.0.zip
+```
+
 - Execute the script `fireup.sh`
+
+> :bulb: 
+> 
+> **Once ran for the first time, something like this should appear**
+> ```shell
+>[opc@ol7example fireup-1.0.0]$ ./fireup.sh 
+>============== CLI Pre-Requisites ==============
+>Installing OCI CLI in RedHat or CentOS...
+>--2022-02-17 15:15:04--  https://raw.githubusercontent.com/oracle/oci-cli/master/>scripts/install/install.sh
+>Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.110.133, >185.199.111.133, 185.199.108.133, ...
+>Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.110.133|>:443... connected.
+>HTTP request sent, awaiting response... 200 OK
+>Length: 16641 (16K) [text/plain]
+>Saving to: ‘install.sh’
+>
+>100%>[====================================================================================>==============================================================================>] 16,>641      --.-K/s   in 0s      
+>
+>2022-02-17 15:15:05 (67.8 MB/s) - ‘install.sh’ saved [16641/16641]
+>
+>Running with --accept-all-defaults
+>Downloading Oracle Cloud Infrastructure CLI install script from https://raw.>githubusercontent.com/oracle/oci-cli/v3.2.1/scripts/install/install.py to /tmp/>oci_cli_install_tmp_qRZg.
+>######################################################################## 100.0%
+>Running install script.
+>python3 /tmp/oci_cli_install_tmp_qRZg  --install-dir /home/opc/oci_cli/lib/>oracle-cli --exec-dir /home/opc/oci_cli/bin --accept-all-defaults
+>-- Verifying Python version.
+>-- Python version 3.6.8 okay.
+>-- Creating directory '/home/opc/oci_cli/lib/oracle-cli'.
+>-- Creating directory '/home/opc/oci_cli/bin'.
+>-- Creating directory '/home/opc/bin/oci-cli-scripts'.
+>-- The scripts will be in '/home/opc/bin/oci-cli-scripts'.
+>-- The optional packages installed will be ''.
+>-- Trying to use python3 venv.
+>-- Executing: ['/bin/python3', '-m', 'venv', '/home/opc/oci_cli/lib/oracle-cli']
+>-- Executing: ['/home/opc/oci_cli/lib/oracle-cli/bin/pip', 'install', '--upgrade', >'pip']
+>Collecting pip
+>  Downloading https://files.pythonhosted.org/packages/a4/6d/>6463d49a933f547439d6b5b98b46af8742cc03ae83543e4d7688c2420f8b/pip-21.3.>1-py3-none-any.whl (1.7MB)
+>    100% |████████████████████████████████| 1.7MB 998kB/s 
+>Installing collected packages: pip
+>  Found existing installation: pip 9.0.3
+>    Uninstalling pip-9.0.3:
+>      Successfully uninstalled pip-9.0.3
+>Successfully installed pip-21.3.1
+>You are using pip version 21.3.1, however version 22.0.3 is available.
+>You should consider upgrading via the 'pip install --upgrade pip' command.
+>-- Executing: ['/home/opc/oci_cli/lib/oracle-cli/bin/pip', 'install', '--cache-dir', >'/tmp/tmpzv35o_xz', 'wheel', '--upgrade']
+>Collecting wheel
+>  Downloading wheel-0.37.1-py2.py3-none-any.whl (35 kB)
+>Installing collected packages: wheel
+>Successfully installed wheel-0.37.1
+>-- Executing: ['/home/opc/oci_cli/lib/oracle-cli/bin/pip', 'install', '--cache-dir', >'/tmp/tmpzv35o_xz', 'oci_cli', '--upgrade']
+>Collecting oci_cli
+>  Downloading oci_cli-3.5.1-py3-none-any.whl (25.6 MB)
+>     |████████████████████████████████| 25.6 MB 25.0 MB/s            
+>Collecting click==7.1.2
+>  Downloading click-7.1.2-py2.py3-none-any.whl (82 kB)
+>     |████████████████████████████████| 82 kB 2.1 MB/s     
+> ...
+> ...
+> ...
+>  ****************************************************************** CALL TO ACTION ******************************************************************
+>  Please finish the configuration of file ~/.oci/config 
+>  Follow this documentation to finish the CLI configuration: https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Entries
+>  A correct configuration file at ~/.oci/config looks like this:
+>
+>     [DEFAULT]
+>     region = us-ashburn-1
+>     tenancy = ocid1.tenancy.oc1..aaaaaaaaw7e6nkszrry6d5hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+>     user = ocid1.user.oc1..aaaaaaaayblfepjieoxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+>     fingerprint = 19:1d:7b:3a:17
+>     key_file = ~/.oci/oci_api_key.pem
+>     
+>
+> Once file is created, run command: chmod 600 ~/.oci/oci_api_key.pem and run ./fireup.sh script again. 
+>  
+>  ****************************************************************** CALL TO ACTION ******************************************************************
+>
+> ```
+
+- This means that the CLI is not yet configured. To finish the configuration, go to the user designated for use fireup (it can be an admin user) and configure its API Token. Follow these documentation to create it: 
+  
+    - [Config File Location](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Name_and_Location)
+    - [Config File Contents](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#File_Entries)
+
+- The content of `~/.oci/config` file can be obtained from here once the API Token is created: 
+
+  - Go to the upper right corner of the page and click on the *User* icon.
+![Jump_Server_02](./images/Jump_Server_02.png)
+
+  - Click on the *API Keys* link.
+![Jump_Server_03](./images/Jump_Server_03.png)
+
+  - Click on the *triple dot* icon on the right part of the screen of an already configured API Key. If you haven't configured one yet, proceed to do it. Then click on "View Configuration File"
+![Jump_Server_04](./images/Jump_Server_04.png)
+
+  - Click on the *Copy* link
+![Jump_Server_05](./images/Jump_Server_05.png)
+
+- Paste the contents on file `~/.oci/config`
+- Be sure to complete the configuration by filling the line, with the private API Key associated to this user: 
+
+```shell
+key_file=<path to your private keyfile> # TODO
+```
+
+- Re-run `./fireup.sh` script and wait for it's completion. A progress bar is shown on the left part of the screen. Depending on the compute power of the jump server, this can take up to 20 minutes. 
 - Once ran, deliver the `reports.tar.gz` file to your Oracle for Startups Architect for review
 
 <div id="ExpectedOutput"></div>
