@@ -13,11 +13,10 @@ from common.utils.helpers.helper import *
 class CloudGuardMonitor(ReviewPoint):
 
     # Class Variables    
-    __tenancy_data_including_cloud_guard = None 
-    # __tenancy_data_including_cloud_guard captures tenancy id, name descirption, region key, and cloud guard status
+    __cloud_guard_data = None 
     __identity = None
     __cloud_guard_client = None
-    __cloud_guard_data = []
+    __cloud_guard_config = []
     __tenancy = None
 
 
@@ -55,35 +54,35 @@ class CloudGuardMonitor(ReviewPoint):
     def load_entity(self):
         
         # Get cloud guard configuration data based on tenancy id
-        self.__cloud_guard_data = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)
+        self.__cloud_guard_config = get_cloud_guard_configuration_data(self.__cloud_guard_client, self.__tenancy.id)
 
-        if type(self.__cloud_guard_data) == oci.exceptions.ServiceError:
+        if type(self.__cloud_guard_config) == oci.exceptions.ServiceError:
             return
 
         # Record some data of a tenancy and its cloud guard enable status
-        tenancy_data_including_cloud_guard = {
+        cloud_guard_data = {
             "tenancy_id" : self.__tenancy.id,
             "tenancy_name" : self.__tenancy.name,
             "tenancy_description" : self.__tenancy.description,
             "tenancy_region_key" : self.__tenancy.home_region_key,
-            "cloud_guard_enable_stautus" : self.__cloud_guard_data.status
+            "cloud_guard_stautus" : self.__cloud_guard_config.status
         }
-        self.__tenancy_data_including_cloud_guard = tenancy_data_including_cloud_guard
+        self.__cloud_guard_data = cloud_guard_data
     
 
     def analyze_entity(self, entry):
         self.load_entity()        
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        if type(self.__cloud_guard_data) == oci.exceptions.ServiceError:
+        if type(self.__cloud_guard_config) == oci.exceptions.ServiceError:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Cloud guard is not available in an always free tenancy")
-            dictionary[entry]['mitigations'].append(str(self.__cloud_guard_data.message))
+            dictionary[entry]['mitigations'].append(str(self.__cloud_guard_config.message))
 
             return dictionary
         
         # Check if Cloud Guard is enable
-        if self.__tenancy_data_including_cloud_guard['cloud_guard_enable_stautus'] != 'ENABLED':
+        if self.__cloud_guard_data['cloud_guard_stautus'] != 'ENABLED':
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("Root level of the tenancy does not have Cloud Guard enabled")
             dictionary[entry]['mitigations'].append("Enable Cloud Guard on tenancy")
