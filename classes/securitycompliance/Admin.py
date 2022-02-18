@@ -86,9 +86,14 @@ class Admin(ReviewPoint):
                 if not any(policy_group in statement.lower() for policy_group in policy_groups):
                     if all(policy_action in statement.lower() for policy_action in policy_actions):
                         compliant_policies.append(statement)
-        
-        if len(compliant_policies) < 10:
+
+        if len(compliant_policies) == 0:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append("Not enough policies found that are compliant with granularity. A minimum of 10 is considered acceptable")                
+            dictionary[entry]['failure_cause'].append("No policies found that are compliant with granularity. A minimum of 10 is considered acceptable")
+            dictionary[entry]['mitigations'].append(f"Increase the amount of granular policies containing \"manage family\" as verbs.")
+        elif len(compliant_policies) < 10:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append("Not enough policies found that are compliant with granularity. A minimum of 10 is considered acceptable")
             dictionary[entry]['mitigations'].append(f"Increase the amount of granular policies containing \"manage family\" as verbs. Sample: \"{compliant_policies[0]}\"")
+
         return dictionary
