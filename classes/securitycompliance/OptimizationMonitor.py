@@ -164,7 +164,7 @@ class OptimizationMonitor(ReviewPoint):
                 if rule[0] not in dictionary[entry]['findings']:
                     dictionary[entry]['findings'].append(rule[0])
                 dictionary[entry]['failure_cause'].append("Cloud Guard responder rule not correctly configured")
-                dictionary[entry]['mitigations'].append(f"Enable Detector rule: \"{rule[1]['display_name']}\" associated to recipe: \"{rule[0]['display_name']}\"")
+                dictionary[entry]['mitigations'].append(f"Enable Responder rule: \"{rule[1]['display_name']}\" associated to recipe: \"{rule[0]['display_name']}\"")
         else:
             dictionary[entry]['status'] = False
             dictionary[entry]['findings'].append(self.__tenancy_data_including_cloud_guard)
