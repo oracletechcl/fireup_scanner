@@ -14,6 +14,7 @@ class MetricAlarms(ReviewPoint):
     # Class Variables
     __compartments = []
     __alarm_objects = []
+    __alarms_dicts = []
     __metric_objects = []
     __namespaces = []
     __identity = None
@@ -69,7 +70,20 @@ class MetricAlarms(ReviewPoint):
             if metric.namespace not in self.__namespaces:
                 self.__namespaces.append(metric.namespace)
 
-        return self.__metric_objects, self.__alarm_objects
+        for alarm in self.__alarm_objects: 
+            record = {
+                'compartment_id': alarm.compartment_id,
+                'display_name': alarm.display_name,
+                'is_enabled': alarm.is_enabled,
+                'namespace': alarm.namespace,
+                'lifecycle_state': alarm.lifecycle_state,
+                'metric_compartment_id': alarm.metric_compartment_id,
+                'query' : alarm.query,
+                'destinations': alarm.destinations,
+                'severity': alarm.severity,
+                'suppression': alarm.suppression,
+            }
+            self.__alarms_dicts.append(record)
 
 
     def analyze_entity(self, entry):
@@ -77,9 +91,10 @@ class MetricAlarms(ReviewPoint):
 
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        for alarm in self.__alarm_objects:
-            if alarm.namespace in self.__namespaces:
-                self.__namespaces.remove(alarm.namespace)
+        for alarm in self.__alarms_dicts:
+            if alarm['namespace'] in self.__namespaces:
+                if alarm['suppression'] is None and alarm['is_enabled']:
+                    self.__namespaces.remove(alarm['namespace'])
 
         if len(self.__namespaces) > 0:
             dictionary[entry]['status'] = False
