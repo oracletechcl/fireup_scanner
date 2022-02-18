@@ -101,8 +101,7 @@ class Rbac(ReviewPoint):
             if not current_compartment_id in self.__policies_by_compartment.keys():
                 self.__policies_by_compartment[current_compartment_id]= []
             
-            self.__policies_by_compartment[current_compartment_id].append(
-                {
+            record = {
                     "defined_tags": policy.defined_tags,
                     "description": policy.description,
                     "freeform_tags": policy.freeform_tags,
@@ -110,9 +109,9 @@ class Rbac(ReviewPoint):
                     "lifecycle_state": policy.lifecycle_state,
                     "name": policy.name,
                     "statements": policy.statements,
-                }
-            )       
-
+            }
+            self.__policies_by_compartment[current_compartment_id].append(record)
+            
     def analyze_entity(self, entry):
 
         self.load_entity()
@@ -142,10 +141,10 @@ class Rbac(ReviewPoint):
                         dictionary[entry]['mitigations'].append(f"Create further granular policies attached to compartment: \"{compartment['name']}\" Current total policies found: \"{counter}\"")
         
         for compartment in self.__compartment_dicts:
-            if not any(compliant_compartment in compartment['id'] for compliant_compartment in compliant_compartments) :
+            if compartment['id'] not in compliant_compartments:
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(compartment)
                 dictionary[entry]['failure_cause'].append("No granular policies found in compartment")
                 dictionary[entry]['mitigations'].append(f"Create granular policies for compartment: \"{compartment['name']}\" Current total policies were found to be 0.")
-                               
+                      
         return dictionary
