@@ -102,13 +102,13 @@ class Rbac(ReviewPoint):
                 self.__policies_by_compartment[current_compartment_id]= []
             
             record = {
-                    "defined_tags": policy.defined_tags,
-                    "description": policy.description,
-                    "freeform_tags": policy.freeform_tags,
-                    "id": policy.id,
-                    "lifecycle_state": policy.lifecycle_state,
-                    "name": policy.name,
-                    "statements": policy.statements,
+                "defined_tags": policy.defined_tags,
+                "description": policy.description,
+                "freeform_tags": policy.freeform_tags,
+                "id": policy.id,
+                "lifecycle_state": policy.lifecycle_state,
+                "name": policy.name,
+                "statements": policy.statements,
             }
             self.__policies_by_compartment[current_compartment_id].append(record)
             
