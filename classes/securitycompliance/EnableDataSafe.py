@@ -1,7 +1,7 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# EnabledDataSafe.py
-# Description: Implementation of class EnabledDataSafe based on abstract
+# EnableDataSafe.py
+# Description: Implementation of class EnableDataSafe based on abstract
 
 
 from common.utils.formatter.printer import debug
@@ -10,7 +10,7 @@ from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
 
-class EnabledDataSafe(ReviewPoint):
+class EnableDataSafe(ReviewPoint):
 
     # Class Variables
     __identity = None
@@ -48,6 +48,14 @@ class EnabledDataSafe(ReviewPoint):
 
     def load_entity(self):
 
+        data_safe_client = get_data_safe_client(self.config, self.signer)
+
+        # debug(data_safe_client.get_data_safe_configuration().data, "green")
+        debug(data_safe_client.list_security_assessments(
+            compartment_id="ocid1.tenancy.oc1..aaaaaaaaoqdygmiidrabhv3y4hkr3rb3z6dpmgotvq2scffra6jt7rubresa",
+            compartment_id_in_subtree=True,
+            access_level="ACCESSIBLE",
+        ).data[0], "green")
 
 
         return
@@ -56,6 +64,7 @@ class EnabledDataSafe(ReviewPoint):
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
+
 
 
         return dictionary

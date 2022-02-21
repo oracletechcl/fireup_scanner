@@ -285,6 +285,14 @@ def get_notification_control_plane_client(config, signer):
     return notification_control_plane_client
 
 
+def get_data_safe_client(config, signer):
+    try:
+        data_safe_client = oci.data_safe.DataSafeClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Data Safe client: " + e)
+    return data_safe_client
+
+
 def get_tenancy_data(identity_client, config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return identity_client.get_tenancy(
         config["tenancy"],
