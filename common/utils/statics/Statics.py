@@ -242,6 +242,15 @@ __rp_1_26 = {
     'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
+__rp_1_27 = {
+    'entry': '1.27',
+    'area': 'Security and Compliance',
+    'sub_area': 'Secure Your Databases',
+    'review_point': 'Enable Data Safe',
+    'success_criteria': 'Check if Data Safe is enabled',
+    'fireup_items': ['Fireup Task: 25 - Are permissions for authorizing deletion of sensitive data locked down to certain users?'],
+}
+
 
 __rp_2_1 = {
     'entry': '2.1',
