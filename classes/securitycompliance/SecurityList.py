@@ -155,23 +155,24 @@ class SecurityList(ReviewPoint):
                         'load_balancer_id': load_balancer['id'],
                         'vcn_id': vcn_info.id,
                         'subnet_id': subnet.id,
-                        'subnet_cidr_blocks': subnet.cidr_block,
+                        'subnet_cidr_blocks': subnet_cidr_blocks,
                         'backend_cidr_blocks': backend_cidr_blocks
                     }
                     vcn_backend_cidrs.append(record)
 
         for blocks in vcn_backend_cidrs:
-            subnet_block = blocks['subnet_cidr_blocks']
+            subnet_blocks = blocks['subnet_cidr_blocks']
             backend_blocks = blocks['backend_cidr_blocks']
             for backend_block in backend_blocks:
-                if ipaddr.IPNetwork(subnet_block).overlaps(ipaddr.IPNetwork(backend_block)) is True:
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append("Load Balancer: {} contains backends which are not in a private subnet".format(blocks['load_balancer_name']))
-                    dictionary[entry]['findings'].append(blocks)
-                    dictionary[entry]['mitigations'].append("Make sure to move load balancer: {} backends to a private subnet".format(blocks['load_balancer_name']))
-                    break
-            else:
-                continue
+                for subnet_block in subnet_blocks:
+                    if ipaddr.IPNetwork(subnet_block).overlaps(ipaddr.IPNetwork(backend_block)) is True:
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['failure_cause'].append("Load Balancer: {} contains backends which are not in a private subnet".format(blocks['load_balancer_name']))
+                        dictionary[entry]['findings'].append(blocks)
+                        dictionary[entry]['mitigations'].append("Make sure to move load balancer: {} backends to a private subnet".format(blocks['load_balancer_name']))
+                        break
+                else:
+                    continue
 
         if len(self.__non_compliant_sec_list) > 0:
             dictionary[entry]['status'] = False
