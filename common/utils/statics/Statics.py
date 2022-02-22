@@ -242,6 +242,15 @@ __rp_1_26 = {
     'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
+__rp_1_28 = {
+    'entry': '1.28',
+    'area': 'Security and Compliance',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Encrypt Data in Block Volumes',    
+    'success_criteria': 'Ensure that Block Volume uses encryption using user-created encryption key assigned to it. Configure a single key per Block Volume.',
+    'fireup_items': ['Fireup Task: - None']
+}
+
 
 __rp_2_1 = {
     'entry': '2.1',
