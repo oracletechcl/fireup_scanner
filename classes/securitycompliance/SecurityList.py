@@ -75,24 +75,25 @@ class SecurityList(ReviewPoint):
         
 
         for load_balancer in self.__load_balancer_objects + self.__network_load_balancer_objects:
-            try:
-                record = {
-                    'display_name': load_balancer.display_name,
-                    'id': load_balancer.id,
-                    'compartment_id': load_balancer.compartment_id,
-                    'backend_sets': load_balancer.backend_sets,
-                    'subnet_id':load_balancer.subnet_ids,
-                    'is_private': load_balancer.is_private,
-                    'lifecycle_state': load_balancer.lifecycle_state,
-                    'time_created': load_balancer.time_created,
-                }
-            except AttributeError as err:
+
+            if "networkloadbalancer" in load_balancer.id:
                 record = {
                     'display_name': load_balancer.display_name,
                     'id': load_balancer.id,
                     'compartment_id': load_balancer.compartment_id,
                     'backend_sets': load_balancer.backend_sets,
                     'subnet_id':load_balancer.subnet_id,
+                    'is_private': load_balancer.is_private,
+                    'lifecycle_state': load_balancer.lifecycle_state,
+                    'time_created': load_balancer.time_created,
+                }
+            else:
+                record = {
+                    'display_name': load_balancer.display_name,
+                    'id': load_balancer.id,
+                    'compartment_id': load_balancer.compartment_id,
+                    'backend_sets': load_balancer.backend_sets,
+                    'subnet_id':load_balancer.subnet_ids,
                     'is_private': load_balancer.is_private,
                     'lifecycle_state': load_balancer.lifecycle_state,
                     'time_created': load_balancer.time_created,
@@ -127,13 +128,12 @@ class SecurityList(ReviewPoint):
         vcn_backend_cidrs = []
         for load_balancer in self.__load_balancers:
             backend_cidr_blocks = []
-            if len(load_balancer['backend_sets']) != 0:
-                for backend_set in load_balancer['backend_sets']:
-                    backends = load_balancer['backend_sets'][backend_set].backends
-                    if len(backends) != 0:
-                        for backend in backends:
-                            backend_ip = backend.ip_address
-                            backend_cidr_blocks.append(backend_ip)
+            for backend_set in load_balancer['backend_sets']:
+                backends = load_balancer['backend_sets'][backend_set].backends
+                for backend in backends:
+                    backend_ip = backend.ip_address
+                    backend_cidr_blocks.append(backend_ip)
+
             if type(load_balancer['subnet_id']) is list:
                 subnet_id = load_balancer['subnet_id'][0]
             else: 
@@ -142,29 +142,36 @@ class SecurityList(ReviewPoint):
             for network_client in self.__network_clients:
                 region = subnet_id.split('.')[3]
                 if network_client[1] in region or network_client[2] in region:
-                    subnet_info = network_client[0].get_subnet(subnet_id=subnet_id)
-                    vcn_info = network_client[0].get_vcn(vcn_id=subnet_info.data.vcn_id)
-                    vcn_cidrs = vcn_info.data.cidr_blocks
-                    if len(backend_cidr_blocks) != 0:
-                        record = {
-                            'load_balancer_name': load_balancer['display_name'],
-                            'load_balancer_id': load_balancer['id'],
-                            'vcn_id': vcn_info.data.id,
-                            'vcn_cidr_blocks': vcn_info.data.cidr_blocks,
-                            'backend_cidr_blocks': backend_cidr_blocks
-                        }
-                        vcn_backend_cidrs.append(record)
+                    subnet_info = get_subnet_info(network_client[0], subnet_id = subnet_id)
+                    vcn_info = get_vcn_from_subnet(network_client[0], vcn_id = subnet_info.vcn_id)
+                    subnets = get_subnets_per_compartment_data(network_client[0], compartment_id = vcn_info.compartment_id)
+                    subnet_cidr_blocks = []
+                    for subnet in subnets:
+                        if subnet.vcn_id in vcn_info.id:
+                            if subnet.prohibit_internet_ingress is False:
+                                subnet_cidr_blocks.append(subnet.cidr_block)
+                    record = {
+                        'load_balancer_name': load_balancer['display_name'],
+                        'load_balancer_id': load_balancer['id'],
+                        'vcn_id': vcn_info.id,
+                        'subnet_id': subnet.id,
+                        'subnet_cidr_blocks': subnet.cidr_block,
+                        'backend_cidr_blocks': backend_cidr_blocks
+                    }
+                    vcn_backend_cidrs.append(record)
 
         for blocks in vcn_backend_cidrs:
-            vcns = blocks['vcn_cidr_blocks']
-            backends = blocks['backend_cidr_blocks']
-            for vcn_block in vcns:
-                for backend_block in backends:
-                    if ipaddr.IPNetwork(vcn_block).overlaps(ipaddr.IPNetwork(backend_block)) is False:
-                        dictionary[entry]['status'] = False
-                        dictionary[entry]['failure_cause'].append("Load Balancer: {} contains backends which are not in a private subnet".format(blocks['load_balancer_name']))
-                        dictionary[entry]['findings'].append(blocks)
-                        dictionary[entry]['mitigations'].append("Make sure to move load balancer: {} backends to a private subnet".format(blocks['load_balancer_name']))
+            subnet_block = blocks['subnet_cidr_blocks']
+            backend_blocks = blocks['backend_cidr_blocks']
+            for backend_block in backend_blocks:
+                if ipaddr.IPNetwork(subnet_block).overlaps(ipaddr.IPNetwork(backend_block)) is True:
+                    dictionary[entry]['status'] = False
+                    dictionary[entry]['failure_cause'].append("Load Balancer: {} contains backends which are not in a private subnet".format(blocks['load_balancer_name']))
+                    dictionary[entry]['findings'].append(blocks)
+                    dictionary[entry]['mitigations'].append("Make sure to move load balancer: {} backends to a private subnet".format(blocks['load_balancer_name']))
+                    break
+            else:
+                continue
 
         if len(self.__non_compliant_sec_list) > 0:
             dictionary[entry]['status'] = False
