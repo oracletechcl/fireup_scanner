@@ -7,7 +7,7 @@ from classes.abstract.ReviewPoint import ReviewPoint
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
-
+import ipaddr
 
 class SecurityList(ReviewPoint):
 
@@ -16,6 +16,10 @@ class SecurityList(ReviewPoint):
     __compartments = []
     __sec_list_objects = []
     __non_compliant_sec_list = []
+    __load_balancers = []
+    __network_load_balancer_objects = []
+    __load_balancer_objects = []
+    __network_clients = []
 
 
     def __init__(self,
@@ -48,13 +52,16 @@ class SecurityList(ReviewPoint):
 
     def load_entity(self):
         regions = get_regions_data(self.__identity, self.config)
-        network_clients = []
+        load_balancer_clients = []
+        network_load_balancer_clients = []
 
         for region in regions:
             region_config = self.config
             region_config['region'] = region.region_name
             # Create a network client for each region
-            network_clients.append(get_virtual_network_client(region_config, self.signer))
+            self.__network_clients.append((get_virtual_network_client(region_config, self.signer),region.region_name,region.region_key.lower()))
+            load_balancer_clients.append(get_load_balancer_client(region_config, self.signer))
+            network_load_balancer_clients.append(get_network_load_balancer_client(region_config, self.signer))
 
         tenancy = get_tenancy_data(self.__identity, self.config)
 
@@ -62,7 +69,35 @@ class SecurityList(ReviewPoint):
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
-        self.__sec_list_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_security_lists, len(self.__compartments), ParallelExecutor.security_lists)
+        self.__sec_list_objects = ParallelExecutor.executor([x[0] for x in self.__network_clients], self.__compartments, ParallelExecutor.get_security_lists, len(self.__compartments), ParallelExecutor.security_lists)
+        self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
+        self.__network_load_balancer_objects = ParallelExecutor.executor(network_load_balancer_clients, self.__compartments, ParallelExecutor.get_network_load_balancers, len(self.__compartments), ParallelExecutor.network_load_balancers)
+        
+
+        for load_balancer in self.__load_balancer_objects + self.__network_load_balancer_objects:
+            try:
+                record = {
+                    'display_name': load_balancer.display_name,
+                    'id': load_balancer.id,
+                    'compartment_id': load_balancer.compartment_id,
+                    'backend_sets': load_balancer.backend_sets,
+                    'subnet_id':load_balancer.subnet_ids,
+                    'is_private': load_balancer.is_private,
+                    'lifecycle_state': load_balancer.lifecycle_state,
+                    'time_created': load_balancer.time_created,
+                }
+            except AttributeError as err:
+                record = {
+                    'display_name': load_balancer.display_name,
+                    'id': load_balancer.id,
+                    'compartment_id': load_balancer.compartment_id,
+                    'backend_sets': load_balancer.backend_sets,
+                    'subnet_id':load_balancer.subnet_id,
+                    'is_private': load_balancer.is_private,
+                    'lifecycle_state': load_balancer.lifecycle_state,
+                    'time_created': load_balancer.time_created,
+                }
+            self.__load_balancers.append(record)
 
         for sec_list in self.__sec_list_objects:
             for ingress in sec_list.ingress_security_rules:
@@ -88,6 +123,48 @@ class SecurityList(ReviewPoint):
     
         self.load_entity()    
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
+
+        vcn_backend_cidrs = []
+        for load_balancer in self.__load_balancers:
+            backend_cidr_blocks = []
+            if len(load_balancer['backend_sets']) != 0:
+                for backend_set in load_balancer['backend_sets']:
+                    backends = load_balancer['backend_sets'][backend_set].backends
+                    if len(backends) != 0:
+                        for backend in backends:
+                            backend_ip = backend.ip_address
+                            backend_cidr_blocks.append(backend_ip)
+            if type(load_balancer['subnet_id']) is list:
+                subnet_id = load_balancer['subnet_id'][0]
+            else: 
+                subnet_id = load_balancer['subnet_id']
+
+            for network_client in self.__network_clients:
+                region = subnet_id.split('.')[3]
+                if network_client[1] in region or network_client[2] in region:
+                    subnet_info = network_client[0].get_subnet(subnet_id=subnet_id)
+                    vcn_info = network_client[0].get_vcn(vcn_id=subnet_info.data.vcn_id)
+                    vcn_cidrs = vcn_info.data.cidr_blocks
+                    if len(backend_cidr_blocks) != 0:
+                        record = {
+                            'load_balancer_name': load_balancer['display_name'],
+                            'load_balancer_id': load_balancer['id'],
+                            'vcn_id': vcn_info.data.id,
+                            'vcn_cidr_blocks': vcn_info.data.cidr_blocks,
+                            'backend_cidr_blocks': backend_cidr_blocks
+                        }
+                        vcn_backend_cidrs.append(record)
+
+        for blocks in vcn_backend_cidrs:
+            vcns = blocks['vcn_cidr_blocks']
+            backends = blocks['backend_cidr_blocks']
+            for vcn_block in vcns:
+                for backend_block in backends:
+                    if ipaddr.IPNetwork(vcn_block).overlaps(ipaddr.IPNetwork(backend_block)) is False:
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['failure_cause'].append("Load Balancer: {} contains backends which are not in a private subnet".format(blocks['load_balancer_name']))
+                        dictionary[entry]['findings'].append(blocks)
+                        dictionary[entry]['mitigations'].append("Make sure to move load balancer: {} backends to a private subnet".format(blocks['load_balancer_name']))
 
         if len(self.__non_compliant_sec_list) > 0:
             dictionary[entry]['status'] = False
