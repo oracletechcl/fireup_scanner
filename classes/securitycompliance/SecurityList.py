@@ -168,9 +168,9 @@ class SecurityList(ReviewPoint):
                 for subnet_block in subnet_blocks:
                     if ipaddr.IPNetwork(subnet_block).overlaps(ipaddr.IPNetwork(backend_block)) is True:
                         dictionary[entry]['status'] = False
-                        dictionary[entry]['failure_cause'].append(f"Load Balancer: \"{blocks['load_balancer_name']}\"  with backend IP Address: \"{subnet_block}\" in compartment: \"{get_compartment_name(self.__compartments, blocks['compartment_id'])}\" are not in a private subnet")
+                        dictionary[entry]['failure_cause'].append(f"Load Balancer backends are not in private subnets")
                         dictionary[entry]['findings'].append(blocks)
-                        dictionary[entry]['mitigations'].append(f"Make sure to move load balancer: \"{blocks['load_balancer_name']}\" , backends IP Address: \"{subnet_block}\" in compartment: \"{get_compartment_name(self.__compartments, blocks['compartment_id'])}\" to a private subnet")
+                        dictionary[entry]['mitigations'].append(f"Move backend: \"{backend_block}\" of Load Balancer: \"{blocks['load_balancer_name']}\" in compartment: \"{get_compartment_name(self.__compartments, blocks['compartment_id'])}\" to a private subnet")
                         break
                 else:
                     continue
