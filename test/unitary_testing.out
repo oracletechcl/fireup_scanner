@@ -1,133 +1,133 @@
-============================================================================================================================ test session starts ============================================================================================================================
-platform linux -- Python 3.6.8, pytest-7.0.1, pluggy-1.0.0 -- /home/opc/code/rp_1.8/fireup/test/venv/bin/python3
+========================================== test session starts ==========================================
+platform linux -- Python 3.6.8, pytest-7.0.1, pluggy-1.0.0 -- /home/opc/code/354/fireup/test/venv/bin/python3
 cachedir: .pytest_cache
-rootdir: /home/opc/code/rp_1.8/fireup/test
+rootdir: /home/opc/code/354/fireup/test
 collecting ... collected 61 items
 
-opsefficiency/test_suite_4_1.py::test_review_point PASSED                                                                                                                                                                                                             [  1%]
-opsefficiency/test_suite_4_2.py::test_review_point PASSED                                                                                                                                                                                                             [  3%]
-opsefficiency/test_suite_4_3.py::test_review_point PASSED                                                                                                                                                                                                             [  4%]
-opsefficiency/test_suite_4_4.py::test_review_point PASSED                                                                                                                                                                                                             [  6%]
-opsefficiency/test_suite_4_5.py::test_review_point PASSED                                                                                                                                                                                                             [  8%]
-opsefficiency/test_suite_4_6.py::test_review_point PASSED                                                                                                                                                                                                             [  9%]
-opsefficiency/test_suite_4_7.py::test_review_point PASSED                                                                                                                                                                                                             [ 11%]
-performancecost/test_suite_3_1.py::test_review_point PASSED                                                                                                                                                                                                           [ 13%]
-performancecost/test_suite_3_10.py::test_review_point PASSED                                                                                                                                                                                                          [ 14%]
-performancecost/test_suite_3_11.py::test_review_point PASSED                                                                                                                                                                                                          [ 16%]
-performancecost/test_suite_3_2.py::test_review_point PASSED                                                                                                                                                                                                           [ 18%]
-performancecost/test_suite_3_3.py::test_review_point PASSED                                                                                                                                                                                                           [ 19%]
-performancecost/test_suite_3_4.py::test_review_point PASSED                                                                                                                                                                                                           [ 21%]
-performancecost/test_suite_3_5.py::test_review_point PASSED                                                                                                                                                                                                           [ 22%]
-performancecost/test_suite_3_6.py::test_review_point PASSED                                                                                                                                                                                                           [ 24%]
-performancecost/test_suite_3_7.py::test_review_point PASSED                                                                                                                                                                                                           [ 26%]
-performancecost/test_suite_3_8.py::test_review_point PASSED                                                                                                                                                                                                           [ 27%]
-performancecost/test_suite_3_9.py::test_review_point PASSED                                                                                                                                                                                                           [ 29%]
-reliabilityresilience/test_suite_2_1.py::test_review_point PASSED                                                                                                                                                                                                     [ 31%]
-reliabilityresilience/test_suite_2_10.py::test_review_point PASSED                                                                                                                                                                                                    [ 32%]
-reliabilityresilience/test_suite_2_11.py::test_review_point PASSED                                                                                                                                                                                                    [ 34%]
-reliabilityresilience/test_suite_2_12.py::test_review_point PASSED                                                                                                                                                                                                    [ 36%]
-reliabilityresilience/test_suite_2_13.py::test_review_point PASSED                                                                                                                                                                                                    [ 37%]
-reliabilityresilience/test_suite_2_14.py::test_review_point PASSED                                                                                                                                                                                                    [ 39%]
-reliabilityresilience/test_suite_2_15.py::test_review_point PASSED                                                                                                                                                                                                    [ 40%]
-reliabilityresilience/test_suite_2_16.py::test_review_point PASSED                                                                                                                                                                                                    [ 42%]
-reliabilityresilience/test_suite_2_17.py::test_review_point PASSED                                                                                                                                                                                                    [ 44%]
-reliabilityresilience/test_suite_2_2.py::test_review_point PASSED                                                                                                                                                                                                     [ 45%]
-reliabilityresilience/test_suite_2_3.py::test_review_point PASSED                                                                                                                                                                                                     [ 47%]
-reliabilityresilience/test_suite_2_4.py::test_review_point PASSED                                                                                                                                                                                                     [ 49%]
-reliabilityresilience/test_suite_2_5.py::test_review_point PASSED                                                                                                                                                                                                     [ 50%]
-reliabilityresilience/test_suite_2_6.py::test_review_point PASSED                                                                                                                                                                                                     [ 52%]
-reliabilityresilience/test_suite_2_7.py::test_review_point PASSED                                                                                                                                                                                                     [ 54%]
-reliabilityresilience/test_suite_2_8.py::test_review_point PASSED                                                                                                                                                                                                     [ 55%]
-reliabilityresilience/test_suite_2_9.py::test_review_point PASSED                                                                                                                                                                                                     [ 57%]
-securitycompliance/test_suite_1_1.py::test_review_point PASSED                                                                                                                                                                                                        [ 59%]
-securitycompliance/test_suite_1_10.py::test_review_point PASSED                                                                                                                                                                                                       [ 60%]
-securitycompliance/test_suite_1_11.py::test_review_point PASSED                                                                                                                                                                                                       [ 62%]
-securitycompliance/test_suite_1_12.py::test_review_point PASSED                                                                                                                                                                                                       [ 63%]
-securitycompliance/test_suite_1_13.py::test_review_point PASSED                                                                                                                                                                                                       [ 65%]
-securitycompliance/test_suite_1_14.py::test_review_point PASSED                                                                                                                                                                                                       [ 67%]
-securitycompliance/test_suite_1_15.py::test_review_point PASSED                                                                                                                                                                                                       [ 68%]
-securitycompliance/test_suite_1_16.py::test_review_point PASSED                                                                                                                                                                                                       [ 70%]
-securitycompliance/test_suite_1_17.py::test_review_point PASSED                                                                                                                                                                                                       [ 72%]
-securitycompliance/test_suite_1_18.py::test_review_point PASSED                                                                                                                                                                                                       [ 73%]
-securitycompliance/test_suite_1_19.py::test_review_point PASSED                                                                                                                                                                                                       [ 75%]
-securitycompliance/test_suite_1_2.py::test_review_point PASSED                                                                                                                                                                                                        [ 77%]
-securitycompliance/test_suite_1_20.py::test_review_point PASSED                                                                                                                                                                                                       [ 78%]
-securitycompliance/test_suite_1_21.py::test_review_point PASSED                                                                                                                                                                                                       [ 80%]
-securitycompliance/test_suite_1_22.py::test_review_point PASSED                                                                                                                                                                                                       [ 81%]
-securitycompliance/test_suite_1_23.py::test_review_point PASSED                                                                                                                                                                                                       [ 83%]
-securitycompliance/test_suite_1_24.py::test_review_point PASSED                                                                                                                                                                                                       [ 85%]
-securitycompliance/test_suite_1_25.py::test_review_point PASSED                                                                                                                                                                                                       [ 86%]
-securitycompliance/test_suite_1_26.py::test_review_point PASSED                                                                                                                                                                                                       [ 88%]
-securitycompliance/test_suite_1_3.py::test_review_point PASSED                                                                                                                                                                                                        [ 90%]
-securitycompliance/test_suite_1_4.py::test_review_point PASSED                                                                                                                                                                                                        [ 91%]
-securitycompliance/test_suite_1_5.py::test_review_point PASSED                                                                                                                                                                                                        [ 93%]
-securitycompliance/test_suite_1_6.py::test_review_point PASSED                                                                                                                                                                                                        [ 95%]
-securitycompliance/test_suite_1_7.py::test_review_point PASSED                                                                                                                                                                                                        [ 96%]
-securitycompliance/test_suite_1_8.py::test_review_point PASSED                                                                                                                                                                                                        [ 98%]
-securitycompliance/test_suite_1_9.py::test_review_point PASSED                                                                                                                                                                                                        [100%]
+opsefficiency/test_suite_4_1.py::test_review_point PASSED                                         [  1%]
+opsefficiency/test_suite_4_2.py::test_review_point PASSED                                         [  3%]
+opsefficiency/test_suite_4_3.py::test_review_point PASSED                                         [  4%]
+opsefficiency/test_suite_4_4.py::test_review_point PASSED                                         [  6%]
+opsefficiency/test_suite_4_5.py::test_review_point PASSED                                         [  8%]
+opsefficiency/test_suite_4_6.py::test_review_point PASSED                                         [  9%]
+opsefficiency/test_suite_4_7.py::test_review_point PASSED                                         [ 11%]
+performancecost/test_suite_3_1.py::test_review_point PASSED                                       [ 13%]
+performancecost/test_suite_3_10.py::test_review_point PASSED                                      [ 14%]
+performancecost/test_suite_3_11.py::test_review_point PASSED                                      [ 16%]
+performancecost/test_suite_3_2.py::test_review_point PASSED                                       [ 18%]
+performancecost/test_suite_3_3.py::test_review_point PASSED                                       [ 19%]
+performancecost/test_suite_3_4.py::test_review_point PASSED                                       [ 21%]
+performancecost/test_suite_3_5.py::test_review_point PASSED                                       [ 22%]
+performancecost/test_suite_3_6.py::test_review_point PASSED                                       [ 24%]
+performancecost/test_suite_3_7.py::test_review_point PASSED                                       [ 26%]
+performancecost/test_suite_3_8.py::test_review_point PASSED                                       [ 27%]
+performancecost/test_suite_3_9.py::test_review_point PASSED                                       [ 29%]
+reliabilityresilience/test_suite_2_1.py::test_review_point PASSED                                 [ 31%]
+reliabilityresilience/test_suite_2_10.py::test_review_point PASSED                                [ 32%]
+reliabilityresilience/test_suite_2_11.py::test_review_point PASSED                                [ 34%]
+reliabilityresilience/test_suite_2_12.py::test_review_point PASSED                                [ 36%]
+reliabilityresilience/test_suite_2_13.py::test_review_point PASSED                                [ 37%]
+reliabilityresilience/test_suite_2_14.py::test_review_point PASSED                                [ 39%]
+reliabilityresilience/test_suite_2_15.py::test_review_point PASSED                                [ 40%]
+reliabilityresilience/test_suite_2_16.py::test_review_point PASSED                                [ 42%]
+reliabilityresilience/test_suite_2_17.py::test_review_point PASSED                                [ 44%]
+reliabilityresilience/test_suite_2_2.py::test_review_point PASSED                                 [ 45%]
+reliabilityresilience/test_suite_2_3.py::test_review_point PASSED                                 [ 47%]
+reliabilityresilience/test_suite_2_4.py::test_review_point PASSED                                 [ 49%]
+reliabilityresilience/test_suite_2_5.py::test_review_point PASSED                                 [ 50%]
+reliabilityresilience/test_suite_2_6.py::test_review_point PASSED                                 [ 52%]
+reliabilityresilience/test_suite_2_7.py::test_review_point PASSED                                 [ 54%]
+reliabilityresilience/test_suite_2_8.py::test_review_point PASSED                                 [ 55%]
+reliabilityresilience/test_suite_2_9.py::test_review_point PASSED                                 [ 57%]
+securitycompliance/test_suite_1_1.py::test_review_point PASSED                                    [ 59%]
+securitycompliance/test_suite_1_10.py::test_review_point PASSED                                   [ 60%]
+securitycompliance/test_suite_1_11.py::test_review_point PASSED                                   [ 62%]
+securitycompliance/test_suite_1_12.py::test_review_point PASSED                                   [ 63%]
+securitycompliance/test_suite_1_13.py::test_review_point PASSED                                   [ 65%]
+securitycompliance/test_suite_1_14.py::test_review_point PASSED                                   [ 67%]
+securitycompliance/test_suite_1_15.py::test_review_point PASSED                                   [ 68%]
+securitycompliance/test_suite_1_16.py::test_review_point PASSED                                   [ 70%]
+securitycompliance/test_suite_1_17.py::test_review_point PASSED                                   [ 72%]
+securitycompliance/test_suite_1_18.py::test_review_point PASSED                                   [ 73%]
+securitycompliance/test_suite_1_19.py::test_review_point PASSED                                   [ 75%]
+securitycompliance/test_suite_1_2.py::test_review_point PASSED                                    [ 77%]
+securitycompliance/test_suite_1_20.py::test_review_point PASSED                                   [ 78%]
+securitycompliance/test_suite_1_21.py::test_review_point PASSED                                   [ 80%]
+securitycompliance/test_suite_1_22.py::test_review_point PASSED                                   [ 81%]
+securitycompliance/test_suite_1_23.py::test_review_point PASSED                                   [ 83%]
+securitycompliance/test_suite_1_24.py::test_review_point PASSED                                   [ 85%]
+securitycompliance/test_suite_1_25.py::test_review_point PASSED                                   [ 86%]
+securitycompliance/test_suite_1_26.py::test_review_point PASSED                                   [ 88%]
+securitycompliance/test_suite_1_3.py::test_review_point PASSED                                    [ 90%]
+securitycompliance/test_suite_1_4.py::test_review_point PASSED                                    [ 91%]
+securitycompliance/test_suite_1_5.py::test_review_point PASSED                                    [ 93%]
+securitycompliance/test_suite_1_6.py::test_review_point PASSED                                    [ 95%]
+securitycompliance/test_suite_1_7.py::test_review_point PASSED                                    [ 96%]
+securitycompliance/test_suite_1_8.py::test_review_point PASSED                                    [ 98%]
+securitycompliance/test_suite_1_9.py::test_review_point PASSED                                    [100%]
 
-============================================================================================================================= slowest durations =============================================================================================================================
-213.27s call     opsefficiency/test_suite_4_7.py::test_review_point
-109.52s call     opsefficiency/test_suite_4_3.py::test_review_point
-75.80s call     performancecost/test_suite_3_6.py::test_review_point
-56.76s call     opsefficiency/test_suite_4_4.py::test_review_point
-55.70s call     opsefficiency/test_suite_4_1.py::test_review_point
-54.43s call     reliabilityresilience/test_suite_2_14.py::test_review_point
-41.62s call     securitycompliance/test_suite_1_18.py::test_review_point
-35.46s call     reliabilityresilience/test_suite_2_4.py::test_review_point
-34.10s call     reliabilityresilience/test_suite_2_17.py::test_review_point
-33.45s call     reliabilityresilience/test_suite_2_11.py::test_review_point
-30.55s call     performancecost/test_suite_3_10.py::test_review_point
-26.16s call     reliabilityresilience/test_suite_2_1.py::test_review_point
-25.60s call     reliabilityresilience/test_suite_2_2.py::test_review_point
-25.49s call     performancecost/test_suite_3_4.py::test_review_point
-23.33s call     reliabilityresilience/test_suite_2_12.py::test_review_point
-16.82s call     reliabilityresilience/test_suite_2_15.py::test_review_point
-16.71s call     opsefficiency/test_suite_4_6.py::test_review_point
-15.56s call     securitycompliance/test_suite_1_10.py::test_review_point
-15.54s call     reliabilityresilience/test_suite_2_7.py::test_review_point
-13.19s call     performancecost/test_suite_3_5.py::test_review_point
-11.95s call     securitycompliance/test_suite_1_26.py::test_review_point
-11.16s call     performancecost/test_suite_3_2.py::test_review_point
-7.34s call     securitycompliance/test_suite_1_11.py::test_review_point
-6.58s call     reliabilityresilience/test_suite_2_6.py::test_review_point
-3.92s call     reliabilityresilience/test_suite_2_13.py::test_review_point
-3.66s call     securitycompliance/test_suite_1_19.py::test_review_point
-3.11s call     securitycompliance/test_suite_1_6.py::test_review_point
-2.68s call     performancecost/test_suite_3_9.py::test_review_point
-2.49s call     performancecost/test_suite_3_7.py::test_review_point
-2.44s call     securitycompliance/test_suite_1_12.py::test_review_point
-2.12s call     reliabilityresilience/test_suite_2_5.py::test_review_point
-2.01s call     performancecost/test_suite_3_11.py::test_review_point
-1.97s call     reliabilityresilience/test_suite_2_8.py::test_review_point
-1.97s call     performancecost/test_suite_3_8.py::test_review_point
-1.91s call     performancecost/test_suite_3_1.py::test_review_point
-1.90s call     securitycompliance/test_suite_1_24.py::test_review_point
-1.81s call     opsefficiency/test_suite_4_5.py::test_review_point
-1.20s call     securitycompliance/test_suite_1_8.py::test_review_point
-1.09s call     reliabilityresilience/test_suite_2_3.py::test_review_point
-1.08s call     securitycompliance/test_suite_1_15.py::test_review_point
-1.02s call     reliabilityresilience/test_suite_2_16.py::test_review_point
-0.99s call     securitycompliance/test_suite_1_22.py::test_review_point
-0.99s call     securitycompliance/test_suite_1_9.py::test_review_point
-0.97s call     securitycompliance/test_suite_1_20.py::test_review_point
-0.92s call     securitycompliance/test_suite_1_1.py::test_review_point
-0.88s call     opsefficiency/test_suite_4_2.py::test_review_point
-0.87s call     securitycompliance/test_suite_1_21.py::test_review_point
-0.84s call     securitycompliance/test_suite_1_16.py::test_review_point
-0.83s call     securitycompliance/test_suite_1_7.py::test_review_point
-0.81s call     securitycompliance/test_suite_1_2.py::test_review_point
-0.79s call     securitycompliance/test_suite_1_23.py::test_review_point
-0.76s call     performancecost/test_suite_3_3.py::test_review_point
-0.76s call     reliabilityresilience/test_suite_2_10.py::test_review_point
-0.75s call     securitycompliance/test_suite_1_4.py::test_review_point
-0.73s call     reliabilityresilience/test_suite_2_9.py::test_review_point
-0.71s call     securitycompliance/test_suite_1_17.py::test_review_point
-0.61s call     securitycompliance/test_suite_1_3.py::test_review_point
-0.60s call     securitycompliance/test_suite_1_14.py::test_review_point
-0.57s call     securitycompliance/test_suite_1_13.py::test_review_point
-0.31s call     securitycompliance/test_suite_1_5.py::test_review_point
-0.22s call     securitycompliance/test_suite_1_25.py::test_review_point
+=========================================== slowest durations ===========================================
+175.50s call     opsefficiency/test_suite_4_7.py::test_review_point
+109.17s call     opsefficiency/test_suite_4_3.py::test_review_point
+100.54s call     opsefficiency/test_suite_4_4.py::test_review_point
+99.04s call     performancecost/test_suite_3_6.py::test_review_point
+49.40s call     securitycompliance/test_suite_1_18.py::test_review_point
+40.00s call     opsefficiency/test_suite_4_1.py::test_review_point
+38.23s call     reliabilityresilience/test_suite_2_17.py::test_review_point
+37.87s call     reliabilityresilience/test_suite_2_14.py::test_review_point
+35.50s call     reliabilityresilience/test_suite_2_4.py::test_review_point
+33.73s call     reliabilityresilience/test_suite_2_11.py::test_review_point
+30.63s call     reliabilityresilience/test_suite_2_1.py::test_review_point
+30.49s call     performancecost/test_suite_3_10.py::test_review_point
+27.47s call     reliabilityresilience/test_suite_2_2.py::test_review_point
+25.97s call     performancecost/test_suite_3_4.py::test_review_point
+22.20s call     reliabilityresilience/test_suite_2_12.py::test_review_point
+18.72s call     opsefficiency/test_suite_4_6.py::test_review_point
+16.94s call     reliabilityresilience/test_suite_2_15.py::test_review_point
+15.44s call     reliabilityresilience/test_suite_2_7.py::test_review_point
+14.84s call     securitycompliance/test_suite_1_10.py::test_review_point
+13.32s call     performancecost/test_suite_3_5.py::test_review_point
+12.04s call     securitycompliance/test_suite_1_26.py::test_review_point
+11.45s call     performancecost/test_suite_3_2.py::test_review_point
+10.59s call     reliabilityresilience/test_suite_2_6.py::test_review_point
+7.61s call     securitycompliance/test_suite_1_11.py::test_review_point
+3.99s call     reliabilityresilience/test_suite_2_13.py::test_review_point
+3.60s call     securitycompliance/test_suite_1_19.py::test_review_point
+3.41s call     securitycompliance/test_suite_1_6.py::test_review_point
+2.95s call     securitycompliance/test_suite_1_12.py::test_review_point
+2.51s call     performancecost/test_suite_3_9.py::test_review_point
+2.23s call     reliabilityresilience/test_suite_2_5.py::test_review_point
+2.09s call     performancecost/test_suite_3_7.py::test_review_point
+2.09s call     performancecost/test_suite_3_11.py::test_review_point
+1.91s call     securitycompliance/test_suite_1_24.py::test_review_point
+1.79s call     performancecost/test_suite_3_1.py::test_review_point
+1.73s call     opsefficiency/test_suite_4_5.py::test_review_point
+1.63s call     reliabilityresilience/test_suite_2_8.py::test_review_point
+1.56s call     performancecost/test_suite_3_8.py::test_review_point
+1.21s call     securitycompliance/test_suite_1_16.py::test_review_point
+1.13s call     securitycompliance/test_suite_1_17.py::test_review_point
+1.11s call     securitycompliance/test_suite_1_9.py::test_review_point
+1.04s call     reliabilityresilience/test_suite_2_3.py::test_review_point
+1.03s call     securitycompliance/test_suite_1_1.py::test_review_point
+1.01s call     opsefficiency/test_suite_4_2.py::test_review_point
+0.91s call     securitycompliance/test_suite_1_8.py::test_review_point
+0.89s call     reliabilityresilience/test_suite_2_9.py::test_review_point
+0.88s call     securitycompliance/test_suite_1_2.py::test_review_point
+0.86s call     performancecost/test_suite_3_3.py::test_review_point
+0.83s call     securitycompliance/test_suite_1_21.py::test_review_point
+0.83s call     securitycompliance/test_suite_1_23.py::test_review_point
+0.82s call     securitycompliance/test_suite_1_3.py::test_review_point
+0.81s call     reliabilityresilience/test_suite_2_16.py::test_review_point
+0.80s call     securitycompliance/test_suite_1_22.py::test_review_point
+0.80s call     securitycompliance/test_suite_1_13.py::test_review_point
+0.80s call     securitycompliance/test_suite_1_20.py::test_review_point
+0.77s call     securitycompliance/test_suite_1_14.py::test_review_point
+0.75s call     reliabilityresilience/test_suite_2_10.py::test_review_point
+0.72s call     securitycompliance/test_suite_1_15.py::test_review_point
+0.70s call     securitycompliance/test_suite_1_4.py::test_review_point
+0.61s call     securitycompliance/test_suite_1_7.py::test_review_point
+0.34s call     securitycompliance/test_suite_1_5.py::test_review_point
+0.16s call     securitycompliance/test_suite_1_25.py::test_review_point
 
 (122 durations < 0.005s hidden.  Use -vv to show these durations.)
-====================================================================================================================== 61 passed in 1010.26s (0:16:50) ======================================================================================================================
+==================================== 61 passed in 1030.91s (0:17:10) ====================================
