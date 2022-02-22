@@ -993,6 +993,13 @@ def get_notification_data(notification_control_plane_client, compartment_id, ret
         retry_strategy=retry_strategy
     ).data 
 
+def get_volumes_backup_data(block_storage_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        block_storage_client.list_volume_backups,
+        compartment_id,
+        retry_strategy=retry_strategy
+    ).data 
+
 
 def is_cloud_shell():
     # check the current os user running this program. If user is ubuntu or opc return false. Else return true

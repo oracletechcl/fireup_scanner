@@ -139,6 +139,10 @@ responder_recipes_with_rules = []
 compute_instances = []
 compute_images = []
 
+## BlockVolumeEncryption.py
+# List for use with the parallel_executor
+block_volume_backups = []
+
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
         return []
@@ -310,6 +314,20 @@ def get_block_volumes(item):
                 block_volumes.append(block_volume)
 
     return block_volumes
+
+def get_block_volumes_backups(item):
+    block_storage_client = item[0]
+    compartments = item[1:]
+
+    block_volume_backups = []
+
+    for compartment in compartments:
+        block_volume_backups_data = get_volumes_backup_data(block_storage_client, compartment.id)
+        for block_volume_backup in block_volume_backups_data:
+            if "TERMINATED" not in block_volume_backup.lifecycle_state:
+                block_volume_backups.append(block_volume_backup)
+
+    return block_volume_backups
 
 
 def get_boot_volumes(item):
