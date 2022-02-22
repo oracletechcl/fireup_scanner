@@ -155,6 +155,7 @@ class SecurityList(ReviewPoint):
                         'load_balancer_id': load_balancer['id'],
                         'vcn_id': vcn_info.id,
                         'subnet_id': subnet.id,
+                        'compartment_id': vcn_info.compartment_id,
                         'subnet_cidr_blocks': subnet_cidr_blocks,
                         'backend_cidr_blocks': backend_cidr_blocks
                     }
@@ -167,9 +168,9 @@ class SecurityList(ReviewPoint):
                 for subnet_block in subnet_blocks:
                     if ipaddr.IPNetwork(subnet_block).overlaps(ipaddr.IPNetwork(backend_block)) is True:
                         dictionary[entry]['status'] = False
-                        dictionary[entry]['failure_cause'].append("Load Balancer: {} contains backends which are not in a private subnet".format(blocks['load_balancer_name']))
+                        dictionary[entry]['failure_cause'].append(f"Load Balancer: \"{blocks['load_balancer_name']}\"  with backend IP Address: \"{subnet_block}\" in compartment: \"{get_compartment_name(self.__compartments, blocks['compartment_id'])}\" are not in a private subnet")
                         dictionary[entry]['findings'].append(blocks)
-                        dictionary[entry]['mitigations'].append("Make sure to move load balancer: {} backends to a private subnet".format(blocks['load_balancer_name']))
+                        dictionary[entry]['mitigations'].append(f"Make sure to move load balancer: \"{blocks['load_balancer_name']}\" , backends IP Address: \"{subnet_block}\" in compartment: \"{get_compartment_name(self.__compartments, blocks['compartment_id'])}\" to a private subnet")
                         break
                 else:
                     continue
