@@ -108,7 +108,7 @@ class ImplementCostTrackingTags(ReviewPoint):
         if len(self.__cost_tracking_tags) == 0:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("No Cost Tracking Tags were found in this tenancy")
-            dictionary[entry]['mitigations'].append("Consider adding \"Cost Tracking Tags\" to allow for more flexibility in where resources are placed and how to cost data is queried.")
+            dictionary[entry]['mitigations'].append("Consider adding \"Cost Tracking Tags\" to allow for more flexibility in where resources are placed and in how cost data is queried.")
 
         failure_case = True
         for policy in self.__policies:
@@ -118,7 +118,7 @@ class ImplementCostTrackingTags(ReviewPoint):
 
         if failure_case:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append("No Policies for securing  tagged namespaces were found in this tenancy")
-            dictionary[entry]['mitigations'].append("Consider implementing \"Policies\" to protect tagged namespaces to ensure only \"Tag administrators\" can make changes")
+            dictionary[entry]['failure_cause'].append("No Policies for securing tagged namespaces were found in this tenancy")
+            dictionary[entry]['mitigations'].append("Consider implementing \"Policies\" to protect tagged namespaces & to ensure only \"Tag administrators\" can make changes")
 
         return dictionary
