@@ -247,7 +247,7 @@ __rp_1_27 = {
     'area': 'Security and Compliance',
     'sub_area': 'Secure Your Databases',
     'review_point': 'Enable Data Safe',
-    'success_criteria': 'Check if Data Safe is enabled',
+    'success_criteria': 'Check if databases are registered in Data Safe',
     'fireup_items': ['Fireup Task: 25 - Are permissions for authorizing deletion of sensitive data locked down to certain users?'],
 }
 

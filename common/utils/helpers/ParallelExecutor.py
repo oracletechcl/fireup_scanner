@@ -133,11 +133,15 @@ responder_recipes = []
 detector_recipes_with_rules = []
 responder_recipes_with_rules = []
 
-
 ## PatchesAndUpdates.py
 # List for use with the parallel_executor
 compute_instances = []
 compute_images = []
+
+## EnableDataSafe.py Global Variables
+database_target_summaries = []
+database_targets = []
+
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1350,3 +1354,24 @@ def get_compute_images(item):
             compute_images.append(compute)
 
     return compute_images
+
+
+def get_database_target_summaries(item):
+    data_safe_client = item[0]
+    root_compartment = item[1]
+
+    return list_target_databases_data(data_safe_client, root_compartment.id)
+
+
+def get_database_targets(item):
+    data_safe_client = item[0]
+    database_target_summaries = item[1:]
+
+    database_targets = []
+
+    for summary in database_target_summaries:
+        region = summary.id.split('.')[3]
+        if data_safe_client[1] in region or data_safe_client[2] in region:    
+            database_targets.append(get_target_database_data(data_safe_client[0], summary.id))
+
+    return database_targets
