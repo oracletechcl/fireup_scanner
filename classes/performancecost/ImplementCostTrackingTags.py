@@ -119,6 +119,6 @@ class ImplementCostTrackingTags(ReviewPoint):
         if failure_case:
             dictionary[entry]['status'] = False
             dictionary[entry]['failure_cause'].append("No Policies for securing tagged namespaces were found in this tenancy")
-            dictionary[entry]['mitigations'].append("Consider implementing \"Policies\" to protect tagged namespaces & to ensure only \"Tag administrators\" can make changes")
+            dictionary[entry]['mitigations'].append("Consider implementing \"Policies\" to protect tagged namespaces and to ensure only \"Tag administrators\" can make changes")
 
         return dictionary
