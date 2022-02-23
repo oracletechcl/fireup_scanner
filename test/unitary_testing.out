@@ -1,7 +1,7 @@
 =================================================================================================================== test session starts ===================================================================================================================
 platform linux -- Python 3.6.8, pytest-7.0.1, pluggy-1.0.0 -- /home/opc/code/354/fireup/test/venv/bin/python3
 cachedir: .pytest_cache
-rootdir: /home/opc/code/354/fireup/test
+rootdir: /home/opc/code/359/fireup/test
 collecting ... collected 61 items
 
 opsefficiency/test_suite_4_1.py::test_review_point PASSED                                                                                                                                                                                           [  1%]
@@ -67,67 +67,67 @@ securitycompliance/test_suite_1_8.py::test_review_point PASSED                  
 securitycompliance/test_suite_1_9.py::test_review_point PASSED                                                                                                                                                                                      [100%]
 
 ==================================================================================================================== slowest durations ====================================================================================================================
-174.50s call     opsefficiency/test_suite_4_7.py::test_review_point
-128.79s call     performancecost/test_suite_3_6.py::test_review_point
-106.01s call     opsefficiency/test_suite_4_3.py::test_review_point
-92.23s call     opsefficiency/test_suite_4_4.py::test_review_point
-55.93s call     reliabilityresilience/test_suite_2_1.py::test_review_point
-54.43s call     reliabilityresilience/test_suite_2_14.py::test_review_point
-46.73s call     reliabilityresilience/test_suite_2_11.py::test_review_point
-41.14s call     opsefficiency/test_suite_4_1.py::test_review_point
-37.99s call     reliabilityresilience/test_suite_2_17.py::test_review_point
-37.26s call     reliabilityresilience/test_suite_2_4.py::test_review_point
-35.77s call     securitycompliance/test_suite_1_18.py::test_review_point
-30.19s call     performancecost/test_suite_3_10.py::test_review_point
-28.67s call     reliabilityresilience/test_suite_2_2.py::test_review_point
-28.35s call     performancecost/test_suite_3_4.py::test_review_point
-23.17s call     reliabilityresilience/test_suite_2_12.py::test_review_point
-18.00s call     opsefficiency/test_suite_4_6.py::test_review_point
-17.94s call     reliabilityresilience/test_suite_2_15.py::test_review_point
-16.25s call     reliabilityresilience/test_suite_2_7.py::test_review_point
-15.65s call     performancecost/test_suite_3_5.py::test_review_point
-13.94s call     securitycompliance/test_suite_1_10.py::test_review_point
-12.28s call     securitycompliance/test_suite_1_26.py::test_review_point
-11.24s call     reliabilityresilience/test_suite_2_6.py::test_review_point
-10.93s call     performancecost/test_suite_3_2.py::test_review_point
-8.69s call     securitycompliance/test_suite_1_11.py::test_review_point
-4.92s call     reliabilityresilience/test_suite_2_13.py::test_review_point
-3.77s call     securitycompliance/test_suite_1_19.py::test_review_point
-3.41s call     securitycompliance/test_suite_1_6.py::test_review_point
-2.65s call     reliabilityresilience/test_suite_2_5.py::test_review_point
-2.64s call     securitycompliance/test_suite_1_12.py::test_review_point
-2.39s call     performancecost/test_suite_3_7.py::test_review_point
-2.33s call     performancecost/test_suite_3_9.py::test_review_point
-2.27s call     performancecost/test_suite_3_11.py::test_review_point
-2.19s call     performancecost/test_suite_3_1.py::test_review_point
-1.87s call     opsefficiency/test_suite_4_5.py::test_review_point
-1.79s call     securitycompliance/test_suite_1_24.py::test_review_point
-1.71s call     reliabilityresilience/test_suite_2_8.py::test_review_point
-1.46s call     performancecost/test_suite_3_8.py::test_review_point
-1.25s call     securitycompliance/test_suite_1_8.py::test_review_point
-1.19s call     reliabilityresilience/test_suite_2_3.py::test_review_point
-1.19s call     reliabilityresilience/test_suite_2_16.py::test_review_point
-1.11s call     securitycompliance/test_suite_1_22.py::test_review_point
-1.10s call     securitycompliance/test_suite_1_21.py::test_review_point
-1.08s call     securitycompliance/test_suite_1_9.py::test_review_point
-0.91s call     securitycompliance/test_suite_1_2.py::test_review_point
-0.88s call     securitycompliance/test_suite_1_1.py::test_review_point
-0.86s call     securitycompliance/test_suite_1_15.py::test_review_point
-0.86s call     securitycompliance/test_suite_1_20.py::test_review_point
-0.81s call     securitycompliance/test_suite_1_17.py::test_review_point
-0.79s call     securitycompliance/test_suite_1_16.py::test_review_point
-0.78s call     securitycompliance/test_suite_1_7.py::test_review_point
-0.77s call     reliabilityresilience/test_suite_2_10.py::test_review_point
-0.77s call     securitycompliance/test_suite_1_14.py::test_review_point
-0.73s call     reliabilityresilience/test_suite_2_9.py::test_review_point
-0.72s call     securitycompliance/test_suite_1_3.py::test_review_point
-0.71s call     performancecost/test_suite_3_3.py::test_review_point
-0.64s call     opsefficiency/test_suite_4_2.py::test_review_point
-0.64s call     securitycompliance/test_suite_1_13.py::test_review_point
-0.62s call     securitycompliance/test_suite_1_23.py::test_review_point
-0.55s call     securitycompliance/test_suite_1_4.py::test_review_point
+238.33s call     opsefficiency/test_suite_4_7.py::test_review_point
+162.61s call     opsefficiency/test_suite_4_4.py::test_review_point
+110.28s call     opsefficiency/test_suite_4_3.py::test_review_point
+74.34s call     opsefficiency/test_suite_4_1.py::test_review_point
+71.04s call     performancecost/test_suite_3_6.py::test_review_point
+50.59s call     securitycompliance/test_suite_1_18.py::test_review_point
+47.03s call     reliabilityresilience/test_suite_2_14.py::test_review_point
+38.30s call     reliabilityresilience/test_suite_2_17.py::test_review_point
+35.64s call     reliabilityresilience/test_suite_2_4.py::test_review_point
+31.50s call     reliabilityresilience/test_suite_2_11.py::test_review_point
+30.94s call     performancecost/test_suite_3_10.py::test_review_point
+29.52s call     securitycompliance/test_suite_1_10.py::test_review_point
+28.75s call     reliabilityresilience/test_suite_2_1.py::test_review_point
+27.79s call     reliabilityresilience/test_suite_2_2.py::test_review_point
+24.84s call     performancecost/test_suite_3_4.py::test_review_point
+21.70s call     opsefficiency/test_suite_4_6.py::test_review_point
+17.17s call     reliabilityresilience/test_suite_2_15.py::test_review_point
+15.84s call     reliabilityresilience/test_suite_2_7.py::test_review_point
+14.56s call     securitycompliance/test_suite_1_26.py::test_review_point
+14.54s call     performancecost/test_suite_3_5.py::test_review_point
+14.35s call     reliabilityresilience/test_suite_2_12.py::test_review_point
+10.86s call     performancecost/test_suite_3_2.py::test_review_point
+10.05s call     securitycompliance/test_suite_1_11.py::test_review_point
+8.99s call     reliabilityresilience/test_suite_2_13.py::test_review_point
+6.62s call     reliabilityresilience/test_suite_2_6.py::test_review_point
+4.32s call     securitycompliance/test_suite_1_12.py::test_review_point
+3.81s call     securitycompliance/test_suite_1_19.py::test_review_point
+2.62s call     securitycompliance/test_suite_1_6.py::test_review_point
+2.18s call     performancecost/test_suite_3_9.py::test_review_point
+2.17s call     performancecost/test_suite_3_11.py::test_review_point
+2.14s call     reliabilityresilience/test_suite_2_5.py::test_review_point
+2.14s call     performancecost/test_suite_3_1.py::test_review_point
+1.91s call     performancecost/test_suite_3_7.py::test_review_point
+1.86s call     opsefficiency/test_suite_4_5.py::test_review_point
+1.85s call     reliabilityresilience/test_suite_2_8.py::test_review_point
+1.85s call     securitycompliance/test_suite_1_24.py::test_review_point
+1.63s call     performancecost/test_suite_3_8.py::test_review_point
+1.16s call     reliabilityresilience/test_suite_2_16.py::test_review_point
+1.16s call     reliabilityresilience/test_suite_2_3.py::test_review_point
+1.13s call     securitycompliance/test_suite_1_8.py::test_review_point
+1.07s call     securitycompliance/test_suite_1_15.py::test_review_point
+1.03s call     securitycompliance/test_suite_1_14.py::test_review_point
+1.01s call     securitycompliance/test_suite_1_1.py::test_review_point
+1.00s call     securitycompliance/test_suite_1_20.py::test_review_point
+0.99s call     performancecost/test_suite_3_3.py::test_review_point
+0.92s call     securitycompliance/test_suite_1_13.py::test_review_point
+0.90s call     securitycompliance/test_suite_1_9.py::test_review_point
+0.88s call     securitycompliance/test_suite_1_7.py::test_review_point
+0.82s call     securitycompliance/test_suite_1_16.py::test_review_point
+0.82s call     securitycompliance/test_suite_1_2.py::test_review_point
+0.81s call     opsefficiency/test_suite_4_2.py::test_review_point
+0.80s call     securitycompliance/test_suite_1_22.py::test_review_point
+0.79s call     securitycompliance/test_suite_1_17.py::test_review_point
+0.78s call     reliabilityresilience/test_suite_2_9.py::test_review_point
+0.77s call     securitycompliance/test_suite_1_21.py::test_review_point
+0.67s call     reliabilityresilience/test_suite_2_10.py::test_review_point
+0.65s call     securitycompliance/test_suite_1_23.py::test_review_point
+0.62s call     securitycompliance/test_suite_1_4.py::test_review_point
+0.61s call     securitycompliance/test_suite_1_3.py::test_review_point
 0.24s call     securitycompliance/test_suite_1_5.py::test_review_point
-0.14s call     securitycompliance/test_suite_1_25.py::test_review_point
+0.19s call     securitycompliance/test_suite_1_25.py::test_review_point
 
 (122 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================================================================================================= 61 passed in 1101.65s (0:18:21) =============================================================================================================
+============================================================================================================= 61 passed in 1187.41s (0:19:47) =============================================================================================================
