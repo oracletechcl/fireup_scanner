@@ -16,7 +16,9 @@ class EnableDataSafe(ReviewPoint):
     __identity = None
     __compartments = []
     __oracle_database_objects = []
+    __oracle_database_dicts = []
     __autonomous_database_objects = []
+    __autonomous_database_dicts = []
     __database_target_summary_objects = []
     __database_target_objects = []
     __database_target_ids = []
@@ -59,45 +61,64 @@ class EnableDataSafe(ReviewPoint):
         db_system_clients = []
         data_safe_clients = []
 
-        # for region in regions:
-        #     region_config = self.config
-        #     region_config['region'] = region.region_name
-        #     db_system_clients.append(get_database_client(region_config, self.signer))
-        #     data_safe_clients.append( (get_data_safe_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
-
-        region_config = self.config
-        region_config['region'] = 'uk-london-1'
-        db_system_clients.append(get_database_client(region_config, self.signer))
-        data_safe_clients.append( (get_data_safe_client(region_config, self.signer), 'uk-london-1', '') )
+        for region in regions:
+            region_config = self.config
+            region_config['region'] = region.region_name
+            db_system_clients.append(get_database_client(region_config, self.signer))
+            data_safe_clients.append( (get_data_safe_client(region_config, self.signer), region.region_name, region.region_key.lower()) )
 
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
         self.__compartments.append(self.__root_compartment)
 
-        # self.__oracle_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_oracle_dbsystem, len(self.__compartments), ParallelExecutor.oracle_dbsystems)
+        self.__oracle_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_oracle_dbsystem, len(self.__compartments), ParallelExecutor.oracle_dbsystems)
         self.__autonomous_database_objects = ParallelExecutor.executor(db_system_clients, self.__compartments, ParallelExecutor.get_autonomous_databases, len(self.__compartments), ParallelExecutor.autonomous_databases)
 
-        debug('1', "yellow")
         self.__database_target_summary_objects = ParallelExecutor.executor([x[0] for x in data_safe_clients], [self.__root_compartment], ParallelExecutor.get_database_target_summaries, len(regions), ParallelExecutor.database_target_summaries)
-        debug('2', "yellow")
         if len(self.__database_target_summary_objects) > 0:
             self.__database_target_objects = ParallelExecutor.executor(data_safe_clients, self.__database_target_summary_objects, ParallelExecutor.get_database_targets, len(self.__database_target_summary_objects), ParallelExecutor.database_targets)
 
-        debug(self.__database_target_objects[0].database_details.autonomous_database_id, "green")
+        for db in self.__oracle_database_objects:
+            record = {
+                'display_name': db.display_name,
+                'compartment_id': db.compartment_id,
+                'id': db.id,
+                'lifecycle_state': db.lifecycle_state,
+            }
+            self.__oracle_database_dicts.append(record)
 
-        debug(self.__autonomous_database_objects[0].id, "blue")
+        for adb in self.__autonomous_database_objects:
+            record = {
+                'display_name': adb.display_name,
+                'compartment_id': adb.compartment_id,
+                'id': adb.id,
+                'lifecycle_state': adb.lifecycle_state,
+            }
+            self.__autonomous_database_dicts.append(record)
 
+        # Get database IDs associated with targets
         for target in self.__database_target_objects:
-            self.__database_target_ids.append(target.database_details.autonomous_database_id)
-
-        return
+            if hasattr(target.database_details, "autonomous_database_id"):
+                self.__database_target_ids.append(target.database_details.autonomous_database_id)
+            elif hasattr(target.database_details, "db_system_id"):
+                self.__database_target_ids.append(target.database_details.db_system_id)
 
 
     def analyze_entity(self, entry):
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
 
-        for adb in self.__autonomous_database_objects:
-            if adb.id not in self.__database_target_ids:
-                debug('ADB not in targets', 'red')
+        for db in self.__oracle_database_dicts:
+            if db['id'] not in self.__database_target_ids:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(db)
+                dictionary[entry]['failure_cause'].append("Oracle database(s) aren't registerd with Oracle Data Safe")                
+                dictionary[entry]['mitigations'].append(f"Consider registering Oracle database: \"{db['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, db['compartment_id'])}\" with Data Safe")
+
+        for adb in self.__autonomous_database_dicts:
+            if adb['id'] not in self.__database_target_ids:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(adb)
+                dictionary[entry]['failure_cause'].append("Autonmous database(s) aren't registerd with Oracle Data Safe")                
+                dictionary[entry]['mitigations'].append(f"Consider registering autonomous database: \"{adb['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, adb['compartment_id'])}\" with Data Safe")
 
         return dictionary
