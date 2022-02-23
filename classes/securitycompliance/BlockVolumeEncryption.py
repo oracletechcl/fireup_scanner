@@ -83,7 +83,7 @@ class BlockVolumeEncryption(ReviewPoint):
                 "kms_key_id":volume.kms_key_id, 
                 "display_name":volume.display_name
             }          
-            if it < len(self.__block_volume_objects)-1:
+            if it <= len(self.__block_volume_objects)-1:
                 self.__block_volumes.append(record)
             else:
                 self.__block_volume_backups.append(record)
@@ -126,7 +126,7 @@ class BlockVolumeEncryption(ReviewPoint):
                     if not attachment['is_pv_encryption_in_transit_enabled']:
                         dictionary[entry]['status'] = False
                         dictionary[entry]['findings'].append(attachment)
-                        dictionary[entry]['failure_cause'].append("Block volume attachment to an instance in not encrypted in transit")   
+                        dictionary[entry]['failure_cause'].append("In transit encryption is not enable for Block Volume")   
                         dictionary[entry]['mitigations'].append(f"For Block Volume: \"{get_block_volume_name(self.__block_volume_objects,attachment['volume_id'])}\" in compartment: \"{get_compartment_name(self.__compartments, attachment['compartment_id'])}\" enable in transit encryption between volume and an instance.")  
 
         return dictionary
