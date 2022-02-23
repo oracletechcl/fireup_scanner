@@ -23,6 +23,9 @@ class BlockVolumeEncryption(ReviewPoint):
     __block_volumes = []
     __block_volume_backups_objects = []
     __block_volume_backups = []
+    __block_volume_attachments_objects = []
+    __block_volume_attachments = []
+    
     
     def __init__(self,
                 entry:str, 
@@ -56,6 +59,7 @@ class BlockVolumeEncryption(ReviewPoint):
     def load_entity(self):
 
         block_volume_clients = []
+        compute_clients = []
         regions = get_regions_data(self.__identity, self.config)
 
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
@@ -66,28 +70,36 @@ class BlockVolumeEncryption(ReviewPoint):
             region_config = self.config
             region_config['region'] = region.region_name
             block_volume_clients.append(get_block_storage_client(region_config, self.signer))
+            compute_clients.append(get_compute_client(region_config, self.signer))
 
         self.__block_volume_objects = ParallelExecutor.executor(block_volume_clients, self.__compartments, ParallelExecutor.get_block_volumes, len(self.__compartments), ParallelExecutor.block_volumes)     
         self.__block_volume_backups_objects = ParallelExecutor.executor(block_volume_clients, self.__compartments, ParallelExecutor.get_block_volumes_backups, len(self.__compartments), ParallelExecutor.block_volume_backups)     
+        self.__block_volume_attachments_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_volume_attachements, len(self.__compartments), ParallelExecutor.volume_attachments)     
 
-        for volume in self.__block_volume_objects:
+        for it, volume in enumerate(self.__block_volume_objects + self.__block_volume_backups_objects):
             record = {
                 "compartment_id":volume.compartment_id, 
                 "id":volume.id, 
                 "kms_key_id":volume.kms_key_id, 
                 "display_name":volume.display_name
-            }
-            self.__block_volumes.append(record)
+            }          
+            if it < len(self.__block_volume_objects)-1:
+                self.__block_volumes.append(record)
+            else:
+                self.__block_volume_backups.append(record)
 
-        for backup in self.__block_volume_backups_objects:
+        for attachment in self.__block_volume_attachments_objects:
             record = {
-                "compartment_id":backup.compartment_id, 
-                "id":backup.id, 
-                "kms_key_id":backup.kms_key_id, 
-                "display_name":backup.display_name
+                "attachment_type":attachment.attachment_type, 
+                "compartment_id":attachment.compartment_id, 
+                "display_name":attachment.display_name, 
+                "id":attachment.id,
+                "instance_id":attachment.instance_id,
+                "is_pv_encryption_in_transit_enabled":attachment.is_pv_encryption_in_transit_enabled,
+                "lifecycle_state":attachment.lifecycle_state,
+                "volume_id":attachment.volume_id
             }
-            self.__block_volume_backups.append(record)
-
+            self.__block_volume_attachments.append(record)
 
     def analyze_entity(self, entry):
     
@@ -107,5 +119,14 @@ class BlockVolumeEncryption(ReviewPoint):
                 dictionary[entry]['findings'].append(backup)
                 dictionary[entry]['failure_cause'].append("The Block Volume Backup is by default encrypted using an Oracle-managed master encryption key.")   
                 dictionary[entry]['mitigations'].append(f"For Block Volume Backup: \"{backup['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, backup['compartment_id'])}\" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service.")   
- 
+
+        for attachment in self.__block_volume_attachments:
+            if attachment['lifecycle_state'] == 'ATTACHED':
+                if attachment['attachment_type'] == 'paravirtualized':
+                    if not attachment['is_pv_encryption_in_transit_enabled']:
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['findings'].append(attachment)
+                        dictionary[entry]['failure_cause'].append("Block volume attachment to an instance in not encrypted in transit")   
+                        dictionary[entry]['mitigations'].append(f"For Block Volume: \"{get_block_volume_name(self.__block_volume_objects,attachment['volume_id'])}\" in compartment: \"{get_compartment_name(self.__compartments, attachment['compartment_id'])}\" enable in transit encryption between volume and an instance.")  
+
         return dictionary

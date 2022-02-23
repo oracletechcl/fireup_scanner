@@ -142,6 +142,7 @@ compute_images = []
 ## BlockVolumeEncryption.py
 # List for use with the parallel_executor
 block_volume_backups = []
+volume_attachments = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -328,6 +329,18 @@ def get_block_volumes_backups(item):
                 block_volume_backups.append(block_volume_backup)
 
     return block_volume_backups
+
+def get_volume_attachements(item):
+    compute_client = item[0]
+    compartments = item[1:]
+
+    volume_attachments = []
+
+    for compartment in compartments:
+        volume_attachments_data = get_volume_attachments_per_compartment(compute_client, compartment.id)
+        for volume_attachment in volume_attachments_data:
+                volume_attachments.append(volume_attachment)
+    return volume_attachments
 
 
 def get_boot_volumes(item):
