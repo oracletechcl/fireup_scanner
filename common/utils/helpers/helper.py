@@ -595,6 +595,17 @@ def get_subnets_per_compartment_data(network_client, compartment_id, retry_strat
         retry_strategy=retry_strategy
     ).data
 
+def get_subnet_info(network_client, subnet_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return network_client.get_subnet(
+        subnet_id,
+        retry_strategy=retry_strategy
+    ).data
+
+def get_vcn_from_subnet(network_client, vcn_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return network_client.get_vcn(
+        vcn_id,
+        retry_strategy=retry_strategy
+    ).data
 
 def get_compartment_name(compartments, compartment_id):
     for compartment in compartments:
