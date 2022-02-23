@@ -28,3 +28,4 @@
 | 1.24         | [CloudGuardMonitor.py](CloudGuardMonitor.py)            |
 | 1.25         | [AuditConfiguration.py](AuditConfiguration.py)          |
 | 1.26         | [OptimizationMonitor.py](OptimizationMonitor.py)        |
+| 1.29         | [FileStorageEncryption.py](FileStorageEncryption.py)        |

@@ -242,6 +242,15 @@ __rp_1_26 = {
     'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
+__rp_1_29 = {
+    'entry': '1.29',
+    'area': 'Security and Compliance',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Encrypt Data in File Storage',    
+    'success_criteria': 'Ensure that File Storage uses encryption using user-created encryption key assigned to it. Configure a single key per each File System.',
+    'fireup_items': ['Fireup Task: None'],
+}
+
 
 __rp_2_1 = {
     'entry': '2.1',
