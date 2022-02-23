@@ -128,9 +128,9 @@ class LBaaSBackends(ReviewPoint):
             for steering_policy in self.__steering_policies:
                 if 'LOAD_BALANCE' in steering_policy['template']:
                     break
-                else:
-                    dictionary[entry]['status'] = False
-                    dictionary[entry]['failure_cause'].append("There are no Load Balancer Steering policies present in this tenancy")
-                    dictionary[entry]['mitigations'].append(f"Make sure to create Steering policies specific to Load Balancers to allow for better traffic management in this tenancy")
+            else:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['failure_cause'].append("There are no Load Balancer Steering policies present in this tenancy")
+                dictionary[entry]['mitigations'].append(f"Make sure to create Steering policies specific to Load Balancers to allow for better traffic management in this tenancy")
                      
         return dictionary
