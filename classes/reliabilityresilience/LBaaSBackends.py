@@ -16,6 +16,7 @@ class LBaaSBackends(ReviewPoint):
     __load_balancer_objects = []
     __network_load_balancer_objects = []
     __compartments = []
+    __steering_policies = []
     __identity = None
 
     def __init__(self,
@@ -51,6 +52,7 @@ class LBaaSBackends(ReviewPoint):
         regions = get_regions_data(self.__identity, self.config)
         load_balancer_clients = []
         network_load_balancer_clients = []
+        dns_clients = []
 
         for region in regions:
             region_config = self.config
@@ -58,7 +60,8 @@ class LBaaSBackends(ReviewPoint):
             # Create a network client for each region
             load_balancer_clients.append(get_load_balancer_client(region_config, self.signer))
             network_load_balancer_clients.append(get_network_load_balancer_client(region_config, self.signer))
-
+            dns_clients.append(get_dns_client(self.config, self.signer))
+        
         tenancy = get_tenancy_data(self.__identity, self.config)
 
         # Get all compartments including root compartment
@@ -66,8 +69,8 @@ class LBaaSBackends(ReviewPoint):
         self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
         self.__load_balancer_objects = ParallelExecutor.executor(load_balancer_clients, self.__compartments, ParallelExecutor.get_load_balancers, len(self.__compartments), ParallelExecutor.load_balancers)
-        
-        self.__network_load_balancer_objects = ParallelExecutor.executor(network_load_balancer_clients, self.__compartments, ParallelExecutor.get_network_load_balancers, len(self.__compartments), ParallelExecutor.network_load_balancers)
+        self.__network_load_balancer_objects = ParallelExecutor.executor(network_load_balancer_clients, self.__compartments, ParallelExecutor.get_network_load_balancers, len(self.__compartments), ParallelExecutor.network_load_balancers)      
+        self.__steering_policy_objects = ParallelExecutor.executor(dns_clients, self.__compartments, ParallelExecutor.get_steering_policies, len(self.__compartments), ParallelExecutor.steering_policies)
 
         for load_balancer in self.__load_balancer_objects + self.__network_load_balancer_objects:
             record = {
@@ -81,7 +84,20 @@ class LBaaSBackends(ReviewPoint):
             }
             self.__combined_load_balancers.append(record)
 
-        return self.__combined_load_balancers
+        for steering_policy in self.__steering_policy_objects:
+            record = {
+                'compartment_id': steering_policy.compartment_id,
+                'defined_tags': steering_policy.defined_tags,
+                'display_name': steering_policy.display_name,
+                'health_check_monitor_id': steering_policy.health_check_monitor_id,
+                'id': steering_policy.id,
+                'lifecycle_state': steering_policy.lifecycle_state,
+                'template': steering_policy.template,
+                'time_created': steering_policy.time_created,
+            }
+            self.__steering_policies.append(record)
+        
+        return self.__combined_load_balancers, self.__steering_policies
 
 
     def analyze_entity(self, entry):
@@ -103,5 +119,18 @@ class LBaaSBackends(ReviewPoint):
                     else:
                         dictionary[entry]['mitigations'].append(f"Make sure load balancer \"{load_balancer['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, load_balancer['compartment_id'])}\" has backends attached to it.")
                     break
-
+        
+        if len(self.__steering_policies) == 0:
+            dictionary[entry]['status'] = False
+            dictionary[entry]['failure_cause'].append("There are no Steering policies present in this tenancy")
+            dictionary[entry]['mitigations'].append(f"Make sure to create Steering policies to allow for better traffic management in this tenancy")
+        else:
+            for steering_policy in self.__steering_policies:
+                if 'LOAD_BALANCE' in steering_policy['template']:
+                    break
+                else:
+                    dictionary[entry]['status'] = False
+                    dictionary[entry]['failure_cause'].append("There are no Load Balancer Steering policies present in this tenancy")
+                    dictionary[entry]['mitigations'].append(f"Make sure to create Steering policies specific to Load Balancers to allow for better traffic management in this tenancy")
+                     
         return dictionary
