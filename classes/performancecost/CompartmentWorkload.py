@@ -97,7 +97,7 @@ class CompartmentWorkload(ReviewPoint):
         # If less that 3 compartments are being utilised (including root), fail.
         if len(self.__compartments) - len(empty_compartments) < 3:
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Use additional compartments than just root to holster your workload.')
+            dictionary[entry]['failure_cause'].append("Use additional compartments rather than just root to holster your workload.")
             for compartment in empty_compartments:
                 compartment_record = {
                     "id": compartment.id,
