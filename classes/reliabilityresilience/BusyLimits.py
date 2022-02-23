@@ -58,7 +58,7 @@ class BusyLimits(ReviewPoint):
             region_config['region'] = region.region_name
             limits_clients.append( (get_limits_client(region_config, self.signer), tenancy.id, region.region_name) )
         
-        services = limits_clients[0][0].list_services(tenancy.id).data
+        services = get_services(limits_clients[0][0], tenancy.id)
 
         self.__limit_value_objects = ParallelExecutor.executor(limits_clients, services, ParallelExecutor.get_limit_values, len(services), ParallelExecutor.limit_values_with_regions)
         
@@ -99,7 +99,7 @@ class BusyLimits(ReviewPoint):
 
         for key, value in self.__non_compliant_limits.items():
             dictionary[entry]['status'] = False
-            dictionary[entry]['failure_cause'].append('Ensure you have room for growth and expansion in your tenancy.')
+            dictionary[entry]['failure_cause'].append("Ensure you have room for growth and expansion in your tenancy.")
             dictionary[entry]['mitigations'].append(f"Limit name: \"{key}\", has reached \"90%\" or greater use in: {value}")
 
         return dictionary
