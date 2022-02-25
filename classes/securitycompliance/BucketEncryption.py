@@ -10,6 +10,7 @@ from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
+import datetime
 
 
 
@@ -21,6 +22,9 @@ class BucketEncryption(ReviewPoint):
     __bucket_objects = []
     __bucket_dicts = []
     __compartments = []
+    __now = datetime.datetime.now()
+    __now_formatted = __now.strftime("%d/%m/%Y %H:%M:%S")
+
      
     def __init__(self,
                 entry:str, 
@@ -57,6 +61,7 @@ class BucketEncryption(ReviewPoint):
         obj_namespace = get_objectstorage_namespace_data(obj_client)
 
         object_storage_clients = []
+        kms_management_clients = []
         regions = get_regions_data(self.__identity, self.config)
 
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
@@ -67,7 +72,7 @@ class BucketEncryption(ReviewPoint):
             region_config = self.config
             region_config['region'] = region.region_name
             object_storage_clients.append((get_object_storage_client(region_config, self.signer), obj_namespace))
-      
+        
         self.__bucket_objects = ParallelExecutor.executor(object_storage_clients, self.__compartments, ParallelExecutor.get_buckets, len(self.__compartments), ParallelExecutor.buckets)     
 
         for bucket in self.__bucket_objects:
@@ -85,6 +90,25 @@ class BucketEncryption(ReviewPoint):
         self.load_entity()     
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
         
+        for bucket in self.__bucket_dicts:
+            if bucket['kms_key_id']:
+                kms_namespace = bucket['kms_key_id'].split(".")[4]
+                kms_region_key = bucket['kms_key_id'].split(".")[3]
+                kms_management_endpoint = "https://" + kms_namespace + "-management.kms." + kms_region_key + ".oraclecloud.com" 
+                kms_client = get_kms_management_client(self.config, kms_management_endpoint, self.signer)
+                kms_key = get_kms_key_info(kms_client,bucket['kms_key_id'])
+                key_version = get_key_version(kms_client,bucket['kms_key_id'])
+                for version in key_version:
+                    if kms_key.current_key_version == version.id:
+                        time_created = version.time_created
+                        time_now = datetime.datetime.strptime(self.__now_formatted, "%d/%m/%Y %H:%M:%S")
+                        time_difference = time_now - time_created.replace(tzinfo=None)
+                        if time_difference.days > 90:
+                            dictionary[entry]['status'] = False
+                            dictionary[entry]['findings'].append(bucket)
+                            dictionary[entry]['failure_cause'].append("The KMS Key of a bucket or more is older than 90 days")
+                            dictionary[entry]['mitigations'].append(f"Update KMS Key of bucket: \"{bucket['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, bucket['compartment_id'])}\" in region: \"{kms_region_key}\"")
+
         for bucket in self.__bucket_dicts:
             if not bucket['kms_key_id']:
                 dictionary[entry]['status'] = False
