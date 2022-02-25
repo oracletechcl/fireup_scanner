@@ -4,7 +4,6 @@
 # Description: Implementation of class BucketEncryption based on abstract
 
 
-
 from common.utils.formatter.printer import debug
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
@@ -107,7 +106,7 @@ class BucketEncryption(ReviewPoint):
                             dictionary[entry]['status'] = False
                             dictionary[entry]['findings'].append(bucket)
                             dictionary[entry]['failure_cause'].append("The KMS Key of a bucket or more is older than 90 days")
-                            dictionary[entry]['mitigations'].append(f"Update KMS Key of bucket: \"{bucket['display_name']}\" located in compartment: \"{get_compartment_name(self.__compartments, bucket['compartment_id'])}\" in region: \"{kms_region_key}\"")
+                            dictionary[entry]['mitigations'].append(f"Update KMS Key of bucket: \"{bucket['name']}\" located in compartment: \"{get_compartment_name(self.__compartments, bucket['compartment_id'])}\" in region: \"{kms_region_key}\"")
 
         for bucket in self.__bucket_dicts:
             if not bucket['kms_key_id']:
