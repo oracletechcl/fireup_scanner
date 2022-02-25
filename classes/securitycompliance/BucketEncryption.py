@@ -88,15 +88,20 @@ class BucketEncryption(ReviewPoint):
     
         self.load_entity()     
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        
+                      
         for bucket in self.__bucket_dicts:
-            if bucket['kms_key_id']:
+            if not bucket['kms_key_id']:
+                dictionary[entry]['status'] = False
+                dictionary[entry]['findings'].append(bucket)
+                dictionary[entry]['failure_cause'].append("The bucket is by default encrypted using an Oracle-managed master encryption key.")   
+                dictionary[entry]['mitigations'].append(f"For bucket: \"{bucket['name']}\" in compartment: \"{get_compartment_name(self.__compartments, bucket['compartment_id'])}\" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service and rotate at a schedule that you define.") 
+            else:
                 kms_namespace = bucket['kms_key_id'].split(".")[4]
                 kms_region_key = bucket['kms_key_id'].split(".")[3]
                 kms_management_endpoint = "https://" + kms_namespace + "-management.kms." + kms_region_key + ".oraclecloud.com" 
                 kms_client = get_kms_management_client(self.config, kms_management_endpoint, self.signer)
                 kms_key = get_kms_key_info(kms_client,bucket['kms_key_id'])
-                key_version = get_key_version(kms_client,bucket['kms_key_id'])
+                key_version = get_key_versions(kms_client,bucket['kms_key_id'])
                 for version in key_version:
                     if kms_key.current_key_version == version.id:
                         time_created = version.time_created
@@ -107,12 +112,5 @@ class BucketEncryption(ReviewPoint):
                             dictionary[entry]['findings'].append(bucket)
                             dictionary[entry]['failure_cause'].append("The KMS Key of a bucket or more is older than 90 days")
                             dictionary[entry]['mitigations'].append(f"Update KMS Key of bucket: \"{bucket['name']}\" located in compartment: \"{get_compartment_name(self.__compartments, bucket['compartment_id'])}\" in region: \"{kms_region_key}\"")
-
-        for bucket in self.__bucket_dicts:
-            if not bucket['kms_key_id']:
-                dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(bucket)
-                dictionary[entry]['failure_cause'].append("The bucket is by default encrypted using an Oracle-managed master encryption key.")   
-                dictionary[entry]['mitigations'].append(f"For bucket: \"{bucket['name']}\" in compartment: \"{get_compartment_name(self.__compartments, bucket['compartment_id'])}\" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service and rotate at a schedule that you define.")   
 
         return dictionary

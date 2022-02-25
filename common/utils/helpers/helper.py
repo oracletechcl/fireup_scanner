@@ -1051,7 +1051,7 @@ def get_kms_key_info(kms_management_client, key_id, retry_strategy=oci.retry.DEF
         retry_strategy=retry_strategy
     ).data
 
-def get_key_version(kms_management_client, key_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+def get_key_versions(kms_management_client, key_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return oci.pagination.list_call_get_all_results(
         kms_management_client.list_key_versions,
         key_id,
