@@ -285,6 +285,14 @@ def get_notification_control_plane_client(config, signer):
     return notification_control_plane_client
 
 
+def get_data_safe_client(config, signer):
+    try:
+        data_safe_client = oci.data_safe.DataSafeClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Data Safe client: " + e)
+    return data_safe_client
+
+
 def get_tenancy_data(identity_client, config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return identity_client.get_tenancy(
         config["tenancy"],
@@ -1011,3 +1019,21 @@ def is_cloud_shell():
         return False    
     else:
         return True
+
+
+def list_target_databases_data(data_safe_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        data_safe_client.list_target_databases,
+        compartment_id=compartment_id,
+        compartment_id_in_subtree=True,
+        access_level="ACCESSIBLE",
+        lifecycle_state="ACTIVE",
+        retry_strategy=retry_strategy
+    ).data 
+
+def get_target_database_data(data_safe_client, target_database_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return data_safe_client.get_target_database(
+        target_database_id=target_database_id,
+        retry_strategy=retry_strategy
+    ).data 
+
