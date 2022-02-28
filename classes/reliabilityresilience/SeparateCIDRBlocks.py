@@ -64,8 +64,6 @@ class SeparateCIDRBlocks(ReviewPoint):
         self.__compartments = get_compartments_data(self.__identity, tenancy.id)
         self.__compartments.append(get_root_compartment_data(self.__identity, tenancy.id))
 
-        # self.__vcns = parallel_executor(network_clients, compartments, self.__search_compartments, len(compartments), "__vcns")
-
         self.__vcn_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_vcns_in_compartments, len(self.__compartments), ParallelExecutor.vcns)
 
         for vcn in self.__vcn_objects:
@@ -75,6 +73,7 @@ class SeparateCIDRBlocks(ReviewPoint):
                 'display_name': vcn.display_name,
                 'id': vcn.id,
                 'lifecycle_state': vcn.lifecycle_state,
+                'region': vcn.id.split('.')[3]
             }
             self.__vcns.append(record)
 
@@ -96,7 +95,7 @@ class SeparateCIDRBlocks(ReviewPoint):
                         dictionary[entry]['status'] = False
                         if vcn1 not in dictionary[entry]['findings']:
                             dictionary[entry]['findings'].append(vcn1)
-                            dictionary[entry]['failure_cause'].append("VCNs CIDR Blocks are overlapping")
-                            dictionary[entry]['mitigations'].append(f"Make sure vcn (\"{vcn1['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, vcn1['compartment_id'])}\") CIDR Blocks are not overlapping with vcn (\"{vcn2['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, vcn2['compartment_id'])}\")")
+                            dictionary[entry]['failure_cause'].append("VCN CIDR Blocks are overlapping")
+                            dictionary[entry]['mitigations'].append(f"Make sure that CIDR Blocks in VCN: (\"{vcn1['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, vcn1['compartment_id'])}\" in region: \"{vcn1['region']}\") are not overlapping with those in VCN: (\"{vcn2['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, vcn2['compartment_id'])}\" in region: \"{vcn2['region']}\")")
 
         return dictionary

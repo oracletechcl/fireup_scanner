@@ -242,6 +242,14 @@ __rp_1_26 = {
     'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
+__rp_1_27 = {
+    'entry': '1.27',
+    'area': 'Security and Compliance',
+    'sub_area': 'Secure Your Databases',
+    'review_point': 'Enable Data Safe',
+    'success_criteria': 'Check if databases are registered in Data Safe',
+    'fireup_items': ['Fireup Task: 25 - Are permissions for authorizing deletion of sensitive data locked down to certain users?'],
+}
 __rp_1_28 = {
     'entry': '1.28',
     'area': 'Security and Compliance',
@@ -251,6 +259,14 @@ __rp_1_28 = {
     'fireup_items': ['Fireup Task: - None']
 }
 
+__rp_1_32 = {
+    'entry': '1.32',
+    'area': 'Security and Compliance',
+    'sub_area': 'Monitor and Audit Your Environment',
+    'review_point': 'Audit Your Policies',
+    'success_criteria': 'Check if there are any duplicate Policy Statements.',
+    'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
+}
 
 __rp_2_1 = {
     'entry': '2.1',
