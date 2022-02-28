@@ -89,6 +89,4 @@ class DuplicatePolicies(ReviewPoint):
                 else:
                     all_statements.append( (policy, statement) )
 
-        debug(len(all_statements), "yellow")
-
         return dictionary
