@@ -30,7 +30,7 @@ reliabilityresilience/test_suite_2_13.py::test_review_point PASSED              
 reliabilityresilience/test_suite_2_14.py::test_review_point PASSED                                                                                                                                   [ 38%]
 reliabilityresilience/test_suite_2_15.py::test_review_point PASSED                                                                                                                                   [ 39%]
 reliabilityresilience/test_suite_2_16.py::test_review_point PASSED                                                                                                                                   [ 41%]
-reliabilityresilience/test_suite_2_17.py::test_review_point FAILED                                                                                                                                   [ 42%]
+reliabilityresilience/test_suite_2_17.py::test_review_point PASSED                                                                                                                                   [ 42%]
 reliabilityresilience/test_suite_2_2.py::test_review_point PASSED                                                                                                                                    [ 44%]
 reliabilityresilience/test_suite_2_3.py::test_review_point PASSED                                                                                                                                    [ 46%]
 reliabilityresilience/test_suite_2_4.py::test_review_point PASSED                                                                                                                                    [ 47%]
@@ -68,177 +68,6 @@ securitycompliance/test_suite_1_7.py::test_review_point PASSED                  
 securitycompliance/test_suite_1_8.py::test_review_point PASSED                                                                                                                                       [ 98%]
 securitycompliance/test_suite_1_9.py::test_review_point PASSED                                                                                                                                       [100%]
 
-================================================================================================= FAILURES =================================================================================================
-____________________________________________________________________________________________ test_review_point _____________________________________________________________________________________________
-
-capsys = <_pytest.capture.CaptureFixture object at 0x7ff138c692e8>
-
-    def test_review_point(capsys):
-    
-        result_dictionary = ReplicateData(Statics.__rp_2_17['entry'],
-        Statics.__rp_2_17['area'],
-        Statics.__rp_2_17['sub_area'],
-        Statics.__rp_2_17['review_point'],
-        True, [], [], [], [],
-        get_config_and_signer()[0],
-        get_config_and_signer()[1]
-        )
-    
-        results_in_fault=0
-        dictionary = result_dictionary.analyze_entity(Statics.__rp_2_17['entry'])
-    
-        for item in dictionary[Statics.__rp_2_17['entry']]['findings']:
-            debug(item)
-            results_in_fault += 1
-    
->       assert results_in_fault == 261
-E       assert 258 == 261
-E         +258
-E         -261
-
-reliabilityresilience/test_suite_2_17.py:38: AssertionError
--------------------------------------------------------------------------------------------- Captured log call ---------------------------------------------------------------------------------------------
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.eu-frankfurt-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-ashburn-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.uk-london-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
-WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection pool is full, discarding connection: iaas.us-phoenix-1.oraclecloud.com
 ============================================================================================ slowest durations =============================================================================================
 174.53s call     opsefficiency/test_suite_4_7.py::test_review_point
 140.96s call     opsefficiency/test_suite_4_4.py::test_review_point
@@ -305,6 +134,4 @@ WARNING  oci._vendor.urllib3.connectionpool:connectionpool.py:309 Connection poo
 0.22s call     securitycompliance/test_suite_1_25.py::test_review_point
 
 (126 durations < 0.005s hidden.  Use -vv to show these durations.)
-========================================================================================= short test summary info ==========================================================================================
-FAILED reliabilityresilience/test_suite_2_17.py::test_review_point - assert 258 == 261
-================================================================================ 1 failed, 62 passed in 1058.41s (0:17:38) =================================================================================
+================================================================================ 63 passed in 1058.41s (0:17:38) =================================================================================
