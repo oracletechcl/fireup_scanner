@@ -22,8 +22,7 @@ class BlockVolumeEncryption(ReviewPoint):
     __block_volume_objects = []
     __block_volumes = []
     __block_volume_attachments_objects = []
-    __block_volume_attachments = []
-    
+    __block_volume_attachments = []  
     __block_volumes_without_policy= []
     
     def __init__(self,
