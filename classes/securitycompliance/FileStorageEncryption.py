@@ -16,9 +16,11 @@ import common.utils.helpers.ParallelExecutor as ParallelExecutor
 class FileStorageEncryption(ReviewPoint):
 
     # Class Variables
-
+    __identity = None
     __file_system_objects = []
     __file_systems = []
+    __policy_objects = []
+    __policies = []
    
     def __init__(self,
                 entry:str, 
@@ -53,7 +55,7 @@ class FileStorageEncryption(ReviewPoint):
 
         file_storage_clients = []
         identity_clients = []
-        
+
         regions = get_regions_data(self.__identity, self.config)
 
         self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
@@ -78,6 +80,7 @@ class FileStorageEncryption(ReviewPoint):
                     file_system_clients_with_ADs.append( (file_storage_client[0], availability_domain) )
       
         self.__file_system_objects = ParallelExecutor.executor(file_system_clients_with_ADs, self.__compartments, ParallelExecutor.get_file_systems, len(self.__compartments), ParallelExecutor.file_systems)
+        self.__policy_objects = ParallelExecutor.executor([self.__identity], self.__compartments, ParallelExecutor.get_policies, len(self.__compartments), ParallelExecutor.policies)
 
         for file_system in self.__file_system_objects:
             record = {
@@ -88,6 +91,17 @@ class FileStorageEncryption(ReviewPoint):
                 "availability_domain": file_system.availability_domain
             }
             self.__file_systems.append(record)
+
+        for policy in self.__policy_objects:  
+            record = {
+                "compartment_id": policy.compartment_id,
+                "description": policy.description,
+                "id": policy.id,
+                "lifecycle_state": policy.lifecycle_state,
+                "name": policy.name,
+                "statements": policy.statements,
+            }
+            self.__policies.append(record)
 
 
     def analyze_entity(self, entry):
@@ -101,5 +115,19 @@ class FileStorageEncryption(ReviewPoint):
                     dictionary[entry]['findings'].append(file_system)
                     dictionary[entry]['failure_cause'].append("The File System is by default encrypted using an Oracle-managed master encryption key.")   
                     dictionary[entry]['mitigations'].append(f"For File System: \"{file_system['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, file_system['compartment_id'])}\" configure your own master encryption key that you store in the Oracle Cloud Infrastructure Vault service.")   
-       
+                else:
+                    # If the file storage is encrypted by an user-defined key
+                    # there is still an IAM policy needed for the service to work
+                    is_required_policy = False
+                    for policy in self.__policies:
+                        for statement in policy['statements']:
+                            if f"Allow service FssOc1Prod to use keys in compartment {get_compartment_name(self.__compartments,file_system['compartment_id'])}" == statement:
+                                is_required_policy = True
+                                break
+                    if not is_required_policy:
+                        dictionary[entry]['status'] = False
+                        dictionary[entry]['findings'].append(file_system)
+                        dictionary[entry]['failure_cause'].append("The File System is missing policy statement which allows File System service to use user-defined encryption keys")   
+                        dictionary[entry]['mitigations'].append(f"For File System: \"{file_system['display_name']}\" in compartment: \"{get_compartment_name(self.__compartments, file_system['compartment_id'])}\" setup appropriate policy to enable user-defined keys encryption: \"Allow service FssOc1Prod to use keys in compartment <compartment_name>\".")   
+
         return dictionary
