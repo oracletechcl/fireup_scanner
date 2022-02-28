@@ -142,6 +142,9 @@ compute_images = []
 database_target_summaries = []
 database_targets = []
 
+## CheckOSJobs.py Global Variables
+managed_instances = []
+
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1375,3 +1378,17 @@ def get_database_targets(item):
             database_targets.append(get_target_database_data(data_safe_client[0], summary.id))
 
     return database_targets
+
+
+def get_managed_instances(item):
+    os_management_client = item[0]
+    compartments = item[1:]
+
+    managed_instances = []
+
+    for compartment in compartments:
+        managed_instance_data = get_managed_instnaces(os_management_client, compartment.id)        
+        for instance in managed_instance_data:
+            managed_instances.append(instance)
+
+    return managed_instances
