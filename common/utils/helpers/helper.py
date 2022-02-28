@@ -1009,19 +1009,13 @@ def get_notification_data(notification_control_plane_client, compartment_id, ret
         retry_strategy=retry_strategy
     ).data 
 
-def get_volumes_backup_data(block_storage_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
-    return oci.pagination.list_call_get_all_results(
-        block_storage_client.list_volume_backups,
-        compartment_id,
-        retry_strategy=retry_strategy
-    ).data 
-
 def get_volume_attachments_per_compartment(compute_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return oci.pagination.list_call_get_all_results(
         compute_client.list_volume_attachments,
         compartment_id,
         retry_strategy=retry_strategy
     ).data 
+
 
 
 def is_cloud_shell():
