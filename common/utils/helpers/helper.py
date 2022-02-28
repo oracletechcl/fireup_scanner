@@ -109,6 +109,14 @@ def get_kms_valult_client(config, signer):
     return kms_valult_client
 
 
+def get_kms_management_client(config, service_endpoint, signer):
+    try:
+        kms_management_client = oci.key_management.KmsManagementClient(config, service_endpoint, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create kms vault client: " + e)
+    return kms_management_client
+
+
 def get_notification_data_plane_client(config, signer):
     try:
         notification_data_plane_client = oci.ons.NotificationDataPlaneClient(config, signer=signer)
@@ -283,6 +291,14 @@ def get_notification_control_plane_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create Notification client: " + e)
     return notification_control_plane_client
+
+
+def get_data_safe_client(config, signer):
+    try:
+        data_safe_client = oci.data_safe.DataSafeClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Data Safe client: " + e)
+    return data_safe_client
 
 
 def get_tenancy_data(identity_client, config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
@@ -1011,3 +1027,33 @@ def is_cloud_shell():
         return False    
     else:
         return True
+
+
+def list_target_databases_data(data_safe_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        data_safe_client.list_target_databases,
+        compartment_id=compartment_id,
+        compartment_id_in_subtree=True,
+        access_level="ACCESSIBLE",
+        lifecycle_state="ACTIVE",
+        retry_strategy=retry_strategy
+    ).data 
+
+def get_target_database_data(data_safe_client, target_database_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return data_safe_client.get_target_database(
+        target_database_id=target_database_id,
+        retry_strategy=retry_strategy
+    ).data 
+
+def get_kms_key_info(kms_management_client, key_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return kms_management_client.get_key(
+        key_id,
+        retry_strategy=retry_strategy
+    ).data
+
+def get_key_versions(kms_management_client, key_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        kms_management_client.list_key_versions,
+        key_id,
+        retry_strategy=retry_strategy
+    ).data
