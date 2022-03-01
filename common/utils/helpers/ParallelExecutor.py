@@ -142,6 +142,9 @@ compute_images = []
 database_target_summaries = []
 database_targets = []
 
+## WebApplicationFirewall.py Global Variables
+waf_firewalls = []
+
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1315,7 +1318,7 @@ def get_responder_rules(item):
 
     return responder_recipes_with_rules
 
-#using notification control plane client
+
 def get_notifications(item):
     notification_control_plane_client = item[0]
     compartments = item[1:]
@@ -1329,6 +1332,7 @@ def get_notifications(item):
 
     return notifications
 
+
 def get_compute_instances(item):
     compute_client = item[0]
     compartments = item[1:]
@@ -1341,6 +1345,7 @@ def get_compute_instances(item):
             compute_instances.append(compute)
 
     return compute_instances
+
 
 def get_compute_images(item):
     compute_client = item[0]
@@ -1375,3 +1380,17 @@ def get_database_targets(item):
             database_targets.append(get_target_database_data(data_safe_client[0], summary.id))
 
     return database_targets
+
+
+def get_waf_firewalls(item):
+    waf_client = item[0]
+    compartments = item[1:]
+
+    waf_firewalls = []
+
+    for compartment in compartments:
+        waf_firewalls_data = get_waf_firewalls_data(waf_client, compartment.id)
+        for waf_firewall in waf_firewalls_data:
+            waf_firewalls.append(waf_firewall)
+
+    return waf_firewalls
