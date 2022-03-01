@@ -15,12 +15,9 @@ from common.utils.helpers.helper import *
 class Secrets(ReviewPoint):
 
     # Class Variables
-    __identity = None
-    __tenancy = None
     __secrets_objects = []
     __secrets = []
 
- 
     def __init__(self,
                 entry:str, 
                 area:str, 
@@ -63,7 +60,6 @@ class Secrets(ReviewPoint):
             region_config = self.config
             region_config['region'] = region.region_name
             vaults_clients.append(get_vaults_client(region_config, self.signer))
-
 
         self.__secrets_objects = ParallelExecutor.executor(vaults_clients, self.__compartments, ParallelExecutor.get_secrets, len(self.__compartments), ParallelExecutor.secrets)
 
