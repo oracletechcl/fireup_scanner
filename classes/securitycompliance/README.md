@@ -30,3 +30,4 @@
 | 1.26         | [OptimizationMonitor.py](OptimizationMonitor.py)        |
 | 1.27         | [EnableDataSafe.py](EnableDataSafe.py)                  |
 | 1.32         | [DuplicatePolicies.py](DuplicatePolicies.py)            |
+| 1.34         | [HardenLoginAccess.py](HardenLoginAccess.py)            |

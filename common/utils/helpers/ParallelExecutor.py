@@ -142,6 +142,9 @@ compute_images = []
 database_target_summaries = []
 database_targets = []
 
+## HardenLoginAccess.py Global Variables
+nsgs = []
+nsg_rules = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1375,3 +1378,33 @@ def get_database_targets(item):
             database_targets.append(get_target_database_data(data_safe_client[0], summary.id))
 
     return database_targets
+
+
+def get_nsgs(item):
+    network_client = item[0]
+    compartments = item[1:]
+
+    nsgs = []
+
+    for compartment in compartments:
+        nsg_info = get_network_security_groups_data(network_client=network_client, compartment_id=compartment.id)
+        for nsg_value in nsg_info:
+            nsg = network_client.get_network_security_group(network_security_group_id=nsg_value.id).data
+            nsgs.append(nsg)
+
+    return nsgs
+
+
+def get_nsg_rules(item):
+    network_client = item[0]
+    nsgs = item[1:]
+
+    nsg_rules = []
+
+    for nsg in nsgs:
+        region = nsg.id.split('.')[3]
+        if network_client[1] in region or network_client[2] in region: 
+            rules = get_nsg_rules_data(network_client[0], nsg.id)
+            nsg_rules.append((nsg,rules))
+
+    return nsg_rules
