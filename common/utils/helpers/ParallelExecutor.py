@@ -142,6 +142,9 @@ compute_images = []
 database_target_summaries = []
 database_targets = []
 
+## Secrets.py Global Variables
+secrets = []
+
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1375,3 +1378,15 @@ def get_database_targets(item):
             database_targets.append(get_target_database_data(data_safe_client[0], summary.id))
 
     return database_targets
+
+def get_secrets(item):
+    vaults_client = item[0]
+    compartments = item[1:]
+
+    secrets = []
+
+    for compartment in compartments:
+        secret_list = get_secrets_per_compartment(vaults_client, compartment.id)
+        for secret in secret_list:
+            secrets.append(get_secret_data(vaults_client,secret.id))
+    return secrets
