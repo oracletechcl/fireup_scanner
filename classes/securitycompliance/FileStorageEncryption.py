@@ -121,7 +121,7 @@ class FileStorageEncryption(ReviewPoint):
                     is_required_policy = False
                     for policy in self.__policies:
                         for statement in policy['statements']:
-                            if f"Allow service FssOc1Prod to use keys in compartment {get_compartment_name(self.__compartments,file_system['compartment_id'])}" == statement:
+                            if f"Allow service FssOc1Prod to use keys in compartment {get_compartment_name(self.__compartments,file_system['compartment_id'])}".lower() == statement.lower():
                                 is_required_policy = True
                                 break
                             else:
