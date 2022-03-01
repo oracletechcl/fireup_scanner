@@ -5,7 +5,7 @@
 # Dependencies: pytest
 
 from os import write
-from classes.securitycompliance.DuplicatePolicies import DuplicatePolicies
+from classes.securitycompliance.VulnerabilityScanning import VulnerabilityScanning
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug
 from common.utils.statics import Statics
@@ -20,7 +20,7 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = DuplicatePolicies(Statics.__rp_1_33['entry'], 
+    result_dictionary = VulnerabilityScanning(Statics.__rp_1_33['entry'], 
     Statics.__rp_1_33['area'], 
     Statics.__rp_1_33['sub_area'], 
     Statics.__rp_1_33['review_point'], 
