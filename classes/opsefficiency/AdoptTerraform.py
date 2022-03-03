@@ -12,7 +12,6 @@ from common.utils.helpers.helper import *
 class AdoptTerraform(ReviewPoint):
 
     # Class Variables   
-    __compartments_objects = []
     __compartments = []
     __jobs_objects = []
     __vcns_objects = []
@@ -59,39 +58,29 @@ class AdoptTerraform(ReviewPoint):
             resource_manager_clients.append(get_resource_manager_client(region_config, self.signer))
             network_clients.append(get_virtual_network_client(region_config, self.signer))
 
-        self.__compartments_objects = get_compartments_data(self.__identity, self.__tenancy.id)
-        self.__compartments_objects.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
+        self.__compartments = get_compartments_data(self.__identity, self.__tenancy.id)
+        self.__compartments.append(get_root_compartment_data(self.__identity, self.__tenancy.id))
 
-        for compartment in self.__compartments_objects:
-            record = {
-                "compartment_id": compartment.compartment_id, 
-                "description":compartment.description,             
-                "id":compartment.id,         
-                "name":compartment.name,
-                "region": ''
-            }
-            self.__compartments.append(record)
+        self.__jobs_objects = ParallelExecutor.executor(resource_manager_clients, self.__compartments, ParallelExecutor.get_resource_manager_jobs, len(self.__compartments), ParallelExecutor.jobs)
+        self.__vcns_objects = ParallelExecutor.executor(network_clients, self.__compartments, ParallelExecutor.get_vcns_in_compartments, len(self.__compartments), ParallelExecutor.vcns)
 
-        self.__jobs_objects = ParallelExecutor.executor(resource_manager_clients, self.__compartments_objects, ParallelExecutor.get_resource_manager_jobs, len(self.__compartments_objects), ParallelExecutor.jobs)
-        self.__vcns_objects = ParallelExecutor.executor(network_clients, self.__compartments_objects, ParallelExecutor.get_vcns_in_compartments, len(self.__compartments_objects), ParallelExecutor.vcns)
 
     def analyze_entity(self, entry):
 
         self.load_entity()
         dictionary = ReviewPoint.get_benchmark_dictionary(self)
-        total = 0
+
         com_region_with_infrastructure = {}
 
         # Find unique compartment + region which has infrastructure
         for vcn in self.__vcns_objects:      
-            vcn_region = vcn.id.split('.')[3]
             vcn_compartment = vcn.compartment_id
+            vcn_region = vcn.id.split('.')[3]
             com_region_with_infrastructure[(vcn_compartment,vcn_region)] = vcn
-        # Iterate thru unique com_reg to find if there were
-        # any jobs created in the resource manager
 
+        # Iterate through unique compartment/region to find if there were
+        # any jobs created in the Resource Manager 
         for com_reg in com_region_with_infrastructure:
-            debug(f"{get_compartment_name(self.__compartments_objects, com_reg[0])}, {com_reg[1]}", 'red')
             has_resource_manager_in_use = False
 
             for job in self.__jobs_objects:
@@ -102,16 +91,16 @@ class AdoptTerraform(ReviewPoint):
                     break
 
             if not has_resource_manager_in_use:
-                compartment = [x for x in self.__compartments if x['id'] == com_reg[0]][0]
-
-                compartment['region'] = com_reg[1]
-                compartment['total'] = total
-                total+=1
+                compartment_name = get_compartment_name(self.__compartments,com_reg[0])
+                report_entry = {
+                    'Compartment name': compartment_name,
+                    'Compartment id': com_reg[0],
+                    'Region': com_reg[1]}
 
                 dictionary[entry]['status'] = False
-                dictionary[entry]['findings'].append(compartment) 
-                dictionary[entry]['failure_cause'].append("Resource Manager is not in use for infrastructure deployment")
-                dictionary[entry]['mitigations'].append(f"In compartment: \"{get_compartment_name(self.__compartments_objects, compartment['id'])}\" Region: \"{compartment['region']}\" total = {compartment['total']} Consider managing oci infrastructure with a use of Terraform and Resource Manager. ")
+                dictionary[entry]['findings'].append(report_entry) 
+                dictionary[entry]['failure_cause'].append("Terraform with Resource Manager is not in use")
+                dictionary[entry]['mitigations'].append(f"In compartment: \"{compartment_name}\" in Region: \"{com_reg[1]}\" Consider managing your infrastructure with the use of Terraform and Resource Manager. ")
         
         return dictionary
 
