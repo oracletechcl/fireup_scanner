@@ -300,6 +300,13 @@ def get_data_safe_client(config, signer):
         raise RuntimeError("Failed to create Data Safe client: " + e)
     return data_safe_client
 
+def get_resource_manager_client(config, signer):
+    try:
+        resource_manager_client = oci.resource_manager.ResourceManagerClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Resource Manager client: " + e)
+    return resource_manager_client
+
 
 def get_tenancy_data(identity_client, config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return identity_client.get_tenancy(
@@ -1055,5 +1062,12 @@ def get_key_versions(kms_management_client, key_id, retry_strategy=oci.retry.DEF
     return oci.pagination.list_call_get_all_results(
         kms_management_client.list_key_versions,
         key_id,
+        retry_strategy=retry_strategy
+    ).data
+
+def get_resource_manager_jobs_per_compartment(resource_manager_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        resource_manager_client.list_jobs,
+        compartment_id = compartment_id,
         retry_strategy=retry_strategy
     ).data

@@ -142,6 +142,8 @@ compute_images = []
 database_target_summaries = []
 database_targets = []
 
+## AdoptTerraform.py Global Variables
+jobs = []
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
     if threads == 0:
@@ -1375,3 +1377,16 @@ def get_database_targets(item):
             database_targets.append(get_target_database_data(data_safe_client[0], summary.id))
 
     return database_targets
+    
+
+def get_resource_manager_jobs(item):
+    resource_manager_client = item[0]
+    compartments = item[1:]
+
+    jobs = []
+
+    for compartment in compartments:
+        jobs_data = get_resource_manager_jobs_per_compartment(resource_manager_client, compartment.id)
+        if jobs_data:
+            jobs.append(jobs_data)
+    return jobs
