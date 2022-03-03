@@ -36,7 +36,7 @@ def test_review_point(capsys):
         results_in_fault += 1
 
 
-    assert results_in_fault == 150
+    assert results_in_fault == 158
 
 
     __test_suite_log(capsys)
