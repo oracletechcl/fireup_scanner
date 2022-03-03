@@ -33,6 +33,7 @@ from classes.securitycompliance.AuditConfiguration import AuditConfiguration
 from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
 from classes.securitycompliance.SecureDNS import SecureDNS
 from classes.securitycompliance.OptimizationMonitor import OptimizationMonitor
+from classes.securitycompliance.BlockVolumeEncryption import BlockVolumeEncryption
 from classes.securitycompliance.EnableDataSafe import EnableDataSafe
 from classes.securitycompliance.DuplicatePolicies import DuplicatePolicies
 
@@ -84,70 +85,71 @@ def main_orchestrator(config, signer, report_directory):
     print_report_sub_header()
 
     orchestrated_list = [
-                            # __call_1_1,
-                            # __call_1_2,
-                            # __call_1_3,
-                            # __call_1_4,
-                            # __call_1_5,
-                            # __call_1_6,
-                            # __call_1_7,
-                            # __call_1_8,
-                            # __call_1_9,
-                            # __call_1_10,
-                            # __call_1_11,
-                            # __call_1_12,
-                            # __call_1_13,
-                            # __call_1_14,
-                            # __call_1_15,
-                            # __call_1_16,
-                            # __call_1_17,
-                            # __call_1_18,
-                            # __call_1_19,
-                            # __call_1_20,
-                            # __call_1_21,
-                            # __call_1_22,
-                            # __call_1_23,
-                            # __call_1_24,
-                            # __call_1_25,
-                            # __call_1_26,
-                            # __call_1_27,
-                            # __call_1_32,
-                            # __call_2_1,
-                            # __call_2_2,
-                            # __call_2_3,
-                            # __call_2_4,
-                            # __call_2_5,
-                            # __call_2_6,
-                            # __call_2_7,
-                            # __call_2_8,
-                            # __call_2_9,
-                            # __call_2_10,
-                            # __call_2_11,
-                            # __call_2_12,
-                            # __call_2_13,
-                            # __call_2_14,
-                            # __call_2_15,
-                            # __call_2_16,
-                            # __call_2_17,
-                            # __call_3_1,
-                            # __call_3_2,
-                            # __call_3_3,
-                            # __call_3_4,
-                            # __call_3_5,
-                            # __call_3_6,
-                            # __call_3_7,
-                            # __call_3_8,
-                            # __call_3_9,
-                            # __call_3_10,
-                            # __call_3_11,
-                            # __call_4_1,
-                            # __call_4_2,
-                            # __call_4_3,
-                            # __call_4_4,
-                            # __call_4_5,
-                            # __call_4_6,
-                            # __call_4_7,
-                            __call_4_8
+                            __call_1_1,
+                            __call_1_2,
+                            __call_1_3,
+                            __call_1_4,
+                            __call_1_5,
+                            __call_1_6,
+                            __call_1_7,
+                            __call_1_8,
+                            __call_1_9,
+                            __call_1_10,
+                            __call_1_11,
+                            __call_1_12,
+                            __call_1_13,
+                            __call_1_14,
+                            __call_1_15,
+                            __call_1_16,
+                            __call_1_17,
+                            __call_1_18,
+                            __call_1_19,
+                            __call_1_20,
+                            __call_1_21,
+                            __call_1_22,
+                            __call_1_23,
+                            __call_1_24,
+                            __call_1_25,
+                            __call_1_26,
+                            __call_1_27,
+                            __call_1_28,
+                            __call_1_32,
+                            __call_2_1,
+                            __call_2_2,
+                            __call_2_3,
+                            __call_2_4,
+                            __call_2_5,
+                            __call_2_6,
+                            __call_2_7,
+                            __call_2_8,
+                            __call_2_9,
+                            __call_2_10,
+                            __call_2_11,
+                            __call_2_12,
+                            __call_2_13,
+                            __call_2_14,
+                            __call_2_15,
+                            __call_2_16,
+                            __call_2_17,
+                            __call_3_1,
+                            __call_3_2,
+                            __call_3_3,
+                            __call_3_4,
+                            __call_3_5,
+                            __call_3_6,
+                            __call_3_7,
+                            __call_3_8,
+                            __call_3_9,
+                            __call_3_10,
+                            __call_3_11,
+                            __call_4_1,
+                            __call_4_2,
+                            __call_4_3,
+                            __call_4_4,
+                            __call_4_5,
+                            __call_4_6,
+                            __call_4_7,     
+                            __call_4_8,     
                         ]
 
     for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
@@ -504,6 +506,19 @@ def __call_1_27(config, signer, report_directory):
     __dictionary = enableDataSafe.analyze_entity(Statics.__rp_1_27['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_27['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_27['fireup_items'])
+
+
+def __call_1_28(config, signer, report_directory):
+    blockVolumeEncryption = BlockVolumeEncryption(
+    Statics.__rp_1_28['entry'], 
+    Statics.__rp_1_28['area'], 
+    Statics.__rp_1_28['sub_area'], 
+    Statics.__rp_1_28['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_28['entry']+"_"+Statics.__rp_1_28['area']+"_"+Statics.__rp_1_28['sub_area']+"_mitigations"
+    __dictionary = blockVolumeEncryption.analyze_entity(Statics.__rp_1_28['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_28['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_28['fireup_items'])   
 
 
 def __call_1_32(config, signer, report_directory):

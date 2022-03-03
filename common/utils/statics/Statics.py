@@ -250,6 +250,14 @@ __rp_1_27 = {
     'success_criteria': 'Check if databases are registered in Data Safe',
     'fireup_items': ['Fireup Task: 25 - Are permissions for authorizing deletion of sensitive data locked down to certain users?'],
 }
+__rp_1_28 = {
+    'entry': '1.28',
+    'area': 'Security and Compliance',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Encrypt Data in Block Volumes',    
+    'success_criteria': 'Ensure that Block Volume uses encryption using user-created encryption key assigned to it. Configure a single key per Block Volume.',
+    'fireup_items': ['Fireup Task: - None']
+}
 
 __rp_1_32 = {
     'entry': '1.32',
