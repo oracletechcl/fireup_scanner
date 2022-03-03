@@ -138,6 +138,10 @@ responder_recipes_with_rules = []
 compute_instances = []
 compute_images = []
 
+## BlockVolumeEncryption.py
+# List for use with the parallel_executor
+volume_attachments = []
+block_volumes_without_policy = []
 ## EnableDataSafe.py Global Variables
 database_target_summaries = []
 database_targets = []
@@ -315,6 +319,18 @@ def get_block_volumes(item):
 
     return block_volumes
 
+def get_volume_attachements(item):
+    compute_client = item[0]
+    compartments = item[1:]
+
+    volume_attachments = []
+
+    for compartment in compartments:
+        volume_attachments_data = get_volume_attachments_per_compartment(compute_client, compartment.id)
+        for volume_attachment in volume_attachments_data:
+                volume_attachments.append(volume_attachment)
+    return volume_attachments
+
 
 def get_boot_volumes(item):
     block_storage_client = item[0][0]
@@ -347,7 +363,6 @@ def get_block_storages_with_no_policy(item):
                     findings.append(block_storage)
 
     return findings
-
 
 def get_file_systems(item):
     file_storage_client = item[0][0]
