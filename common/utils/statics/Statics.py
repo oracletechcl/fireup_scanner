@@ -591,3 +591,12 @@ __rp_4_7 = {
     'success_criteria': 'Check infrastructure created and if it applies see if it has the latest and greatest patching set',
     'fireup_items': ['Fireup Task 20: Do you have an update / patching schedule on OS, Applications, etc?'],
 }
+
+__rp_4_9 = {
+    'entry': '4.9',
+    'area': 'Operational Efficiency',
+    'sub_area': 'Manage Your Operating Systems',
+    'review_point': 'Automate OS Management',    
+    'success_criteria': 'Check if OS Management has any jobs scheduled.',
+    'fireup_items': ['Fireup Task 66: Do you use any configuration or infrastructure management tools?'],
+}

@@ -75,6 +75,7 @@ from classes.opsefficiency.ServiceLogs import ServiceLogs
 from classes.opsefficiency.CloudGuardEnabled import CloudGuardEnabled
 from classes.opsefficiency.ResourceMonitoring import ResourceMonitoring
 from classes.opsefficiency.PatchesAndUpdates import PatchesAndUpdates
+from classes.opsefficiency.CheckOSJobs import CheckOSJobs
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -149,8 +150,10 @@ def main_orchestrator(config, signer, report_directory):
                             __call_4_4,
                             __call_4_5,
                             __call_4_6,
+                            __call_4_7,
+                            __call_4_9,
                             __call_4_7,     
-                        ]
+
 
     for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
         orchestrated_list[i](config,signer, report_directory)
@@ -994,3 +997,16 @@ def __call_4_7(config, signer, report_directory):
     __dictionary = patchesUpdates.analyze_entity(Statics.__rp_4_7['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_7['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_7['fireup_items'])
+
+
+def __call_4_9(config, signer, report_directory):
+    checkOSJobs = CheckOSJobs(
+    Statics.__rp_4_9['entry'],
+    Statics.__rp_4_9['area'],
+    Statics.__rp_4_9['sub_area'],
+    Statics.__rp_4_9['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_9['entry']+"_"+Statics.__rp_4_9['area']+"_"+Statics.__rp_4_9['sub_area']+"_mitigations"
+    __dictionary = checkOSJobs.analyze_entity(Statics.__rp_4_9['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_9['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_9['fireup_items'])
