@@ -259,6 +259,15 @@ __rp_1_28 = {
     'fireup_items': ['Fireup Task: - None']
 }
 
+__rp_1_29 = {
+    'entry': '1.29',
+    'area': 'Security and Compliance',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Encrypt Data in File Storage',    
+    'success_criteria': 'Ensure that File Storage uses encryption using user-created encryption key assigned to it. Configure a single key per each File System.',
+    'fireup_items': ['Fireup Task: None'],
+}
+
 __rp_1_32 = {
     'entry': '1.32',
     'area': 'Security and Compliance',
