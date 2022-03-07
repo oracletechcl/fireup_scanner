@@ -1,9 +1,3 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
-# All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# fireup.py
-# Description: Main test suite for fireup review tool
-# Dependencies: pytest
-
 from classes.opsefficiency.ServiceLogs import ServiceLogs
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug

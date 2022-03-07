@@ -138,12 +138,20 @@ responder_recipes_with_rules = []
 compute_instances = []
 compute_images = []
 
+## BlockVolumeEncryption.py
+# List for use with the parallel_executor
+volume_attachments = []
+block_volumes_without_policy = []
 ## EnableDataSafe.py Global Variables
 database_target_summaries = []
 database_targets = []
 
 ## WebApplicationFirewall.py Global Variables
 waf_firewalls = []
+
+## CheckOSJobs.py Global Variables
+managed_instances = []
+
 
 
 def executor(dependent_clients:list, independent_iterator:list, fuction_to_execute, threads:int, data_variable):
@@ -318,6 +326,18 @@ def get_block_volumes(item):
 
     return block_volumes
 
+def get_volume_attachements(item):
+    compute_client = item[0]
+    compartments = item[1:]
+
+    volume_attachments = []
+
+    for compartment in compartments:
+        volume_attachments_data = get_volume_attachments_per_compartment(compute_client, compartment.id)
+        for volume_attachment in volume_attachments_data:
+                volume_attachments.append(volume_attachment)
+    return volume_attachments
+
 
 def get_boot_volumes(item):
     block_storage_client = item[0][0]
@@ -350,7 +370,6 @@ def get_block_storages_with_no_policy(item):
                     findings.append(block_storage)
 
     return findings
-
 
 def get_file_systems(item):
     file_storage_client = item[0][0]
@@ -1394,3 +1413,19 @@ def get_waf_firewalls(item):
             waf_firewalls.append(waf_firewall)
 
     return waf_firewalls
+ 
+
+def get_managed_instances(item):
+    os_management_client = item[0]
+    compartments = item[1:]
+
+    managed_instances = []
+
+    for compartment in compartments:
+        managed_instance_data = get_managed_instnaces(os_management_client, compartment.id)        
+        for instance in managed_instance_data:
+            managed_instances.append(instance)
+
+    return managed_instances
+
+  
