@@ -36,3 +36,4 @@
 | 1.32         | [DuplicatePolicies.py](DuplicatePolicies.py)            |
 | 1.33         | [VulnerabilityScanning.py](VulnerabilityScanning.py)    |
 | 1.34         | [HardenLoginAccess.py](HardenLoginAccess.py)            |
+| 1.35         | [MaxSecurityZoneEnabled.py](MaxSecurityZoneEnabled.py)  |

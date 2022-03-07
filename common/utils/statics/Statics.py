@@ -313,6 +313,15 @@ __rp_1_34 = {
     'fireup_items': ['Fireup Task: 18 - Do you have a proper security list, route tables, VCN, firewalls in place?'],
 }
 
+__rp_1_35 = {
+    'entry': '1.35',
+    'area': 'Security and Compliance',
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Define Maximum Security Zones',    
+    'success_criteria': 'Check if Maximum Security Zone is enabled for compartments that holster production workdload. Check Public and Private subnets are in place',
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
+}
+
 __rp_2_1 = {
     'entry': '2.1',
     'area': 'Reliability and Resilience',

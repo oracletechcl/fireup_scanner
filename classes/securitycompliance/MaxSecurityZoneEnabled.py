@@ -1,14 +1,14 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
-# MaxSecurityZone.py
-# Description: Implementation of class MaxSecurityZone based on abstract
+# MaxSecurityZoneEnabled.py
+# Description: Implementation of class MaxSecurityZoneEnabled based on abstract
 
 from classes.abstract.ReviewPoint import ReviewPoint
 from common.utils.tokenizer import *
 from common.utils.helpers.helper import *
 
 
-class MaxSecurityZone(ReviewPoint):
+class MaxSecurityZoneEnabled(ReviewPoint):
 
     # Class Variables
     __identity = None
