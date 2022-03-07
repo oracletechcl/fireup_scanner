@@ -79,7 +79,9 @@ from classes.opsefficiency.ServiceLogs import ServiceLogs
 from classes.opsefficiency.CloudGuardEnabled import CloudGuardEnabled
 from classes.opsefficiency.ResourceMonitoring import ResourceMonitoring
 from classes.opsefficiency.PatchesAndUpdates import PatchesAndUpdates
+from classes.opsefficiency.AdoptTerraform import AdoptTerraform
 from classes.opsefficiency.CheckOSJobs import CheckOSJobs
+
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -161,6 +163,8 @@ def main_orchestrator(config, signer, report_directory):
                             __call_4_7,
                             __call_4_9,
                             __call_4_7,     
+                            __call_4_8,     
+                        ]
 
 
     for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
@@ -1058,6 +1062,19 @@ def __call_4_7(config, signer, report_directory):
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_7['fireup_items'])
 
 
+def __call_4_8(config, signer, report_directory):
+    adoptTerraform = AdoptTerraform(
+    Statics.__rp_4_8['entry'],
+    Statics.__rp_4_8['area'],
+    Statics.__rp_4_8['sub_area'],
+    Statics.__rp_4_8['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_8['entry']+"_"+Statics.__rp_4_8['area']+"_"+Statics.__rp_4_8['sub_area']+"_mitigations"
+    __dictionary = adoptTerraform.analyze_entity(Statics.__rp_4_8['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_8['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_8['fireup_items'])
+
+
 def __call_4_9(config, signer, report_directory):
     checkOSJobs = CheckOSJobs(
     Statics.__rp_4_9['entry'],
@@ -1069,3 +1086,4 @@ def __call_4_9(config, signer, report_directory):
     __dictionary = checkOSJobs.analyze_entity(Statics.__rp_4_9['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_9['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_9['fireup_items'])
+

@@ -307,6 +307,13 @@ def get_data_safe_client(config, signer):
         raise RuntimeError("Failed to create Data Safe client: " + e)
     return data_safe_client
 
+def get_resource_manager_client(config, signer):
+    try:
+        resource_manager_client = oci.resource_manager.ResourceManagerClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Resource Manager client: " + e)
+    return resource_manager_client
+
 
 def get_waf_client(config, signer):
     try:
@@ -1104,6 +1111,14 @@ def get_network_security_groups_data(network_client, compartment_id, retry_strat
         retry_strategy=retry_strategy
     ).data
 
+def get_resource_manager_jobs_per_compartment(resource_manager_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        resource_manager_client.list_jobs,
+        compartment_id = compartment_id,
+        retry_strategy=retry_strategy
+    ).data
+
+
 def get_secrets_per_compartment(vaults_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return oci.pagination.list_call_get_all_results(
         vaults_client.list_secrets,
@@ -1132,4 +1147,5 @@ def get_managed_instnaces(os_management_client, compartment_id, retry_strategy=o
         compartment_id,
         retry_strategy=retry_strategy
     ).data
+
 

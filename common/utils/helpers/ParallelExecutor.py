@@ -146,9 +146,15 @@ block_volumes_without_policy = []
 database_target_summaries = []
 database_targets = []
 
+
+
+## AdoptTerraform.py Global Variables
+jobs = []
+
 ## HardenLoginAccess.py Global Variables
 nsgs = []
 nsg_rules = []
+
 
 ## Secrets.py Global Variables
 secrets = []
@@ -1407,6 +1413,20 @@ def get_database_targets(item):
 
     return database_targets
 
+    
+
+def get_resource_manager_jobs(item):
+    resource_manager_client = item[0]
+    compartments = item[1:]
+
+    jobs = []
+
+    for compartment in compartments:
+        jobs_data = get_resource_manager_jobs_per_compartment(resource_manager_client, compartment.id)
+        if jobs_data:
+            jobs.append(jobs_data)
+    return jobs
+
 
 def get_nsgs(item):
     network_client = item[0]
@@ -1477,3 +1497,4 @@ def get_managed_instances(item):
             managed_instances.append(instance)
 
     return managed_instances
+
