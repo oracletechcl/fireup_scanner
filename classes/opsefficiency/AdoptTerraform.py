@@ -100,7 +100,7 @@ class AdoptTerraform(ReviewPoint):
                 dictionary[entry]['status'] = False
                 dictionary[entry]['findings'].append(report_entry) 
                 dictionary[entry]['failure_cause'].append("Terraform with Resource Manager is not in use")
-                dictionary[entry]['mitigations'].append(f"In compartment: \"{compartment_name}\" in Region: \"{com_reg[1]}\" Consider managing your infrastructure with the use of Terraform and Resource Manager. ")
+                dictionary[entry]['mitigations'].append(f"In compartment: \"{compartment_name}\" in Region: \"{com_reg[1]}\" Consider managing your infrastructure with the use of Terraform and/or Resource Manager. ")
         
         return dictionary
 
