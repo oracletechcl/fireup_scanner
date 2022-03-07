@@ -503,7 +503,6 @@ def get_block_volume_data(block_storage_client, compartment_id, retry_strategy=o
         retry_strategy=retry_strategy
     ).data
 
-
 def get_block_volume_replica_data(block_storage_client, availability_domain, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return oci.pagination.list_call_get_all_results(
         block_storage_client.list_block_volume_replicas,
@@ -636,6 +635,12 @@ def get_compartment_name(compartments, compartment_id):
     for compartment in compartments:
         if compartment_id == compartment.id:
             return compartment.name
+    return None
+
+def get_block_volume_name(volumes,volume_id): 
+    for volume in volumes:
+        if volume.id == volume_id:
+            return volume.display_name
     return None
 
 
@@ -1027,6 +1032,14 @@ def get_notification_data(notification_control_plane_client, compartment_id, ret
         compartment_id,
         retry_strategy=retry_strategy
     ).data 
+
+def get_volume_attachments_per_compartment(compute_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        compute_client.list_volume_attachments,
+        compartment_id,
+        retry_strategy=retry_strategy
+    ).data 
+
 
 
 def is_cloud_shell():

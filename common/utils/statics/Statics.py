@@ -250,6 +250,14 @@ __rp_1_27 = {
     'success_criteria': 'Check if databases are registered in Data Safe',
     'fireup_items': ['Fireup Task: 25 - Are permissions for authorizing deletion of sensitive data locked down to certain users?'],
 }
+__rp_1_28 = {
+    'entry': '1.28',
+    'area': 'Security and Compliance',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Encrypt Data in Block Volumes',    
+    'success_criteria': 'Ensure that Block Volume uses encryption using user-created encryption key assigned to it. Configure a single key per Block Volume.',
+    'fireup_items': ['Fireup Task: - None']
+}
 
 __rp_1_32 = {
     'entry': '1.32',
@@ -257,6 +265,15 @@ __rp_1_32 = {
     'sub_area': 'Monitor and Audit Your Environment',
     'review_point': 'Audit Your Policies',
     'success_criteria': 'Check if there are any duplicate Policy Statements.',
+    'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
+}
+
+__rp_1_33 = {
+    'entry': '1.33',
+    'area': 'Security and Compliance',
+    'sub_area': 'Monitor and Audit Your Environment',
+    'review_point': 'Continuously Scan for Vulnerabilities',
+    'success_criteria': 'Check if the Vulnerability Scanning Service is working. Do it by checking if required IAM policies are created.',
     'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
 }
 
