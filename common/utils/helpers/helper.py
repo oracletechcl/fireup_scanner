@@ -1104,6 +1104,12 @@ def get_key_versions(kms_management_client, key_id, retry_strategy=oci.retry.DEF
         retry_strategy=retry_strategy
     ).data
 
+def get_network_security_groups_data(network_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        network_client.list_network_security_groups,
+        compartment_id=compartment_id,
+        retry_strategy=retry_strategy
+    ).data
 
 def get_resource_manager_jobs_per_compartment(resource_manager_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return oci.pagination.list_call_get_all_results(

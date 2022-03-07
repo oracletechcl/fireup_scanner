@@ -37,6 +37,7 @@ from classes.securitycompliance.FileStorageEncryption import FileStorageEncrypti
 from classes.securitycompliance.BlockVolumeEncryption import BlockVolumeEncryption
 from classes.securitycompliance.EnableDataSafe import EnableDataSafe
 from classes.securitycompliance.DuplicatePolicies import DuplicatePolicies
+from classes.securitycompliance.HardenLoginAccess import HardenLoginAccess
 from classes.securitycompliance.Secrets import Secrets
 from classes.securitycompliance.WebApplicationFirewall import WebApplicationFirewall
 from classes.securitycompliance.VulnerabilityScanning import VulnerabilityScanning
@@ -124,6 +125,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_1_31,
                             __call_1_32,
                             __call_1_33,
+                            __call_1_34,
                             __call_2_1,
                             __call_2_2,
                             __call_2_3,
@@ -595,6 +597,19 @@ def __call_1_33(config, signer, report_directory):
     __dictionary = vulnerabilityScanning.analyze_entity(Statics.__rp_1_33['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_33['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_33['fireup_items'])
+
+def __call_1_34(config, signer, report_directory):
+    hardenLoginAccess = HardenLoginAccess(
+    Statics.__rp_1_34['entry'],
+    Statics.__rp_1_34['area'],
+    Statics.__rp_1_34['sub_area'],
+    Statics.__rp_1_34['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_34['entry']+"_"+Statics.__rp_1_34['area']+"_"+Statics.__rp_1_34['sub_area']+"_mitigations"
+    __dictionary = hardenLoginAccess.analyze_entity(Statics.__rp_1_34['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_34['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_34['fireup_items'])
+
 
 def __call_2_1(config, signer, report_directory):
     autoscaling = CheckAutoscaling(
