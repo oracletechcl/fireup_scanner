@@ -5,37 +5,37 @@
 # Dependencies: pytest
 
 from os import write
-from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
+from classes.securitycompliance.VulnerabilityScanning import VulnerabilityScanning
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug
 from common.utils.statics import Statics
 from common.utils.tokenizer.signer import *
 
-  
 
 def __test_suite_log(capsys):
     out, err = capsys.readouterr()
     open("stderr.out", "w").write(err)
     open("stdout.out", "w").write(out)
 
+
 def test_review_point(capsys):     
     
-    result_dictionary = SecureLoadBalancers(Statics.__rp_1_21['entry'],
-    Statics.__rp_1_21['area'],
-    Statics.__rp_1_21['sub_area'],
-    Statics.__rp_1_21['review_point'],
+    result_dictionary = VulnerabilityScanning(Statics.__rp_1_33['entry'], 
+    Statics.__rp_1_33['area'], 
+    Statics.__rp_1_33['sub_area'], 
+    Statics.__rp_1_33['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_21['entry'])
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_33['entry'])   
     
-    for item in dictionary[Statics.__rp_1_21['entry']]['findings']:
+    for item in dictionary[Statics.__rp_1_33['entry']]['findings']:
         debug(item)
         results_in_fault += 1    
 
-    assert results_in_fault == 12
+    assert results_in_fault == 0
 
     __test_suite_log(capsys)
