@@ -146,6 +146,9 @@ block_volumes_without_policy = []
 database_target_summaries = []
 database_targets = []
 
+## Secrets.py Global Variables
+secrets = []
+
 ## WebApplicationFirewall.py Global Variables
 waf_firewalls = []
 
@@ -1401,6 +1404,19 @@ def get_database_targets(item):
     return database_targets
 
 
+def get_secrets(item):
+    vaults_client = item[0]
+    compartments = item[1:]
+
+    secrets = []
+
+    for compartment in compartments:
+        secret_list = get_secrets_per_compartment(vaults_client, compartment.id)
+        for secret in secret_list:
+            secrets.append(get_secret_data(vaults_client,secret.id))
+    return secrets
+
+
 def get_waf_firewalls(item):
     waf_client = item[0]
     compartments = item[1:]
@@ -1428,4 +1444,4 @@ def get_managed_instances(item):
 
     return managed_instances
 
-  
+

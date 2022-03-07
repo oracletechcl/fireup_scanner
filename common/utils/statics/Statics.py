@@ -277,6 +277,15 @@ __rp_1_31 = {
     'fireup_items': ['Fireup Task: 31 - Are you leveraging traffic management, web firewall and load balancing for public resources?'],
 }
 
+__rp_1_30 = {
+    'entry': '1.30',
+    'area': 'Security and Compliance',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Maintain Application Secrets in Oracle Cloud Infrastructure Vault',
+    'success_criteria': 'Check if Secret Reuse Rule and Secret Expiry Rule is defined per each Secret.',
+    'fireup_items': ['Fireup Task: 30 - None'],
+}
+
 __rp_1_32 = {
     'entry': '1.32',
     'area': 'Security and Compliance',
