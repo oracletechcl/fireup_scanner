@@ -250,6 +250,14 @@ __rp_1_27 = {
     'success_criteria': 'Check if databases are registered in Data Safe',
     'fireup_items': ['Fireup Task: 25 - Are permissions for authorizing deletion of sensitive data locked down to certain users?'],
 }
+__rp_1_28 = {
+    'entry': '1.28',
+    'area': 'Security and Compliance',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Encrypt Data in Block Volumes',    
+    'success_criteria': 'Ensure that Block Volume uses encryption using user-created encryption key assigned to it. Configure a single key per Block Volume.',
+    'fireup_items': ['Fireup Task: - None']
+}
 
 __rp_1_29 = {
     'entry': '1.29',
@@ -266,6 +274,15 @@ __rp_1_32 = {
     'sub_area': 'Monitor and Audit Your Environment',
     'review_point': 'Audit Your Policies',
     'success_criteria': 'Check if there are any duplicate Policy Statements.',
+    'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
+}
+
+__rp_1_33 = {
+    'entry': '1.33',
+    'area': 'Security and Compliance',
+    'sub_area': 'Monitor and Audit Your Environment',
+    'review_point': 'Continuously Scan for Vulnerabilities',
+    'success_criteria': 'Check if the Vulnerability Scanning Service is working. Do it by checking if required IAM policies are created.',
     'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
 }
 
@@ -582,4 +599,13 @@ __rp_4_7 = {
     'review_point': 'Stay Up-to-Date with Security Patches, Bug Fixes, and Enhancement Updates',    
     'success_criteria': 'Check infrastructure created and if it applies see if it has the latest and greatest patching set',
     'fireup_items': ['Fireup Task 20: Do you have an update / patching schedule on OS, Applications, etc?'],
+}
+
+__rp_4_9 = {
+    'entry': '4.9',
+    'area': 'Operational Efficiency',
+    'sub_area': 'Manage Your Operating Systems',
+    'review_point': 'Automate OS Management',    
+    'success_criteria': 'Check if OS Management has any jobs scheduled.',
+    'fireup_items': ['Fireup Task 66: Do you use any configuration or infrastructure management tools?'],
 }
