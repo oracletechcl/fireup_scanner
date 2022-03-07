@@ -108,6 +108,13 @@ def get_kms_valult_client(config, signer):
         raise RuntimeError("Failed to create kms vault client: " + e)
     return kms_valult_client
 
+def get_vaults_client(config, signer):
+    try:
+        vaults_client = oci.vault.VaultsClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create vault client: " + e)
+    return vaults_client
+
 
 def get_kms_management_client(config, service_endpoint, signer):
     try:
@@ -306,6 +313,22 @@ def get_resource_manager_client(config, signer):
     except Exception as e:
         raise RuntimeError("Failed to create Resource Manager client: " + e)
     return resource_manager_client
+
+
+def get_waf_client(config, signer):
+    try:
+        waf_client = oci.waf.WafClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Web Application Firewall client: " + e)
+    return waf_client
+
+  
+def get_os_management_client(config, signer):
+    try:
+        os_management_client = oci.os_management.OsManagementClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create OS Management Client: " + e)
+    return os_management_client
 
 
 def get_tenancy_data(identity_client, config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
@@ -1059,17 +1082,20 @@ def list_target_databases_data(data_safe_client, compartment_id, retry_strategy=
         retry_strategy=retry_strategy
     ).data 
 
+
 def get_target_database_data(data_safe_client, target_database_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return data_safe_client.get_target_database(
         target_database_id=target_database_id,
         retry_strategy=retry_strategy
     ).data 
 
+
 def get_kms_key_info(kms_management_client, key_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return kms_management_client.get_key(
         key_id,
         retry_strategy=retry_strategy
     ).data
+
 
 def get_key_versions(kms_management_client, key_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return oci.pagination.list_call_get_all_results(
@@ -1078,9 +1104,42 @@ def get_key_versions(kms_management_client, key_id, retry_strategy=oci.retry.DEF
         retry_strategy=retry_strategy
     ).data
 
+
 def get_resource_manager_jobs_per_compartment(resource_manager_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return oci.pagination.list_call_get_all_results(
         resource_manager_client.list_jobs,
         compartment_id = compartment_id,
         retry_strategy=retry_strategy
     ).data
+
+
+def get_secrets_per_compartment(vaults_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        vaults_client.list_secrets,
+        compartment_id,
+        retry_strategy=retry_strategy
+    ).data
+
+def get_secret_data(vaults_client, secret_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return vaults_client.get_secret(
+        secret_id,
+        retry_strategy=retry_strategy
+    ).data
+
+
+def get_waf_firewalls_data(waf_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        waf_client.list_web_app_firewalls,
+        compartment_id,
+        retry_strategy=retry_strategy
+    ).data 
+
+ 
+def get_managed_instnaces(os_management_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        os_management_client.list_managed_instances,
+        compartment_id,
+        retry_strategy=retry_strategy
+    ).data
+
+

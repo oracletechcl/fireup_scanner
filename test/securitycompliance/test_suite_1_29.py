@@ -4,7 +4,8 @@
 # Description: Main test suite for fireup review tool
 # Dependencies: pytest
 
-from classes.reliabilityresilience.DataSecurity import DataSecurity
+from os import write
+from classes.securitycompliance.FileStorageEncryption import FileStorageEncryption
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug
 from common.utils.statics import Statics
@@ -19,24 +20,22 @@ def __test_suite_log(capsys):
 
 def test_review_point(capsys):     
     
-    result_dictionary = DataSecurity(Statics.__rp_2_16['entry'], 
-    Statics.__rp_2_16['area'], 
-    Statics.__rp_2_16['sub_area'], 
-    Statics.__rp_2_16['review_point'], 
+    result_dictionary = FileStorageEncryption(Statics.__rp_1_29['entry'], 
+    Statics.__rp_1_29['area'], 
+    Statics.__rp_1_29['sub_area'], 
+    Statics.__rp_1_29['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_16['entry'])   
-
-    for item in dictionary[Statics.__rp_2_16['entry']]['findings']:
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_29['entry'])   
+    
+    for item in dictionary[Statics.__rp_1_29['entry']]['findings']:
         debug(item)
-        results_in_fault += 1
+        results_in_fault += 1    
 
-
-    assert results_in_fault == 110
-
+    assert results_in_fault == 19
 
     __test_suite_log(capsys)

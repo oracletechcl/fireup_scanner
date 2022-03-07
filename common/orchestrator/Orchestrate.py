@@ -33,9 +33,13 @@ from classes.securitycompliance.AuditConfiguration import AuditConfiguration
 from classes.securitycompliance.SecureLoadBalancers import SecureLoadBalancers
 from classes.securitycompliance.SecureDNS import SecureDNS
 from classes.securitycompliance.OptimizationMonitor import OptimizationMonitor
+from classes.securitycompliance.FileStorageEncryption import FileStorageEncryption
 from classes.securitycompliance.BlockVolumeEncryption import BlockVolumeEncryption
 from classes.securitycompliance.EnableDataSafe import EnableDataSafe
 from classes.securitycompliance.DuplicatePolicies import DuplicatePolicies
+from classes.securitycompliance.Secrets import Secrets
+from classes.securitycompliance.WebApplicationFirewall import WebApplicationFirewall
+from classes.securitycompliance.VulnerabilityScanning import VulnerabilityScanning
 
 from classes.reliabilityresilience.ServiceLimits import ServiceLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
@@ -75,6 +79,8 @@ from classes.opsefficiency.CloudGuardEnabled import CloudGuardEnabled
 from classes.opsefficiency.ResourceMonitoring import ResourceMonitoring
 from classes.opsefficiency.PatchesAndUpdates import PatchesAndUpdates
 from classes.opsefficiency.AdoptTerraform import AdoptTerraform
+from classes.opsefficiency.CheckOSJobs import CheckOSJobs
+
 
 from common.utils.reporter.report import *
 from common.utils.statics import Statics
@@ -112,8 +118,12 @@ def main_orchestrator(config, signer, report_directory):
                             __call_1_25,
                             __call_1_26,
                             __call_1_27,
-                            __call_1_28,
+                            __call_1_28,  
+                            __call_1_29,
+                            __call_1_30,
+                            __call_1_31,
                             __call_1_32,
+                            __call_1_33,
                             __call_2_1,
                             __call_2_2,
                             __call_2_3,
@@ -148,9 +158,12 @@ def main_orchestrator(config, signer, report_directory):
                             __call_4_4,
                             __call_4_5,
                             __call_4_6,
+                            __call_4_7,
+                            __call_4_9,
                             __call_4_7,     
                             __call_4_8,     
                         ]
+
 
     for i in tqdm(range(len(orchestrated_list)), bar_format='{l_bar}{bar} | {n_fmt}/{total_fmt} ', initial=1, colour='green', position=0, leave=False):
         orchestrated_list[i](config,signer, report_directory)
@@ -507,7 +520,7 @@ def __call_1_27(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_27['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_27['fireup_items'])
 
-
+    
 def __call_1_28(config, signer, report_directory):
     blockVolumeEncryption = BlockVolumeEncryption(
     Statics.__rp_1_28['entry'], 
@@ -519,6 +532,44 @@ def __call_1_28(config, signer, report_directory):
     __dictionary = blockVolumeEncryption.analyze_entity(Statics.__rp_1_28['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_28['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_28['fireup_items'])   
+
+      
+def __call_1_29(config, signer, report_directory):
+    fileStorageEncryption = FileStorageEncryption(
+    Statics.__rp_1_29['entry'], 
+    Statics.__rp_1_29['area'], 
+    Statics.__rp_1_29['sub_area'], 
+    Statics.__rp_1_29['review_point'], 
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_29['entry']+"_"+Statics.__rp_1_29['area']+"_"+Statics.__rp_1_29['sub_area']+"_mitigations"
+    __dictionary = fileStorageEncryption.analyze_entity(Statics.__rp_1_29['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_29['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_29['fireup_items'])
+
+def __call_1_31(config, signer, report_directory):
+    webApplicationFirewall = WebApplicationFirewall(
+    Statics.__rp_1_31['entry'],
+    Statics.__rp_1_31['area'],
+    Statics.__rp_1_31['sub_area'],
+    Statics.__rp_1_31['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_31['entry']+"_"+Statics.__rp_1_31['area']+"_"+Statics.__rp_1_31['sub_area']+"_mitigations"
+    __dictionary = webApplicationFirewall.analyze_entity(Statics.__rp_1_31['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_31['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_31['fireup_items'])
+
+
+def __call_1_30(config, signer, report_directory):
+    secrets = Secrets(
+    Statics.__rp_1_30['entry'],
+    Statics.__rp_1_30['area'],
+    Statics.__rp_1_30['sub_area'],
+    Statics.__rp_1_30['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_30['entry']+"_"+Statics.__rp_1_30['area']+"_"+Statics.__rp_1_30['sub_area']+"_mitigations"
+    __dictionary = Secrets.analyze_entity(Statics.__rp_1_30['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_30['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_30['fireup_items'])
 
 
 def __call_1_32(config, signer, report_directory):
@@ -533,6 +584,17 @@ def __call_1_32(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_32['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_32['fireup_items'])
 
+def __call_1_33(config, signer, report_directory):
+    vulnerabilityScanning = VulnerabilityScanning(
+    Statics.__rp_1_33['entry'],
+    Statics.__rp_1_33['area'],
+    Statics.__rp_1_33['sub_area'],
+    Statics.__rp_1_33['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_33['entry']+"_"+Statics.__rp_1_33['area']+"_"+Statics.__rp_1_33['sub_area']+"_mitigations"
+    __dictionary = vulnerabilityScanning.analyze_entity(Statics.__rp_1_33['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_33['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_33['fireup_items'])
 
 def __call_2_1(config, signer, report_directory):
     autoscaling = CheckAutoscaling(
@@ -984,6 +1046,7 @@ def __call_4_7(config, signer, report_directory):
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_7['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_7['fireup_items'])
 
+
 def __call_4_8(config, signer, report_directory):
     adoptTerraform = AdoptTerraform(
     Statics.__rp_4_8['entry'],
@@ -995,3 +1058,17 @@ def __call_4_8(config, signer, report_directory):
     __dictionary = adoptTerraform.analyze_entity(Statics.__rp_4_8['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_8['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_8['fireup_items'])
+
+
+def __call_4_9(config, signer, report_directory):
+    checkOSJobs = CheckOSJobs(
+    Statics.__rp_4_9['entry'],
+    Statics.__rp_4_9['area'],
+    Statics.__rp_4_9['sub_area'],
+    Statics.__rp_4_9['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_4_9['entry']+"_"+Statics.__rp_4_9['area']+"_"+Statics.__rp_4_9['sub_area']+"_mitigations"
+    __dictionary = checkOSJobs.analyze_entity(Statics.__rp_4_9['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_4_9['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_4_9['fireup_items'])
+

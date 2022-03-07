@@ -259,12 +259,48 @@ __rp_1_28 = {
     'fireup_items': ['Fireup Task: - None']
 }
 
+__rp_1_29 = {
+    'entry': '1.29',
+    'area': 'Security and Compliance',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Encrypt Data in File Storage',    
+    'success_criteria': 'Ensure that File Storage uses encryption using user-created encryption key assigned to it. Configure a single key per each File System.',
+    'fireup_items': ['Fireup Task: None'],
+}
+
+__rp_1_31 = {
+    'entry': '1.31',
+    'area': 'Security and Compliance',
+    'sub_area': 'Ensure Secure Network Access',
+    'review_point': 'Implement Network Access Controls',
+    'success_criteria': 'Check if Web Application Firewall is enabled for public-facing HTTP and HTTPS services.',
+    'fireup_items': ['Fireup Task: 31 - Are you leveraging traffic management, web firewall and load balancing for public resources?'],
+}
+
+__rp_1_30 = {
+    'entry': '1.30',
+    'area': 'Security and Compliance',
+    'sub_area': 'Protect Data at Rest',
+    'review_point': 'Maintain Application Secrets in Oracle Cloud Infrastructure Vault',
+    'success_criteria': 'Check if Secret Reuse Rule and Secret Expiry Rule is defined per each Secret.',
+    'fireup_items': ['Fireup Task: 30 - None'],
+}
+
 __rp_1_32 = {
     'entry': '1.32',
     'area': 'Security and Compliance',
     'sub_area': 'Monitor and Audit Your Environment',
     'review_point': 'Audit Your Policies',
     'success_criteria': 'Check if there are any duplicate Policy Statements.',
+    'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
+}
+
+__rp_1_33 = {
+    'entry': '1.33',
+    'area': 'Security and Compliance',
+    'sub_area': 'Monitor and Audit Your Environment',
+    'review_point': 'Continuously Scan for Vulnerabilities',
+    'success_criteria': 'Check if the Vulnerability Scanning Service is working. Do it by checking if required IAM policies are created.',
     'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
 }
 
@@ -583,6 +619,7 @@ __rp_4_7 = {
     'fireup_items': ['Fireup Task 20: Do you have an update / patching schedule on OS, Applications, etc?'],
 }
 
+
 __rp_4_8 = {
     'entry': '4.8',
     'area': 'Operational Efficiency',
@@ -591,3 +628,13 @@ __rp_4_8 = {
     'success_criteria': 'Check if Resource manager is in use with Terraform',
     'fireup_items': ['Fireup Task 66: Do you use any configuration or infrastructure management tools? '],
 }
+
+__rp_4_9 = {
+    'entry': '4.9',
+    'area': 'Operational Efficiency',
+    'sub_area': 'Manage Your Operating Systems',
+    'review_point': 'Automate OS Management',    
+    'success_criteria': 'Check if OS Management has any jobs scheduled.',
+    'fireup_items': ['Fireup Task 66: Do you use any configuration or infrastructure management tools?'],
+}
+
