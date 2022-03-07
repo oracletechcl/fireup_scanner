@@ -268,6 +268,15 @@ __rp_1_32 = {
     'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
 }
 
+__rp_1_33 = {
+    'entry': '1.33',
+    'area': 'Security and Compliance',
+    'sub_area': 'Monitor and Audit Your Environment',
+    'review_point': 'Continuously Scan for Vulnerabilities',
+    'success_criteria': 'Check if the Vulnerability Scanning Service is working. Do it by checking if required IAM policies are created.',
+    'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
+}
+
 __rp_2_1 = {
     'entry': '2.1',
     'area': 'Reliability and Resilience',

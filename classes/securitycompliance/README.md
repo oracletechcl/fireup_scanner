@@ -31,3 +31,4 @@
 | 1.27         | [EnableDataSafe.py](EnableDataSafe.py)                  |
 | 1.28         | [BlockVolumeEncryption.py](BlockVolumeEncryption.py)    |
 | 1.32         | [DuplicatePolicies.py](DuplicatePolicies.py)            |
+| 1.33         | [VulnerabilityScanning.py](VulnerabilityScanning.py)    |
