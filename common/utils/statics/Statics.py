@@ -268,6 +268,15 @@ __rp_1_29 = {
     'fireup_items': ['Fireup Task: None'],
 }
 
+__rp_1_31 = {
+    'entry': '1.31',
+    'area': 'Security and Compliance',
+    'sub_area': 'Ensure Secure Network Access',
+    'review_point': 'Implement Network Access Controls',
+    'success_criteria': 'Check if Web Application Firewall is enabled for public-facing HTTP and HTTPS services.',
+    'fireup_items': ['Fireup Task: 31 - Are you leveraging traffic management, web firewall and load balancing for public resources?'],
+}
+
 __rp_1_32 = {
     'entry': '1.32',
     'area': 'Security and Compliance',

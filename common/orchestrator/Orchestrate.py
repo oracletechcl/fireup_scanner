@@ -37,6 +37,7 @@ from classes.securitycompliance.FileStorageEncryption import FileStorageEncrypti
 from classes.securitycompliance.BlockVolumeEncryption import BlockVolumeEncryption
 from classes.securitycompliance.EnableDataSafe import EnableDataSafe
 from classes.securitycompliance.DuplicatePolicies import DuplicatePolicies
+from classes.securitycompliance.WebApplicationFirewall import WebApplicationFirewall
 from classes.securitycompliance.VulnerabilityScanning import VulnerabilityScanning
 
 from classes.reliabilityresilience.ServiceLimits import ServiceLimits
@@ -116,6 +117,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_1_27,
                             __call_1_28,  
                             __call_1_29,
+                            __call_1_31,
                             __call_1_32,
                             __call_1_33,
                             __call_2_1,
@@ -537,6 +539,19 @@ def __call_1_29(config, signer, report_directory):
     __dictionary = fileStorageEncryption.analyze_entity(Statics.__rp_1_29['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_29['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_29['fireup_items'])
+
+def __call_1_31(config, signer, report_directory):
+    webApplicationFirewall = WebApplicationFirewall(
+    Statics.__rp_1_31['entry'],
+    Statics.__rp_1_31['area'],
+    Statics.__rp_1_31['sub_area'],
+    Statics.__rp_1_31['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_31['entry']+"_"+Statics.__rp_1_31['area']+"_"+Statics.__rp_1_31['sub_area']+"_mitigations"
+    __dictionary = webApplicationFirewall.analyze_entity(Statics.__rp_1_31['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_31['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_31['fireup_items'])
+
 
 def __call_1_32(config, signer, report_directory):
     duplicatePolicies = DuplicatePolicies(

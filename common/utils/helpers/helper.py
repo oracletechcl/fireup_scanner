@@ -301,6 +301,14 @@ def get_data_safe_client(config, signer):
     return data_safe_client
 
 
+def get_waf_client(config, signer):
+    try:
+        waf_client = oci.waf.WafClient(config, signer=signer)
+    except Exception as e:
+        raise RuntimeError("Failed to create Web Application Firewall client: " + e)
+    return waf_client
+
+  
 def get_os_management_client(config, signer):
     try:
         os_management_client = oci.os_management.OsManagementClient(config, signer=signer)
@@ -1083,9 +1091,18 @@ def get_key_versions(kms_management_client, key_id, retry_strategy=oci.retry.DEF
     ).data
 
 
+def get_waf_firewalls_data(waf_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
+    return oci.pagination.list_call_get_all_results(
+        waf_client.list_web_app_firewalls,
+        compartment_id,
+        retry_strategy=retry_strategy
+    ).data 
+
+ 
 def get_managed_instnaces(os_management_client, compartment_id, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY):
     return oci.pagination.list_call_get_all_results(
         os_management_client.list_managed_instances,
         compartment_id,
         retry_strategy=retry_strategy
     ).data
+
