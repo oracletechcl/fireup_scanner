@@ -304,6 +304,15 @@ __rp_1_33 = {
     'fireup_items': ['Fireup Task: 9 - 	Who is responsible for auditing logs for resources and activities?'],
 }
 
+__rp_1_34 = {
+    'entry': '1.34',
+    'area': 'Security and Compliance',
+    'sub_area': 'Isolate Resources and Control Access',
+    'review_point': 'Harden Login Access to Compute Instances',
+    'success_criteria': 'Check if Security Groups or Security Lists are created to restrict access to the instance based on the source IP address.',
+    'fireup_items': ['Fireup Task: 18 - Do you have a proper security list, route tables, VCN, firewalls in place?'],
+}
+
 __rp_2_1 = {
     'entry': '2.1',
     'area': 'Reliability and Resilience',

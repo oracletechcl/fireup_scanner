@@ -35,3 +35,4 @@
 | 1.31         | [WebApplicationFirewall.py](WebApplicationFirewall.py)  |
 | 1.32         | [DuplicatePolicies.py](DuplicatePolicies.py)            |
 | 1.33         | [VulnerabilityScanning.py](VulnerabilityScanning.py)    |
+| 1.34         | [HardenLoginAccess.py](HardenLoginAccess.py)            |

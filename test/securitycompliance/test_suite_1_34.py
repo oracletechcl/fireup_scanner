@@ -4,38 +4,38 @@
 # Description: Main test suite for fireup review tool
 # Dependencies: pytest
 
-from classes.reliabilityresilience.ReplicateData import ReplicateData
+from os import write
+from classes.securitycompliance.HardenLoginAccess import HardenLoginAccess
 from common.utils.helpers.helper import get_config_and_signer
 from common.utils.formatter.printer import debug
 from common.utils.statics import Statics
 from common.utils.tokenizer.signer import *
 
-  
 
 def __test_suite_log(capsys):
     out, err = capsys.readouterr()
     open("stderr.out", "w").write(err)
     open("stdout.out", "w").write(out)
 
+
 def test_review_point(capsys):     
     
-    result_dictionary = ReplicateData(Statics.__rp_2_17['entry'], 
-    Statics.__rp_2_17['area'], 
-    Statics.__rp_2_17['sub_area'], 
-    Statics.__rp_2_17['review_point'], 
+    result_dictionary = HardenLoginAccess(Statics.__rp_1_34['entry'], 
+    Statics.__rp_1_34['area'], 
+    Statics.__rp_1_34['sub_area'], 
+    Statics.__rp_1_34['review_point'], 
     True, [], [], [], [], 
     get_config_and_signer()[0], 
     get_config_and_signer()[1]
     )
 
     results_in_fault=0
-    dictionary = result_dictionary.analyze_entity(Statics.__rp_2_17['entry'])   
-
-    for item in dictionary[Statics.__rp_2_17['entry']]['findings']:
+    dictionary = result_dictionary.analyze_entity(Statics.__rp_1_34['entry'])   
+    
+    for item in dictionary[Statics.__rp_1_34['entry']]['findings']:
         debug(item)
-        results_in_fault += 1
+        results_in_fault += 1    
 
-    assert results_in_fault == 262
-
+    assert results_in_fault == 261
 
     __test_suite_log(capsys)
