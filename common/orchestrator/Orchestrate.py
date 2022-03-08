@@ -41,6 +41,7 @@ from classes.securitycompliance.HardenLoginAccess import HardenLoginAccess
 from classes.securitycompliance.Secrets import Secrets
 from classes.securitycompliance.WebApplicationFirewall import WebApplicationFirewall
 from classes.securitycompliance.VulnerabilityScanning import VulnerabilityScanning
+from classes.securitycompliance.MaxSecurityZoneEnabled import MaxSecurityZoneEnabled
 
 from classes.reliabilityresilience.ServiceLimits import ServiceLimits
 from classes.reliabilityresilience.CompartmentQuotas import CompartmentQuotas
@@ -126,6 +127,7 @@ def main_orchestrator(config, signer, report_directory):
                             __call_1_32,
                             __call_1_33,
                             __call_1_34,
+                            __call_1_35,
                             __call_2_1,
                             __call_2_2,
                             __call_2_3,
@@ -569,7 +571,7 @@ def __call_1_30(config, signer, report_directory):
     Statics.__rp_1_30['review_point'],
     True, [], [], [], [], config, signer)
     mitigation_report_name = Statics.__rp_1_30['entry']+"_"+Statics.__rp_1_30['area']+"_"+Statics.__rp_1_30['sub_area']+"_mitigations"
-    __dictionary = Secrets.analyze_entity(Statics.__rp_1_30['entry'])
+    __dictionary = secrets.analyze_entity(Statics.__rp_1_30['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_30['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_30['fireup_items'])
 
@@ -609,6 +611,18 @@ def __call_1_34(config, signer, report_directory):
     __dictionary = hardenLoginAccess.analyze_entity(Statics.__rp_1_34['entry'])
     generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_34['entry'])
     generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_34['fireup_items'])
+
+def __call_1_35(config, signer, report_directory):
+    maxSecurityZoneEnabled = MaxSecurityZoneEnabled(
+    Statics.__rp_1_35['entry'],
+    Statics.__rp_1_35['area'],
+    Statics.__rp_1_35['sub_area'],
+    Statics.__rp_1_35['review_point'],
+    True, [], [], [], [], config, signer)
+    mitigation_report_name = Statics.__rp_1_35['entry']+"_"+Statics.__rp_1_35['area']+"_"+Statics.__rp_1_35['sub_area']+"_mitigations"
+    __dictionary = maxSecurityZoneEnabled.analyze_entity(Statics.__rp_1_35['entry'])
+    generate_on_screen_report(__dictionary, report_directory, Statics.__rp_1_35['entry'])
+    generate_mitigation_report(__dictionary, report_directory, mitigation_report_name, Statics.__rp_1_35['fireup_items'])
 
 
 def __call_2_1(config, signer, report_directory):

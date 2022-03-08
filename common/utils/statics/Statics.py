@@ -313,6 +313,15 @@ __rp_1_34 = {
     'fireup_items': ['Fireup Task: 18 - Do you have a proper security list, route tables, VCN, firewalls in place?'],
 }
 
+__rp_1_35 = {
+    'entry': '1.35',
+    'area': 'Security and Compliance',
+    'sub_area': 'Ensure Secure Network Access',
+    'review_point': 'Leverage Maximum Security Zones in Oracle Cloud Infrastructure',    
+    'success_criteria': 'Check if Security Zones are created.',
+    'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
+}
+
 __rp_2_1 = {
     'entry': '2.1',
     'area': 'Reliability and Resilience',

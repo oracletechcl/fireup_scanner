@@ -1458,7 +1458,7 @@ def get_nsg_rules(item):
     return nsg_rules
 
   
-  def get_secrets(item):
+def get_secrets(item):
     vaults_client = item[0]
     compartments = item[1:]
 
