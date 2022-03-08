@@ -642,7 +642,7 @@ __rp_4_8 = {
     'entry': '4.8',
     'area': 'Operational Efficiency',
     'sub_area': 'Plan Your Deployment Strategy',
-    'review_point': 'dAopt Terraform to Implement Repeatable Workflows',    
+    'review_point': 'Adopt Terraform to Implement Repeatable Workflows',    
     'success_criteria': 'Check if Resource manager is in use with Terraform',
     'fireup_items': ['Fireup Task 66: Do you use any configuration or infrastructure management tools? '],
 }
