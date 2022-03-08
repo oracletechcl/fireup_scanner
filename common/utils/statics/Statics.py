@@ -316,9 +316,9 @@ __rp_1_34 = {
 __rp_1_35 = {
     'entry': '1.35',
     'area': 'Security and Compliance',
-    'sub_area': 'Isolate Resources and Control Access',
-    'review_point': 'Define Maximum Security Zones',    
-    'success_criteria': 'Check if Maximum Security Zone is enabled for compartments that holster production workdload. Check Public and Private subnets are in place',
+    'sub_area': 'Ensure Secure Network Access',
+    'review_point': 'Leverage Maximum Security Zones in Oracle Cloud Infrastructure',    
+    'success_criteria': 'Check if Security Zones are created.',
     'fireup_items': ['Fireup Task: 24 - Do you check the OCI Cloud Guard on your console for Security Recommendations?'],
 }
 
