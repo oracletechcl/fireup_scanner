@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v1.0.0_rc1'
+__version__ = 'v1.0.0'
 __lenght_print__ = "230"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
@@ -642,7 +642,7 @@ __rp_4_8 = {
     'entry': '4.8',
     'area': 'Operational Efficiency',
     'sub_area': 'Plan Your Deployment Strategy',
-    'review_point': 'dAopt Terraform to Implement Repeatable Workflows',    
+    'review_point': 'Adopt Terraform to Implement Repeatable Workflows',    
     'success_criteria': 'Check if Resource manager is in use with Terraform',
     'fireup_items': ['Fireup Task 66: Do you use any configuration or infrastructure management tools? '],
 }
