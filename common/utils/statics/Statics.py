@@ -4,7 +4,7 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v1.0.0'
+__version__ = 'v1.0.0.1'
 __lenght_print__ = "230"
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
