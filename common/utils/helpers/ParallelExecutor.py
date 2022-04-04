@@ -315,11 +315,12 @@ def get_load_balancer_healths(item):
 
     for load_balancer in load_balancers:
         id = load_balancer.id
+        region = id.split('.')[3]
         if "networkloadbalancer" in id:
-            if client[1] in id or client[2] in id:
+            if client[1] in region or client[2] in region:
                 healths.append( (load_balancer, get_network_load_balancer_health_data(client[0], id)) )
         else:
-            if client[1] in id or client[2] in id:
+            if client[1] in region or client[2] in region:
                 healths.append( (load_balancer, get_load_balancer_health_data(client[0], id)) )
 
     return healths
