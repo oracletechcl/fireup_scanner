@@ -12,6 +12,7 @@ from common.utils.helpers.helper import *
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.helpers.WebScrapper import *
 import pandas as pd
+from common.utils.statics import Statics
 
 
 class PatchesAndUpdates(ReviewPoint):
@@ -43,9 +44,8 @@ class PatchesAndUpdates(ReviewPoint):
     __os_image_ids = []
 
     # Scrapper variables
-    __db_patches_website = "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/patchingDB.htm"
-    __db_patches_website_id = "patchingDB_topic-Currently_Available_Patches"
-
+    __patches_website = Statics.__dbpatch_webscrapping_url__
+    __patches_website_id = Statics.__dbpatch_webscrapping_id__
     __last_patch_level = None
 
 
@@ -106,7 +106,7 @@ class PatchesAndUpdates(ReviewPoint):
         self.__compute_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_compute_instances, len(self.__compartments), ParallelExecutor.compute_instances)      
         self.__os_image_objects = ParallelExecutor.executor(compute_clients, self.__compartments, ParallelExecutor.get_compute_images, len(self.__compartments), ParallelExecutor.compute_images)      
 
-        self.__last_patch_level = get_db_patches(self.__db_patches_website, self.__db_patches_website_id)
+        self.__last_patch_level = get_db_patches(self.__patches_website, self.__patches_website_id)
 
         for compute in self.__compute_objects:
             compute_record = {
