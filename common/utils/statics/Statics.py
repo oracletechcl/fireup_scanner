@@ -4,8 +4,15 @@
 #
 # Purpose: Static methods and variables for FireUp
 
-__version__ = 'v1.0.0.1'
+__version__ = 'v1.0.1'
 __lenght_print__ = "230"
+
+
+# Declare statics that are used more than one time on the code and have functional usage
+
+__dbpatch_webscrapping_url__="https://docs.oracle.com/en-us/iaas/dbcs/doc/patch-db-system.html"
+__dbpatch_webscrapping_id__="GUID-6D2A010B-2FDB-470D-B74A-015A11613CA6__GUID-118F3E93-D99C-4989-8B12-0D6BF485667F"
+
 
 # declare dictionary with name of the review_point and entries for each entry on spreadsheet
 __rp_1_1 = {

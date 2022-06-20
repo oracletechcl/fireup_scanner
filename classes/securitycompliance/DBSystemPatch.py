@@ -11,6 +11,7 @@ from common.utils.helpers.helper import *
 import common.utils.helpers.ParallelExecutor as ParallelExecutor
 from common.utils.helpers.WebScrapper import *
 import pandas as pd
+from common.utils.statics import Statics
 
 
 class DBSystemPatch(ReviewPoint):
@@ -36,8 +37,8 @@ class DBSystemPatch(ReviewPoint):
     __compartments = []
 
     # Scrapper variables
-    __patches_website = "https://docs.oracle.com/en-us/iaas/Content/Database/Tasks/patchingDB.htm"
-    __patches_website_id = "patchingDB_topic-Currently_Available_Patches"
+    __patches_website = Statics.__dbpatch_webscrapping_url__
+    __patches_website_id = Statics.__dbpatch_webscrapping_id__
     __last_patch_level = None
 
 
